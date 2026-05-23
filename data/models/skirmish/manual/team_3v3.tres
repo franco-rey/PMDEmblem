@@ -3,12 +3,12 @@
 [ext_resource type="Script" path="res://data/models/skirmish/resources/skirmish_definition_resource.gd" id="1_dth5n"]
 [ext_resource type="Resource" path="res://data/models/maps/definitions/test_arena.tres" id="2_0sot8"]
 [ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_instance_resource.gd" id="3_ue8xg"]
-[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/lucario.tres" id="4_qvy06"]
-[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/gardevoir.tres" id="5_utlbw"]
-[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/toxicroak.tres" id="6_6k2e3"]
-[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/magmortar.tres" id="7_vlp5s"]
-[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/gengar.tres" id="8_apvco"]
-[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/dusclops.tres" id="9_lw140"]
+[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/0448_lucario.tres" id="4_qvy06"]
+[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/0282_gardevoir.tres" id="5_utlbw"]
+[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/0454_toxicroak.tres" id="6_6k2e3"]
+[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/0467_magmortar.tres" id="7_vlp5s"]
+[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/0094_gengar.tres" id="8_apvco"]
+[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/0356_dusclops.tres" id="9_lw140"]
 
 [resource]
 script = ExtResource("1_dth5n")

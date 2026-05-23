@@ -79,6 +79,8 @@ func _ready() -> void:
 	if use_speed_scheduler:
 		scheduler = BattleScheduler.new()
 		scheduler.turn_started.connect(_on_turn_started)
+		scheduler.turn_completed.connect(_on_turn_completed)
+		scheduler.round_started.connect(_on_round_started)
 
 func _physics_process(delta: float) -> void:
 	if battle_finished:
@@ -206,6 +208,7 @@ func _on_turn_started(unit: BattleUnit) -> void:
 	if not pawn.is_alive():
 		return
 	pawn.reset_turn()
+	pawn.res.has_acted_this_round = false
 	pawn.res.use_legacy_attack_fallback = false
 	if not pawn.stats.move_slots.is_empty():
 		var idx: int = pawn.stats.first_usable_move_index(false)
@@ -227,6 +230,20 @@ func _on_turn_started(unit: BattleUnit) -> void:
 		"unit": pawn,
 		"team": unit.team,
 	})
+
+
+func _on_turn_completed(unit: BattleUnit) -> void:
+	if unit == null or unit.pawn == null:
+		return
+	unit.pawn.res.has_acted_this_round = true
+
+
+func _on_round_started() -> void:
+	# Greying flag resets at the top of each scheduler round so units waiting
+	# for their next turn aren't visually indistinguishable from spent ones.
+	for unit in battle_units:
+		if unit.pawn != null:
+			unit.pawn.res.has_acted_this_round = false
 
 
 func get_type_chart() -> TypeChartResource:

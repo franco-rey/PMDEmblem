@@ -1,0 +1,95 @@
+[gd_resource type="Resource" script_class="PokemonSpeciesResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_ody3r"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/0282_gardevoir__0.tres" id="2_yu3lj"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/0282_gardevoir__1.tres" id="3_s8jno"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_species_resource.gd" id="4_y4ipw"]
+
+[resource]
+script = ExtResource("4_y4ipw")
+species_id = "0282_gardevoir"
+dex_number = 282
+canonical_name = "Gardevoir"
+forms = Array[ExtResource("1_ody3r")]([ExtResource("2_yu3lj"), ExtResource("3_s8jno")])
+level_skills = Array[Dictionary]([{
+"level": 1,
+"skill": "moonblast"
+}, {
+"level": 1,
+"skill": "stored_power"
+}, {
+"level": 1,
+"skill": "misty_terrain"
+}, {
+"level": 1,
+"skill": "healing_wish"
+}, {
+"level": 1,
+"skill": "growl"
+}, {
+"level": 1,
+"skill": "confusion"
+}, {
+"level": 1,
+"skill": "double_team"
+}, {
+"level": 1,
+"skill": "teleport"
+}, {
+"level": 4,
+"skill": "confusion"
+}, {
+"level": 6,
+"skill": "double_team"
+}, {
+"level": 9,
+"skill": "teleport"
+}, {
+"level": 11,
+"skill": "disarming_voice"
+}, {
+"level": 14,
+"skill": "wish"
+}, {
+"level": 17,
+"skill": "magical_leaf"
+}, {
+"level": 19,
+"skill": "heal_pulse"
+}, {
+"level": 23,
+"skill": "draining_kiss"
+}, {
+"level": 26,
+"skill": "calm_mind"
+}, {
+"level": 31,
+"skill": "psychic"
+}, {
+"level": 35,
+"skill": "imprison"
+}, {
+"level": 40,
+"skill": "future_sight"
+}, {
+"level": 44,
+"skill": "captivate"
+}, {
+"level": 49,
+"skill": "hypnosis"
+}, {
+"level": 53,
+"skill": "dream_eater"
+}, {
+"level": 58,
+"skill": "stored_power"
+}, {
+"level": 62,
+"skill": "moonblast"
+}])
+teach_skills = Array[String](["hyper_beam", "thunderbolt", "toxic", "psychic", "double_team", "light_screen", "reflect", "flash", "rest", "thief", "protect", "attract", "return", "frustration", "safeguard", "hidden_power", "rain_dance", "sunny_day", "shadow_ball", "torment", "facade", "taunt", "skill_swap", "snatch", "secret_power", "calm_mind", "shock_wave", "thunder_wave", "dream_eater", "substitute", "endure", "swagger", "sleep_talk", "psych_up", "recycle", "natural_gift", "fling", "focus_blast", "energy_ball", "giga_impact", "trick_room", "captivate", "grass_knot", "charge_beam", "will_o_wisp", "psyshock", "telekinesis", "round", "echoed_voice", "ally_switch", "confide", "dazzling_gleam"])
+shared_skills = Array[String](["disable", "destiny_bond", "mean_look", "will_o_wisp", "memento", "confuse_ray", "grudge", "shadow_sneak", "encore", "skill_swap", "synchronoise", "ally_switch", "misty_terrain"])
+secret_skills = Array[String](["fire_punch", "ice_punch", "thunder_punch", "body_slam", "double_edge", "thunder_wave", "mimic", "defense_curl", "dream_eater", "substitute", "snore", "mud_slap", "icy_wind", "endure", "swagger", "sleep_talk", "psych_up", "swift", "helping_hand", "trick", "signal_beam", "zen_headbutt", "headbutt", "heal_bell", "pain_split", "magic_coat", "nightmare", "recycle", "skill_swap", "snatch", "hyper_voice", "wonder_room", "magic_room", "shock_wave"])
+evolution_from = "kirlia"
+skill_group1 = "humanlike"
+skill_group2 = "amorphous"

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="PokemonInstanceResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_7kwip"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/aura_sphere.tres" id="2_ayp8w"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_instance_resource.gd" id="3_rdbu6"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/species/0448_lucario.tres" id="4_qikl3"]
+
+[resource]
+script = ExtResource("3_rdbu6")
+species = ExtResource("4_qikl3")
+level = 50
+move_slots = Array[ExtResource("1_7kwip")]([ExtResource("2_ayp8w")])
+pp_state = Array[int]([8])
+movement_override = 5

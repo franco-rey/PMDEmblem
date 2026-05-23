@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PokemonInstanceResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_jtu6t"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/shadow_punch.tres" id="2_qjugg"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_instance_resource.gd" id="3_7tmn8"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/species/0356_dusclops.tres" id="4_8tiqb"]
+
+[resource]
+script = ExtResource("3_7tmn8")
+species = ExtResource("4_8tiqb")
+level = 50
+move_slots = Array[ExtResource("1_jtu6t")]([ExtResource("2_qjugg")])
+pp_state = Array[int]([20])
+team = 1
+control_type = 1
+movement_override = 3

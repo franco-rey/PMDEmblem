@@ -2,22 +2,62 @@ extends Node
 ## A placeholder script that is meant to be replaced by your own level loader system
 
 #region: --- Props ---
+## Picker entries. `kind = "static"` loads a fixed `.tres`; `kind = "random"`
+## rerolls Pokemon picks every launch via `CustomSkirmishBuilder.build_random`.
 const MANUAL_SKIRMISHES: Array[Dictionary] = [
 	{
+		"kind": "static",
 		"id": "demo_3v3",
+		"label": "Demo 3v3 (fixed)",
 		"path": "res://data/models/skirmish/manual/demo_3v3.tres",
 	},
 	{
+		"kind": "static",
 		"id": "single_1v1",
+		"label": "1v1 fixture (fixed)",
 		"path": "res://data/models/skirmish/manual/single_1v1.tres",
 	},
 	{
+		"kind": "static",
 		"id": "team_3v3",
+		"label": "3v3 fixture (fixed)",
 		"path": "res://data/models/skirmish/manual/team_3v3.tres",
 	},
 	{
+		"kind": "static",
 		"id": "type_effectiveness_test",
+		"label": "Type effectiveness fixture",
 		"path": "res://data/models/skirmish/manual/type_effectiveness_test.tres",
+	},
+	{
+		"kind": "random",
+		"id": "random_1v1",
+		"label": "Random 1v1",
+		"team_size": 1,
+	},
+	{
+		"kind": "random",
+		"id": "random_2v2",
+		"label": "Random 2v2",
+		"team_size": 2,
+	},
+	{
+		"kind": "random",
+		"id": "random_3v3",
+		"label": "Random 3v3",
+		"team_size": 3,
+	},
+	{
+		"kind": "random",
+		"id": "random_4v4",
+		"label": "Random 4v4",
+		"team_size": 4,
+	},
+	{
+		"kind": "random",
+		"id": "random_5v5",
+		"label": "Random 5v5",
+		"team_size": 5,
 	},
 ]
 
@@ -113,22 +153,60 @@ func load_selected_skirmish() -> void:
 	if idx < 0 or idx >= MANUAL_SKIRMISHES.size():
 		push_error("Main: no manual skirmish selected")
 		return
-	var path: String = MANUAL_SKIRMISHES[idx].get("path", "")
-	var definition: SkirmishDefinitionResource = load(path) as SkirmishDefinitionResource
+	var entry: Dictionary = MANUAL_SKIRMISHES[idx]
+	var definition: SkirmishDefinitionResource = _resolve_skirmish_definition(entry)
 	if definition == null:
-		push_error("Main: could not load skirmish %s" % path)
 		return
 	unload_level()
 	level_instance = skirmish_loader.load_skirmish(definition, world)
 	$UI/MapSelector.visible = false
 
 
+func _resolve_skirmish_definition(entry: Dictionary) -> SkirmishDefinitionResource:
+	var kind: String = String(entry.get("kind", "static"))
+	if kind == "random":
+		return _build_random_skirmish(entry)
+	var path: String = String(entry.get("path", ""))
+	var definition: SkirmishDefinitionResource = load(path) as SkirmishDefinitionResource
+	if definition == null:
+		push_error("Main: could not load skirmish %s" % path)
+	return definition
+
+
+func _build_random_skirmish(entry: Dictionary) -> SkirmishDefinitionResource:
+	# Random modes reuse the M4 R1 custom builder so spawn shuffling, anchor
+	# validation, and seed plumbing match the explicit-pick path exactly.
+	var team_size: int = int(entry.get("team_size", 1))
+	var maps: Array[String] = CustomSkirmishBuilder.map_paths()
+	if maps.is_empty():
+		push_error("Main: no maps available for random skirmish")
+		return null
+	# M4.5 will introduce real map variety; until then test_arena is the only
+	# map and is the deterministic first entry after sort.
+	var result: Dictionary = CustomSkirmishBuilder.build_random(team_size, maps[0], "")
+	if not result.get("ok", false):
+		push_error("Main: random skirmish build failed: %s" % result.get("error", "?"))
+		return null
+	print("Main: launching %s seed=%d" % [entry.get("id", "random"), int(result["seed"])])
+	return result["definition"]
+
+
 func _populate_skirmish_picker() -> void:
 	skirmish_picker.clear()
 	for entry in MANUAL_SKIRMISHES:
-		var definition: SkirmishDefinitionResource = load(entry.get("path", "")) as SkirmishDefinitionResource
-		var label: String = definition.display_name if definition != null else entry.get("id", "")
-		skirmish_picker.add_item(label)
+		skirmish_picker.add_item(_label_for_picker_entry(entry))
+
+
+func _label_for_picker_entry(entry: Dictionary) -> String:
+	var explicit: String = String(entry.get("label", ""))
+	if not explicit.is_empty():
+		return explicit
+	var path: String = String(entry.get("path", ""))
+	if not path.is_empty():
+		var definition: SkirmishDefinitionResource = load(path) as SkirmishDefinitionResource
+		if definition != null and not definition.display_name.is_empty():
+			return definition.display_name
+	return String(entry.get("id", "unnamed"))
 
 
 func _populate_custom_pickers() -> void:

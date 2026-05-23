@@ -4,8 +4,8 @@ extends SceneTree
 ##   godot --headless --path <project> --script tools/validation/smoke_test_combat.gd
 
 const TYPE_CHART_PATH: String = "res://data/models/pokemon/generated/types/type_chart.tres"
-const LUCARIO_PATH: String = "res://data/models/pokemon/overrides/instances/lucario.tres"
-const MAGMORTAR_PATH: String = "res://data/models/pokemon/overrides/instances/magmortar.tres"
+const LUCARIO_PATH: String = "res://data/models/pokemon/overrides/instances/0448_lucario.tres"
+const MAGMORTAR_PATH: String = "res://data/models/pokemon/overrides/instances/0467_magmortar.tres"
 const SCENE_PATH: String = "res://assets/maps/level/test_level.tscn"
 
 var failures: int = 0

@@ -15,6 +15,18 @@ extends Resource
 @export_file("*.png") var sleep_path: String = ""
 @export_file("*.png") var hop_path: String = ""
 
+## Path to the SpriteCollab `AnimData.xml` sidecar bundled with each species'
+## sprite folder. When present, the runtime sprite reads per-state FrameWidth
+## / FrameHeight from it to handle the 8-row directional layout (Sleep is
+## single-direction; other states span all 8 facings). Empty falls back to
+## the legacy 2-row layout assumption.
+@export_file("*.xml") var anim_data_path: String = ""
+
+## World-space size of one source sprite pixel for SpriteCollab sheets. This is
+## intentionally one shared pixels-to-world conversion rather than per-species
+## normalization, so naturally larger source sprites still render larger.
+@export var world_pixel_size: float = 0.04
+
 @export var cell_size: Vector2i = Vector2i.ZERO
 @export var frame_counts: Dictionary = {}
 @export var grounding_offset: float = 0.0

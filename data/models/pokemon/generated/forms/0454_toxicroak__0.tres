@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="PokemonFormResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_rad8c"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/sprites/0454_toxicroak.tres" id="2_tm4ue"]
+
+[resource]
+script = ExtResource("1_rad8c")
+species_id = "0454_toxicroak"
+generation = 6
+type1 = "poison"
+type2 = "fighting"
+base_hp = 83
+base_atk = 106
+base_def = 65
+base_spa = 86
+base_spd = 65
+base_speed = 85
+height = 1.3
+weight = 44.4
+gender_weights = Vector3i(0, 4, 4)
+exp_table = "medium_fast"
+join_rate = -20
+sprite_set = ExtResource("2_tm4ue")
+intrinsic1 = "anticipation"
+intrinsic2 = "dry_skin"
+intrinsic3 = "poison_touch"

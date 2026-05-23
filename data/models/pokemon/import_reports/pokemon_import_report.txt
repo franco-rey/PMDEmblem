@@ -1,6 +1,6 @@
 Pokemon Import Report
 =====================
-Started: 2026-05-23T03:07:04
+Started: 2026-05-23T12:44:00
 Species imported: 7
 Moves imported: 7
 Instance overrides written: 7
@@ -27,31 +27,31 @@ Effectiveness bucket counts (index -> count):
 
 Species
 -------
-- toxicroak (Toxicroak, dex 454) OK
+- 0454_toxicroak (Toxicroak, dex 454) OK
     types: poison/fighting
     base stats: HP=83 Atk=106 Def=65 SpA=86 SpD=65 Spe=85
     signature move: poison_jab
-- gardevoir (Gardevoir, dex 282) OK
+- 0282_gardevoir (Gardevoir, dex 282) OK
     types: psychic/fairy
     base stats: HP=68 Atk=65 Def=65 SpA=125 SpD=115 Spe=80
     signature move: moonblast
-- lucario (Lucario, dex 448) OK
+- 0448_lucario (Lucario, dex 448) OK
     types: fighting/steel
     base stats: HP=70 Atk=110 Def=70 SpA=115 SpD=70 Spe=90
     signature move: aura_sphere
-- gallade (Gallade, dex 475) OK
+- 0475_gallade (Gallade, dex 475) OK
     types: psychic/fighting
     base stats: HP=68 Atk=125 Def=65 SpA=65 SpD=115 Spe=80
     signature move: psycho_cut
-- magmortar (Magmortar, dex 467) OK
+- 0467_magmortar (Magmortar, dex 467) OK
     types: fire
     base stats: HP=75 Atk=95 Def=67 SpA=125 SpD=95 Spe=83
     signature move: flamethrower
-- dusclops (Dusclops, dex 356) OK
+- 0356_dusclops (Dusclops, dex 356) OK
     types: ghost
     base stats: HP=40 Atk=70 Def=130 SpA=60 SpD=130 Spe=25
     signature move: shadow_punch
-- gengar (Gengar, dex 94) OK
+- 0094_gengar (Gengar, dex 94) OK
     types: ghost/poison
     base stats: HP=60 Atk=65 Def=60 SpA=130 SpD=75 Spe=110
     signature move: shadow_ball
@@ -93,10 +93,10 @@ Moves
 
 Instance overrides
 ------------------
-- res://data/models/pokemon/overrides/instances/toxicroak.tres
-- res://data/models/pokemon/overrides/instances/gardevoir.tres
-- res://data/models/pokemon/overrides/instances/lucario.tres
-- res://data/models/pokemon/overrides/instances/gallade.tres
-- res://data/models/pokemon/overrides/instances/magmortar.tres
-- res://data/models/pokemon/overrides/instances/dusclops.tres
-- res://data/models/pokemon/overrides/instances/gengar.tres
+- res://data/models/pokemon/overrides/instances/0454_toxicroak.tres
+- res://data/models/pokemon/overrides/instances/0282_gardevoir.tres
+- res://data/models/pokemon/overrides/instances/0448_lucario.tres
+- res://data/models/pokemon/overrides/instances/0475_gallade.tres
+- res://data/models/pokemon/overrides/instances/0467_magmortar.tres
+- res://data/models/pokemon/overrides/instances/0356_dusclops.tres
+- res://data/models/pokemon/overrides/instances/0094_gengar.tres

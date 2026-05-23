@@ -161,10 +161,16 @@ func snap_to_nearest_quadrant(camera: TacticsCamera) -> void:
 		res.y_rot += 360
 
 
-## Calculates the nearest quadrant for camera snapping
+## Calculates the nearest snap angle for camera framing. The set now covers
+## both the original 45° diagonals AND the 0°/90°/180°/270° right-angle
+## "straight-on" views, so free-look snap-out and manual rotation can land on
+## either perspective family without any change to the slerp animation.
+const SNAP_ANGLES: Array[int] = [0, 45, 90, 135, 180, 225, 270, 315]
+
+
 func calculate_nearest_quadrant(camera: TacticsCamera) -> Vector3:
 	var current_rotation: float = camera.t_pivot.rotation_degrees.y
-	var quadrants: Array = [45, 135, 225, 315]
+	var quadrants: Array = SNAP_ANGLES
 	
 	# Normalize the current rotation to be between 0 and 360
 	current_rotation = fmod(current_rotation, 360)

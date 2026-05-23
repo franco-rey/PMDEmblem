@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="PokemonInstanceResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_t2osr"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/psycho_cut.tres" id="2_at2s7"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_instance_resource.gd" id="3_vdrv5"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/species/0475_gallade.tres" id="4_qok1u"]
+
+[resource]
+script = ExtResource("3_vdrv5")
+species = ExtResource("4_qok1u")
+level = 50
+move_slots = Array[ExtResource("1_t2osr")]([ExtResource("2_at2s7")])
+pp_state = Array[int]([16])
+movement_override = 3
