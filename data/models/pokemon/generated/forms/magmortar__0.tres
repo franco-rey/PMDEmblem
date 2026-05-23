@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="PokemonFormResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_yu0bl"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/sprites/magmortar.tres" id="2_xwslw"]
+
+[resource]
+script = ExtResource("1_yu0bl")
+species_id = "magmortar"
+generation = 6
+type1 = "fire"
+base_hp = 75
+base_atk = 95
+base_def = 67
+base_spa = 125
+base_spd = 95
+base_speed = 83
+height = 1.6
+weight = 68.0
+gender_weights = Vector3i(0, 6, 2)
+exp_table = "medium_fast"
+join_rate = -50
+sprite_set = ExtResource("2_xwslw")
+intrinsic1 = "flame_body"
+intrinsic2 = "none"
+intrinsic3 = "vital_spirit"

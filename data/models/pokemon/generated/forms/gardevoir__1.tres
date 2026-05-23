@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="PokemonFormResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_lg5u2"]
+
+[resource]
+script = ExtResource("1_lg5u2")
+species_id = "gardevoir"
+form_index = 1
+generation = 6
+type1 = "psychic"
+type2 = "fairy"
+base_hp = 68
+base_atk = 85
+base_def = 65
+base_spa = 165
+base_spd = 135
+base_speed = 100
+height = 1.6
+weight = 48.4
+gender_weights = Vector3i(0, 4, 4)
+exp_table = "slow"
+join_rate = -40
+temporary = true
+intrinsic1 = "pixilate"
+intrinsic2 = "none"
+intrinsic3 = "none"

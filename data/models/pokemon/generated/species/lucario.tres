@@ -1,0 +1,86 @@
+[gd_resource type="Resource" script_class="PokemonSpeciesResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_j72m0"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/lucario__0.tres" id="2_4mwvo"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/lucario__1.tres" id="3_kdf2o"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_species_resource.gd" id="4_el5ps"]
+
+[resource]
+script = ExtResource("4_el5ps")
+species_id = "lucario"
+dex_number = 448
+canonical_name = "Lucario"
+forms = Array[ExtResource("1_j72m0")]([ExtResource("2_4mwvo"), ExtResource("3_kdf2o")])
+level_skills = Array[Dictionary]([{
+"level": 1,
+"skill": "extreme_speed"
+}, {
+"level": 1,
+"skill": "dragon_pulse"
+}, {
+"level": 1,
+"skill": "close_combat"
+}, {
+"level": 1,
+"skill": "aura_sphere"
+}, {
+"level": 1,
+"skill": "foresight"
+}, {
+"level": 1,
+"skill": "quick_attack"
+}, {
+"level": 1,
+"skill": "detect"
+}, {
+"level": 1,
+"skill": "metal_claw"
+}, {
+"level": 6,
+"skill": "counter"
+}, {
+"level": 11,
+"skill": "feint"
+}, {
+"level": 15,
+"skill": "power_up_punch"
+}, {
+"level": 19,
+"skill": "swords_dance"
+}, {
+"level": 24,
+"skill": "metal_sound"
+}, {
+"level": 29,
+"skill": "bone_rush"
+}, {
+"level": 33,
+"skill": "quick_guard"
+}, {
+"level": 37,
+"skill": "me_first"
+}, {
+"level": 42,
+"skill": "aura_sphere"
+}, {
+"level": 47,
+"skill": "calm_mind"
+}, {
+"level": 51,
+"skill": "heal_pulse"
+}, {
+"level": 55,
+"skill": "close_combat"
+}, {
+"level": 60,
+"skill": "dragon_pulse"
+}, {
+"level": 65,
+"skill": "extreme_speed"
+}])
+teach_skills = Array[String](["swords_dance", "roar", "hyper_beam", "strength", "earthquake", "dig", "toxic", "psychic", "double_team", "rest", "rock_slide", "substitute", "protect", "endure", "swagger", "attract", "sleep_talk", "return", "frustration", "iron_tail", "hidden_power", "rain_dance", "sunny_day", "shadow_ball", "rock_smash", "facade", "focus_punch", "brick_break", "secret_power", "rock_tomb", "bulk_up", "calm_mind", "water_pulse", "natural_gift", "payback", "fling", "poison_jab", "dark_pulse", "dragon_pulse", "drain_punch", "focus_blast", "giga_impact", "shadow_claw", "flash_cannon", "rock_climb", "stone_edge", "captivate", "hone_claws", "low_sweep", "round", "retaliate", "bulldoze", "work_up", "confide", "power_up_punch"])
+shared_skills = Array[String](["bite", "low_kick", "agility", "high_jump_kick", "mind_reader", "detect", "cross_chop", "crunch", "blaze_kick", "sky_uppercut", "iron_defense", "vacuum_wave", "bullet_punch", "follow_me", "circle_throw"])
+secret_skills = Array[String](["ice_punch", "thunder_punch", "swift", "snore", "mud_slap", "fury_cutter", "helping_hand", "iron_defense", "magnet_rise", "vacuum_wave", "zen_headbutt", "headbutt", "low_kick", "role_play", "sleep_talk", "iron_tail", "dark_pulse", "dragon_pulse", "drain_punch", "dual_chop", "focus_punch", "water_pulse"])
+evolution_from = "riolu"
+skill_group1 = "field"
+skill_group2 = "humanlike"

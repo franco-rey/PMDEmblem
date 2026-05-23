@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_sxij8"]
+
+[resource]
+script = ExtResource("1_sxij8")
+move_id = "flamethrower"
+index_number = 53
+name = "Flamethrower"
+description = "The target is scorched with an intense blast of fire. This may also leave the target with a burn."
+type = "fire"
+category = 2
+base_power = 70
+accuracy = 100
+pp = 8
+tactical_range_kind = 3
+tactical_range_value = 5
+target_alignment = 6
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.AdditionalEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.AdditionalEvent, PMDC"])

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_d0ogm"]
+
+[resource]
+script = ExtResource("1_d0ogm")
+move_id = "aura_sphere"
+index_number = 396
+name = "Aura Sphere"
+description = "The user lets loose a blast of aura power from deep within its body at the target. This attack never misses."
+type = "fighting"
+category = 2
+base_power = 70
+pp = 8
+tactical_range_kind = 3
+tactical_range_value = 6
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC"])

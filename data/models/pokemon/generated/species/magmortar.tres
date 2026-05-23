@@ -1,0 +1,73 @@
+[gd_resource type="Resource" script_class="PokemonSpeciesResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_ac68y"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/magmortar__0.tres" id="2_0ckhv"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_species_resource.gd" id="3_dtrb8"]
+
+[resource]
+script = ExtResource("3_dtrb8")
+species_id = "magmortar"
+dex_number = 467
+canonical_name = "Magmortar"
+forms = Array[ExtResource("1_ac68y")]([ExtResource("2_0ckhv")])
+level_skills = Array[Dictionary]([{
+"level": 1,
+"skill": "thunder_punch"
+}, {
+"level": 1,
+"skill": "smog"
+}, {
+"level": 1,
+"skill": "leer"
+}, {
+"level": 1,
+"skill": "ember"
+}, {
+"level": 1,
+"skill": "smokescreen"
+}, {
+"level": 5,
+"skill": "ember"
+}, {
+"level": 8,
+"skill": "smokescreen"
+}, {
+"level": 12,
+"skill": "feint_attack"
+}, {
+"level": 15,
+"skill": "fire_spin"
+}, {
+"level": 19,
+"skill": "clear_smog"
+}, {
+"level": 22,
+"skill": "flame_burst"
+}, {
+"level": 26,
+"skill": "confuse_ray"
+}, {
+"level": 29,
+"skill": "fire_punch"
+}, {
+"level": 36,
+"skill": "lava_plume"
+}, {
+"level": 42,
+"skill": "sunny_day"
+}, {
+"level": 49,
+"skill": "flamethrower"
+}, {
+"level": 55,
+"skill": "fire_blast"
+}, {
+"level": 62,
+"skill": "hyper_beam"
+}])
+teach_skills = Array[String](["flamethrower", "hyper_beam", "strength", "solar_beam", "thunderbolt", "earthquake", "toxic", "psychic", "double_team", "fire_blast", "rest", "rock_slide", "substitute", "thief", "protect", "endure", "swagger", "attract", "sleep_talk", "return", "frustration", "iron_tail", "hidden_power", "sunny_day", "rock_smash", "torment", "will_o_wisp", "facade", "focus_punch", "taunt", "brick_break", "secret_power", "overheat", "rock_tomb", "natural_gift", "fling", "focus_blast", "giga_impact", "rock_climb", "captivate", "flame_charge", "low_sweep", "round", "incinerate", "bulldoze", "confide", "power_up_punch"])
+shared_skills = Array[String](["karate_chop", "mega_punch", "thunder_punch", "screech", "barrier", "cross_chop", "mach_punch", "dynamic_punch", "flare_blitz", "belly_drum", "focus_energy", "iron_tail", "power_swap", "belch"])
+secret_skills = Array[String](["fire_punch", "thunder_punch", "snore", "mud_slap", "heat_wave", "helping_hand", "headbutt", "low_kick", "sleep_talk", "iron_tail", "covet", "dual_chop", "focus_punch", "mega_punch", "mega_kick", "body_slam", "double_edge", "counter", "seismic_toss", "mimic", "substitute", "endure", "swagger", "dynamic_punch", "uproar"])
+evolution_from = "magmar"
+skill_group1 = "humanlike"
+skill_group2 = "undiscovered"

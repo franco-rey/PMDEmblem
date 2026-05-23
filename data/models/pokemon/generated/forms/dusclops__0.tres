@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="PokemonFormResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_dehmq"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/sprites/dusclops.tres" id="2_6jl2q"]
+
+[resource]
+script = ExtResource("1_dehmq")
+species_id = "dusclops"
+generation = 6
+type1 = "ghost"
+base_hp = 40
+base_atk = 70
+base_def = 130
+base_spa = 60
+base_spd = 130
+base_speed = 25
+height = 1.6
+weight = 30.6
+gender_weights = Vector3i(0, 4, 4)
+exp_table = "fast"
+join_rate = -20
+sprite_set = ExtResource("2_6jl2q")
+intrinsic1 = "pressure"
+intrinsic2 = "none"
+intrinsic3 = "frisk"

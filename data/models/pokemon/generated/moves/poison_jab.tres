@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_133q7"]
+
+[resource]
+script = ExtResource("1_133q7")
+move_id = "poison_jab"
+index_number = 398
+name = "Poison Jab"
+description = "The target is stabbed with a tentacle or arm steeped in poison. This may also poison the target."
+type = "poison"
+category = 1
+base_power = 60
+accuracy = 100
+pp = 16
+tactical_range_value = 2
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.AdditionalEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence", "PMDC.Dungeon.AdditionalEvent, PMDC"])

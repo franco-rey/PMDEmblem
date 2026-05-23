@@ -1,0 +1,102 @@
+Pokemon Import Report
+=====================
+Started: 2026-05-23T03:07:04
+Species imported: 7
+Moves imported: 7
+Instance overrides written: 7
+Errors: 0
+Aggregate warnings: 0
+
+Type chart
+----------
+Loaded: yes
+Type count: 19
+Matchup matrix entries: 361 (expected 361 for 19x19)
+Effectiveness bucket counts (index -> count):
+  [0] 8
+  [1] 0
+  [2] 0
+  [3] 61
+  [4] 241
+  [5] 51
+  [6] 0
+  [7] 0
+  [8] 0
+  [9] 0
+  [10] 0
+
+Species
+-------
+- toxicroak (Toxicroak, dex 454) OK
+    types: poison/fighting
+    base stats: HP=83 Atk=106 Def=65 SpA=86 SpD=65 Spe=85
+    signature move: poison_jab
+- gardevoir (Gardevoir, dex 282) OK
+    types: psychic/fairy
+    base stats: HP=68 Atk=65 Def=65 SpA=125 SpD=115 Spe=80
+    signature move: moonblast
+- lucario (Lucario, dex 448) OK
+    types: fighting/steel
+    base stats: HP=70 Atk=110 Def=70 SpA=115 SpD=70 Spe=90
+    signature move: aura_sphere
+- gallade (Gallade, dex 475) OK
+    types: psychic/fighting
+    base stats: HP=68 Atk=125 Def=65 SpA=65 SpD=115 Spe=80
+    signature move: psycho_cut
+- magmortar (Magmortar, dex 467) OK
+    types: fire
+    base stats: HP=75 Atk=95 Def=67 SpA=125 SpD=95 Spe=83
+    signature move: flamethrower
+- dusclops (Dusclops, dex 356) OK
+    types: ghost
+    base stats: HP=40 Atk=70 Def=130 SpA=60 SpD=130 Spe=25
+    signature move: shadow_punch
+- gengar (Gengar, dex 94) OK
+    types: ghost/poison
+    base stats: HP=60 Atk=65 Def=60 SpA=130 SpD=75 Spe=110
+    signature move: shadow_ball
+
+Moves
+-----
+- poison_jab (#398, Poison Jab) OK
+    type=poison category=1 power=60 acc=100 pp=16
+    range=unsupported/2 alignment=4
+    effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.AdditionalEvent, PMDC
+    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence, PMDC.Dungeon.AdditionalEvent, PMDC
+- moonblast (#585, Moonblast) OK
+    type=fairy category=2 power=75 acc=100 pp=9
+    range=projectile/6 alignment=6
+    effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.AdditionalEvent, PMDC
+    UNSUPPORTED effect tags: PMDC.Dungeon.AdditionalEvent, PMDC
+- aura_sphere (#396, Aura Sphere) OK
+    type=fighting category=2 power=70 acc=-1 pp=8
+    range=projectile/6 alignment=4
+    effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
+- psycho_cut (#427, Psycho Cut) OK
+    type=psychic category=1 power=70 acc=100 pp=16
+    range=projectile/2 alignment=4
+    effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
+- flamethrower (#53, Flamethrower) OK
+    type=fire category=2 power=70 acc=100 pp=8
+    range=projectile/5 alignment=6
+    effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.AdditionalEvent, PMDC
+    UNSUPPORTED effect tags: PMDC.Dungeon.AdditionalEvent, PMDC
+- shadow_punch (#325, Shadow Punch) OK
+    type=ghost category=1 power=60 acc=-1 pp=20
+    range=melee/1 alignment=4
+    effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
+- shadow_ball (#247, Shadow Ball) OK
+    type=ghost category=2 power=70 acc=100 pp=8
+    range=projectile/6 alignment=6
+    effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.AdditionalEvent, PMDC
+    UNSUPPORTED effect tags: PMDC.Dungeon.AdditionalEvent, PMDC
+
+Instance overrides
+------------------
+- res://data/models/pokemon/overrides/instances/toxicroak.tres
+- res://data/models/pokemon/overrides/instances/gardevoir.tres
+- res://data/models/pokemon/overrides/instances/lucario.tres
+- res://data/models/pokemon/overrides/instances/gallade.tres
+- res://data/models/pokemon/overrides/instances/magmortar.tres
+- res://data/models/pokemon/overrides/instances/dusclops.tres
+- res://data/models/pokemon/overrides/instances/gengar.tres

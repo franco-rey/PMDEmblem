@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="PokemonFormResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_w1clg"]
+
+[resource]
+script = ExtResource("1_w1clg")
+species_id = "gengar"
+form_index = 1
+generation = 6
+type1 = "ghost"
+type2 = "poison"
+base_hp = 60
+base_atk = 65
+base_def = 80
+base_spa = 170
+base_spd = 95
+base_speed = 130
+height = 1.4
+weight = 40.5
+gender_weights = Vector3i(0, 4, 4)
+exp_table = "medium_slow"
+join_rate = -40
+temporary = true
+intrinsic1 = "shadow_tag"
+intrinsic2 = "none"
+intrinsic3 = "none"
