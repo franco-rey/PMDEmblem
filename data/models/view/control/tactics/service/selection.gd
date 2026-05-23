@@ -65,7 +65,14 @@ func select_new_location(ctrl: TacticsControls) -> void:
 	var tile: TacticsTile = input_service.get_3d_canvas_mouse_position(1, ctrl)
 	arena.mark_hover_tile(tile)
 	if Input.is_action_just_pressed("ui_accept") and tile and tile.reachable:
-		ctrl.curr_pawn.res.pathfinding_tilestack = arena.get_pathfinding_tilestack(tile)
+		# `participant.curr_pawn` is set by both the legacy `select_pawn`
+		# flow and M3's scheduler turn dispatch; `ctrl.curr_pawn` is only
+		# populated by the legacy hover-then-click selection, so prefer the
+		# participant resource as the source of truth.
+		var active_pawn: TacticsPawn = participant.curr_pawn if participant.curr_pawn != null else ctrl.curr_pawn
+		if active_pawn == null:
+			return
+		active_pawn.res.pathfinding_tilestack = arena.get_pathfinding_tilestack(tile)
 		t_cam.target = tile
 		participant.stage = 4
 

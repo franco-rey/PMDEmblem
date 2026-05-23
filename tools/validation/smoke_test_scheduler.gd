@@ -1,0 +1,196 @@
+extends SceneTree
+## Headless smoke test for M3's Speed-ordered initiative scheduler.
+##
+##   godot --headless --path <project> --script tools/validation/smoke_test_scheduler.gd
+##
+## Builds synthetic [BattleUnit]s with mixed Speeds across teams and exercises
+## the scheduler's API: ordering, deterministic ties, remove, insert, rebuild,
+## fainted skipping, and battle-end detection. Exits 0 on success.
+
+var failures: int = 0
+
+
+func _init() -> void:
+	_test_basic_order()
+	_test_determinism_same_seed()
+	_test_player_team_precedence()
+	_test_remove_unit()
+	_test_insert_unit()
+	_test_rebuild_queue()
+	_test_fainted_skipped()
+	_test_is_battle_over()
+	_test_peek_upcoming()
+
+	if failures > 0:
+		push_error("smoke: scheduler failed %d check(s)" % failures)
+		quit(1)
+	else:
+		print("smoke: scheduler clean")
+		quit(0)
+
+
+func _make_unit(speed_val: int, team: int, insertion: int) -> BattleUnit:
+	var stats := Stats.new()
+	stats.speed = speed_val
+	stats.battle_status = Stats.BattleStatus.ACTIVE
+	return BattleUnit.new(null, stats, team, PokemonInstanceResource.ControlType.AI, insertion)
+
+
+func _test_basic_order() -> void:
+	var a := _make_unit(110, PokemonInstanceResource.Team.PLAYER, 0)
+	var b := _make_unit(90, PokemonInstanceResource.Team.ENEMY, 1)
+	var c := _make_unit(85, PokemonInstanceResource.Team.PLAYER, 2)
+	var d := _make_unit(25, PokemonInstanceResource.Team.ENEMY, 3)
+
+	var s := BattleScheduler.new()
+	s.start_battle([a, b, c, d], 42)
+	var order: Array = _drain(s, 4)
+	_assert_eq(order, [a, b, c, d], "basic speed-descending order (110>90>85>25)")
+
+
+func _test_determinism_same_seed() -> void:
+	var a := _make_unit(80, PokemonInstanceResource.Team.PLAYER, 0)
+	var b := _make_unit(80, PokemonInstanceResource.Team.PLAYER, 1)
+	var c := _make_unit(80, PokemonInstanceResource.Team.PLAYER, 2)
+	var d := _make_unit(80, PokemonInstanceResource.Team.PLAYER, 3)
+
+	var s1 := BattleScheduler.new()
+	s1.start_battle([a, b, c, d], 7)
+	var order1: Array = _drain(s1, 4)
+
+	var s2 := BattleScheduler.new()
+	s2.start_battle([a, b, c, d], 7)
+	var order2: Array = _drain(s2, 4)
+
+	_assert_eq(order1, order2, "same seed produces same order")
+	_assert_eq(order1, [a, b, c, d], "stable insertion order resolves within-team ties")
+
+
+func _test_player_team_precedence() -> void:
+	# Same Speed, different teams - Player (0) should precede Enemy (1).
+	var p1 := _make_unit(90, PokemonInstanceResource.Team.PLAYER, 0)
+	var e1 := _make_unit(90, PokemonInstanceResource.Team.ENEMY, 1)
+	var p2 := _make_unit(90, PokemonInstanceResource.Team.PLAYER, 2)
+	var s := BattleScheduler.new()
+	s.start_battle([e1, p1, p2], 11)
+	var order: Array = _drain(s, 3)
+	_assert_eq(order, [p1, p2, e1], "team precedence applies within tied Speeds")
+
+
+func _test_remove_unit() -> void:
+	var a := _make_unit(110, PokemonInstanceResource.Team.PLAYER, 0)
+	var b := _make_unit(90, PokemonInstanceResource.Team.ENEMY, 1)
+	var c := _make_unit(85, PokemonInstanceResource.Team.PLAYER, 2)
+	var d := _make_unit(25, PokemonInstanceResource.Team.ENEMY, 3)
+	var s := BattleScheduler.new()
+	s.start_battle([a, b, c, d], 42)
+
+	_assert_eq([s.get_active_unit()], [a], "round starts with a")
+	s.complete_active_unit()
+	_assert_eq([s.get_active_unit()], [b], "advances to b")
+	s.remove_unit(b)
+	_assert_eq([s.get_active_unit()], [c], "removing active b advances to c")
+	s.remove_unit(b)
+	_assert_eq([s.get_active_unit()], [c], "double-remove of b is idempotent")
+	s.complete_active_unit()
+	_assert_eq([s.get_active_unit()], [d], "after c, d is active")
+
+
+func _test_insert_unit() -> void:
+	var a := _make_unit(110, PokemonInstanceResource.Team.PLAYER, 0)
+	var b := _make_unit(90, PokemonInstanceResource.Team.ENEMY, 1)
+	var c := _make_unit(85, PokemonInstanceResource.Team.PLAYER, 2)
+	var d := _make_unit(25, PokemonInstanceResource.Team.ENEMY, 3)
+	var s := BattleScheduler.new()
+	s.start_battle([a, b, c, d], 42)
+
+	s.complete_active_unit()  # a done, b is now active
+	var hot := _make_unit(200, PokemonInstanceResource.Team.ALLY, 99)
+	s.insert_unit(hot)
+	_assert_eq([s.get_active_unit()], [b], "active b not displaced by insertion")
+	s.complete_active_unit()
+	_assert_eq([s.get_active_unit()], [hot], "inserted high-speed unit acts before remaining queue")
+	s.complete_active_unit()
+	_assert_eq([s.get_active_unit()], [c], "queue resumes after inserted unit acts")
+
+
+func _test_rebuild_queue() -> void:
+	var a := _make_unit(110, PokemonInstanceResource.Team.PLAYER, 0)
+	var b := _make_unit(90, PokemonInstanceResource.Team.ENEMY, 1)
+	var c := _make_unit(85, PokemonInstanceResource.Team.PLAYER, 2)
+	var d := _make_unit(25, PokemonInstanceResource.Team.ENEMY, 3)
+	var s := BattleScheduler.new()
+	s.start_battle([a, b, c, d], 42)
+
+	# Advance partially through the round.
+	s.complete_active_unit()
+	s.complete_active_unit()
+	s.rebuild_queue()
+	_assert_eq([s.get_active_unit()], [a], "rebuild restarts with highest-speed living unit")
+
+
+func _test_fainted_skipped() -> void:
+	var a := _make_unit(110, PokemonInstanceResource.Team.PLAYER, 0)
+	var b := _make_unit(90, PokemonInstanceResource.Team.ENEMY, 1)
+	var c := _make_unit(85, PokemonInstanceResource.Team.PLAYER, 2)
+	var s := BattleScheduler.new()
+	s.start_battle([a, b, c], 42)
+	b.stats.battle_status = Stats.BattleStatus.FAINTED
+	s.complete_active_unit()  # a complete; should skip b (fainted) and land on c
+	_assert_eq([s.get_active_unit()], [c], "fainted unit is skipped without removal")
+
+
+func _test_is_battle_over() -> void:
+	var a := _make_unit(110, PokemonInstanceResource.Team.PLAYER, 0)
+	var b := _make_unit(90, PokemonInstanceResource.Team.ENEMY, 1)
+	var s := BattleScheduler.new()
+	s.start_battle([a, b], 42)
+	_assert_true(not s.is_battle_over(), "two living teams -> battle ongoing")
+	b.stats.battle_status = Stats.BattleStatus.FAINTED
+	_assert_true(s.is_battle_over(), "one team remaining -> battle over")
+
+
+func _test_peek_upcoming() -> void:
+	var a := _make_unit(110, PokemonInstanceResource.Team.PLAYER, 0)
+	var b := _make_unit(90, PokemonInstanceResource.Team.ENEMY, 1)
+	var c := _make_unit(85, PokemonInstanceResource.Team.PLAYER, 2)
+	var d := _make_unit(25, PokemonInstanceResource.Team.ENEMY, 3)
+	var s := BattleScheduler.new()
+	s.start_battle([a, b, c, d], 42)
+	# After start_battle, a is active and {b, c, d} are queued.
+	var upcoming: Array = s.peek_upcoming(3)
+	_assert_eq(upcoming, [b, c, d], "peek_upcoming returns the next N queued units")
+
+
+func _drain(s: BattleScheduler, n: int) -> Array:
+	var order: Array = []
+	while order.size() < n:
+		var u: BattleUnit = s.get_active_unit()
+		if u == null:
+			break
+		order.append(u)
+		s.complete_active_unit()
+	return order
+
+
+func _assert_eq(actual: Array, expected: Array, label: String) -> void:
+	if actual.size() != expected.size():
+		_fail("%s (size mismatch: %d vs %d)" % [label, actual.size(), expected.size()])
+		return
+	for i in range(actual.size()):
+		if actual[i] != expected[i]:
+			_fail("%s (index %d differs)" % [label, i])
+			return
+	print("smoke: ok - %s" % label)
+
+
+func _assert_true(value: bool, label: String) -> void:
+	if value:
+		print("smoke: ok - %s" % label)
+	else:
+		_fail(label)
+
+
+func _fail(label: String) -> void:
+	failures += 1
+	push_error("smoke: fail - %s" % label)
