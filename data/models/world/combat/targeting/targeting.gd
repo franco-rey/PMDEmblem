@@ -73,11 +73,16 @@ static func filter_by_alignment(
 
 
 static func is_target_legal(unit: TacticsPawn, target: TacticsPawn, move: PokemonMoveResource) -> bool:
+	# Source of truth is the visual `mark_attackable_tiles` pass that
+	# `display_attackable_targets` runs before the player can click. The
+	# height-aware BFS that paints those red tiles uses a different metric
+	# than the geometric Chebyshev box `compute_range` emits, so the two
+	# disagree on short-range moves like Gallade's Psycho Cut (range 2). Trust
+	# the marker the player can see.
 	if unit == null or target == null or move == null or not target.is_alive():
 		return false
-	var tiles: Array[Vector3i] = compute_range(unit, move)
-	var target_key: Vector3i = _tile_key(target.get_tile())
-	if not tiles.has(target_key):
+	var tile: TacticsTile = target.get_tile()
+	if tile == null or not tile.attackable:
 		return false
 	return _alignment_allows(unit, target, move)
 
@@ -87,6 +92,11 @@ static func _alignment_allows(unit: TacticsPawn, target: TacticsPawn, move: Poke
 		return move.can_target_self()
 	var same_team: bool = _team_key(unit) == _team_key(target)
 	if same_team:
+		# PMD's `target_alignment` bitmask often includes TARGET_FRIEND on
+		# damaging moves to model AoE friendly-fire. Our tactical model picks a
+		# single target, so damaging moves must never voluntarily target allies.
+		if move.is_damaging():
+			return false
 		return move.can_target_allies()
 	return move.can_target_foes()
 
@@ -103,9 +113,12 @@ static func _team_key(unit: TacticsPawn) -> String:
 
 
 static func _tile_key(tile: TacticsTile) -> Vector3i:
+	# Drop y on purpose. Tiles sit at varying heights, but range / alignment
+	# checks operate on the x/z grid; `compute_range` emits offsets with y=0,
+	# so keying by y would reject same-column tiles at different elevations.
 	if tile == null:
 		return Vector3i.ZERO
-	return Vector3i(roundi(tile.global_position.x), roundi(tile.global_position.y), roundi(tile.global_position.z))
+	return Vector3i(roundi(tile.global_position.x), 0, roundi(tile.global_position.z))
 
 
 static func _facing_direction(unit: TacticsPawn) -> Vector3i:
