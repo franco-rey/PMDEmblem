@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="PokemonSpriteSetResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_sprite_set_resource.gd" id="1_51kj2"]
+
+[resource]
+script = ExtResource("1_51kj2")
+idle_path = "res://assets/textures/actor/pokemon/0282_gardevoir/idle.png"
+walk_path = "res://assets/textures/actor/pokemon/0282_gardevoir/walk.png"
+hurt_path = "res://assets/textures/actor/pokemon/0282_gardevoir/hurt.png"
+sleep_path = "res://assets/textures/actor/pokemon/0282_gardevoir/sleep.png"
+hop_path = "res://assets/textures/actor/pokemon/0282_gardevoir/hop.png"
+anim_data_path = "res://assets/textures/actor/pokemon/0282_gardevoir/AnimData.xml"

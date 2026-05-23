@@ -16,13 +16,13 @@ const MAX_TEAM_SIZE: int = 8
 ## loader's sort. M4 R1 hard-caps this at 8 per side so 8v8 customs can lay out.
 const ANCHOR_POOL_SIZE: int = 8
 const ROSTER_SLUGS: Array[String] = [
-	"gallade",
-	"lucario",
-	"gardevoir",
-	"toxicroak",
-	"magmortar",
-	"gengar",
-	"dusclops",
+	"0475_gallade",
+	"0448_lucario",
+	"0282_gardevoir",
+	"0454_toxicroak",
+	"0467_magmortar",
+	"0094_gengar",
+	"0356_dusclops",
 ]
 
 
@@ -164,6 +164,50 @@ static func build(player_paths: Array[String], enemy_paths: Array[String], map_p
 		"map_path": map_path,
 	}
 	return {"ok": true, "definition": definition, "seed": seed}
+
+
+## Picks `count` roster Pokemon at random (with replacement, matching the
+## explicit-builder's duplicate-allowed contract). `seed` drives the choice
+## deterministically; pass `0` to draw a fresh non-deterministic sample.
+static func random_roster_paths(count: int, seed: int = 0) -> Array[String]:
+	var out: Array[String] = []
+	var pool: Array[String] = roster_paths()
+	if count <= 0 or pool.is_empty():
+		return out
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	if seed == 0:
+		rng.randomize()
+	else:
+		rng.seed = seed
+	for i in range(count):
+		out.append(pool[int(rng.randi_range(0, pool.size() - 1))])
+	return out
+
+
+## Builds an NvN skirmish whose teams are rolled fresh each call.
+##
+## A non-empty `seed_text` makes both team picks AND spawn placement
+## reproducible (different XOR masks keep player/enemy rolls independent).
+## Returns the same `{"ok"/"error" + definition + seed}` shape as `build`.
+static func build_random(team_size: int, map_path: String, seed_text: String = "") -> Dictionary:
+	if team_size < MIN_TEAM_SIZE or team_size > MAX_TEAM_SIZE:
+		return {"ok": false, "error": "Team size must be %d-%d" % [MIN_TEAM_SIZE, MAX_TEAM_SIZE]}
+	var seed: int = resolve_seed(seed_text)
+	# XOR salts derive deterministic but distinct per-side roster rolls from the
+	# single user-facing seed, so a replayed seed always reproduces both teams.
+	var player_paths: Array[String] = random_roster_paths(team_size, seed ^ 0x1234ABCD)
+	var enemy_paths: Array[String] = random_roster_paths(team_size, seed ^ 0xFEDC4321)
+	var seed_for_build: String = String.num_int64(seed)
+	var result: Dictionary = build(player_paths, enemy_paths, map_path, seed_for_build)
+	if result.get("ok", false):
+		var definition: SkirmishDefinitionResource = result["definition"]
+		definition.skirmish_id = "random_%dv%d_%d" % [team_size, team_size, seed]
+		definition.display_name = "Random %dv%d" % [team_size, team_size]
+		var meta: Dictionary = definition.generation_metadata
+		meta["source"] = "random_builder"
+		meta["team_size"] = team_size
+		definition.generation_metadata = meta
+	return result
 
 
 static func _load_team(paths: Array[String]) -> Array[PokemonInstanceResource]:

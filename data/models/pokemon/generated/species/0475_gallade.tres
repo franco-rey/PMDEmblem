@@ -1,0 +1,92 @@
+[gd_resource type="Resource" script_class="PokemonSpeciesResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_7cxvc"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/0475_gallade__0.tres" id="2_ihtto"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/0475_gallade__1.tres" id="3_bl3lh"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_species_resource.gd" id="4_ney3p"]
+
+[resource]
+script = ExtResource("4_ney3p")
+species_id = "0475_gallade"
+dex_number = 475
+canonical_name = "Gallade"
+forms = Array[ExtResource("1_7cxvc")]([ExtResource("2_ihtto"), ExtResource("3_bl3lh")])
+level_skills = Array[Dictionary]([{
+"level": 1,
+"skill": "stored_power"
+}, {
+"level": 1,
+"skill": "close_combat"
+}, {
+"level": 1,
+"skill": "leaf_blade"
+}, {
+"level": 1,
+"skill": "night_slash"
+}, {
+"level": 1,
+"skill": "leer"
+}, {
+"level": 1,
+"skill": "confusion"
+}, {
+"level": 1,
+"skill": "double_team"
+}, {
+"level": 1,
+"skill": "teleport"
+}, {
+"level": 4,
+"skill": "confusion"
+}, {
+"level": 6,
+"skill": "double_team"
+}, {
+"level": 9,
+"skill": "teleport"
+}, {
+"level": 11,
+"skill": "quick_guard"
+}, {
+"level": 14,
+"skill": "fury_cutter"
+}, {
+"level": 17,
+"skill": "slash"
+}, {
+"level": 19,
+"skill": "heal_pulse"
+}, {
+"level": 23,
+"skill": "wide_guard"
+}, {
+"level": 26,
+"skill": "swords_dance"
+}, {
+"level": 31,
+"skill": "psycho_cut"
+}, {
+"level": 35,
+"skill": "helping_hand"
+}, {
+"level": 40,
+"skill": "feint"
+}, {
+"level": 44,
+"skill": "false_swipe"
+}, {
+"level": 49,
+"skill": "protect"
+}, {
+"level": 53,
+"skill": "close_combat"
+}, {
+"level": 58,
+"skill": "stored_power"
+}])
+teach_skills = Array[String](["swords_dance", "cut", "hyper_beam", "strength", "thunderbolt", "thunder_wave", "earthquake", "toxic", "psychic", "double_team", "light_screen", "reflect", "dream_eater", "flash", "rest", "rock_slide", "substitute", "thief", "protect", "endure", "false_swipe", "swagger", "attract", "sleep_talk", "return", "frustration", "safeguard", "hidden_power", "rain_dance", "sunny_day", "psych_up", "shadow_ball", "rock_smash", "torment", "facade", "focus_punch", "taunt", "recycle", "brick_break", "skill_swap", "snatch", "secret_power", "rock_tomb", "aerial_ace", "bulk_up", "calm_mind", "shock_wave", "natural_gift", "fling", "poison_jab", "x_scissor", "drain_punch", "focus_blast", "giga_impact", "trick_room", "stone_edge", "captivate", "grass_knot", "charge_beam", "will_o_wisp", "psyshock", "telekinesis", "low_sweep", "round", "echoed_voice", "ally_switch", "retaliate", "bulldoze", "work_up", "confide", "dazzling_gleam", "power_up_punch"])
+shared_skills = Array[String](["disable", "destiny_bond", "mean_look", "will_o_wisp", "memento", "confuse_ray", "grudge", "shadow_sneak", "encore", "skill_swap", "synchronoise", "ally_switch", "misty_terrain"])
+secret_skills = Array[String](["fire_punch", "ice_punch", "thunder_punch", "swift", "snore", "mud_slap", "fury_cutter", "helping_hand", "trick", "knock_off", "signal_beam", "vacuum_wave", "zen_headbutt", "headbutt", "low_kick", "pain_split", "magic_coat", "sleep_talk", "recycle", "skill_swap", "snatch", "hyper_voice", "drain_punch", "wonder_room", "magic_room", "dual_chop", "focus_punch", "shock_wave", "body_slam", "double_edge", "thunder_wave", "mimic", "defense_curl", "dream_eater", "substitute", "icy_wind", "endure", "swagger", "psych_up", "nightmare"])
+evolution_from = "kirlia"
+skill_group1 = "humanlike"
+skill_group2 = "amorphous"

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="PokemonSpriteSetResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_sprite_set_resource.gd" id="1_mg2qk"]
+
+[resource]
+script = ExtResource("1_mg2qk")
+idle_path = "res://assets/textures/actor/pokemon/0454_toxicroak/idle.png"
+walk_path = "res://assets/textures/actor/pokemon/0454_toxicroak/walk.png"
+hurt_path = "res://assets/textures/actor/pokemon/0454_toxicroak/hurt.png"
+sleep_path = "res://assets/textures/actor/pokemon/0454_toxicroak/sleep.png"
+hop_path = "res://assets/textures/actor/pokemon/0454_toxicroak/hop.png"
+anim_data_path = "res://assets/textures/actor/pokemon/0454_toxicroak/AnimData.xml"

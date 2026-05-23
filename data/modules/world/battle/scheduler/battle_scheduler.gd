@@ -11,6 +11,9 @@ extends RefCounted
 signal turn_started(unit: BattleUnit)
 ## Emitted after [method complete_active_unit] finishes the active turn.
 signal turn_completed(unit: BattleUnit)
+## Emitted whenever a fresh round begins (initial battle start and every
+## subsequent queue rebuild after all units have taken their turn).
+signal round_started
 ## Emitted once when [method is_battle_over] flips to true.
 signal battle_ended
 
@@ -38,6 +41,7 @@ func start_battle(units: Array, battle_seed: int) -> void:
 			_units.append(u)
 			_tie_values[u] = _rng.randi()
 	_build_queue()
+	round_started.emit()
 	_activate_next()
 
 
@@ -153,6 +157,7 @@ func _activate_next() -> void:
 		return
 
 	_build_queue()
+	round_started.emit()
 	while _queue.size() > 0:
 		var next: BattleUnit = _queue.pop_front()
 		if not next.is_alive():

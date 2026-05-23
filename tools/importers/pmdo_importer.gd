@@ -179,14 +179,17 @@ func _import_sprite_sets(report: PokemonValidation) -> Dictionary:
 
 func _build_sprite_set(slug: String, report: PokemonValidation) -> PokemonSpriteSetResource:
 	var sprite_set: PokemonSpriteSetResource = PokemonSpriteSetResource.new()
-	var sprite_dir: String = _Paths.sprite_dir_for(slug)
-	var base_name: String = "chr_pawn_%s" % slug
-	var idle_path: String = "%s/%s.png" % [sprite_dir, base_name]
+	var anim_data_path: String = _Paths.anim_data_path(slug)
+	if ResourceLoader.exists(anim_data_path) or FileAccess.file_exists(anim_data_path):
+		sprite_set.anim_data_path = anim_data_path
+	else:
+		report.add_warning("%s missing AnimData.xml at %s" % [slug, anim_data_path])
+	var idle_path: String = _Paths.sprite_state_path(slug, "idle")
 	var sidecars: Array = [
-		["walk", "%s/%s_walk.png" % [sprite_dir, base_name]],
-		["hurt", "%s/%s_hurt.png" % [sprite_dir, base_name]],
-		["sleep", "%s/%s_sleep.png" % [sprite_dir, base_name]],
-		["hop", "%s/%s_hop.png" % [sprite_dir, base_name]],
+		["walk", _Paths.sprite_state_path(slug, "walk")],
+		["hurt", _Paths.sprite_state_path(slug, "hurt")],
+		["sleep", _Paths.sprite_state_path(slug, "sleep")],
+		["hop", _Paths.sprite_state_path(slug, "hop")],
 	]
 
 	if ResourceLoader.exists(idle_path):
@@ -315,8 +318,12 @@ func _import_species(sprite_sets: Dictionary, moves: Dictionary, report: Pokemon
 
 
 func _import_one_species(slug: String, sprite_sets: Dictionary, moves: Dictionary, report: PokemonValidation) -> String:
+	# `slug` is the bare PMDODump identifier (e.g. "gallade"); `project_slug`
+	# carries the in-project numbered prefix (e.g. "0475_gallade") that every
+	# generated file and every cross-resource reference uses.
+	var project_slug: String = _Paths.project_slug_for(slug)
 	var entry := PokemonValidation.SpeciesEntry.new()
-	entry.slug = slug
+	entry.slug = project_slug
 	entry.signature_move = String(_Paths.SIGNATURE_MOVES.get(slug, ""))
 
 	var raw: Variant = _read_json_absolute(_Paths.monster_json_path(slug))
@@ -331,7 +338,7 @@ func _import_one_species(slug: String, sprite_sets: Dictionary, moves: Dictionar
 		return ""
 
 	var species: PokemonSpeciesResource = PokemonSpeciesResource.new()
-	species.species_id = slug
+	species.species_id = project_slug
 	species.dex_number = int(obj.get("IndexNum", 0))
 	species.canonical_name = _localized(obj.get("Name", {}))
 	species.released = bool(obj.get("Released", true))
@@ -357,7 +364,7 @@ func _import_one_species(slug: String, sprite_sets: Dictionary, moves: Dictionar
 			continue
 		var form_dict: Dictionary = form_entry
 		var form: PokemonFormResource = PokemonFormResource.new()
-		form.species_id = slug
+		form.species_id = project_slug
 		form.form_index = i
 		form.generation = int(form_dict.get("Generation", 0))
 		form.type1 = String(form_dict.get("Element1", "none")).to_lower()

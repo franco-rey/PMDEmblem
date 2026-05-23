@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="PokemonSpriteSetResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_sprite_set_resource.gd" id="1_i6obj"]
+
+[resource]
+script = ExtResource("1_i6obj")
+idle_path = "res://assets/textures/actor/pokemon/0475_gallade/idle.png"
+walk_path = "res://assets/textures/actor/pokemon/0475_gallade/walk.png"
+hurt_path = "res://assets/textures/actor/pokemon/0475_gallade/hurt.png"
+sleep_path = "res://assets/textures/actor/pokemon/0475_gallade/sleep.png"
+hop_path = "res://assets/textures/actor/pokemon/0475_gallade/hop.png"
+anim_data_path = "res://assets/textures/actor/pokemon/0475_gallade/AnimData.xml"

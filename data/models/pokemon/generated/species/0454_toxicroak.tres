@@ -1,0 +1,73 @@
+[gd_resource type="Resource" script_class="PokemonSpeciesResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_plh06"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/0454_toxicroak__0.tres" id="2_k7gy4"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_species_resource.gd" id="3_y0prd"]
+
+[resource]
+script = ExtResource("3_y0prd")
+species_id = "0454_toxicroak"
+dex_number = 454
+canonical_name = "Toxicroak"
+forms = Array[ExtResource("1_plh06")]([ExtResource("2_k7gy4")])
+level_skills = Array[Dictionary]([{
+"level": 1,
+"skill": "astonish"
+}, {
+"level": 1,
+"skill": "mud_slap"
+}, {
+"level": 1,
+"skill": "poison_sting"
+}, {
+"level": 3,
+"skill": "mud_slap"
+}, {
+"level": 8,
+"skill": "poison_sting"
+}, {
+"level": 10,
+"skill": "taunt"
+}, {
+"level": 15,
+"skill": "pursuit"
+}, {
+"level": 17,
+"skill": "feint_attack"
+}, {
+"level": 22,
+"skill": "revenge"
+}, {
+"level": 24,
+"skill": "swagger"
+}, {
+"level": 29,
+"skill": "mud_bomb"
+}, {
+"level": 31,
+"skill": "sucker_punch"
+}, {
+"level": 36,
+"skill": "venoshock"
+}, {
+"level": 41,
+"skill": "nasty_plot"
+}, {
+"level": 49,
+"skill": "poison_jab"
+}, {
+"level": 54,
+"skill": "sludge_bomb"
+}, {
+"level": 58,
+"skill": "belch"
+}, {
+"level": 62,
+"skill": "flatter"
+}])
+teach_skills = Array[String](["swords_dance", "cut", "hyper_beam", "strength", "earthquake", "dig", "toxic", "double_team", "rest", "rock_slide", "substitute", "thief", "protect", "sludge_bomb", "endure", "swagger", "attract", "sleep_talk", "return", "frustration", "hidden_power", "rain_dance", "sunny_day", "shadow_ball", "rock_smash", "torment", "facade", "focus_punch", "taunt", "brick_break", "snatch", "secret_power", "rock_tomb", "bulk_up", "natural_gift", "payback", "embargo", "fling", "poison_jab", "dark_pulse", "x_scissor", "focus_blast", "giga_impact", "rock_climb", "stone_edge", "captivate", "venoshock", "sludge_wave", "low_sweep", "round", "retaliate", "bulldoze", "work_up", "confide", "power_up_punch"])
+shared_skills = Array[String](["headbutt", "meditate", "dynamic_punch", "cross_chop", "fake_out", "smelling_salts", "wake_up_slap", "feint", "me_first", "vacuum_wave", "bullet_punch", "counter", "acupressure", "drain_punch", "quick_guard"])
+secret_skills = Array[String](["ice_punch", "thunder_punch", "snore", "spite", "mud_slap", "icy_wind", "fury_cutter", "helping_hand", "knock_off", "bounce", "sucker_punch", "vacuum_wave", "gunk_shot", "headbutt", "low_kick", "super_fang", "role_play", "sleep_talk", "snatch", "dark_pulse", "drain_punch", "foul_play", "dual_chop", "focus_punch"])
+evolution_from = "croagunk"
+skill_group1 = "humanlike"
+skill_group2 = "undiscovered"

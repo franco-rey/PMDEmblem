@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="PokemonInstanceResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_16rmx"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/moonblast.tres" id="2_hxxd2"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_instance_resource.gd" id="3_2kxdm"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/species/0282_gardevoir.tres" id="4_th48q"]
+
+[resource]
+script = ExtResource("3_2kxdm")
+species = ExtResource("4_th48q")
+level = 50
+move_slots = Array[ExtResource("1_16rmx")]([ExtResource("2_hxxd2")])
+pp_state = Array[int]([9])
+movement_override = 4

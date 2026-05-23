@@ -22,13 +22,13 @@ const MAIN_SCENE_PATH: String = "res://assets/scene/main.tscn"
 const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/test_arena.tres"
 const ROSTER_DIR: String = "res://data/models/pokemon/overrides/instances/"
 const EXPECTED_ROSTER: Array[String] = [
-	"gallade",
-	"lucario",
-	"gardevoir",
-	"toxicroak",
-	"magmortar",
-	"gengar",
-	"dusclops",
+	"0475_gallade",
+	"0448_lucario",
+	"0282_gardevoir",
+	"0454_toxicroak",
+	"0467_magmortar",
+	"0094_gengar",
+	"0356_dusclops",
 ]
 const FIXED_SEED: int = 424242
 const ANCHOR_POOL_SIZE: int = 8
@@ -144,8 +144,8 @@ func _check_test_arena_anchor_count() -> void:
 
 
 func _check_build_1v1() -> void:
-	var player_team: Array[String] = [_roster_path("lucario")]
-	var enemy_team: Array[String] = [_roster_path("magmortar")]
+	var player_team: Array[String] = [_roster_path("0448_lucario")]
+	var enemy_team: Array[String] = [_roster_path("0467_magmortar")]
 	var result: Dictionary = CustomSkirmishBuilder.build(player_team, enemy_team, TEST_ARENA_MAP_PATH, str(FIXED_SEED))
 	_assert_true(result.get("ok", false), "1v1 build returns ok=true (error=%s)" % result.get("error", ""))
 	if not result.get("ok", false):
@@ -176,24 +176,24 @@ func _check_build_1v1() -> void:
 
 func _check_build_8v8_with_duplicates() -> void:
 	var player_team: Array[String] = [
-		_roster_path("lucario"),
-		_roster_path("lucario"),
-		_roster_path("gardevoir"),
-		_roster_path("gardevoir"),
-		_roster_path("gallade"),
-		_roster_path("gallade"),
-		_roster_path("toxicroak"),
-		_roster_path("toxicroak"),
+		_roster_path("0448_lucario"),
+		_roster_path("0448_lucario"),
+		_roster_path("0282_gardevoir"),
+		_roster_path("0282_gardevoir"),
+		_roster_path("0475_gallade"),
+		_roster_path("0475_gallade"),
+		_roster_path("0454_toxicroak"),
+		_roster_path("0454_toxicroak"),
 	]
 	var enemy_team: Array[String] = [
-		_roster_path("magmortar"),
-		_roster_path("magmortar"),
-		_roster_path("gengar"),
-		_roster_path("gengar"),
-		_roster_path("dusclops"),
-		_roster_path("dusclops"),
-		_roster_path("lucario"),
-		_roster_path("gardevoir"),
+		_roster_path("0467_magmortar"),
+		_roster_path("0467_magmortar"),
+		_roster_path("0094_gengar"),
+		_roster_path("0094_gengar"),
+		_roster_path("0356_dusclops"),
+		_roster_path("0356_dusclops"),
+		_roster_path("0448_lucario"),
+		_roster_path("0282_gardevoir"),
 	]
 	var result: Dictionary = CustomSkirmishBuilder.build(player_team, enemy_team, TEST_ARENA_MAP_PATH, str(FIXED_SEED))
 	_assert_true(result.get("ok", false), "8v8 build returns ok=true (error=%s)" % result.get("error", ""))
@@ -225,14 +225,14 @@ func _check_build_8v8_with_duplicates() -> void:
 
 func _check_determinism_same_seed() -> void:
 	var player_team: Array[String] = [
-		_roster_path("lucario"),
-		_roster_path("gardevoir"),
-		_roster_path("gallade"),
+		_roster_path("0448_lucario"),
+		_roster_path("0282_gardevoir"),
+		_roster_path("0475_gallade"),
 	]
 	var enemy_team: Array[String] = [
-		_roster_path("magmortar"),
-		_roster_path("gengar"),
-		_roster_path("dusclops"),
+		_roster_path("0467_magmortar"),
+		_roster_path("0094_gengar"),
+		_roster_path("0356_dusclops"),
 	]
 	var first: Dictionary = CustomSkirmishBuilder.build(player_team, enemy_team, TEST_ARENA_MAP_PATH, str(FIXED_SEED))
 	var second: Dictionary = CustomSkirmishBuilder.build(player_team, enemy_team, TEST_ARENA_MAP_PATH, str(FIXED_SEED))
@@ -268,8 +268,8 @@ func _check_empty_seed_resolves() -> void:
 	var seed_again: int = CustomSkirmishBuilder.resolve_seed("")
 	_assert_true(seed != seed_again or seed > 0, "empty seed resolves repeatedly without crashing")
 
-	var player_team: Array[String] = [_roster_path("lucario")]
-	var enemy_team: Array[String] = [_roster_path("magmortar")]
+	var player_team: Array[String] = [_roster_path("0448_lucario")]
+	var enemy_team: Array[String] = [_roster_path("0467_magmortar")]
 	var result: Dictionary = CustomSkirmishBuilder.build(player_team, enemy_team, TEST_ARENA_MAP_PATH, "")
 	_assert_true(result.get("ok", false), "empty seed build returns ok=true")
 	if result.get("ok", false):
@@ -277,8 +277,8 @@ func _check_empty_seed_resolves() -> void:
 
 
 func _check_invalid_seed_rejected() -> void:
-	var player_team: Array[String] = [_roster_path("lucario")]
-	var enemy_team: Array[String] = [_roster_path("magmortar")]
+	var player_team: Array[String] = [_roster_path("0448_lucario")]
+	var enemy_team: Array[String] = [_roster_path("0467_magmortar")]
 	var bad: Dictionary = CustomSkirmishBuilder.build(player_team, enemy_team, TEST_ARENA_MAP_PATH, "not a number")
 	_assert_true(not bad.get("ok", true), "non-numeric seed text is rejected")
 
@@ -287,7 +287,7 @@ func _check_invalid_seed_rejected() -> void:
 
 	var too_many_player: Array[String] = []
 	for i in range(CustomSkirmishBuilder.MAX_TEAM_SIZE + 1):
-		too_many_player.append(_roster_path("lucario"))
+		too_many_player.append(_roster_path("0448_lucario"))
 	var too_many: Dictionary = CustomSkirmishBuilder.build(too_many_player, enemy_team, TEST_ARENA_MAP_PATH, str(FIXED_SEED))
 	_assert_true(not too_many.get("ok", true), ">8 player team is rejected")
 

@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://data/models/skirmish/resources/skirmish_definition_resource.gd" id="1_kimns"]
 [ext_resource type="Resource" path="res://data/models/maps/definitions/test_arena.tres" id="2_6xyi0"]
 [ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_instance_resource.gd" id="3_t1i6n"]
-[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/lucario.tres" id="4_furcp"]
-[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/magmortar.tres" id="5_3ejck"]
+[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/0448_lucario.tres" id="4_furcp"]
+[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/0467_magmortar.tres" id="5_3ejck"]
 
 [resource]
 script = ExtResource("1_kimns")

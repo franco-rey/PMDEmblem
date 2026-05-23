@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="PokemonFormResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_j4rc6"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/sprites/0448_lucario.tres" id="2_ocywn"]
+
+[resource]
+script = ExtResource("1_j4rc6")
+species_id = "0448_lucario"
+generation = 6
+type1 = "fighting"
+type2 = "steel"
+base_hp = 70
+base_atk = 110
+base_def = 70
+base_spa = 115
+base_spd = 70
+base_speed = 90
+height = 1.2
+weight = 54.0
+gender_weights = Vector3i(0, 7, 1)
+exp_table = "medium_slow"
+join_rate = -30
+sprite_set = ExtResource("2_ocywn")
+intrinsic1 = "steadfast"
+intrinsic2 = "inner_focus"
+intrinsic3 = "justified"

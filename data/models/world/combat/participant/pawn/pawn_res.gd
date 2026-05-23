@@ -50,6 +50,10 @@ var selected_move_index: int = 0
 ## AI-only escape hatch for M2: if no Pokemon move can legally reach a target,
 ## the opponent may preserve legacy direct-attack behavior for this action.
 var use_legacy_attack_fallback: bool = false
+## True after this pawn has completed its turn within the current scheduler
+## round. Reset to false when a new round begins. Drives the "greyed-out"
+## visual cue so players can tell who still has a turn coming this round.
+var has_acted_this_round: bool = false
 
 
 ## Resets the pawn's turn, allowing it to move and attack again
