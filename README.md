@@ -1,3 +1,11 @@
+# PMD Emblem
+
+Pokemon Mystery Dungeon Strategy Roguelite
+
+---
+
+(Old readme)
+
 ![banner](./docs/img/banner.png)
 
 # About
