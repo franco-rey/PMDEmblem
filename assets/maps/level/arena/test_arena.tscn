@@ -3686,4 +3686,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.46078, 2.51051, -4.5579)
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 1.4708, -0.0246843, 6.43793)
 
 [node name="SpawnEnemy8" type="Node3D" parent="SpawnPoints"]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 5.4708, -0.0246843, 5.43793)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 4.5108, -0.0246843, 5.43793)
