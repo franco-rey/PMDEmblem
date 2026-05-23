@@ -75,8 +75,13 @@ func load_skirmish(definition: SkirmishDefinitionResource, battle_parent: Node =
 		level.free()
 		return null
 
-	_spawn_team(definition.player_team, player, player_anchors, level)
-	_spawn_team(definition.enemy_team, opponent, enemy_anchors, level)
+	var player_order: Array[int] = _resolve_spawn_order(definition, "player_spawn_order", definition.player_team.size(), player_anchors.size())
+	var enemy_order: Array[int] = _resolve_spawn_order(definition, "enemy_spawn_order", definition.enemy_team.size(), enemy_anchors.size())
+	if player_order.is_empty() or enemy_order.is_empty():
+		level.free()
+		return null
+	_spawn_team(definition.player_team, player, player_anchors, player_order, level)
+	_spawn_team(definition.enemy_team, opponent, enemy_anchors, enemy_order, level)
 	_assign_owner(level, level)
 
 	current_definition = definition
@@ -158,7 +163,7 @@ func _spawn_anchor_order(anchor_name: String) -> int:
 	return int(digits) if not digits.is_empty() else 0
 
 
-func _spawn_team(team: Array[PokemonInstanceResource], parent: Node3D, anchors: Array[Node3D], level: TacticsLevel) -> void:
+func _spawn_team(team: Array[PokemonInstanceResource], parent: Node3D, anchors: Array[Node3D], spawn_order: Array[int], level: TacticsLevel) -> void:
 	for i in range(team.size()):
 		var instance: PokemonInstanceResource = team[i]
 		var pawn: TacticsPawn = _pawn_scene.instantiate() as TacticsPawn
@@ -170,9 +175,55 @@ func _spawn_team(team: Array[PokemonInstanceResource], parent: Node3D, anchors: 
 		pawn.add_child(expertise)
 
 		parent.add_child(pawn)
-		var anchor_transform: Transform3D = _local_transform_to(anchors[i], level)
+		var anchor: Node3D = anchors[spawn_order[i]]
+		var anchor_transform: Transform3D = _local_transform_to(anchor, level)
 		var parent_transform: Transform3D = _local_transform_to(parent, level)
 		pawn.transform = parent_transform.affine_inverse() * anchor_transform
+
+
+## Resolves the per-side anchor index list used by `_spawn_team`.
+##
+## Manual / authored skirmishes omit the metadata key and get the default
+## sequential `[0, 1, ..., team_size - 1]` mapping, preserving M4 behavior.
+##
+## The custom builder (M4 R1) writes a pre-shuffled `Array[int]` index list
+## into `generation_metadata["player_spawn_order"]` /
+## `["enemy_spawn_order"]`. Each index must be unique and reference an
+## existing sorted anchor.
+func _resolve_spawn_order(definition: SkirmishDefinitionResource, metadata_key: String, team_size: int, anchor_count: int) -> Array[int]:
+	var out: Array[int] = []
+	if team_size <= 0:
+		return out
+	var override: Variant = null
+	if definition.generation_metadata.has(metadata_key):
+		override = definition.generation_metadata[metadata_key]
+	if override == null:
+		for i in range(team_size):
+			out.append(i)
+		return out
+	if not (override is Array):
+		push_error("SkirmishLoader: %s.%s must be an Array; got %s" % [definition.skirmish_id, metadata_key, typeof(override)])
+		return []
+	var order_raw: Array = override
+	if order_raw.size() < team_size:
+		push_error("SkirmishLoader: %s.%s has %d indices for a team of %d" % [definition.skirmish_id, metadata_key, order_raw.size(), team_size])
+		return []
+	var seen: Dictionary = {}
+	for i in range(team_size):
+		var raw_idx: Variant = order_raw[i]
+		if not (raw_idx is int or raw_idx is float):
+			push_error("SkirmishLoader: %s.%s[%d] is not numeric: %s" % [definition.skirmish_id, metadata_key, i, raw_idx])
+			return []
+		var idx: int = int(raw_idx)
+		if idx < 0 or idx >= anchor_count:
+			push_error("SkirmishLoader: %s.%s[%d]=%d outside anchor range [0, %d)" % [definition.skirmish_id, metadata_key, i, idx, anchor_count])
+			return []
+		if seen.has(idx):
+			push_error("SkirmishLoader: %s.%s contains duplicate anchor index %d" % [definition.skirmish_id, metadata_key, idx])
+			return []
+		seen[idx] = true
+		out.append(idx)
+	return out
 
 
 func _local_transform_to(node: Node3D, ancestor: Node) -> Transform3D:

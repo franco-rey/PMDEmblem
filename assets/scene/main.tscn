@@ -37,8 +37,93 @@ layout_mode = 2
 text = "Launch"
 icon = SubResource("ImageTexture_sa2p4")
 
+[node name="CustomToggleButton" type="Button" parent="UI/MapSelector/SkirmishMenu"]
+layout_mode = 2
+text = "Custom Skirmish"
+
+[node name="CustomBuilder" type="VBoxContainer" parent="UI/MapSelector/SkirmishMenu"]
+visible = false
+layout_mode = 2
+
+[node name="PlayerTeamLabel" type="Label" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
+layout_mode = 2
+text = "Player Team (1-8)"
+
+[node name="PlayerTeamRow" type="HBoxContainer" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
+layout_mode = 2
+
+[node name="PlayerPicker" type="OptionButton" parent="UI/MapSelector/SkirmishMenu/CustomBuilder/PlayerTeamRow"]
+layout_mode = 2
+
+[node name="PlayerAddButton" type="Button" parent="UI/MapSelector/SkirmishMenu/CustomBuilder/PlayerTeamRow"]
+layout_mode = 2
+text = "Add"
+
+[node name="PlayerRemoveButton" type="Button" parent="UI/MapSelector/SkirmishMenu/CustomBuilder/PlayerTeamRow"]
+layout_mode = 2
+text = "Remove Last"
+
+[node name="PlayerTeamList" type="Label" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
+layout_mode = 2
+text = "Player team: (empty)"
+
+[node name="EnemyTeamLabel" type="Label" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
+layout_mode = 2
+text = "Enemy Team (1-8)"
+
+[node name="EnemyTeamRow" type="HBoxContainer" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
+layout_mode = 2
+
+[node name="EnemyPicker" type="OptionButton" parent="UI/MapSelector/SkirmishMenu/CustomBuilder/EnemyTeamRow"]
+layout_mode = 2
+
+[node name="EnemyAddButton" type="Button" parent="UI/MapSelector/SkirmishMenu/CustomBuilder/EnemyTeamRow"]
+layout_mode = 2
+text = "Add"
+
+[node name="EnemyRemoveButton" type="Button" parent="UI/MapSelector/SkirmishMenu/CustomBuilder/EnemyTeamRow"]
+layout_mode = 2
+text = "Remove Last"
+
+[node name="EnemyTeamList" type="Label" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
+layout_mode = 2
+text = "Enemy team: (empty)"
+
+[node name="MapLabel" type="Label" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
+layout_mode = 2
+text = "Map"
+
+[node name="MapPicker" type="OptionButton" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
+layout_mode = 2
+
+[node name="SeedLabel" type="Label" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
+layout_mode = 2
+text = "Seed (blank = random)"
+
+[node name="SeedInput" type="LineEdit" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
+layout_mode = 2
+placeholder_text = "integer or empty"
+
+[node name="ResolvedSeedLabel" type="Label" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
+layout_mode = 2
+text = "Last seed: (none)"
+
+[node name="StatusLabel" type="Label" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
+layout_mode = 2
+text = ""
+
+[node name="LaunchCustomButton" type="Button" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
+layout_mode = 2
+text = "Launch Custom Skirmish"
+
 [node name="TacticsControls" parent="." unique_id=191703792 instance=ExtResource("3_swndv")]
 
 [node name="World" type="Node3D" parent="." unique_id=79446120]
 
 [connection signal="pressed" from="UI/MapSelector/SkirmishMenu/LaunchButton" to="." method="_on_launch_button_pressed"]
+[connection signal="pressed" from="UI/MapSelector/SkirmishMenu/CustomToggleButton" to="." method="_on_custom_toggle_pressed"]
+[connection signal="pressed" from="UI/MapSelector/SkirmishMenu/CustomBuilder/PlayerTeamRow/PlayerAddButton" to="." method="_on_player_add_pressed"]
+[connection signal="pressed" from="UI/MapSelector/SkirmishMenu/CustomBuilder/PlayerTeamRow/PlayerRemoveButton" to="." method="_on_player_remove_pressed"]
+[connection signal="pressed" from="UI/MapSelector/SkirmishMenu/CustomBuilder/EnemyTeamRow/EnemyAddButton" to="." method="_on_enemy_add_pressed"]
+[connection signal="pressed" from="UI/MapSelector/SkirmishMenu/CustomBuilder/EnemyTeamRow/EnemyRemoveButton" to="." method="_on_enemy_remove_pressed"]
+[connection signal="pressed" from="UI/MapSelector/SkirmishMenu/CustomBuilder/LaunchCustomButton" to="." method="_on_launch_custom_pressed"]
