@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SkirmishDefinitionResource" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://data/models/skirmish/resources/skirmish_definition_resource.gd" id="1_kimns"]
+[ext_resource type="Resource" path="res://data/models/maps/definitions/test_arena.tres" id="2_6xyi0"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_instance_resource.gd" id="3_t1i6n"]
+[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/lucario.tres" id="4_furcp"]
+[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/magmortar.tres" id="5_3ejck"]
+
+[resource]
+script = ExtResource("1_kimns")
+skirmish_id = "single_1v1"
+display_name = "1v1 test"
+map = ExtResource("2_6xyi0")
+seed = 12345
+player_team = Array[ExtResource("3_t1i6n")]([ExtResource("4_furcp")])
+enemy_team = Array[ExtResource("3_t1i6n")]([ExtResource("5_3ejck")])
+objective = 0
+reward_profile = "manual_test"

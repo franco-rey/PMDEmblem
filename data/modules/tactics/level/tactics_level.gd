@@ -7,6 +7,8 @@ extends Node3D
 ## Combat resolution (M2) is unchanged either way.[br][br]
 ## Dependencies: [TacticsArena], [TacticsTile], [TacticsCamera], [TacticsControls], [TacticsParticipant], [TacticsOpponent], [TacticsPlayer], [TacticsPawn], [BattleScheduler]
 
+signal battle_ended(result: int)
+
 #region: --- Props ---
 const RESULT_ONGOING: int = 0
 const RESULT_PLAYER_WIN: int = 1
@@ -23,6 +25,9 @@ const TYPE_CHART_PATH: String = "res://data/models/pokemon/generated/types/type_
 ## team-phase loop. Defaults to true; flip to false in a scene to fall back to
 ## the legacy loop while diagnosing scheduler regressions.
 @export var use_speed_scheduler: bool = true
+## Skirmish-provided seed. The scheduler receives this seed for tie-breaks and
+## the combat resolver consumes the matching RNG state for accuracy rolls.
+@export var battle_seed: int = 0
 ## Reference to the TacticsParticipant node
 var participant: TacticsParticipant
 ## Reference to the TacticsPlayer node
@@ -51,7 +56,7 @@ var _type_chart: TypeChartResource = null
 
 #region: --- Processing ---
 func _ready() -> void:
-	battle_rng.seed = 0
+	battle_rng.seed = battle_seed
 	battle_log.event_appended.connect(_on_battle_event_appended)
 	if not ui_control:
 		push_error("TacticsControls needs a ControlResource from /data/models/view/control/tactics/")
@@ -264,6 +269,7 @@ func _check_and_handle_battle_end() -> void:
 		"kind": "battle_ended",
 		"winner": "player" if result == RESULT_PLAYER_WIN else "opponent",
 	})
+	battle_ended.emit(result)
 	if ui_control != null:
 		ui_control.set_actions_menu_visibility(false, null)
 
