@@ -1,0 +1,35 @@
+# Godot-specific ignores
+.godot/
+.import/
+export.cfg
+export_presets.cfg
+
+# Imported translations (automatically generated from CSV files)
+*.translation
+
+# Mono-specific ignores
+.mono/
+data_*/
+
+.vscode/
+.DS_Store
+
+docs/img/*.import
+docs/img/tutorials/how-to-create-maps/img/*.import
+
+addons/code_fold_unfold/
+addons/collapse_folders/collapse-all.svg
+addons/collapse_folders/collapse-all.svg.import
+addons/collapse_folders/plugin.cfg
+addons/collapse_folders/plugin.gd
+addons/debug_menu/debug_menu.gd
+addons/debug_menu/debug_menu.tscn
+addons/debug_menu/LICENSE.md
+addons/debug_menu/plugin.cfg
+addons/debug_menu/plugin.gd
+addons/script-tabs/LICENSE
+addons/script-tabs/plugin.cfg
+addons/script-tabs/plugin.gd
+
+plan/
+unfiled/
