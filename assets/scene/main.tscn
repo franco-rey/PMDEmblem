@@ -43,6 +43,7 @@ text = "Custom Skirmish"
 
 [node name="CustomBuilder" type="VBoxContainer" parent="UI/MapSelector/SkirmishMenu"]
 visible = false
+custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
 
 [node name="PlayerTeamLabel" type="Label" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
@@ -64,8 +65,11 @@ layout_mode = 2
 text = "Remove Last"
 
 [node name="PlayerTeamList" type="Label" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
+custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Player team: (empty)"
+autowrap_mode = 3
 
 [node name="EnemyTeamLabel" type="Label" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
 layout_mode = 2
@@ -86,8 +90,11 @@ layout_mode = 2
 text = "Remove Last"
 
 [node name="EnemyTeamList" type="Label" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
+custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Enemy team: (empty)"
+autowrap_mode = 3
 
 [node name="MapLabel" type="Label" parent="UI/MapSelector/SkirmishMenu/CustomBuilder"]
 layout_mode = 2
