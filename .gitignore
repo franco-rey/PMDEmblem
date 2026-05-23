@@ -33,3 +33,5 @@ addons/script-tabs/plugin.gd
 
 plan/
 unfiled/
+logs.txt
+logs/
