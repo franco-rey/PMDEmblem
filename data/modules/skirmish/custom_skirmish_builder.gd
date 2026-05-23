@@ -10,6 +10,7 @@ extends RefCounted
 
 const ROSTER_DIR: String = "res://data/models/pokemon/overrides/instances/"
 const MAP_DIR: String = "res://data/models/maps/definitions/"
+const RandomSkirmishGenerator = preload("res://data/modules/skirmish/random_skirmish_generator.gd")
 const MIN_TEAM_SIZE: int = 1
 const MAX_TEAM_SIZE: int = 8
 ## Each side draws its placement candidates from the first N anchors after the
@@ -24,13 +25,20 @@ const ROSTER_SLUGS: Array[String] = [
 	"0094_gengar",
 	"0356_dusclops",
 ]
+const DEFAULT_RANDOM_DIFFICULTY_TIER: int = 4
 
 
 ## Returns the canonical roster path list in the order the picker should display.
 static func roster_paths() -> Array[String]:
 	var out: Array[String] = []
 	for slug in ROSTER_SLUGS:
-		out.append("%s%s.tres" % [ROSTER_DIR, slug])
+		var path: String = "%s%s.tres" % [ROSTER_DIR, slug]
+		if ResourceLoader.exists(path):
+			out.append(path)
+	var discovered: Array[String] = _discover_roster_paths()
+	for path in discovered:
+		if not out.has(path):
+			out.append(path)
 	return out
 
 
@@ -83,25 +91,7 @@ static func _generate_seed() -> int:
 ## produces the same `Array[int]` of unique anchor indices in `[0, pool_size)`.
 ## `team_size` must be <= `pool_size`.
 static func build_spawn_order(seed: int, team_size: int, pool_size: int) -> Array[int]:
-	var out: Array[int] = []
-	if team_size <= 0 or pool_size <= 0:
-		return out
-	var pool: Array[int] = []
-	for i in range(pool_size):
-		pool.append(i)
-	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
-	rng.seed = seed
-	# Fisher-Yates shuffle so the permutation is uniform and the RNG handle is
-	# the only source of randomness (matches `combat_model.md`'s determinism
-	# contract: same seed -> same shuffle).
-	for i in range(pool.size() - 1, 0, -1):
-		var j: int = int(rng.randi_range(0, i))
-		var tmp: int = pool[i]
-		pool[i] = pool[j]
-		pool[j] = tmp
-	for i in range(team_size):
-		out.append(pool[i])
-	return out
+	return RandomSkirmishGenerator.build_spawn_order(seed, team_size, pool_size)
 
 
 ## Constructs a transient `SkirmishDefinitionResource` ready for the loader.
@@ -122,6 +112,8 @@ static func build(player_paths: Array[String], enemy_paths: Array[String], map_p
 		return {"ok": false, "error": "Select a map"}
 	if not seed_text.strip_edges().is_empty() and not seed_text.strip_edges().is_valid_int():
 		return {"ok": false, "error": "Seed must be an integer or empty"}
+	if not ResourceLoader.exists(map_path):
+		return {"ok": false, "error": "Could not load map %s" % map_path}
 
 	var map: MapDefinitionResource = load(map_path) as MapDefinitionResource
 	if map == null:
@@ -179,8 +171,17 @@ static func random_roster_paths(count: int, seed: int = 0) -> Array[String]:
 		rng.randomize()
 	else:
 		rng.seed = seed
+	var allow_duplicates: bool = count > pool.size()
+	var available: Array[String] = pool.duplicate()
 	for i in range(count):
-		out.append(pool[int(rng.randi_range(0, pool.size() - 1))])
+		if available.is_empty():
+			if not allow_duplicates:
+				break
+			available = pool.duplicate()
+		var pick_index: int = int(rng.randi_range(0, available.size() - 1))
+		out.append(available[pick_index])
+		if not allow_duplicates:
+			available.remove_at(pick_index)
 	return out
 
 
@@ -192,22 +193,100 @@ static func random_roster_paths(count: int, seed: int = 0) -> Array[String]:
 static func build_random(team_size: int, map_path: String, seed_text: String = "") -> Dictionary:
 	if team_size < MIN_TEAM_SIZE or team_size > MAX_TEAM_SIZE:
 		return {"ok": false, "error": "Team size must be %d-%d" % [MIN_TEAM_SIZE, MAX_TEAM_SIZE]}
+	if not seed_text.strip_edges().is_empty() and not seed_text.strip_edges().is_valid_int():
+		return {"ok": false, "error": "Seed must be an integer or empty"}
 	var seed: int = resolve_seed(seed_text)
-	# XOR salts derive deterministic but distinct per-side roster rolls from the
-	# single user-facing seed, so a replayed seed always reproduces both teams.
 	var player_paths: Array[String] = random_roster_paths(team_size, seed ^ 0x1234ABCD)
-	var enemy_paths: Array[String] = random_roster_paths(team_size, seed ^ 0xFEDC4321)
-	var seed_for_build: String = String.num_int64(seed)
-	var result: Dictionary = build(player_paths, enemy_paths, map_path, seed_for_build)
+	var result: Dictionary = build_with_random_enemy(
+		player_paths,
+		map_path,
+		String.num_int64(seed),
+		team_size,
+		DEFAULT_RANDOM_DIFFICULTY_TIER
+	)
 	if result.get("ok", false):
 		var definition: SkirmishDefinitionResource = result["definition"]
 		definition.skirmish_id = "random_%dv%d_%d" % [team_size, team_size, seed]
 		definition.display_name = "Random %dv%d" % [team_size, team_size]
-		var meta: Dictionary = definition.generation_metadata
-		meta["source"] = "random_builder"
+		var meta: Dictionary = definition.generation_metadata.duplicate(true)
+		meta["facade_source"] = "build_random"
 		meta["team_size"] = team_size
+		meta["player_roster"] = player_paths
 		definition.generation_metadata = meta
 	return result
+
+
+## Builds a skirmish with an explicit player team and generated enemy team.
+##
+## This is the M5 compatibility surface that M5.5 and M7 can reuse without
+## depending on main-menu controls. The explicit player team keeps the same
+## duplicate-allowed contract as `build`; generated enemies avoid duplicates
+## while the requested size fits the roster.
+static func build_with_random_enemy(
+	player_paths: Array[String],
+	map_path: String,
+	seed_text: String = "",
+	enemy_team_size: int = 0,
+	difficulty_tier: int = DEFAULT_RANDOM_DIFFICULTY_TIER,
+	biome: String = "",
+	reward_profile: String = ""
+) -> Dictionary:
+	if player_paths.size() < MIN_TEAM_SIZE or player_paths.size() > MAX_TEAM_SIZE:
+		return {"ok": false, "error": "Player team must be %d-%d Pokemon" % [MIN_TEAM_SIZE, MAX_TEAM_SIZE]}
+	var resolved_enemy_size: int = enemy_team_size if enemy_team_size > 0 else player_paths.size()
+	if resolved_enemy_size < MIN_TEAM_SIZE or resolved_enemy_size > MAX_TEAM_SIZE:
+		return {"ok": false, "error": "Enemy team size must be %d-%d" % [MIN_TEAM_SIZE, MAX_TEAM_SIZE]}
+	if map_path.is_empty():
+		return {"ok": false, "error": "Select a map"}
+	if not seed_text.strip_edges().is_empty() and not seed_text.strip_edges().is_valid_int():
+		return {"ok": false, "error": "Seed must be an integer or empty"}
+	if not ResourceLoader.exists(map_path):
+		return {"ok": false, "error": "Could not load map %s" % map_path}
+
+	var map: MapDefinitionResource = load(map_path) as MapDefinitionResource
+	if map == null:
+		return {"ok": false, "error": "Could not load map %s" % map_path}
+
+	var anchor_counts: Dictionary = _count_map_anchors(map)
+	if anchor_counts.get("player", 0) < player_paths.size():
+		return {"ok": false, "error": "Map has %d player anchors; need %d" % [anchor_counts.get("player", 0), player_paths.size()]}
+	if anchor_counts.get("enemy", 0) < resolved_enemy_size:
+		return {"ok": false, "error": "Map has %d enemy anchors; need %d" % [anchor_counts.get("enemy", 0), resolved_enemy_size]}
+
+	var player_team: Array[PokemonInstanceResource] = _load_team(player_paths)
+	if player_team.size() != player_paths.size():
+		return {"ok": false, "error": "One or more player instance files could not load"}
+
+	var roster_templates: Array[PokemonInstanceResource] = _load_team(roster_paths())
+	if roster_templates.is_empty():
+		return {"ok": false, "error": "No roster Pokemon available"}
+
+	var seed: int = resolve_seed(seed_text)
+	var inputs := RandomSkirmishGenerator.GeneratorInputs.new()
+	inputs.seed = seed
+	inputs.biome = biome
+	inputs.difficulty_tier = difficulty_tier
+	inputs.player_party = player_team
+	inputs.enemy_team_size = resolved_enemy_size
+	inputs.enemy_budget = 0
+	inputs.map_pool = [map]
+	inputs.roster_templates = roster_templates
+	inputs.reward_profile = reward_profile
+
+	var definition: SkirmishDefinitionResource = RandomSkirmishGenerator.generate(inputs)
+	if definition == null:
+		return {"ok": false, "error": "Random skirmish generation failed"}
+
+	var player_pool: int = mini(anchor_counts.get("player", 0), ANCHOR_POOL_SIZE)
+	var enemy_pool: int = mini(anchor_counts.get("enemy", 0), ANCHOR_POOL_SIZE)
+	if not RandomSkirmishGenerator.attach_spawn_orders(definition, player_pool, enemy_pool, ANCHOR_POOL_SIZE):
+		return {"ok": false, "error": "Could not assign spawn anchors for generated skirmish"}
+
+	var meta: Dictionary = definition.generation_metadata.duplicate(true)
+	meta["player_roster"] = player_paths
+	meta["map_path"] = map_path
+	definition.generation_metadata = meta
+	return {"ok": true, "definition": definition, "seed": seed}
 
 
 static func _load_team(paths: Array[String]) -> Array[PokemonInstanceResource]:
@@ -218,6 +297,23 @@ static func _load_team(paths: Array[String]) -> Array[PokemonInstanceResource]:
 			push_error("CustomSkirmishBuilder: could not load instance %s" % path)
 			continue
 		out.append(instance)
+	return out
+
+
+static func _discover_roster_paths() -> Array[String]:
+	var out: Array[String] = []
+	var dir: DirAccess = DirAccess.open(ROSTER_DIR)
+	if dir == null:
+		push_error("CustomSkirmishBuilder: cannot open %s" % ROSTER_DIR)
+		return out
+	dir.list_dir_begin()
+	var name: String = dir.get_next()
+	while name != "":
+		if not dir.current_is_dir() and name.ends_with(".tres"):
+			out.append("%s%s" % [ROSTER_DIR, name])
+		name = dir.get_next()
+	dir.list_dir_end()
+	out.sort()
 	return out
 
 
