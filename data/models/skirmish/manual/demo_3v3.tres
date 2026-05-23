@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="SkirmishDefinitionResource" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://data/models/skirmish/resources/skirmish_definition_resource.gd" id="1_n06lt"]
+[ext_resource type="Resource" path="res://data/models/maps/definitions/test_arena.tres" id="2_v3t2h"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_instance_resource.gd" id="3_jefg6"]
+[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/gallade.tres" id="4_uh21b"]
+[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/lucario.tres" id="5_001rw"]
+[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/gardevoir.tres" id="6_52x5j"]
+[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/toxicroak.tres" id="7_stul5"]
+[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/magmortar.tres" id="8_hwkq6"]
+[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/gengar.tres" id="9_rh23c"]
+[ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/dusclops.tres" id="10_trh7g"]
+
+[resource]
+script = ExtResource("1_n06lt")
+skirmish_id = "demo_3v3"
+display_name = "Current demo battle"
+map = ExtResource("2_v3t2h")
+seed = 0
+player_team = Array[ExtResource("3_jefg6")]([ExtResource("4_uh21b"), ExtResource("5_001rw"), ExtResource("6_52x5j"), ExtResource("7_stul5")])
+enemy_team = Array[ExtResource("3_jefg6")]([ExtResource("8_hwkq6"), ExtResource("8_hwkq6"), ExtResource("8_hwkq6"), ExtResource("9_rh23c"), ExtResource("9_rh23c"), ExtResource("10_trh7g")])
+objective = 0
+reward_profile = "manual_demo"
