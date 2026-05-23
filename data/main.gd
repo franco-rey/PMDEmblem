@@ -181,7 +181,7 @@ func _build_random_skirmish(entry: Dictionary) -> SkirmishDefinitionResource:
 	if maps.is_empty():
 		push_error("Main: no maps available for random skirmish")
 		return null
-	# M4.5 will introduce real map variety; until then test_arena is the only
+	# M6.5 will introduce real map variety; until then test_arena is the only
 	# map and is the deterministic first entry after sort.
 	var result: Dictionary = CustomSkirmishBuilder.build_random(team_size, maps[0], "")
 	if not result.get("ok", false):

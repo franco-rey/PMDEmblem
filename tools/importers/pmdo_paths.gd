@@ -3,7 +3,7 @@ class_name PMDOPaths
 extends RefCounted
 ## Constants shared by the PMDODump importer.
 ##
-## Centralized so the M7 bulk importer can extend the species/move lists
+## Centralized so the M6 bulk importer can extend the species/move lists
 ## without scrolling through importer logic.[br][br]
 ##
 ## Slug terminology:

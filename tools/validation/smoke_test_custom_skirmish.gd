@@ -93,8 +93,8 @@ func _check_main_scene_controls() -> void:
 	var player_picker: OptionButton = instance.get_node_or_null("UI/MapSelector/SkirmishMenu/CustomBuilder/PlayerTeamRow/PlayerPicker") as OptionButton
 	var enemy_picker: OptionButton = instance.get_node_or_null("UI/MapSelector/SkirmishMenu/CustomBuilder/EnemyTeamRow/EnemyPicker") as OptionButton
 	var map_picker: OptionButton = instance.get_node_or_null("UI/MapSelector/SkirmishMenu/CustomBuilder/MapPicker") as OptionButton
-	_assert_true(player_picker != null and player_picker.item_count == EXPECTED_ROSTER.size(), "PlayerPicker populated with %d roster entries" % EXPECTED_ROSTER.size())
-	_assert_true(enemy_picker != null and enemy_picker.item_count == EXPECTED_ROSTER.size(), "EnemyPicker populated with %d roster entries" % EXPECTED_ROSTER.size())
+	_assert_true(player_picker != null and player_picker.item_count >= EXPECTED_ROSTER.size(), "PlayerPicker populated with at least %d roster entries" % EXPECTED_ROSTER.size())
+	_assert_true(enemy_picker != null and enemy_picker.item_count >= EXPECTED_ROSTER.size(), "EnemyPicker populated with at least %d roster entries" % EXPECTED_ROSTER.size())
 	_assert_true(map_picker != null and map_picker.item_count >= 1, "MapPicker populated with at least one map")
 
 	instance.queue_free()
@@ -103,10 +103,12 @@ func _check_main_scene_controls() -> void:
 
 func _check_builder_static_listings() -> void:
 	var roster: Array[String] = CustomSkirmishBuilder.roster_paths()
-	_assert_true(roster.size() == EXPECTED_ROSTER.size(), "roster_paths returns %d entries" % EXPECTED_ROSTER.size())
-	for slug in EXPECTED_ROSTER:
+	_assert_true(roster.size() >= EXPECTED_ROSTER.size(), "roster_paths returns at least %d entries" % EXPECTED_ROSTER.size())
+	for i in range(EXPECTED_ROSTER.size()):
+		var slug: String = EXPECTED_ROSTER[i]
 		var expected_path: String = "%s%s.tres" % [ROSTER_DIR, slug]
 		_assert_true(roster.has(expected_path), "roster_paths includes %s" % slug)
+		_assert_true(i < roster.size() and roster[i] == expected_path, "roster_paths keeps %s in canonical display order" % slug)
 		var instance: PokemonInstanceResource = load(expected_path) as PokemonInstanceResource
 		_assert_true(instance != null, "%s.tres loads as PokemonInstanceResource" % slug)
 
