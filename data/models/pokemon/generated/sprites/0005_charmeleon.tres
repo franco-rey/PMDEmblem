@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PokemonSpriteSetResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_sprite_set_resource.gd" id="1_8su0y"]
+
+[resource]
+script = ExtResource("1_8su0y")
+idle_path = "res://assets/textures/actor/pokemon/0005_charmeleon/idle.png"
+walk_path = "res://assets/textures/actor/pokemon/0005_charmeleon/walk.png"
+hurt_path = "res://assets/textures/actor/pokemon/0005_charmeleon/hurt.png"
+sleep_path = "res://assets/textures/actor/pokemon/0005_charmeleon/sleep.png"
+hop_path = "res://assets/textures/actor/pokemon/0005_charmeleon/hop.png"
+anim_data_path = "res://assets/textures/actor/pokemon/0005_charmeleon/AnimData.xml"
+portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0005_charmeleon/Normal.png"])

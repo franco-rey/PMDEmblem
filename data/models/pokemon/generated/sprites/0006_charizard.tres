@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PokemonSpriteSetResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_sprite_set_resource.gd" id="1_5xy16"]
+
+[resource]
+script = ExtResource("1_5xy16")
+idle_path = "res://assets/textures/actor/pokemon/0006_charizard/idle.png"
+walk_path = "res://assets/textures/actor/pokemon/0006_charizard/walk.png"
+hurt_path = "res://assets/textures/actor/pokemon/0006_charizard/hurt.png"
+sleep_path = "res://assets/textures/actor/pokemon/0006_charizard/sleep.png"
+hop_path = "res://assets/textures/actor/pokemon/0006_charizard/hop.png"
+anim_data_path = "res://assets/textures/actor/pokemon/0006_charizard/AnimData.xml"
+portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0006_charizard/Normal.png"])

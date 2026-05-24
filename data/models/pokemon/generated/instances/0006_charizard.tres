@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PokemonInstanceResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_tldlc"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/flame_burst.tres" id="2_fljla"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/wing_attack.tres" id="3_bqcte"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/slash.tres" id="4_lvaqq"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/flamethrower.tres" id="5_p15nl"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_instance_resource.gd" id="6_16a7s"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/species/0006_charizard.tres" id="7_jos2q"]
+
+[resource]
+script = ExtResource("6_16a7s")
+species = ExtResource("7_jos2q")
+level = 50
+move_slots = Array[ExtResource("1_tldlc")]([ExtResource("2_fljla"), ExtResource("3_bqcte"), ExtResource("4_lvaqq"), ExtResource("5_p15nl")])
+pp_state = Array[int]([11, 16, 18, 8])
+team = 2
+control_type = 1

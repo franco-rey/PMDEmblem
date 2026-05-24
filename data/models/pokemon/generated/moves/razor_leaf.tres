@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_sf1ol"]
+
+[resource]
+script = ExtResource("1_sf1ol")
+move_id = "razor_leaf"
+index_number = 75
+name = "Razor Leaf"
+description = "Sharp-edged leaves are launched to slash at the opposing Pokémon. Critical hits land more easily."
+type = "grass"
+category = 1
+base_power = 55
+accuracy = 100
+pp = 14
+tactical_range_kind = 3
+tactical_range_value = 6
+target_alignment = 6
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC"])

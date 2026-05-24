@@ -1,0 +1,618 @@
+{
+  "generated_at": "2026-05-24T19:48:38Z",
+  "mode": "write",
+  "schema_version": 1,
+  "source_roots": {
+    "pmdo_root": "/Users/franco/Documents/GitHub/PMDODump",
+    "raw_asset_root": "/Users/franco/Documents/GitHub/RawAsset",
+    "sprite_collab_root": "/Users/franco/Documents/GitHub/SpriteCollab"
+  },
+  "species": [
+    {
+      "assets": {
+        "anim_data": "res://assets/textures/actor/pokemon/0001_bulbasaur/AnimData.xml",
+        "hop": "res://assets/textures/actor/pokemon/0001_bulbasaur/hop.png",
+        "hurt": "res://assets/textures/actor/pokemon/0001_bulbasaur/hurt.png",
+        "idle": "res://assets/textures/actor/pokemon/0001_bulbasaur/idle.png",
+        "portrait_credits": "res://assets/textures/pokemon/portraits/0001_bulbasaur/credits.txt",
+        "portrait_normal": "res://assets/textures/pokemon/portraits/0001_bulbasaur/Normal.png",
+        "sleep": "res://assets/textures/actor/pokemon/0001_bulbasaur/sleep.png",
+        "sprite_credits": "res://assets/textures/actor/pokemon/0001_bulbasaur/credits.txt",
+        "walk": "res://assets/textures/actor/pokemon/0001_bulbasaur/walk.png"
+      },
+      "checksums": {
+        "anim_data": "sha256:c7722f5da724f40f35fccabb1135fbd1b70e770b2a38db3d9fbe7643af626162",
+        "hop": "sha256:6174ddd9e79bfb720b548643af093d3a2b172bcec2328ce8f282f7e8fdd58d7e",
+        "hurt": "sha256:b1a95ec74b23a6ad4ed4239e11d73b6ee6bc9ffc180778437314ac4e57cc583c",
+        "idle": "sha256:6f16efbf63b5370798bf5b1de9d7da493323a61c62bf150a82f338aa4e1f2747",
+        "portrait_credits": "sha256:1035f39e8857b4c64dcaaf79b7cb7ae40a2886e7c8be076201fd12b99fecf467",
+        "portrait_normal": "sha256:611d0a78688afe875242c4c0ec163b0a64d618f5e3df64fe7a419159f2879031",
+        "sleep": "sha256:a70049f765a4fa2dc55c4dc2983b79b0d621f8f77554c0dc1cac9f0d3c787f5f",
+        "sprite_credits": "sha256:31796de899773bb045cf0aecee1b599c4800631b6832e9f5df9777ba7e0699ac",
+        "walk": "sha256:b8dd3d5fed28e6a9fb872e571ae62dfce4e3ea1d693cc20db3300e04ec1878a6"
+      },
+      "default_form_index": 0,
+      "dex_number": 1,
+      "disabled_reason": "",
+      "display_name": "Bulbasaur",
+      "generation": 1,
+      "moves": {
+        "default_moves": [
+          "double_edge",
+          "worry_seed",
+          "synthesis",
+          "seed_bomb"
+        ],
+        "import_moves": [
+          "tackle",
+          "growl",
+          "leech_seed",
+          "vine_whip",
+          "poison_powder",
+          "sleep_powder",
+          "take_down",
+          "razor_leaf",
+          "sweet_scent",
+          "growth",
+          "double_edge",
+          "worry_seed",
+          "synthesis",
+          "seed_bomb"
+        ],
+        "usable_move_count": 14
+      },
+      "pmdo_slug": "bulbasaur",
+      "released": true,
+      "slug": "0001_bulbasaur",
+      "source": {
+        "monster_json": "DumpAsset/Data/Monster/bulbasaur.json",
+        "portrait_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/portrait/0001",
+        "portrait_dir": "/Users/franco/Documents/GitHub/RawAsset/Portrait/0001",
+        "sprite_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/sprite/0001",
+        "sprite_dir": "/Users/franco/Documents/GitHub/RawAsset/Sprite/0001"
+      },
+      "status": "battle_ready",
+      "warnings": []
+    },
+    {
+      "assets": {
+        "anim_data": "res://assets/textures/actor/pokemon/0002_ivysaur/AnimData.xml",
+        "hop": "res://assets/textures/actor/pokemon/0002_ivysaur/hop.png",
+        "hurt": "res://assets/textures/actor/pokemon/0002_ivysaur/hurt.png",
+        "idle": "res://assets/textures/actor/pokemon/0002_ivysaur/idle.png",
+        "portrait_credits": "res://assets/textures/pokemon/portraits/0002_ivysaur/credits.txt",
+        "portrait_normal": "res://assets/textures/pokemon/portraits/0002_ivysaur/Normal.png",
+        "sleep": "res://assets/textures/actor/pokemon/0002_ivysaur/sleep.png",
+        "sprite_credits": "res://assets/textures/actor/pokemon/0002_ivysaur/credits.txt",
+        "walk": "res://assets/textures/actor/pokemon/0002_ivysaur/walk.png"
+      },
+      "checksums": {
+        "anim_data": "sha256:e1c494c9d795980bb77622e8ce782b4fba62bd1e5103165351748dc3924702c0",
+        "hop": "sha256:37f45263deba547b9680e6b34c2c0428903b7abd0dfa6f7117abb9d8e61c88c9",
+        "hurt": "sha256:b16c851246c88b163127dc1426893aa16695a5eb9ee9804c2586e26cd82e8a31",
+        "idle": "sha256:d251cbd9aaf3f9ff6ee6f6119a9ce87267e2548124fd499c0c62fe1083fc72b9",
+        "portrait_credits": "sha256:0f67cb3b737f8a2fa1045c25c247525cfe40a09401740e45fbe870d7ae559e1e",
+        "portrait_normal": "sha256:9ed265687bfa0f543605bc80d923ab637d3c36808d56965ef6677e1a53416377",
+        "sleep": "sha256:2069fa358d466847712c95f49170eaa1a051c57df4ade8c402ac36c7378e06ed",
+        "sprite_credits": "sha256:852eae21a46cb72f9b005b9233465085c8ba74a5054e890ffbf6c34abafbf043",
+        "walk": "sha256:294de55669bceca7e4c0904ce5f41203368c0f24261cedae09ed699cd2002576"
+      },
+      "default_form_index": 0,
+      "dex_number": 2,
+      "disabled_reason": "",
+      "display_name": "Ivysaur",
+      "generation": 1,
+      "moves": {
+        "default_moves": [
+          "double_edge",
+          "worry_seed",
+          "synthesis",
+          "solar_beam"
+        ],
+        "import_moves": [
+          "growl",
+          "leech_seed",
+          "tackle",
+          "vine_whip",
+          "poison_powder",
+          "sleep_powder",
+          "take_down",
+          "razor_leaf",
+          "sweet_scent",
+          "growth",
+          "double_edge",
+          "worry_seed",
+          "synthesis",
+          "solar_beam"
+        ],
+        "usable_move_count": 14
+      },
+      "pmdo_slug": "ivysaur",
+      "released": true,
+      "slug": "0002_ivysaur",
+      "source": {
+        "monster_json": "DumpAsset/Data/Monster/ivysaur.json",
+        "portrait_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/portrait/0002",
+        "portrait_dir": "/Users/franco/Documents/GitHub/RawAsset/Portrait/0002",
+        "sprite_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/sprite/0002",
+        "sprite_dir": "/Users/franco/Documents/GitHub/RawAsset/Sprite/0002"
+      },
+      "status": "battle_ready",
+      "warnings": []
+    },
+    {
+      "assets": {
+        "anim_data": "res://assets/textures/actor/pokemon/0003_venusaur/AnimData.xml",
+        "hop": "res://assets/textures/actor/pokemon/0003_venusaur/hop.png",
+        "hurt": "res://assets/textures/actor/pokemon/0003_venusaur/hurt.png",
+        "idle": "res://assets/textures/actor/pokemon/0003_venusaur/idle.png",
+        "portrait_credits": "res://assets/textures/pokemon/portraits/0003_venusaur/credits.txt",
+        "portrait_normal": "res://assets/textures/pokemon/portraits/0003_venusaur/Normal.png",
+        "sleep": "res://assets/textures/actor/pokemon/0003_venusaur/sleep.png",
+        "sprite_credits": "res://assets/textures/actor/pokemon/0003_venusaur/credits.txt",
+        "walk": "res://assets/textures/actor/pokemon/0003_venusaur/walk.png"
+      },
+      "checksums": {
+        "anim_data": "sha256:b5b556e42df4322440f63da430e918bbad794c83cdf58dbff2393138f96c15d3",
+        "hop": "sha256:d67a0422cea50d5a9404107418ed36d1dda120122aa034e04b8ec2ae8c1c4b12",
+        "hurt": "sha256:10876419c84fc961fc0fb2cc7caecf943b0035464b53cd956aae34c3d7e9f318",
+        "idle": "sha256:53547ad2b27a60f270a9cd698ab53fe55df8352d6ebc54fecae955362d8563c3",
+        "portrait_credits": "sha256:0396d3b5dd9e7cafe254b7103168693b23316d81fa2fa51e10e324ce2a272242",
+        "portrait_normal": "sha256:ad837a186afb8399c9c2a1ac832dc77256709e832d71851e2ebade2497daf191",
+        "sleep": "sha256:d9c3e96e18fe7dd96d67bf3892d90355a7dd7ef8e0cae1f1b210e625eb8e4064",
+        "sprite_credits": "sha256:a7f223eed9b33a4921918891399aa7eccdbeb1877a7eee23694250b365b5f260",
+        "walk": "sha256:53547ad2b27a60f270a9cd698ab53fe55df8352d6ebc54fecae955362d8563c3"
+      },
+      "default_form_index": 0,
+      "dex_number": 3,
+      "disabled_reason": "",
+      "display_name": "Venusaur",
+      "generation": 1,
+      "moves": {
+        "default_moves": [
+          "petal_dance",
+          "worry_seed",
+          "synthesis",
+          "petal_blizzard"
+        ],
+        "import_moves": [
+          "growl",
+          "leech_seed",
+          "tackle",
+          "vine_whip",
+          "poison_powder",
+          "sleep_powder",
+          "take_down",
+          "razor_leaf",
+          "sweet_scent",
+          "growth",
+          "double_edge",
+          "petal_dance",
+          "worry_seed",
+          "synthesis",
+          "petal_blizzard"
+        ],
+        "usable_move_count": 15
+      },
+      "pmdo_slug": "venusaur",
+      "released": true,
+      "slug": "0003_venusaur",
+      "source": {
+        "monster_json": "DumpAsset/Data/Monster/venusaur.json",
+        "portrait_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/portrait/0003",
+        "portrait_dir": "/Users/franco/Documents/GitHub/RawAsset/Portrait/0003",
+        "sprite_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/sprite/0003",
+        "sprite_dir": "/Users/franco/Documents/GitHub/RawAsset/Sprite/0003"
+      },
+      "status": "battle_ready",
+      "warnings": []
+    },
+    {
+      "assets": {
+        "anim_data": "res://assets/textures/actor/pokemon/0004_charmander/AnimData.xml",
+        "hop": "res://assets/textures/actor/pokemon/0004_charmander/hop.png",
+        "hurt": "res://assets/textures/actor/pokemon/0004_charmander/hurt.png",
+        "idle": "res://assets/textures/actor/pokemon/0004_charmander/idle.png",
+        "portrait_credits": "res://assets/textures/pokemon/portraits/0004_charmander/credits.txt",
+        "portrait_normal": "res://assets/textures/pokemon/portraits/0004_charmander/Normal.png",
+        "sleep": "res://assets/textures/actor/pokemon/0004_charmander/sleep.png",
+        "sprite_credits": "res://assets/textures/actor/pokemon/0004_charmander/credits.txt",
+        "walk": "res://assets/textures/actor/pokemon/0004_charmander/walk.png"
+      },
+      "checksums": {
+        "anim_data": "sha256:d14356987aafc0bc86c2bdd46fd026a479499032056dad58a0c8f13fbf0686ff",
+        "hop": "sha256:8d3ee5f46c7aee5091a7ad6ff482f6ca74be3799bf017d1e31d4a2b1b0bb17fb",
+        "hurt": "sha256:86e742d76d27fede779bde33ab956799de900361cf842946086c25eac2042ad1",
+        "idle": "sha256:304a2a2d7f07e6a81bec42270b585b57d4ce0af78b20a6905a1bc704e2415350",
+        "portrait_credits": "sha256:b5bf67ab78006bad08d65ba47f7fbb1fb5d6a28e22b27cae1c7621d553c3bac5",
+        "portrait_normal": "sha256:19ece460b8336a72fba5c8615ee1746bb70aa357fd3d9dd5500cbb54cf7109f5",
+        "sleep": "sha256:82b8f176078f0d168905ecb7d72cd53f5f70f9fd67d8c733cea06fdcbbba9833",
+        "sprite_credits": "sha256:ba48ccf869c549300c7cabf8028f81fcf8e30951174d703bace14d8bf545507f",
+        "walk": "sha256:3e120c93b743fe30d10766114d54e230e851a43e4ffc174bcb7eb424a452a05a"
+      },
+      "default_form_index": 0,
+      "dex_number": 4,
+      "disabled_reason": "",
+      "display_name": "Charmander",
+      "generation": 1,
+      "moves": {
+        "default_moves": [
+          "slash",
+          "flamethrower",
+          "fire_spin",
+          "inferno"
+        ],
+        "import_moves": [
+          "growl",
+          "scratch",
+          "ember",
+          "smokescreen",
+          "dragon_rage",
+          "scary_face",
+          "fire_fang",
+          "flame_burst",
+          "slash",
+          "flamethrower",
+          "fire_spin",
+          "inferno"
+        ],
+        "usable_move_count": 12
+      },
+      "pmdo_slug": "charmander",
+      "released": true,
+      "slug": "0004_charmander",
+      "source": {
+        "monster_json": "DumpAsset/Data/Monster/charmander.json",
+        "portrait_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/portrait/0004",
+        "portrait_dir": "/Users/franco/Documents/GitHub/RawAsset/Portrait/0004",
+        "sprite_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/sprite/0004",
+        "sprite_dir": "/Users/franco/Documents/GitHub/RawAsset/Sprite/0004"
+      },
+      "status": "battle_ready",
+      "warnings": []
+    },
+    {
+      "assets": {
+        "anim_data": "res://assets/textures/actor/pokemon/0005_charmeleon/AnimData.xml",
+        "hop": "res://assets/textures/actor/pokemon/0005_charmeleon/hop.png",
+        "hurt": "res://assets/textures/actor/pokemon/0005_charmeleon/hurt.png",
+        "idle": "res://assets/textures/actor/pokemon/0005_charmeleon/idle.png",
+        "portrait_credits": "res://assets/textures/pokemon/portraits/0005_charmeleon/credits.txt",
+        "portrait_normal": "res://assets/textures/pokemon/portraits/0005_charmeleon/Normal.png",
+        "sleep": "res://assets/textures/actor/pokemon/0005_charmeleon/sleep.png",
+        "sprite_credits": "res://assets/textures/actor/pokemon/0005_charmeleon/credits.txt",
+        "walk": "res://assets/textures/actor/pokemon/0005_charmeleon/walk.png"
+      },
+      "checksums": {
+        "anim_data": "sha256:13ef1773a2fad61457e063e81a95de4fbc6ebe8355f5456aa1316866b3f277f0",
+        "hop": "sha256:6de07a06ec9ebd0fa16138e68afa298158f9eb769685729797bdb3725acf9d3f",
+        "hurt": "sha256:17513d26837225186d9762924a72e2b0921373546bfa03c5bfa957a3ae9cd63a",
+        "idle": "sha256:8addf741bbf9ff03ee6834012f7e63205db731c3f108dbd7e628c7141e10d9c3",
+        "portrait_credits": "sha256:e18168807e2bdb543489a8b107fc4ef3dbfc0d997707d14bf41dcae7a4ddf3c2",
+        "portrait_normal": "sha256:8420abc5ed79d9c7bd2be9072671afd38c5141a3876d1bc4a63e237b2cdd437d",
+        "sleep": "sha256:7d2dffdda2417ca5185ccd260a5b044189594f09383ab915f0c6971c335de7a2",
+        "sprite_credits": "sha256:c97a9abb3449740884d512bdfc1bb20093988e19fa8657741899a72945eb90f7",
+        "walk": "sha256:851542353e3b77af75abde27abd0f4f9cafc8e025c6b0351d2230f2a14e9c54e"
+      },
+      "default_form_index": 0,
+      "dex_number": 5,
+      "disabled_reason": "",
+      "display_name": "Charmeleon",
+      "generation": 1,
+      "moves": {
+        "default_moves": [
+          "flame_burst",
+          "slash",
+          "flamethrower",
+          "fire_spin"
+        ],
+        "import_moves": [
+          "ember",
+          "growl",
+          "scratch",
+          "smokescreen",
+          "dragon_rage",
+          "scary_face",
+          "fire_fang",
+          "flame_burst",
+          "slash",
+          "flamethrower",
+          "fire_spin"
+        ],
+        "usable_move_count": 11
+      },
+      "pmdo_slug": "charmeleon",
+      "released": true,
+      "slug": "0005_charmeleon",
+      "source": {
+        "monster_json": "DumpAsset/Data/Monster/charmeleon.json",
+        "portrait_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/portrait/0005",
+        "portrait_dir": "/Users/franco/Documents/GitHub/RawAsset/Portrait/0005",
+        "sprite_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/sprite/0005",
+        "sprite_dir": "/Users/franco/Documents/GitHub/RawAsset/Sprite/0005"
+      },
+      "status": "battle_ready",
+      "warnings": []
+    },
+    {
+      "assets": {
+        "anim_data": "res://assets/textures/actor/pokemon/0006_charizard/AnimData.xml",
+        "hop": "res://assets/textures/actor/pokemon/0006_charizard/hop.png",
+        "hurt": "res://assets/textures/actor/pokemon/0006_charizard/hurt.png",
+        "idle": "res://assets/textures/actor/pokemon/0006_charizard/idle.png",
+        "portrait_credits": "res://assets/textures/pokemon/portraits/0006_charizard/credits.txt",
+        "portrait_normal": "res://assets/textures/pokemon/portraits/0006_charizard/Normal.png",
+        "sleep": "res://assets/textures/actor/pokemon/0006_charizard/sleep.png",
+        "sprite_credits": "res://assets/textures/actor/pokemon/0006_charizard/credits.txt",
+        "walk": "res://assets/textures/actor/pokemon/0006_charizard/walk.png"
+      },
+      "checksums": {
+        "anim_data": "sha256:4cbf990e82d5f15925b33d01e3e9792f1acd45b70cefe819c6170fef62428294",
+        "hop": "sha256:b7238cb91fa4f226c52f6ef7925bf9e3b6ce31dfa63c6a816e57b83ff581d86e",
+        "hurt": "sha256:f2799d2b947560b7a3ffb95eb99c63af04f5a385542352b594a7f7e90bade528",
+        "idle": "sha256:b0e3e63aa0c5a9fc35d125d532715072a0479966e384b8c62aefce536a3ef1fa",
+        "portrait_credits": "sha256:0a6428ea36e6f7a24ddcecfaec64b5f3e5f53fa49874000f97a65f26ea988b17",
+        "portrait_normal": "sha256:ae3866c1ecb5bd42d03b3f5685bd859d00b623ceaa176d355a22403a694f7908",
+        "sleep": "sha256:c0fc6f26c68311e390cdc4a1ff3f65bfdd0352686d3d4a78b79aa576f8849950",
+        "sprite_credits": "sha256:1534cacde13e4deaee734812ff29271fb6b0f1983ef34708800c788dca9e880f",
+        "walk": "sha256:b0e3e63aa0c5a9fc35d125d532715072a0479966e384b8c62aefce536a3ef1fa"
+      },
+      "default_form_index": 0,
+      "dex_number": 6,
+      "disabled_reason": "",
+      "display_name": "Charizard",
+      "generation": 1,
+      "moves": {
+        "default_moves": [
+          "flame_burst",
+          "wing_attack",
+          "slash",
+          "flamethrower"
+        ],
+        "import_moves": [
+          "air_slash",
+          "dragon_claw",
+          "ember",
+          "flare_blitz",
+          "growl",
+          "heat_wave",
+          "scratch",
+          "shadow_claw",
+          "smokescreen",
+          "dragon_rage",
+          "scary_face",
+          "fire_fang",
+          "flame_burst",
+          "wing_attack",
+          "slash",
+          "flamethrower"
+        ],
+        "usable_move_count": 16
+      },
+      "pmdo_slug": "charizard",
+      "released": true,
+      "slug": "0006_charizard",
+      "source": {
+        "monster_json": "DumpAsset/Data/Monster/charizard.json",
+        "portrait_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/portrait/0006",
+        "portrait_dir": "/Users/franco/Documents/GitHub/RawAsset/Portrait/0006",
+        "sprite_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/sprite/0006",
+        "sprite_dir": "/Users/franco/Documents/GitHub/RawAsset/Sprite/0006"
+      },
+      "status": "battle_ready",
+      "warnings": []
+    },
+    {
+      "assets": {
+        "anim_data": "res://assets/textures/actor/pokemon/0007_squirtle/AnimData.xml",
+        "hop": "res://assets/textures/actor/pokemon/0007_squirtle/hop.png",
+        "hurt": "res://assets/textures/actor/pokemon/0007_squirtle/hurt.png",
+        "idle": "res://assets/textures/actor/pokemon/0007_squirtle/idle.png",
+        "portrait_credits": "res://assets/textures/pokemon/portraits/0007_squirtle/credits.txt",
+        "portrait_normal": "res://assets/textures/pokemon/portraits/0007_squirtle/Normal.png",
+        "sleep": "res://assets/textures/actor/pokemon/0007_squirtle/sleep.png",
+        "sprite_credits": "res://assets/textures/actor/pokemon/0007_squirtle/credits.txt",
+        "walk": "res://assets/textures/actor/pokemon/0007_squirtle/walk.png"
+      },
+      "checksums": {
+        "anim_data": "sha256:cd5137917a3d4fcf7131ad9b395edae4c0cc69a926c1ecfcd0e3b3cbb173bfc7",
+        "hop": "sha256:fa00cb92c520cde4be1356b15ff91381b35f1120278b4e02bd75816ca8f540e1",
+        "hurt": "sha256:b08cd8679617df5ca9d1e87ed773a8b3265eae46ef945f4bec2c9153b645eceb",
+        "idle": "sha256:d796b3b94475e4e2a5089bf10f392559989d4104d29c2fe387cfe003bcba5447",
+        "portrait_credits": "sha256:a1cc0678fc18e6afcd1663dfdc120910e2486ad4cd1c5fd9ad279f1eaac0871f",
+        "portrait_normal": "sha256:3d3f7f82309d1e422b4eedf689979584d70144921fa712daa06727e70731212c",
+        "sleep": "sha256:cd8864325eac8545cd4f932e44bcefc9160991713bb627be95b587950e70068a",
+        "sprite_credits": "sha256:bf7e6856ca572f1d043d08d26cc6d1e939d0a53f3ad1357b2d949e39be70e35f",
+        "walk": "sha256:0e71a8bf34299cf73e59eccebc0b9fc16dfb9bd9554d8009b2323c8e3c00504f"
+      },
+      "default_form_index": 0,
+      "dex_number": 7,
+      "disabled_reason": "",
+      "display_name": "Squirtle",
+      "generation": 1,
+      "moves": {
+        "default_moves": [
+          "skull_bash",
+          "iron_defense",
+          "rain_dance",
+          "hydro_pump"
+        ],
+        "import_moves": [
+          "tackle",
+          "tail_whip",
+          "water_gun",
+          "withdraw",
+          "bubble",
+          "bite",
+          "rapid_spin",
+          "protect",
+          "water_pulse",
+          "aqua_tail",
+          "skull_bash",
+          "iron_defense",
+          "rain_dance",
+          "hydro_pump"
+        ],
+        "usable_move_count": 14
+      },
+      "pmdo_slug": "squirtle",
+      "released": true,
+      "slug": "0007_squirtle",
+      "source": {
+        "monster_json": "DumpAsset/Data/Monster/squirtle.json",
+        "portrait_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/portrait/0007",
+        "portrait_dir": "/Users/franco/Documents/GitHub/RawAsset/Portrait/0007",
+        "sprite_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/sprite/0007",
+        "sprite_dir": "/Users/franco/Documents/GitHub/RawAsset/Sprite/0007"
+      },
+      "status": "battle_ready",
+      "warnings": []
+    },
+    {
+      "assets": {
+        "anim_data": "res://assets/textures/actor/pokemon/0008_wartortle/AnimData.xml",
+        "hop": "res://assets/textures/actor/pokemon/0008_wartortle/hop.png",
+        "hurt": "res://assets/textures/actor/pokemon/0008_wartortle/hurt.png",
+        "idle": "res://assets/textures/actor/pokemon/0008_wartortle/idle.png",
+        "portrait_credits": "res://assets/textures/pokemon/portraits/0008_wartortle/credits.txt",
+        "portrait_normal": "res://assets/textures/pokemon/portraits/0008_wartortle/Normal.png",
+        "sleep": "res://assets/textures/actor/pokemon/0008_wartortle/sleep.png",
+        "sprite_credits": "res://assets/textures/actor/pokemon/0008_wartortle/credits.txt",
+        "walk": "res://assets/textures/actor/pokemon/0008_wartortle/walk.png"
+      },
+      "checksums": {
+        "anim_data": "sha256:0c08e4fdb76e1da231193615c12d0abd3d8afeb59ceb757db0b1faa9152b2746",
+        "hop": "sha256:b722899be96db5196321d2ce6db3b21e8c34eeee2a5538fb465731a09c7e6a90",
+        "hurt": "sha256:d0baf6a0aa278d33848aabdc8571f612f456bacb1e861e5a82e7426b9cc1ffb4",
+        "idle": "sha256:f08eadc10f327c5137631733ee406f53f642547ae1c375d65bccf09c8dd6a1f3",
+        "portrait_credits": "sha256:f6d651796bad7604b8d5bb6f32f82bc754819bfb17a5a56f53bf2cc8aedbbb62",
+        "portrait_normal": "sha256:623588f3d602be694872ea614aa4f5cb9db7706451d3b1ecc3bb94bbb3af66a4",
+        "sleep": "sha256:ca08843addbd7d3ffa4aeed914802481069a436faa9f50bd7ae0783d2606dc41",
+        "sprite_credits": "sha256:b56249a5308533a089e3a21db6a2f32d1f0501acc44d4e5e9f118cf711b198d6",
+        "walk": "sha256:215892752dc98e5039fbe67d25c06ebe041d1ba9d7189ec329d4f998cc7e95dd"
+      },
+      "default_form_index": 0,
+      "dex_number": 8,
+      "disabled_reason": "",
+      "display_name": "Wartortle",
+      "generation": 1,
+      "moves": {
+        "default_moves": [
+          "skull_bash",
+          "iron_defense",
+          "rain_dance",
+          "hydro_pump"
+        ],
+        "import_moves": [
+          "tackle",
+          "tail_whip",
+          "water_gun",
+          "withdraw",
+          "bubble",
+          "bite",
+          "rapid_spin",
+          "protect",
+          "water_pulse",
+          "aqua_tail",
+          "skull_bash",
+          "iron_defense",
+          "rain_dance",
+          "hydro_pump"
+        ],
+        "usable_move_count": 14
+      },
+      "pmdo_slug": "wartortle",
+      "released": true,
+      "slug": "0008_wartortle",
+      "source": {
+        "monster_json": "DumpAsset/Data/Monster/wartortle.json",
+        "portrait_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/portrait/0008",
+        "portrait_dir": "/Users/franco/Documents/GitHub/RawAsset/Portrait/0008",
+        "sprite_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/sprite/0008",
+        "sprite_dir": "/Users/franco/Documents/GitHub/RawAsset/Sprite/0008"
+      },
+      "status": "battle_ready",
+      "warnings": []
+    },
+    {
+      "assets": {
+        "anim_data": "res://assets/textures/actor/pokemon/0009_blastoise/AnimData.xml",
+        "hop": "res://assets/textures/actor/pokemon/0009_blastoise/hop.png",
+        "hurt": "res://assets/textures/actor/pokemon/0009_blastoise/hurt.png",
+        "idle": "res://assets/textures/actor/pokemon/0009_blastoise/idle.png",
+        "portrait_credits": "res://assets/textures/pokemon/portraits/0009_blastoise/credits.txt",
+        "portrait_normal": "res://assets/textures/pokemon/portraits/0009_blastoise/Normal.png",
+        "sleep": "res://assets/textures/actor/pokemon/0009_blastoise/sleep.png",
+        "sprite_credits": "res://assets/textures/actor/pokemon/0009_blastoise/credits.txt",
+        "walk": "res://assets/textures/actor/pokemon/0009_blastoise/walk.png"
+      },
+      "checksums": {
+        "anim_data": "sha256:4ccb8ab3596721a434c3d561b8930a9988bb314d403e8b4cfc7a4daaea9732a8",
+        "hop": "sha256:6262e4fdec774c3f951dd38550897a7790e5e893afd3aece18df1fd965c63708",
+        "hurt": "sha256:8f5e78a8814aa0d16a9da08c56415e6892e09ec687ca9538ccc1e8edecd9961a",
+        "idle": "sha256:eb9bca8db6a6fda567302db7815bf122829a07c2fb77ab5e5fb69fb67779815e",
+        "portrait_credits": "sha256:81145aa2aa55e2f3f995fd3ebff609108e7892694451b0243aea7e6708f31395",
+        "portrait_normal": "sha256:12c33f645dc274421f3e4a69a4275f8f6e415d49658fa2389c53561cf9dfc3c5",
+        "sleep": "sha256:173f081792c97727a8d45fa441729af7d085182dcc5895d39e772910c4b41fc4",
+        "sprite_credits": "sha256:4c7472b085a622d9b9a183e61026665d449b5ab5b5fe8d753efe1aa490978a26",
+        "walk": "sha256:90074aa6cea5dc4fd11a5ca2bd756f71d83798e2efc346d8d609907489f70350"
+      },
+      "default_form_index": 0,
+      "dex_number": 9,
+      "disabled_reason": "",
+      "display_name": "Blastoise",
+      "generation": 1,
+      "moves": {
+        "default_moves": [
+          "water_pulse",
+          "aqua_tail",
+          "skull_bash",
+          "iron_defense"
+        ],
+        "import_moves": [
+          "flash_cannon",
+          "tackle",
+          "tail_whip",
+          "water_gun",
+          "withdraw",
+          "bubble",
+          "bite",
+          "rapid_spin",
+          "protect",
+          "water_pulse",
+          "aqua_tail",
+          "skull_bash",
+          "iron_defense"
+        ],
+        "usable_move_count": 13
+      },
+      "pmdo_slug": "blastoise",
+      "released": true,
+      "slug": "0009_blastoise",
+      "source": {
+        "monster_json": "DumpAsset/Data/Monster/blastoise.json",
+        "portrait_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/portrait/0009",
+        "portrait_dir": "/Users/franco/Documents/GitHub/RawAsset/Portrait/0009",
+        "sprite_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/sprite/0009",
+        "sprite_dir": "/Users/franco/Documents/GitHub/RawAsset/Sprite/0009"
+      },
+      "status": "battle_ready",
+      "warnings": []
+    }
+  ],
+  "target": {
+    "dex_max": 9,
+    "dex_min": 1,
+    "generations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "limit": 0,
+    "only": [],
+    "released_only": true
+  }
+}

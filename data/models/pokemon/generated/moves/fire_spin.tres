@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_ppas8"]
+
+[resource]
+script = ExtResource("1_ppas8")
+move_id = "fire_spin"
+index_number = 83
+name = "Fire Spin"
+description = "The target becomes trapped within a fierce vortex of fire that rages for three turns."
+type = "fire"
+category = 2
+base_power = 45
+accuracy = 100
+pp = 16
+tactical_range_kind = 1
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.OnHitEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.OnHitEvent, PMDC"])

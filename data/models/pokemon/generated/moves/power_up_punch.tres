@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_15esj"]
+
+[resource]
+script = ExtResource("1_15esj")
+move_id = "power_up_punch"
+index_number = 612
+name = "Power-Up Punch"
+description = "Striking opponents over and over makes the user's fists harder. Hitting a target raises the Attack stat."
+type = "fighting"
+category = 1
+base_power = 40
+accuracy = 100
+pp = 12
+tactical_range_kind = 1
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.AdditionalEndEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.AdditionalEndEvent, PMDC"])

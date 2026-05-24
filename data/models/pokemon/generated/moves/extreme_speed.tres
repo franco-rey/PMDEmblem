@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_eiavc"]
+
+[resource]
+script = ExtResource("1_eiavc")
+move_id = "extreme_speed"
+index_number = 245
+name = "Extreme Speed"
+description = "The user charges the target at blinding speed."
+type = "normal"
+category = 1
+base_power = 70
+accuracy = 100
+pp = 10
+tactical_range_value = 6
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"])

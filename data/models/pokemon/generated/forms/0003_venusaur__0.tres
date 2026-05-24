@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="PokemonFormResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_1pwxa"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/sprites/0003_venusaur.tres" id="2_selg2"]
+
+[resource]
+script = ExtResource("1_1pwxa")
+species_id = "0003_venusaur"
+generation = 6
+type1 = "grass"
+type2 = "poison"
+base_hp = 80
+base_atk = 82
+base_def = 83
+base_spa = 100
+base_spd = 100
+base_speed = 80
+height = 2.0
+weight = 100.0
+gender_weights = Vector3i(0, 7, 1)
+exp_table = "medium_slow"
+join_rate = -40
+sprite_set = ExtResource("2_selg2")
+intrinsic1 = "overgrow"
+intrinsic2 = "none"
+intrinsic3 = "chlorophyll"

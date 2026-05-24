@@ -9,6 +9,7 @@ extends RefCounted
 ## and shuffles spawn anchors with a seeded RNG.
 
 const ROSTER_DIR: String = "res://data/models/pokemon/overrides/instances/"
+const GENERATED_ROSTER_DIR: String = "res://data/models/pokemon/generated/instances/"
 const MAP_DIR: String = "res://data/models/maps/definitions/"
 const RandomSkirmishGenerator = preload("res://data/modules/skirmish/random_skirmish_generator.gd")
 const MIN_TEAM_SIZE: int = 1
@@ -30,14 +31,32 @@ const DEFAULT_RANDOM_DIFFICULTY_TIER: int = 4
 
 ## Returns the canonical roster path list in the order the picker should display.
 static func roster_paths() -> Array[String]:
+	var by_slug: Dictionary = {}
+	for path in _discover_roster_paths(GENERATED_ROSTER_DIR):
+		by_slug[path.get_file().get_basename()] = path
+	for path in _discover_roster_paths(ROSTER_DIR):
+		# Hand-authored overrides shadow generated templates with the same slug.
+		by_slug[path.get_file().get_basename()] = path
+
 	var out: Array[String] = []
 	for slug in ROSTER_SLUGS:
-		var path: String = "%s%s.tres" % [ROSTER_DIR, slug]
-		if ResourceLoader.exists(path):
+		if by_slug.has(slug):
+			var path: String = String(by_slug[slug])
 			out.append(path)
-	var discovered: Array[String] = _discover_roster_paths()
-	for path in discovered:
-		if not out.has(path):
+			by_slug.erase(slug)
+	var remaining: Array[String] = []
+	for slug in by_slug.keys():
+		remaining.append(String(slug))
+	remaining.sort()
+	for slug in remaining:
+		out.append(String(by_slug[slug]))
+	return out
+
+
+static func battle_ready_roster_paths() -> Array[String]:
+	var out: Array[String] = []
+	for path in roster_paths():
+		if _is_battle_ready_path(path):
 			out.append(path)
 	return out
 
@@ -130,8 +149,8 @@ static func build(player_paths: Array[String], enemy_paths: Array[String], map_p
 	if player_pool < player_paths.size() or enemy_pool < enemy_paths.size():
 		return {"ok": false, "error": "Map needs %d anchors per side for an %dv%d setup" % [ANCHOR_POOL_SIZE, player_paths.size(), enemy_paths.size()]}
 
-	var player_team: Array[PokemonInstanceResource] = _load_team(player_paths)
-	var enemy_team: Array[PokemonInstanceResource] = _load_team(enemy_paths)
+	var player_team: Array[PokemonInstanceResource] = _load_team_for_side(player_paths, PokemonInstanceResource.Team.PLAYER, PokemonInstanceResource.ControlType.PLAYER)
+	var enemy_team: Array[PokemonInstanceResource] = _load_team_for_side(enemy_paths, PokemonInstanceResource.Team.ENEMY, PokemonInstanceResource.ControlType.AI)
 	if player_team.size() != player_paths.size() or enemy_team.size() != enemy_paths.size():
 		return {"ok": false, "error": "One or more instance files could not load"}
 
@@ -163,7 +182,7 @@ static func build(player_paths: Array[String], enemy_paths: Array[String], map_p
 ## deterministically; pass `0` to draw a fresh non-deterministic sample.
 static func random_roster_paths(count: int, seed: int = 0) -> Array[String]:
 	var out: Array[String] = []
-	var pool: Array[String] = roster_paths()
+	var pool: Array[String] = battle_ready_roster_paths()
 	if count <= 0 or pool.is_empty():
 		return out
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -253,11 +272,11 @@ static func build_with_random_enemy(
 	if anchor_counts.get("enemy", 0) < resolved_enemy_size:
 		return {"ok": false, "error": "Map has %d enemy anchors; need %d" % [anchor_counts.get("enemy", 0), resolved_enemy_size]}
 
-	var player_team: Array[PokemonInstanceResource] = _load_team(player_paths)
+	var player_team: Array[PokemonInstanceResource] = _load_team_for_side(player_paths, PokemonInstanceResource.Team.PLAYER, PokemonInstanceResource.ControlType.PLAYER)
 	if player_team.size() != player_paths.size():
 		return {"ok": false, "error": "One or more player instance files could not load"}
 
-	var roster_templates: Array[PokemonInstanceResource] = _load_team(roster_paths())
+	var roster_templates: Array[PokemonInstanceResource] = _load_team(battle_ready_roster_paths())
 	if roster_templates.is_empty():
 		return {"ok": false, "error": "No roster Pokemon available"}
 
@@ -300,21 +319,64 @@ static func _load_team(paths: Array[String]) -> Array[PokemonInstanceResource]:
 	return out
 
 
-static func _discover_roster_paths() -> Array[String]:
+static func _load_team_for_side(paths: Array[String], team: int, control_type: int) -> Array[PokemonInstanceResource]:
+	var out: Array[PokemonInstanceResource] = []
+	for path in paths:
+		var instance: PokemonInstanceResource = load(path) as PokemonInstanceResource
+		if instance == null:
+			push_error("CustomSkirmishBuilder: could not load instance %s" % path)
+			continue
+		out.append(_clone_instance_for_side(instance, team, control_type))
+	return out
+
+
+static func _clone_instance_for_side(template: PokemonInstanceResource, team: int, control_type: int) -> PokemonInstanceResource:
+	var instance := PokemonInstanceResource.new()
+	instance.species = template.species
+	instance.form_index = template.form_index
+	instance.level = template.level
+	instance.current_hp = PokemonInstanceResource.CURRENT_HP_AUTO if template.current_hp == PokemonInstanceResource.CURRENT_HP_AUTO else template.current_hp
+	instance.move_slots = template.move_slots.duplicate()
+	instance.pp_state = template.pp_state.duplicate()
+	instance.team = team
+	instance.control_type = control_type
+	instance.nickname = template.nickname
+	instance.movement_override = template.movement_override
+	instance.recruited = template.recruited
+	instance.runtime_modifiers = template.runtime_modifiers.duplicate(true)
+	instance.temporary_statuses = template.temporary_statuses.duplicate()
+	return instance
+
+
+static func _discover_roster_paths(dir_path: String) -> Array[String]:
 	var out: Array[String] = []
-	var dir: DirAccess = DirAccess.open(ROSTER_DIR)
+	var dir: DirAccess = DirAccess.open(dir_path)
 	if dir == null:
-		push_error("CustomSkirmishBuilder: cannot open %s" % ROSTER_DIR)
 		return out
 	dir.list_dir_begin()
 	var name: String = dir.get_next()
 	while name != "":
 		if not dir.current_is_dir() and name.ends_with(".tres"):
-			out.append("%s%s" % [ROSTER_DIR, name])
+			out.append("%s%s" % [dir_path, name])
 		name = dir.get_next()
 	dir.list_dir_end()
 	out.sort()
 	return out
+
+
+static func _is_battle_ready_path(path: String) -> bool:
+	var instance: PokemonInstanceResource = load(path) as PokemonInstanceResource
+	if instance == null or instance.species == null:
+		return false
+	var form: PokemonFormResource = instance.resolved_form()
+	if form == null or form.sprite_set == null or not form.sprite_set.is_complete():
+		return false
+	if instance.move_slots.is_empty():
+		return false
+	for move in instance.move_slots:
+		if move != null:
+			return true
+	return false
 
 
 ## Walks the map's scene and counts `SpawnPlayer*` / `SpawnEnemy*` anchors

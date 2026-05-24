@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_4l1w7"]
+
+[resource]
+script = ExtResource("1_4l1w7")
+move_id = "feint"
+index_number = 364
+name = "Feint"
+description = "An attack that hits a target trying to protect itself. This also lifts the effects of those moves."
+type = "normal"
+category = 1
+base_power = 40
+accuracy = 100
+pp = 20
+tactical_range_value = 4
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"])

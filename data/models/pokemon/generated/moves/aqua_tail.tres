@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_vcjf1"]
+
+[resource]
+script = ExtResource("1_vcjf1")
+move_id = "aqua_tail"
+index_number = 401
+name = "Aqua Tail"
+description = "The user attacks by swinging its tail as if it were a vicious wave in a raging storm."
+type = "water"
+category = 1
+base_power = 80
+accuracy = 90
+pp = 15
+tactical_range_kind = 1
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC"])

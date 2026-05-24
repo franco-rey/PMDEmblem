@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_7klny"]
+
+[resource]
+script = ExtResource("1_7klny")
+move_id = "growth"
+index_number = 74
+name = "Growth"
+description = "The user's body grows all at once, raising the Attack and Sp. Atk stats."
+type = "normal"
+pp = 18
+tactical_range_kind = 6
+tactical_range_value = 0
+target_alignment = 1
+effect_tags = Array[String](["PMDC.Dungeon.WeatherStackEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.WeatherStackEvent, PMDC"])

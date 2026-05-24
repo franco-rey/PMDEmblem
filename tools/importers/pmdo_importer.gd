@@ -3,14 +3,9 @@ class_name PMDOImporter
 extends RefCounted
 ## PMDODump -> Godot Pokemon resource importer.
 ##
-## Reads JSON from the sibling PMDODump checkout, emits .tres files into
-## `res://data/models/pokemon/generated/`, hand-authors level-50 instance
-## overrides under `overrides/instances/`, and writes a flat report at
-## `import_reports/pokemon_import_report.txt`.
-##
-## Scoped to the M1 species slice (7 Pokemon, 7 signature moves, full type chart).
-## Adding more species in M7 is a matter of extending `PMDOPaths.TARGET_SPECIES`
-## and `PMDOPaths.SIGNATURE_MOVES`.
+## Reads the batch manifest written by `pokemon_batch_packager.py`, then emits
+## .tres files into `res://data/models/pokemon/generated/` and reports under
+## `res://data/models/pokemon/import_reports/`.
 ##
 ## Two ways to invoke it:
 ## 1. From the Godot editor: open `pmdo_importer_editor.gd` in the script editor
@@ -21,24 +16,68 @@ const _SkillMapper: GDScript = preload("res://tools/importers/pmdo_skill_mapper.
 const _Paths: GDScript = preload("res://tools/importers/pmdo_paths.gd")
 const _Validation: GDScript = preload("res://tools/validation/pokemon_validation.gd")
 
+const _LEGACY_DEX_NUMBERS: Dictionary = {
+	"toxicroak": 454,
+	"gardevoir": 282,
+	"lucario": 448,
+	"gallade": 475,
+	"magmortar": 467,
+	"dusclops": 356,
+	"gengar": 94,
+}
+const _LEGACY_TARGET_SPECIES: Array[String] = [
+	"toxicroak",
+	"gardevoir",
+	"lucario",
+	"gallade",
+	"magmortar",
+	"dusclops",
+	"gengar",
+]
+const _LEGACY_SIGNATURE_MOVES: Dictionary = {
+	"toxicroak": "poison_jab",
+	"gardevoir": "moonblast",
+	"lucario": "aura_sphere",
+	"gallade": "psycho_cut",
+	"magmortar": "flamethrower",
+	"dusclops": "shadow_punch",
+	"gengar": "shadow_ball",
+}
+const _LEGACY_MOVEMENT_OVERRIDE: Dictionary = {
+	"toxicroak": 4,
+	"gardevoir": 4,
+	"lucario": 5,
+	"gallade": 3,
+	"magmortar": 5,
+	"dusclops": 3,
+	"gengar": 4,
+}
+
 
 func run() -> void:
 	print_rich("[color=cyan]PMDOImporter: starting import[/color]")
 	_ensure_directories()
 
 	var report: PokemonValidation = _Validation.new()
+	var import_context: Dictionary = _load_import_context()
+	var import_entries: Array = import_context.get("species", [])
+	var source_roots: Dictionary = import_context.get("source_roots", {})
 
-	var type_chart: TypeChartResource = _import_type_chart(report)
-	var sprite_sets: Dictionary = _import_sprite_sets(report)
-	var moves: Dictionary = _import_moves(report)
-	var species_map: Dictionary = _import_species(sprite_sets, moves, report)
-	_author_instances(species_map, moves, report)
+	var type_chart: TypeChartResource = _import_type_chart(report, source_roots)
+	var sprite_sets: Dictionary = _import_sprite_sets(import_entries, report)
+	var moves: Dictionary = _import_moves(import_entries, source_roots, report)
+	var species_map: Dictionary = _import_species(import_entries, sprite_sets, moves, source_roots, report)
+	_author_generated_instances(import_entries, species_map, moves, report)
 
 	var report_path: String = _Paths.REPORT_PATH
 	if report.write(report_path):
 		print_rich("[color=cyan]PMDOImporter: report written to %s[/color]" % report_path)
 	else:
 		push_error("PMDOImporter: failed to write %s" % report_path)
+	if report.write_json(_Paths.REPORT_JSON_PATH):
+		print_rich("[color=cyan]PMDOImporter: JSON report written to %s[/color]" % _Paths.REPORT_JSON_PATH)
+	else:
+		push_error("PMDOImporter: failed to write %s" % _Paths.REPORT_JSON_PATH)
 
 	# Suppress unused warnings for callers that don't care about return values.
 	if type_chart == null:
@@ -58,6 +97,8 @@ func _ensure_directories() -> void:
 		_Paths.GENERATED_FORMS_DIR,
 		_Paths.GENERATED_MOVES_DIR,
 		_Paths.GENERATED_SPRITES_DIR,
+		_Paths.GENERATED_INSTANCES_DIR,
+		_Paths.GENERATED_MANIFESTS_DIR,
 		_Paths.OVERRIDE_INSTANCES_DIR,
 		_Paths.IMPORT_REPORTS_DIR,
 	]
@@ -72,10 +113,10 @@ func _ensure_directories() -> void:
 # Type chart
 # ---------------------------------------------------------------------------
 
-func _import_type_chart(report: PokemonValidation) -> TypeChartResource:
-	var raw: Variant = _read_json_absolute(_Paths.PMDO_UNIVERSAL_PATH)
+func _import_type_chart(report: PokemonValidation, source_roots: Dictionary) -> TypeChartResource:
+	var raw: Variant = _read_json_absolute(_universal_path(source_roots))
 	if raw == null:
-		report.add_error("Could not read Universal.json at %s" % _Paths.PMDO_UNIVERSAL_PATH)
+		report.add_error("Could not read Universal.json at %s" % _universal_path(source_roots))
 		report.set_type_chart_summary(false, 0, 0, [])
 		return null
 
@@ -164,54 +205,55 @@ func _find_element_table_state(node: Variant) -> Dictionary:
 # Sprite sets
 # ---------------------------------------------------------------------------
 
-func _import_sprite_sets(report: PokemonValidation) -> Dictionary:
+func _import_sprite_sets(import_entries: Array, report: PokemonValidation) -> Dictionary:
 	var out: Dictionary = {}
-	for slug in _Paths.TARGET_SPECIES:
-		var sprite_set: PokemonSpriteSetResource = _build_sprite_set(slug, report)
-		var save_path: String = _Paths.generated_sprite_path(slug)
+	for raw_entry in import_entries:
+		if not (raw_entry is Dictionary):
+			continue
+		var entry: Dictionary = raw_entry
+		var project_slug: String = String(entry.get("slug", ""))
+		if project_slug.is_empty():
+			continue
+		var sprite_set: PokemonSpriteSetResource = _build_sprite_set(entry, report)
+		var save_path: String = _Paths.generated_sprite_path_for_project_slug(project_slug)
 		var err: int = ResourceSaver.save(sprite_set, save_path)
 		if err != OK:
-			report.add_error("Failed to save sprite set for %s (err %d)" % [slug, err])
+			report.add_error("Failed to save sprite set for %s (err %d)" % [project_slug, err])
 			continue
-		out[slug] = save_path
+		out[project_slug] = save_path
 	return out
 
 
-func _build_sprite_set(slug: String, report: PokemonValidation) -> PokemonSpriteSetResource:
+func _build_sprite_set(entry: Dictionary, report: PokemonValidation) -> PokemonSpriteSetResource:
 	var sprite_set: PokemonSpriteSetResource = PokemonSpriteSetResource.new()
-	var anim_data_path: String = _Paths.anim_data_path(slug)
-	if ResourceLoader.exists(anim_data_path) or FileAccess.file_exists(anim_data_path):
-		sprite_set.anim_data_path = anim_data_path
-	else:
-		report.add_warning("%s missing AnimData.xml at %s" % [slug, anim_data_path])
-	var idle_path: String = _Paths.sprite_state_path(slug, "idle")
-	var sidecars: Array = [
-		["walk", _Paths.sprite_state_path(slug, "walk")],
-		["hurt", _Paths.sprite_state_path(slug, "hurt")],
-		["sleep", _Paths.sprite_state_path(slug, "sleep")],
-		["hop", _Paths.sprite_state_path(slug, "hop")],
-	]
+	var project_slug: String = String(entry.get("slug", ""))
+	var assets: Dictionary = entry.get("assets", {})
+	var manifest_warnings: Array = entry.get("warnings", [])
+	for warning in manifest_warnings:
+		sprite_set.validation_warnings.append(String(warning))
 
-	if ResourceLoader.exists(idle_path):
-		sprite_set.idle_path = idle_path
-	else:
-		var msg: String = "%s missing idle sprite at %s" % [slug, idle_path]
-		sprite_set.validation_warnings.append(msg)
-		report.add_warning(msg)
+	sprite_set.idle_path = String(assets.get("idle", ""))
+	sprite_set.walk_path = String(assets.get("walk", ""))
+	sprite_set.hurt_path = String(assets.get("hurt", ""))
+	sprite_set.sleep_path = String(assets.get("sleep", ""))
+	sprite_set.hop_path = String(assets.get("hop", ""))
+	sprite_set.anim_data_path = String(assets.get("anim_data", ""))
+	if assets.has("portrait_normal"):
+		sprite_set.portrait_paths = [String(assets["portrait_normal"])]
 
-	for entry in sidecars:
-		var label: String = String(entry[0])
-		var path: String = String(entry[1])
-		if ResourceLoader.exists(path):
-			match label:
-				"walk": sprite_set.walk_path = path
-				"hurt": sprite_set.hurt_path = path
-				"sleep": sprite_set.sleep_path = path
-				"hop": sprite_set.hop_path = path
-		else:
-			var warning: String = "%s missing %s sprite at %s" % [slug, label, path]
-			sprite_set.validation_warnings.append(warning)
-			report.add_warning(warning)
+	for pair in sprite_set.iter_animation_paths():
+		var label: String = String(pair[0])
+		var path: String = String(pair[1])
+		if path.is_empty() or not _res_path_exists(path):
+			var msg: String = "%s missing %s sprite at %s" % [project_slug, label, path]
+			if not sprite_set.validation_warnings.has(msg):
+				sprite_set.validation_warnings.append(msg)
+			report.add_warning(msg)
+	if sprite_set.anim_data_path.is_empty() or not _res_path_exists(sprite_set.anim_data_path):
+		var anim_msg: String = "%s missing AnimData.xml at %s" % [project_slug, sprite_set.anim_data_path]
+		if not sprite_set.validation_warnings.has(anim_msg):
+			sprite_set.validation_warnings.append(anim_msg)
+		report.add_warning(anim_msg)
 
 	return sprite_set
 
@@ -220,25 +262,24 @@ func _build_sprite_set(slug: String, report: PokemonValidation) -> PokemonSprite
 # Moves
 # ---------------------------------------------------------------------------
 
-func _import_moves(report: PokemonValidation) -> Dictionary:
+func _import_moves(import_entries: Array, source_roots: Dictionary, report: PokemonValidation) -> Dictionary:
 	var out: Dictionary = {}
 	var slugs_seen: Dictionary = {}
-	for species_slug in _Paths.SIGNATURE_MOVES.keys():
-		var move_slug: String = String(_Paths.SIGNATURE_MOVES[species_slug])
+	for move_slug in _move_slugs_for_import(import_entries):
 		if slugs_seen.has(move_slug):
 			out[move_slug] = slugs_seen[move_slug]
 			continue
-		var save_path: String = _import_move(move_slug, report)
+		var save_path: String = _import_move(move_slug, source_roots, report)
 		slugs_seen[move_slug] = save_path
 		out[move_slug] = save_path
 	return out
 
 
-func _import_move(slug: String, report: PokemonValidation) -> String:
+func _import_move(slug: String, source_roots: Dictionary, report: PokemonValidation) -> String:
 	var entry := PokemonValidation.MoveEntry.new()
 	entry.slug = slug
 
-	var json_path: String = _Paths.skill_json_path(slug)
+	var json_path: String = _skill_json_path(slug, source_roots)
 	var raw: Variant = _read_json_absolute(json_path)
 	if raw == null:
 		report.add_error("Skill JSON missing or invalid: %s" % json_path)
@@ -308,25 +349,34 @@ func _import_move(slug: String, report: PokemonValidation) -> String:
 # Species + forms
 # ---------------------------------------------------------------------------
 
-func _import_species(sprite_sets: Dictionary, moves: Dictionary, report: PokemonValidation) -> Dictionary:
+func _import_species(import_entries: Array, sprite_sets: Dictionary, moves: Dictionary, source_roots: Dictionary, report: PokemonValidation) -> Dictionary:
 	var out: Dictionary = {}
-	for slug in _Paths.TARGET_SPECIES:
-		var save_path: String = _import_one_species(slug, sprite_sets, moves, report)
+	for raw_entry in import_entries:
+		if not (raw_entry is Dictionary):
+			continue
+		var entry: Dictionary = raw_entry
+		var save_path: String = _import_one_species(entry, sprite_sets, moves, source_roots, report)
 		if not save_path.is_empty():
-			out[slug] = save_path
+			out[String(entry.get("slug", ""))] = save_path
 	return out
 
 
-func _import_one_species(slug: String, sprite_sets: Dictionary, moves: Dictionary, report: PokemonValidation) -> String:
+func _import_one_species(entry_data: Dictionary, sprite_sets: Dictionary, moves: Dictionary, source_roots: Dictionary, report: PokemonValidation) -> String:
 	# `slug` is the bare PMDODump identifier (e.g. "gallade"); `project_slug`
 	# carries the in-project numbered prefix (e.g. "0475_gallade") that every
 	# generated file and every cross-resource reference uses.
-	var project_slug: String = _Paths.project_slug_for(slug)
+	var slug: String = String(entry_data.get("pmdo_slug", ""))
+	var project_slug: String = String(entry_data.get("slug", _Paths.project_slug_for(slug, int(entry_data.get("dex_number", 0)))))
 	var entry := PokemonValidation.SpeciesEntry.new()
 	entry.slug = project_slug
-	entry.signature_move = String(_Paths.SIGNATURE_MOVES.get(slug, ""))
+	entry.status = String(entry_data.get("status", "battle_ready"))
+	entry.disabled_reason = String(entry_data.get("disabled_reason", ""))
+	entry.generation = int(entry_data.get("generation", 0))
+	var default_moves: Array = _entry_move_array(entry_data, "default_moves")
+	if not default_moves.is_empty():
+		entry.signature_move = String(default_moves[0])
 
-	var raw: Variant = _read_json_absolute(_Paths.monster_json_path(slug))
+	var raw: Variant = _read_json_absolute(_monster_json_path(entry_data, source_roots))
 	if raw == null:
 		report.add_error("Monster JSON missing or invalid for %s" % slug)
 		report.add_species(entry)
@@ -346,7 +396,7 @@ func _import_one_species(slug: String, sprite_sets: Dictionary, moves: Dictionar
 	species.skill_group1 = String(obj.get("SkillGroup1", ""))
 	species.skill_group2 = String(obj.get("SkillGroup2", ""))
 
-	var sprite_path: String = String(sprite_sets.get(slug, ""))
+	var sprite_path: String = String(sprite_sets.get(project_slug, ""))
 	var sprite_set: PokemonSpriteSetResource = null
 	if not sprite_path.is_empty() and ResourceLoader.exists(sprite_path):
 		sprite_set = load(sprite_path) as PokemonSpriteSetResource
@@ -390,7 +440,7 @@ func _import_one_species(slug: String, sprite_sets: Dictionary, moves: Dictionar
 		form.intrinsic3 = String(form_dict.get("Intrinsic3", ""))
 		form.sprite_set = sprite_set if i == 0 else null
 
-		var form_save_path: String = _Paths.generated_form_path(slug, i)
+		var form_save_path: String = _Paths.generated_form_path_for_project_slug(project_slug, i)
 		var err: int = ResourceSaver.save(form, form_save_path)
 		if err != OK:
 			report.add_error("Failed to save %s form %d (err %d)" % [slug, i, err])
@@ -424,7 +474,7 @@ func _import_one_species(slug: String, sprite_sets: Dictionary, moves: Dictionar
 	species.shared_skills = _string_skill_list(first_form_dict, "SharedSkills")
 	species.secret_skills = _string_skill_list(first_form_dict, "SecretSkills")
 
-	var save_path: String = _Paths.generated_species_path(slug)
+	var save_path: String = _Paths.generated_species_path_for_project_slug(project_slug)
 	var save_err: int = ResourceSaver.save(species, save_path)
 	if save_err != OK:
 		report.add_error("Failed to save species %s (err %d)" % [slug, save_err])
@@ -443,9 +493,9 @@ func _import_one_species(slug: String, sprite_sets: Dictionary, moves: Dictionar
 	if sprite_set != null:
 		for warning in sprite_set.validation_warnings:
 			entry.sprite_warnings.append(warning)
-	var sig_move_slug: String = String(_Paths.SIGNATURE_MOVES.get(slug, ""))
-	if not sig_move_slug.is_empty() and not moves.has(sig_move_slug):
-		entry.notes.append("signature move %s did not import" % sig_move_slug)
+	for move_slug in default_moves:
+		if not moves.has(String(move_slug)):
+			entry.notes.append("default move %s did not import" % String(move_slug))
 	entry.imported = true
 	report.add_species(entry)
 	return save_path
@@ -467,45 +517,57 @@ func _string_skill_list(form_dict: Dictionary, key: String) -> Array[String]:
 
 
 # ---------------------------------------------------------------------------
-# Instance overrides
+# Generated default instances
 # ---------------------------------------------------------------------------
 
-func _author_instances(species_map: Dictionary, moves: Dictionary, report: PokemonValidation) -> void:
-	for slug in _Paths.TARGET_SPECIES:
-		var species_path: String = String(species_map.get(slug, ""))
+func _author_generated_instances(import_entries: Array, species_map: Dictionary, moves: Dictionary, report: PokemonValidation) -> void:
+	for raw_entry in import_entries:
+		if not (raw_entry is Dictionary):
+			continue
+		var entry: Dictionary = raw_entry
+		if String(entry.get("status", "")) != "battle_ready":
+			continue
+		var slug: String = String(entry.get("pmdo_slug", ""))
+		var project_slug: String = String(entry.get("slug", _Paths.project_slug_for(slug, int(entry.get("dex_number", 0)))))
+		var species_path: String = String(species_map.get(project_slug, ""))
 		if species_path.is_empty():
-			report.add_warning("Skipping instance for %s (species missing)" % slug)
+			report.add_warning("Skipping generated instance for %s (species missing)" % project_slug)
 			continue
 
 		var instance: PokemonInstanceResource = PokemonInstanceResource.new()
 		instance.species = load(species_path) as PokemonSpeciesResource
-		instance.form_index = 0
+		instance.form_index = int(entry.get("default_form_index", 0))
 		instance.level = 50
 		instance.current_hp = PokemonInstanceResource.CURRENT_HP_AUTO
-		instance.movement_override = int(_Paths.LEGACY_MOVEMENT_OVERRIDE.get(slug, 0))
+		instance.movement_override = int(_LEGACY_MOVEMENT_OVERRIDE.get(slug, 0))
+		instance.team = PokemonInstanceResource.Team.NEUTRAL
+		instance.control_type = PokemonInstanceResource.ControlType.AI
 
-		if slug in _Paths.PLAYER_TEAM_SPECIES:
-			instance.team = PokemonInstanceResource.Team.PLAYER
-			instance.control_type = PokemonInstanceResource.ControlType.PLAYER
-		else:
-			instance.team = PokemonInstanceResource.Team.ENEMY
-			instance.control_type = PokemonInstanceResource.ControlType.AI
+		var move_slugs: Array = _entry_move_array(entry, "default_moves")
+		var move_slots: Array[PokemonMoveResource] = []
+		var pp_state: Array[int] = []
+		for move_slug_var in move_slugs:
+			var move_slug: String = String(move_slug_var)
+			var move_path: String = String(moves.get(move_slug, ""))
+			var move: PokemonMoveResource = null
+			if not move_path.is_empty():
+				move = load(move_path) as PokemonMoveResource
+			if move == null:
+				continue
+			move_slots.append(move)
+			pp_state.append(move.pp)
+			if move_slots.size() >= PokemonInstanceResource.MAX_MOVE_SLOTS:
+				break
+		if move_slots.is_empty():
+			report.add_warning("Generated instance for %s has no usable moves" % project_slug)
+			continue
+		instance.move_slots = move_slots
+		instance.pp_state = pp_state
 
-		var move_slug: String = String(_Paths.SIGNATURE_MOVES.get(slug, ""))
-		var move_path: String = String(moves.get(move_slug, ""))
-		var move: PokemonMoveResource = null
-		if not move_path.is_empty():
-			move = load(move_path) as PokemonMoveResource
-		if move != null:
-			instance.move_slots = [move]
-			instance.pp_state = [move.pp]
-		else:
-			report.add_warning("Instance for %s has no move (signature %s missing)" % [slug, move_slug])
-
-		var save_path: String = _Paths.instance_override_path(slug)
+		var save_path: String = _Paths.generated_instance_path_for_project_slug(project_slug)
 		var err: int = ResourceSaver.save(instance, save_path)
 		if err != OK:
-			report.add_error("Failed to save instance %s (err %d)" % [slug, err])
+			report.add_error("Failed to save generated instance %s (err %d)" % [project_slug, err])
 			continue
 		report.record_instance(save_path)
 
@@ -550,3 +612,138 @@ func _dict_field(parent: Variant, key: String) -> Dictionary:
 	if inner is Dictionary:
 		return inner
 	return {}
+
+
+func _load_import_context() -> Dictionary:
+	if FileAccess.file_exists(_Paths.IMPORT_MANIFEST_PATH):
+		var file: FileAccess = FileAccess.open(_Paths.IMPORT_MANIFEST_PATH, FileAccess.READ)
+		if file != null:
+			var parsed: Variant = JSON.parse_string(file.get_as_text())
+			file.close()
+			if parsed is Dictionary:
+				var manifest: Dictionary = parsed
+				var species: Array = manifest.get("species", [])
+				if not species.is_empty():
+					print_rich("[color=cyan]PMDOImporter: using manifest %s (%d entries)[/color]" % [_Paths.IMPORT_MANIFEST_PATH, species.size()])
+					return {
+						"species": species,
+						"source_roots": manifest.get("source_roots", {}),
+					}
+	print_rich("[color=yellow]PMDOImporter: no manifest found; using legacy M1 target list[/color]")
+	return {
+		"species": _legacy_import_entries(),
+		"source_roots": {"pmdo_root": _Paths.PMDO_ROOT},
+	}
+
+
+func _legacy_import_entries() -> Array:
+	var out: Array = []
+	for slug in _LEGACY_TARGET_SPECIES:
+		var dex_number: int = int(_LEGACY_DEX_NUMBERS.get(slug, 0))
+		var project_slug: String = _Paths.project_slug_for(slug, dex_number)
+		var signature_move: String = String(_LEGACY_SIGNATURE_MOVES.get(slug, ""))
+		out.append({
+			"pmdo_slug": slug,
+			"slug": project_slug,
+			"dex_number": dex_number,
+			"display_name": slug.capitalize(),
+			"generation": _generation_from_dex(dex_number),
+			"released": true,
+			"default_form_index": 0,
+			"status": "battle_ready",
+			"disabled_reason": "",
+			"warnings": [],
+			"assets": {
+				"idle": _Paths.sprite_state_path_for_project_slug(project_slug, "idle"),
+				"walk": _Paths.sprite_state_path_for_project_slug(project_slug, "walk"),
+				"hurt": _Paths.sprite_state_path_for_project_slug(project_slug, "hurt"),
+				"sleep": _Paths.sprite_state_path_for_project_slug(project_slug, "sleep"),
+				"hop": _Paths.sprite_state_path_for_project_slug(project_slug, "hop"),
+				"anim_data": _Paths.anim_data_path_for_project_slug(project_slug),
+				"portrait_normal": "res://assets/textures/pokemon/portraits/%s/Normal.png" % project_slug,
+			},
+			"moves": {
+				"import_moves": [signature_move],
+				"default_moves": [signature_move],
+			},
+		})
+	return out
+
+
+func _move_slugs_for_import(import_entries: Array) -> Array[String]:
+	var out: Array[String] = []
+	var seen: Dictionary = {}
+	for raw_entry in import_entries:
+		if not (raw_entry is Dictionary):
+			continue
+		var entry: Dictionary = raw_entry
+		var moves_info: Variant = entry.get("moves", {})
+		if not (moves_info is Dictionary):
+			continue
+		for key in ["import_moves", "default_moves"]:
+			var arr: Variant = (moves_info as Dictionary).get(key, [])
+			if not (arr is Array):
+				continue
+			for move_slug_var in arr:
+				var move_slug: String = String(move_slug_var)
+				if move_slug.is_empty() or seen.has(move_slug):
+					continue
+				seen[move_slug] = true
+				out.append(move_slug)
+	return out
+
+
+func _entry_move_array(entry: Dictionary, key: String) -> Array:
+	var moves_info: Variant = entry.get("moves", {})
+	if moves_info is Dictionary:
+		var arr: Variant = (moves_info as Dictionary).get(key, [])
+		if arr is Array:
+			return arr
+	return []
+
+
+func _pmdo_root(source_roots: Dictionary) -> String:
+	return String(source_roots.get("pmdo_root", _Paths.PMDO_ROOT))
+
+
+func _universal_path(source_roots: Dictionary) -> String:
+	return "%s/DumpAsset/Data/Universal.json" % _pmdo_root(source_roots)
+
+
+func _skill_json_path(slug: String, source_roots: Dictionary) -> String:
+	return "%s/DumpAsset/Data/Skill/%s.json" % [_pmdo_root(source_roots), slug]
+
+
+func _monster_json_path(entry: Dictionary, source_roots: Dictionary) -> String:
+	var source: Variant = entry.get("source", {})
+	if source is Dictionary:
+		var rel_path: String = String((source as Dictionary).get("monster_json", ""))
+		if not rel_path.is_empty():
+			return "%s/%s" % [_pmdo_root(source_roots), rel_path]
+	return "%s/DumpAsset/Data/Monster/%s.json" % [_pmdo_root(source_roots), String(entry.get("pmdo_slug", ""))]
+
+
+func _res_path_exists(path: String) -> bool:
+	if path.is_empty():
+		return false
+	return ResourceLoader.exists(path) or FileAccess.file_exists(path)
+
+
+func _generation_from_dex(dex_number: int) -> int:
+	if dex_number <= 151:
+		return 1
+	if dex_number <= 251:
+		return 2
+	if dex_number <= 386:
+		return 3
+	if dex_number <= 493:
+		return 4
+	if dex_number <= 649:
+		return 5
+	if dex_number <= 721:
+		return 6
+	if dex_number <= 809:
+		return 7
+	if dex_number <= 905:
+		return 8
+	return 9

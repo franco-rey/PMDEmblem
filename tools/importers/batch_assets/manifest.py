@@ -1,0 +1,45 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any
+
+
+MANIFEST_PATH = Path("data/models/pokemon/generated/manifests/pokemon_import_manifest.json")
+REPORT_JSON_PATH = Path("data/models/pokemon/import_reports/pokemon_import_report.json")
+
+
+def write_json(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as handle:
+        json.dump(payload, handle, indent=2, sort_keys=True)
+        handle.write("\n")
+
+
+def render_text_report(payload: dict[str, Any]) -> str:
+    species = payload.get("species", [])
+    status_counts: dict[str, int] = {}
+    for entry in species:
+        status = str(entry.get("status", "unknown"))
+        status_counts[status] = status_counts.get(status, 0) + 1
+
+    lines = [
+        "Pokemon Batch Import Preflight",
+        "==============================",
+        f"Generated: {payload.get('generated_at', '')}",
+        f"Target species: {len(species)}",
+    ]
+    for status in sorted(status_counts):
+        lines.append(f"{status}: {status_counts[status]}")
+    lines.append("")
+
+    for entry in species:
+        line = f"- {entry.get('slug', '?')} ({entry.get('display_name', '?')}) {entry.get('status', '?')}"
+        disabled_reason = entry.get("disabled_reason", "")
+        if disabled_reason:
+            line += f" [{disabled_reason}]"
+        lines.append(line)
+        for warning in entry.get("warnings", []):
+            lines.append(f"    warning: {warning}")
+    return "\n".join(lines) + "\n"
+

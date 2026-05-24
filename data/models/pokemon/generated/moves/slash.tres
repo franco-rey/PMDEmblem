@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_y3ahs"]
+
+[resource]
+script = ExtResource("1_y3ahs")
+move_id = "slash"
+index_number = 163
+name = "Slash"
+description = "The target is attacked with a slash of claws or blades. Critical hits land more easily."
+type = "normal"
+category = 1
+base_power = 75
+accuracy = 100
+pp = 18
+tactical_range_kind = 1
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC"])

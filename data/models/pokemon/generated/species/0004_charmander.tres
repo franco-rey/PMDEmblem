@@ -1,0 +1,54 @@
+[gd_resource type="Resource" script_class="PokemonSpeciesResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_2oq7b"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/0004_charmander__0.tres" id="2_y7crd"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_species_resource.gd" id="3_03jan"]
+
+[resource]
+script = ExtResource("3_03jan")
+species_id = "0004_charmander"
+dex_number = 4
+canonical_name = "Charmander"
+forms = Array[ExtResource("1_2oq7b")]([ExtResource("2_y7crd")])
+level_skills = Array[Dictionary]([{
+"level": 1,
+"skill": "scratch"
+}, {
+"level": 1,
+"skill": "growl"
+}, {
+"level": 7,
+"skill": "ember"
+}, {
+"level": 10,
+"skill": "smokescreen"
+}, {
+"level": 16,
+"skill": "dragon_rage"
+}, {
+"level": 19,
+"skill": "scary_face"
+}, {
+"level": 25,
+"skill": "fire_fang"
+}, {
+"level": 28,
+"skill": "flame_burst"
+}, {
+"level": 34,
+"skill": "slash"
+}, {
+"level": 37,
+"skill": "flamethrower"
+}, {
+"level": 43,
+"skill": "fire_spin"
+}, {
+"level": 46,
+"skill": "inferno"
+}])
+teach_skills = Array[String](["cut", "flamethrower", "strength", "dig", "toxic", "double_team", "fire_blast", "rest", "protect", "attract", "return", "frustration", "iron_tail", "hidden_power", "sunny_day", "rock_smash", "facade", "focus_punch", "brick_break", "secret_power", "overheat", "aerial_ace", "dragon_claw", "swords_dance", "rock_slide", "substitute", "endure", "swagger", "sleep_talk", "will_o_wisp", "rock_tomb", "natural_gift", "fling", "shadow_claw", "captivate", "hone_claws", "flame_charge", "round", "echoed_voice", "incinerate", "confide", "power_up_punch"])
+shared_skills = Array[String](["swords_dance", "bite", "rock_slide", "belly_drum", "outrage", "ancient_power", "beat_up", "dragon_dance", "metal_claw", "crunch", "flare_blitz", "dragon_rush", "counter", "focus_punch", "dragon_pulse", "air_cutter"])
+secret_skills = Array[String](["mega_punch", "fire_punch", "swords_dance", "mega_kick", "body_slam", "double_edge", "counter", "seismic_toss", "mimic", "defense_curl", "swift", "rock_slide", "substitute", "snore", "mud_slap", "endure", "swagger", "fury_cutter", "sleep_talk", "dynamic_punch", "thunder_punch", "heat_wave", "headbutt", "fire_pledge", "outrage", "iron_tail", "focus_punch", "dragon_pulse"])
+skill_group1 = "monster"
+skill_group2 = "dragon"

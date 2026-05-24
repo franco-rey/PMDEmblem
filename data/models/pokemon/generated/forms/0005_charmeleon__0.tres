@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="PokemonFormResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_cx8a1"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/sprites/0005_charmeleon.tres" id="2_imcn6"]
+
+[resource]
+script = ExtResource("1_cx8a1")
+species_id = "0005_charmeleon"
+generation = 6
+type1 = "fire"
+base_hp = 58
+base_atk = 64
+base_def = 58
+base_spa = 80
+base_spd = 65
+base_speed = 80
+height = 1.1
+weight = 19.0
+gender_weights = Vector3i(0, 7, 1)
+exp_table = "medium_slow"
+join_rate = -10
+sprite_set = ExtResource("2_imcn6")
+intrinsic1 = "blaze"
+intrinsic2 = "none"
+intrinsic3 = "solar_power"

@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="PokemonFormResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_c8nw6"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/sprites/0004_charmander.tres" id="2_fhogm"]
+
+[resource]
+script = ExtResource("1_c8nw6")
+species_id = "0004_charmander"
+generation = 6
+type1 = "fire"
+base_hp = 39
+base_atk = 52
+base_def = 43
+base_spa = 60
+base_spd = 50
+base_speed = 65
+height = 0.6
+weight = 8.5
+gender_weights = Vector3i(0, 7, 1)
+exp_table = "medium_slow"
+join_rate = 20
+sprite_set = ExtResource("2_fhogm")
+intrinsic1 = "blaze"
+intrinsic2 = "none"
+intrinsic3 = "solar_power"

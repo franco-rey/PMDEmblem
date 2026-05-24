@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_2rvor"]
+
+[resource]
+script = ExtResource("1_2rvor")
+move_id = "bone_rush"
+index_number = 198
+name = "Bone Rush"
+description = "The user strikes the target with a hard bone five times in a row."
+type = "ground"
+category = 1
+base_power = 20
+accuracy = 50
+pp = 18
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"])

@@ -43,12 +43,15 @@ func _setup_lobby() -> void:
 	if lobby == null:
 		return
 	root.add_child(lobby)
-	await process_frame
+	await _resize_lobby(Vector2(1280, 900))
 	_assert_true(lobby.get_node_or_null("LayoutMargin/LobbyLayout/PlayerTeamTray") != null, "player tray exists on the top border")
 	_assert_true(lobby.get_node_or_null("LayoutMargin/LobbyLayout/EnemyTeamTray") != null, "enemy tray exists on the bottom border")
 	_assert_true(lobby.get_node_or_null("LayoutMargin/LobbyLayout/MiddleLayout/RosterPanel") != null, "roster panel exists between trays")
 	_assert_true(lobby.find_child("PlayAgainButton", true, false) != null, "summary exposes Play Again")
 	_assert_true(lobby.find_child("BackToLobbyButton", true, false) != null, "summary exposes Back to Lobby")
+	_check_responsive_layout("small", false)
+	await _resize_lobby(Vector2(1980, 1200))
+	_check_responsive_layout("wide", true)
 
 
 func _check_roster_portraits() -> void:
@@ -81,6 +84,58 @@ func _check_button_mouse_routing() -> void:
 		_assert_true(_non_button_children_ignore_mouse(enemy_slot), "enemy slot contents do not steal mouse input")
 
 
+func _resize_lobby(target_size: Vector2) -> void:
+	if lobby == null:
+		return
+	lobby.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	lobby.custom_minimum_size = Vector2.ZERO
+	lobby.size = target_size
+	await process_frame
+	await process_frame
+	await process_frame
+
+
+func _check_responsive_layout(label: String, expect_wide: bool) -> void:
+	if lobby == null:
+		return
+	var roster_grid := lobby.find_child("RosterGrid", true, false) as GridContainer
+	_assert_true(roster_grid != null, "%s roster grid exists for layout check" % label)
+	if roster_grid == null:
+		return
+	var roster_scroll := lobby.find_child("RosterScroll", true, false) as ScrollContainer
+	_assert_true(roster_scroll != null, "%s roster scroll exists for layout check" % label)
+	if roster_scroll == null:
+		return
+	var budget: float = float(lobby.call("_roster_width_budget"))
+	var available_width: float = minf(budget, roster_scroll.size.x) if roster_scroll.size.x > 1.0 else budget
+	var expected_columns: int = clampi(int(floor((available_width + SkirmishLobby.GRID_GAP) / (SkirmishLobby.CELL_SIZE.x + SkirmishLobby.GRID_GAP))), SkirmishLobby.GRID_MIN_COLUMNS, SkirmishLobby.GRID_MAX_COLUMNS)
+	_assert_true(roster_grid.columns == expected_columns, "%s roster grid columns use available width" % label)
+	_assert_true((roster_grid.columns > 8) == expect_wide, "%s roster column count matches layout mode" % label)
+	_assert_control_inside_lobby("PlayerTeamTray", label)
+	_assert_control_inside_lobby("EnemyTeamTray", label)
+	_assert_control_inside_lobby("MiddleLayout", label)
+	_assert_control_inside_lobby("SetupPanel", label)
+	_assert_control_inside_lobby("RosterPanel", label)
+	_assert_control_inside_lobby("DetailsPanel", label)
+	_assert_control_inside_lobby("PlayerSlot8", label)
+	_assert_control_inside_lobby("EnemySlot8", label)
+	var grid_right: float = roster_grid.global_position.x + roster_grid.size.x
+	var scroll_right: float = roster_scroll.global_position.x + roster_scroll.size.x
+	_assert_true(grid_right <= scroll_right + 1.0, "%s roster grid stays inside scroll width" % label)
+
+
+func _assert_control_inside_lobby(node_name: String, label: String) -> void:
+	if lobby == null:
+		return
+	var control := lobby.find_child(node_name, true, false) as Control
+	_assert_true(control != null, "%s %s exists" % [label, node_name])
+	if control == null:
+		return
+	var control_right: float = control.global_position.x + control.size.x
+	var lobby_right: float = lobby.global_position.x + lobby.size.x
+	_assert_true(control_right <= lobby_right + 1.0, "%s %s stays inside lobby width" % [label, node_name])
+
+
 func _check_active_side_and_direct_adds() -> void:
 	if lobby == null:
 		return
@@ -98,6 +153,7 @@ func _check_active_side_and_direct_adds() -> void:
 		first_roster_button.pressed.emit()
 	await process_frame
 	_assert_true(lobby.get_player_team_paths().size() == 1, "player team has one after player-mode add")
+	_assert_slot_name_visible("PlayerSlot1", "player occupied slot shows name")
 
 	var enemy_slot := lobby.find_child("EnemySlot1", true, false) as Button
 	if enemy_slot != null:
@@ -108,12 +164,28 @@ func _check_active_side_and_direct_adds() -> void:
 		second_roster_button.pressed.emit()
 	await process_frame
 	_assert_true(lobby.get_enemy_team_paths().size() == 1, "enemy team has one after enemy-mode add")
+	_assert_slot_name_visible("EnemySlot1", "enemy occupied slot shows name")
 
 	lobby.activate_player_team()
 	if first_roster_button != null:
 		first_roster_button.pressed.emit()
 	await process_frame
 	_assert_true(lobby.get_player_team_paths().size() == 2, "duplicates are allowed")
+
+
+func _assert_slot_name_visible(slot_name: String, label: String) -> void:
+	if lobby == null:
+		return
+	var slot := lobby.find_child(slot_name, true, false) as Button
+	_assert_true(slot != null, "%s slot exists" % label)
+	if slot == null:
+		return
+	var name_label := slot.find_child("NameLabel", true, false) as Label
+	_assert_true(name_label != null, "%s label exists" % label)
+	if name_label == null:
+		return
+	_assert_true(not name_label.text.strip_edges().is_empty(), "%s label has text" % label)
+	_assert_true(name_label.size.x > 24.0, "%s label has visible width" % label)
 
 
 func _check_duplicate_cap() -> void:

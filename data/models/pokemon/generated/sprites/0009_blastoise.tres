@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PokemonSpriteSetResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_sprite_set_resource.gd" id="1_tt42v"]
+
+[resource]
+script = ExtResource("1_tt42v")
+idle_path = "res://assets/textures/actor/pokemon/0009_blastoise/idle.png"
+walk_path = "res://assets/textures/actor/pokemon/0009_blastoise/walk.png"
+hurt_path = "res://assets/textures/actor/pokemon/0009_blastoise/hurt.png"
+sleep_path = "res://assets/textures/actor/pokemon/0009_blastoise/sleep.png"
+hop_path = "res://assets/textures/actor/pokemon/0009_blastoise/hop.png"
+anim_data_path = "res://assets/textures/actor/pokemon/0009_blastoise/AnimData.xml"
+portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0009_blastoise/Normal.png"])

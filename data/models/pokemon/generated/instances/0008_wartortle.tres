@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PokemonInstanceResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_nhok5"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/skull_bash.tres" id="2_45enj"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/iron_defense.tres" id="3_d1d68"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/rain_dance.tres" id="4_7ofg8"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/hydro_pump.tres" id="5_vgvqf"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_instance_resource.gd" id="6_rfcij"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/species/0008_wartortle.tres" id="7_0e8bj"]
+
+[resource]
+script = ExtResource("6_rfcij")
+species = ExtResource("7_0e8bj")
+level = 50
+move_slots = Array[ExtResource("1_nhok5")]([ExtResource("2_45enj"), ExtResource("3_d1d68"), ExtResource("4_7ofg8"), ExtResource("5_vgvqf")])
+pp_state = Array[int]([14, 14, 10, 8])
+team = 2
+control_type = 1

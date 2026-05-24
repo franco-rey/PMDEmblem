@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="PokemonFormResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_xr33u"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/sprites/0008_wartortle.tres" id="2_6pehm"]
+
+[resource]
+script = ExtResource("1_xr33u")
+species_id = "0008_wartortle"
+generation = 6
+type1 = "water"
+base_hp = 59
+base_atk = 63
+base_def = 80
+base_spa = 65
+base_spd = 80
+base_speed = 58
+height = 1.0
+weight = 22.5
+gender_weights = Vector3i(0, 7, 1)
+exp_table = "medium_slow"
+join_rate = -10
+sprite_set = ExtResource("2_6pehm")
+intrinsic1 = "torrent"
+intrinsic2 = "none"
+intrinsic3 = "rain_dish"

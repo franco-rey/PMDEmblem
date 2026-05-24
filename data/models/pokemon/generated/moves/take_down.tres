@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_ruw1u"]
+
+[resource]
+script = ExtResource("1_ruw1u")
+move_id = "take_down"
+index_number = 36
+name = "Take Down"
+description = "A reckless, full-body charge attack for slamming into the target. This also damages the user a little."
+type = "normal"
+category = 1
+base_power = 80
+accuracy = 80
+pp = 17
+tactical_range_value = 4
+target_alignment = 6
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.HPRecoilEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence", "PMDC.Dungeon.HPRecoilEvent, PMDC"])
