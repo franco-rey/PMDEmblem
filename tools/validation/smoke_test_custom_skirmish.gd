@@ -1,11 +1,11 @@
 extends SceneTree
 ## Headless smoke test for M4 R1 custom skirmishes.
 ##
-## Validates the inline custom skirmish builder against the spec in
+## Validates the custom skirmish builder and M5.5 lobby entrypoint against the spec in
 ## `plan/milestones/M4_R1_custom_skirmishes.md`:
 ##
-##   - The main scene exposes the premade dropdown + Launch button alongside
-##     the inline custom builder controls.
+##   - The main scene exposes the premade dropdown + Launch button and opens
+##     the dedicated SkirmishLobby for custom setup.
 ##   - `CustomSkirmishBuilder` lists the 7 current Pokemon and the `test_arena`
 ##     map; `test_arena` ships >= 8 player and 8 enemy anchors.
 ##   - 1v1 and 8v8 (with duplicates) custom builds produce loader-ready
@@ -73,29 +73,17 @@ func _check_main_scene_controls() -> void:
 	_assert_true(instance.get_node_or_null("UI/MapSelector/SkirmishMenu/LaunchButton") != null, "main scene keeps premade LaunchButton")
 
 	var toggle: Button = instance.get_node_or_null("UI/MapSelector/SkirmishMenu/CustomToggleButton") as Button
-	var builder: Control = instance.get_node_or_null("UI/MapSelector/SkirmishMenu/CustomBuilder") as Control
+	var lobby: Control = instance.get_node_or_null("UI/SkirmishLobby") as Control
+	var map_selector: Control = instance.get_node_or_null("UI/MapSelector") as Control
 	_assert_true(toggle != null, "main scene has CustomToggleButton")
-	_assert_true(builder != null, "main scene has CustomBuilder container")
-	_assert_true(builder != null and not builder.visible, "CustomBuilder is hidden by default")
-	if toggle != null and builder != null:
+	_assert_true(lobby != null, "main scene has dedicated SkirmishLobby")
+	_assert_true(lobby != null and not lobby.visible, "SkirmishLobby is hidden by default")
+	if toggle != null and lobby != null and map_selector != null:
 		toggle.emit_signal("pressed")
-		_assert_true(builder.visible, "CustomToggleButton press reveals the inline builder")
-
-	for path in [
-		"UI/MapSelector/SkirmishMenu/CustomBuilder/PlayerTeamRow/PlayerPicker",
-		"UI/MapSelector/SkirmishMenu/CustomBuilder/EnemyTeamRow/EnemyPicker",
-		"UI/MapSelector/SkirmishMenu/CustomBuilder/MapPicker",
-		"UI/MapSelector/SkirmishMenu/CustomBuilder/SeedInput",
-		"UI/MapSelector/SkirmishMenu/CustomBuilder/LaunchCustomButton",
-	]:
-		_assert_true(instance.get_node_or_null(path) != null, "main scene exposes %s" % path)
-
-	var player_picker: OptionButton = instance.get_node_or_null("UI/MapSelector/SkirmishMenu/CustomBuilder/PlayerTeamRow/PlayerPicker") as OptionButton
-	var enemy_picker: OptionButton = instance.get_node_or_null("UI/MapSelector/SkirmishMenu/CustomBuilder/EnemyTeamRow/EnemyPicker") as OptionButton
-	var map_picker: OptionButton = instance.get_node_or_null("UI/MapSelector/SkirmishMenu/CustomBuilder/MapPicker") as OptionButton
-	_assert_true(player_picker != null and player_picker.item_count >= EXPECTED_ROSTER.size(), "PlayerPicker populated with at least %d roster entries" % EXPECTED_ROSTER.size())
-	_assert_true(enemy_picker != null and enemy_picker.item_count >= EXPECTED_ROSTER.size(), "EnemyPicker populated with at least %d roster entries" % EXPECTED_ROSTER.size())
-	_assert_true(map_picker != null and map_picker.item_count >= 1, "MapPicker populated with at least one map")
+		await process_frame
+		_assert_true(lobby.visible, "CustomToggleButton press opens SkirmishLobby")
+		_assert_true(not map_selector.visible, "opening SkirmishLobby hides the compact menu")
+		_assert_true(lobby.get_roster_entries().size() >= EXPECTED_ROSTER.size(), "SkirmishLobby sees at least %d roster entries" % EXPECTED_ROSTER.size())
 
 	instance.queue_free()
 	await process_frame

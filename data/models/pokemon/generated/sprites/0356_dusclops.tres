@@ -10,3 +10,4 @@ hurt_path = "res://assets/textures/actor/pokemon/0356_dusclops/hurt.png"
 sleep_path = "res://assets/textures/actor/pokemon/0356_dusclops/sleep.png"
 hop_path = "res://assets/textures/actor/pokemon/0356_dusclops/hop.png"
 anim_data_path = "res://assets/textures/actor/pokemon/0356_dusclops/AnimData.xml"
+portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0356_dusclops/Normal.png"])

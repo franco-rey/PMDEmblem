@@ -10,3 +10,4 @@ hurt_path = "res://assets/textures/actor/pokemon/0475_gallade/hurt.png"
 sleep_path = "res://assets/textures/actor/pokemon/0475_gallade/sleep.png"
 hop_path = "res://assets/textures/actor/pokemon/0475_gallade/hop.png"
 anim_data_path = "res://assets/textures/actor/pokemon/0475_gallade/AnimData.xml"
+portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0475_gallade/Normal.png"])
