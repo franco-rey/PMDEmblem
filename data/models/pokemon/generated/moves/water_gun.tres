@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_vqney"]
+
+[resource]
+script = ExtResource("1_vqney")
+move_id = "water_gun"
+index_number = 55
+name = "Water Gun"
+description = "The target is blasted with a forceful shot of water."
+type = "water"
+category = 2
+base_power = 35
+accuracy = 100
+pp = 19
+tactical_range_kind = 3
+tactical_range_value = 6
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC"])

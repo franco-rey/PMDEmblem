@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_q4xmj"]
+
+[resource]
+script = ExtResource("1_q4xmj")
+move_id = "wing_attack"
+index_number = 17
+name = "Wing Attack"
+description = "The target is struck with large, imposing wings spread wide to inflict damage."
+type = "flying"
+category = 1
+base_power = 50
+accuracy = 100
+pp = 16
+tactical_range_value = 2
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"])

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_u2g6b"]
+
+[resource]
+script = ExtResource("1_u2g6b")
+move_id = "vine_whip"
+index_number = 22
+name = "Vine Whip"
+description = "The target is struck with slender, whiplike vines to inflict damage."
+type = "grass"
+category = 1
+base_power = 45
+accuracy = 100
+pp = 20
+tactical_range_kind = 1
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC"])

@@ -1,0 +1,88 @@
+[gd_resource type="Resource" script_class="PokemonSpeciesResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_s4anc"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/0006_charizard__0.tres" id="2_qx3pb"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/0006_charizard__1.tres" id="3_wtqn1"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/0006_charizard__2.tres" id="4_c12qf"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/0006_charizard__3.tres" id="5_eychg"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_species_resource.gd" id="6_wxqdq"]
+
+[resource]
+script = ExtResource("6_wxqdq")
+species_id = "0006_charizard"
+dex_number = 6
+canonical_name = "Charizard"
+forms = Array[ExtResource("1_s4anc")]([ExtResource("2_qx3pb"), ExtResource("3_wtqn1"), ExtResource("4_c12qf"), ExtResource("5_eychg")])
+level_skills = Array[Dictionary]([{
+"level": 1,
+"skill": "flare_blitz"
+}, {
+"level": 1,
+"skill": "heat_wave"
+}, {
+"level": 1,
+"skill": "dragon_claw"
+}, {
+"level": 1,
+"skill": "shadow_claw"
+}, {
+"level": 1,
+"skill": "air_slash"
+}, {
+"level": 1,
+"skill": "scratch"
+}, {
+"level": 1,
+"skill": "growl"
+}, {
+"level": 1,
+"skill": "ember"
+}, {
+"level": 1,
+"skill": "smokescreen"
+}, {
+"level": 7,
+"skill": "ember"
+}, {
+"level": 10,
+"skill": "smokescreen"
+}, {
+"level": 17,
+"skill": "dragon_rage"
+}, {
+"level": 21,
+"skill": "scary_face"
+}, {
+"level": 28,
+"skill": "fire_fang"
+}, {
+"level": 32,
+"skill": "flame_burst"
+}, {
+"level": 36,
+"skill": "wing_attack"
+}, {
+"level": 41,
+"skill": "slash"
+}, {
+"level": 47,
+"skill": "flamethrower"
+}, {
+"level": 56,
+"skill": "fire_spin"
+}, {
+"level": 62,
+"skill": "inferno"
+}, {
+"level": 71,
+"skill": "heat_wave"
+}, {
+"level": 77,
+"skill": "flare_blitz"
+}])
+teach_skills = Array[String](["cut", "fly", "roar", "flamethrower", "hyper_beam", "strength", "earthquake", "dig", "toxic", "double_team", "fire_blast", "rest", "protect", "steel_wing", "attract", "return", "frustration", "iron_tail", "hidden_power", "sunny_day", "rock_smash", "facade", "focus_punch", "brick_break", "secret_power", "overheat", "aerial_ace", "dragon_claw", "swords_dance", "solar_beam", "rock_slide", "substitute", "endure", "swagger", "sleep_talk", "will_o_wisp", "rock_tomb", "roost", "natural_gift", "fling", "dragon_pulse", "focus_blast", "giga_impact", "shadow_claw", "defog", "captivate", "hone_claws", "flame_charge", "round", "echoed_voice", "sky_drop", "incinerate", "bulldoze", "dragon_tail", "confide", "power_up_punch"])
+shared_skills = Array[String](["swords_dance", "bite", "rock_slide", "belly_drum", "outrage", "ancient_power", "beat_up", "dragon_dance", "metal_claw", "crunch", "flare_blitz", "dragon_rush", "counter", "focus_punch", "dragon_pulse", "air_cutter"])
+secret_skills = Array[String](["mega_punch", "fire_punch", "swords_dance", "mega_kick", "body_slam", "double_edge", "counter", "seismic_toss", "mimic", "defense_curl", "swift", "rock_slide", "substitute", "snore", "mud_slap", "endure", "swagger", "fury_cutter", "sleep_talk", "dynamic_punch", "blast_burn", "thunder_punch", "outrage", "twister", "heat_wave", "air_cutter", "ominous_wind", "headbutt", "tailwind", "fire_pledge", "iron_tail", "roost", "dragon_pulse", "focus_punch"])
+evolution_from = "charmeleon"
+skill_group1 = "monster"
+skill_group2 = "dragon"

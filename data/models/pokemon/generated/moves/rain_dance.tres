@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_vif2h"]
+
+[resource]
+script = ExtResource("1_vif2h")
+move_id = "rain_dance"
+index_number = 240
+name = "Rain Dance"
+description = "The user summons a heavy rain on the floor, powering up Water-type moves."
+type = "water"
+pp = 10
+tactical_range_kind = 6
+tactical_range_value = 0
+target_alignment = 1
+effect_tags = Array[String](["PMDC.Dungeon.GiveMapStatusEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.GiveMapStatusEvent, PMDC"])

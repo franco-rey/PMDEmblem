@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PokemonSpriteSetResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_sprite_set_resource.gd" id="1_j4mjd"]
+
+[resource]
+script = ExtResource("1_j4mjd")
+idle_path = "res://assets/textures/actor/pokemon/0002_ivysaur/idle.png"
+walk_path = "res://assets/textures/actor/pokemon/0002_ivysaur/walk.png"
+hurt_path = "res://assets/textures/actor/pokemon/0002_ivysaur/hurt.png"
+sleep_path = "res://assets/textures/actor/pokemon/0002_ivysaur/sleep.png"
+hop_path = "res://assets/textures/actor/pokemon/0002_ivysaur/hop.png"
+anim_data_path = "res://assets/textures/actor/pokemon/0002_ivysaur/AnimData.xml"
+portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0002_ivysaur/Normal.png"])

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_vxpyi"]
+
+[resource]
+script = ExtResource("1_vxpyi")
+move_id = "scary_face"
+index_number = 184
+name = "Scary Face"
+description = "The user frightens the target with a scary face to harshly lower its Movement Speed."
+type = "normal"
+accuracy = 70
+pp = 16
+tactical_range_kind = 5
+tactical_range_value = 2
+effect_tags = Array[String](["PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.StatusStackBattleEvent, PMDC"])

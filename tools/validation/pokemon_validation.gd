@@ -21,6 +21,9 @@ class SpeciesEntry:
 	var sprite_warnings: Array[String] = []
 	var notes: Array[String] = []
 	var imported: bool = false
+	var status: String = ""
+	var disabled_reason: String = ""
+	var generation: int = 0
 
 
 class MoveEntry:
@@ -104,6 +107,25 @@ func write(path: String) -> bool:
 	return true
 
 
+func write_json(path: String) -> bool:
+	var dir_path: String = path.get_base_dir()
+	if not DirAccess.dir_exists_absolute(dir_path):
+		var err: int = DirAccess.make_dir_recursive_absolute(dir_path)
+		if err != OK:
+			push_error("PokemonValidation: failed to create %s (err %d)" % [dir_path, err])
+			return false
+
+	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		push_error("PokemonValidation: failed to open %s for writing" % path)
+		return false
+
+	file.store_string(JSON.stringify(_json_payload(), "\t"))
+	file.store_string("\n")
+	file.close()
+	return true
+
+
 func _render() -> String:
 	var out: PackedStringArray = PackedStringArray()
 	out.append("Pokemon Import Report")
@@ -111,7 +133,7 @@ func _render() -> String:
 	out.append("Started: %s" % run_started_at)
 	out.append("Species imported: %d" % _imported_species_count())
 	out.append("Moves imported: %d" % _imported_moves_count())
-	out.append("Instance overrides written: %d" % instance_paths_written.size())
+	out.append("Instance templates written: %d" % instance_paths_written.size())
 	out.append("Errors: %d" % errors.size())
 	out.append("Aggregate warnings: %d" % aggregate_warnings.size())
 	out.append("")
@@ -151,6 +173,10 @@ func _render() -> String:
 			])
 		if not entry.signature_move.is_empty():
 			out.append("    signature move: %s" % entry.signature_move)
+		if not entry.status.is_empty():
+			out.append("    status: %s" % entry.status)
+		if not entry.disabled_reason.is_empty():
+			out.append("    disabled reason: %s" % entry.disabled_reason)
 		for warn in entry.sprite_warnings:
 			out.append("    sprite warning: %s" % warn)
 		for note in entry.notes:
@@ -179,7 +205,7 @@ func _render() -> String:
 	out.append("")
 
 	if not instance_paths_written.is_empty():
-		out.append("Instance overrides")
+		out.append("Instance templates")
 		out.append("------------------")
 		for inst in instance_paths_written:
 			out.append("- %s" % inst)
@@ -216,3 +242,83 @@ func _imported_moves_count() -> int:
 		if move.imported:
 			n += 1
 	return n
+
+
+func _json_payload() -> Dictionary:
+	return {
+		"schema_version": 1,
+		"generated_at": run_started_at,
+		"summary": {
+			"species_imported": _imported_species_count(),
+			"moves_imported": _imported_moves_count(),
+			"instances_written": instance_paths_written.size(),
+			"errors": errors.size(),
+			"warnings": aggregate_warnings.size(),
+			"status_counts": _status_counts(),
+		},
+		"type_chart": {
+			"loaded": type_chart_loaded,
+			"type_count": type_count,
+			"matchup_size": matchup_size,
+			"effectiveness_buckets": effectiveness_buckets,
+		},
+		"species": _species_json(),
+		"moves": _moves_json(),
+		"instance_paths_written": instance_paths_written,
+		"warnings": aggregate_warnings,
+		"errors": errors,
+	}
+
+
+func _species_json() -> Array:
+	var out: Array = []
+	for entry in species_entries:
+		var stats: Array[int] = []
+		for value in entry.base_stats:
+			stats.append(int(value))
+		out.append({
+			"slug": entry.slug,
+			"dex": entry.dex,
+			"canonical_name": entry.canonical_name,
+			"generation": entry.generation,
+			"type1": entry.type1,
+			"type2": entry.type2,
+			"base_stats": stats,
+			"signature_move": entry.signature_move,
+			"sprite_warnings": entry.sprite_warnings,
+			"notes": entry.notes,
+			"imported": entry.imported,
+			"status": entry.status,
+			"disabled_reason": entry.disabled_reason,
+		})
+	return out
+
+
+func _moves_json() -> Array:
+	var out: Array = []
+	for move in move_entries:
+		out.append({
+			"slug": move.slug,
+			"index_number": move.index_number,
+			"name": move.name,
+			"type": move.type,
+			"category": move.category,
+			"base_power": move.base_power,
+			"accuracy": move.accuracy,
+			"pp": move.pp,
+			"range_kind": move.range_kind,
+			"range_value": move.range_value,
+			"target_alignment": move.target_alignment,
+			"effect_tags": move.effect_tags,
+			"unsupported_effect_tags": move.unsupported_effect_tags,
+			"imported": move.imported,
+		})
+	return out
+
+
+func _status_counts() -> Dictionary:
+	var out: Dictionary = {}
+	for entry in species_entries:
+		var status: String = entry.status if not entry.status.is_empty() else ("imported" if entry.imported else "failed")
+		out[status] = int(out.get(status, 0)) + 1
+	return out

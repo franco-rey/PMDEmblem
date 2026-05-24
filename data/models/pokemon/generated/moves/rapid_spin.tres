@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_n28tn"]
+
+[resource]
+script = ExtResource("1_n28tn")
+move_id = "rapid_spin"
+index_number = 229
+name = "Rapid Spin"
+description = "A spin attack that can eliminate moves such as Wrap or Leech Seed. It also destroys traps."
+type = "normal"
+category = 1
+base_power = 40
+accuracy = 100
+pp = 20
+tactical_range_kind = 1
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.AddContextStateEvent, PMDC", "PMDC.Dungeon.RemoveStatusBattleEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.AddContextStateEvent, PMDC", "PMDC.Dungeon.RemoveStatusBattleEvent, PMDC"])

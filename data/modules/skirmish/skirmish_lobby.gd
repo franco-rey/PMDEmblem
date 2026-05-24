@@ -11,10 +11,26 @@ const RosterProvider = preload("res://data/modules/skirmish/skirmish_roster_prov
 const FONT_SIZE: int = 20
 const SMALL_FONT_SIZE: int = 18
 const TITLE_FONT_SIZE: int = 24
-const CELL_SIZE: Vector2 = Vector2(148, 172)
-const SLOT_SIZE: Vector2 = Vector2(168, 90)
+const CELL_SIZE: Vector2 = Vector2(124, 156)
+const SLOT_SIZE: Vector2 = Vector2(96, 90)
+const SLOT_PORTRAIT_SIZE: Vector2 = Vector2(52, 52)
 const TRAY_HEIGHT: float = 150.0
 const CONTROL_HEIGHT: float = 42.0
+const GRID_MIN_COLUMNS: int = 3
+const GRID_MAX_COLUMNS: int = 16
+const GRID_GAP: float = 12.0
+const LAYOUT_MARGIN_X: float = 20.0
+const PANEL_MARGIN_X: float = 10.0
+const MIDDLE_GAP: float = 12.0
+const COMPACT_LAYOUT_WIDTH: float = 1400.0
+const SETUP_PANEL_WIDTH: float = 320.0
+const SETUP_PANEL_COMPACT_WIDTH: float = 260.0
+const DETAILS_PANEL_WIDTH: float = 300.0
+const DETAILS_PANEL_COMPACT_WIDTH: float = 220.0
+const TYPE_FILTER_WIDTH: float = 170.0
+const TYPE_FILTER_COMPACT_WIDTH: float = 130.0
+const SORT_PICKER_WIDTH: float = 150.0
+const SORT_PICKER_COMPACT_WIDTH: float = 105.0
 const PANEL_COLOR: Color = Color(0.17, 0.18, 0.18, 0.96)
 const ACTIVE_COLOR: Color = Color(0.22, 0.31, 0.28, 1.0)
 const BORDER_COLOR: Color = Color(0.62, 0.75, 0.70, 0.95)
@@ -36,6 +52,8 @@ var player_tray: PanelContainer
 var enemy_tray: PanelContainer
 var player_slots: HBoxContainer
 var enemy_slots: HBoxContainer
+var setup_panel: PanelContainer
+var details_panel: PanelContainer
 var roster_grid: GridContainer
 var roster_scroll: ScrollContainer
 var search_input: LineEdit
@@ -60,13 +78,13 @@ func _ready() -> void:
 		_build_ui()
 	_load_data()
 	_refresh_all()
-	call_deferred("_update_grid_columns")
+	_queue_update_grid_columns()
 
 
 func open() -> void:
 	visible = true
 	_set_active_side(active_side)
-	call_deferred("_update_grid_columns")
+	_queue_update_grid_columns()
 
 
 func get_roster_entries() -> Array[Dictionary]:
@@ -148,9 +166,9 @@ func _build_ui() -> void:
 	var margin := MarginContainer.new()
 	margin.name = "LayoutMargin"
 	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
-	margin.add_theme_constant_override("margin_left", 20)
+	margin.add_theme_constant_override("margin_left", int(LAYOUT_MARGIN_X))
 	margin.add_theme_constant_override("margin_top", 16)
-	margin.add_theme_constant_override("margin_right", 20)
+	margin.add_theme_constant_override("margin_right", int(LAYOUT_MARGIN_X))
 	margin.add_theme_constant_override("margin_bottom", 16)
 	add_child(margin)
 
@@ -168,7 +186,7 @@ func _build_ui() -> void:
 	middle.name = "MiddleLayout"
 	middle.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	middle.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	middle.add_theme_constant_override("separation", 12)
+	middle.add_theme_constant_override("separation", int(MIDDLE_GAP))
 	outer.add_child(middle)
 
 	middle.add_child(_create_setup_panel())
@@ -177,7 +195,7 @@ func _build_ui() -> void:
 
 	enemy_tray = _create_team_tray("EnemyTeamTray", "Enemy Team", SIDE_ENEMY)
 	outer.add_child(enemy_tray)
-	resized.connect(_update_grid_columns)
+	resized.connect(_queue_update_grid_columns)
 
 
 func _create_team_tray(node_name: String, title: String, side: String) -> PanelContainer:
@@ -256,9 +274,10 @@ func _create_team_tray(node_name: String, title: String, side: String) -> PanelC
 func _create_setup_panel() -> PanelContainer:
 	var panel := PanelContainer.new()
 	panel.name = "SetupPanel"
-	panel.custom_minimum_size = Vector2(320, 0)
+	panel.custom_minimum_size = Vector2(SETUP_PANEL_WIDTH, 0)
 	panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	panel.add_theme_stylebox_override("panel", _style_box(PANEL_COLOR, MUTED_BORDER_COLOR, 1))
+	setup_panel = panel
 
 	var margin := MarginContainer.new()
 	margin.add_theme_constant_override("margin_left", 10)
@@ -403,13 +422,13 @@ func _create_roster_panel() -> PanelContainer:
 
 	type_filter = OptionButton.new()
 	type_filter.name = "TypeFilter"
-	type_filter.custom_minimum_size = Vector2(170, CONTROL_HEIGHT)
+	type_filter.custom_minimum_size = Vector2(TYPE_FILTER_WIDTH, CONTROL_HEIGHT)
 	type_filter.item_selected.connect(_on_filter_changed)
 	toolbar.add_child(type_filter)
 
 	sort_picker = OptionButton.new()
 	sort_picker.name = "SortPicker"
-	sort_picker.custom_minimum_size = Vector2(150, CONTROL_HEIGHT)
+	sort_picker.custom_minimum_size = Vector2(SORT_PICKER_WIDTH, CONTROL_HEIGHT)
 	sort_picker.item_selected.connect(_on_filter_changed)
 	toolbar.add_child(sort_picker)
 
@@ -418,6 +437,7 @@ func _create_roster_panel() -> PanelContainer:
 	roster_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	roster_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	roster_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	roster_scroll.resized.connect(_queue_update_grid_columns)
 	column.add_child(roster_scroll)
 
 	roster_grid = GridContainer.new()
@@ -432,9 +452,10 @@ func _create_roster_panel() -> PanelContainer:
 func _create_details_panel() -> PanelContainer:
 	var panel := PanelContainer.new()
 	panel.name = "DetailsPanel"
-	panel.custom_minimum_size = Vector2(300, 0)
+	panel.custom_minimum_size = Vector2(DETAILS_PANEL_WIDTH, 0)
 	panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	panel.add_theme_stylebox_override("panel", _style_box(PANEL_COLOR, MUTED_BORDER_COLOR, 1))
+	details_panel = panel
 
 	var margin := MarginContainer.new()
 	margin.add_theme_constant_override("margin_left", 10)
@@ -529,6 +550,7 @@ func _refresh_roster() -> void:
 	filtered.sort_custom(_is_roster_entry_less_than)
 	for entry in filtered:
 		roster_grid.add_child(_create_roster_cell(entry))
+	_queue_update_grid_columns()
 
 
 func _create_roster_cell(entry: Dictionary) -> Button:
@@ -600,19 +622,23 @@ func _create_slot_button(path: String, index: int, side: String) -> Button:
 	button.tooltip_text = "Slot %d" % (index + 1)
 	button.pressed.connect(_on_team_slot_pressed.bind(side, index))
 
-	var content := HBoxContainer.new()
+	var content := Control.new()
 	content.set_anchors_preset(Control.PRESET_FULL_RECT)
-	content.offset_left = 5
+	content.offset_left = 6
 	content.offset_top = 4
-	content.offset_right = -5
+	content.offset_right = -6
 	content.offset_bottom = -4
 	content.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	content.add_theme_constant_override("separation", 4)
 	button.add_child(content)
 
 	var portrait := TextureRect.new()
 	portrait.name = "Portrait"
-	portrait.custom_minimum_size = Vector2(64, 64)
+	portrait.anchor_top = 0.5
+	portrait.anchor_bottom = 0.5
+	portrait.offset_left = 0
+	portrait.offset_top = -SLOT_PORTRAIT_SIZE.y * 0.5
+	portrait.offset_right = SLOT_PORTRAIT_SIZE.x
+	portrait.offset_bottom = SLOT_PORTRAIT_SIZE.y * 0.5
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -621,17 +647,26 @@ func _create_slot_button(path: String, index: int, side: String) -> Button:
 
 	var label := Label.new()
 	label.name = "NameLabel"
-	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.set_anchors_preset(Control.PRESET_FULL_RECT)
+	label.offset_left = SLOT_PORTRAIT_SIZE.x + 8.0
+	label.offset_top = 0
+	label.offset_right = 0
+	label.offset_bottom = 0
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.clip_text = true
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	content.add_child(label)
 
 	if path.is_empty():
+		portrait.visible = false
+		label.offset_left = 0
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		label.text = "%d" % (index + 1)
 	else:
 		var entry: Dictionary = _entry_for_path(path)
 		portrait.texture = RosterProvider.texture_for_entry(entry)
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		label.text = String(entry.get("label", RosterProvider.label_for_path(path)))
 	return button
 
@@ -882,8 +917,48 @@ func _build_from_state(state: Dictionary) -> Dictionary:
 func _update_grid_columns() -> void:
 	if roster_grid == null or roster_scroll == null:
 		return
-	var available_width: float = maxf(roster_scroll.size.x, CELL_SIZE.x * 3.0)
-	roster_grid.columns = clampi(int(floor(available_width / (CELL_SIZE.x + 12.0))), 3, 10)
+	var available_width: float = _roster_width_budget()
+	if roster_scroll.size.x > 1.0:
+		available_width = minf(available_width, roster_scroll.size.x)
+	if available_width <= 1.0:
+		return
+	roster_grid.columns = clampi(int(floor((available_width + GRID_GAP) / (CELL_SIZE.x + GRID_GAP))), GRID_MIN_COLUMNS, GRID_MAX_COLUMNS)
+
+
+func _queue_update_grid_columns() -> void:
+	call_deferred("_apply_responsive_layout")
+
+
+func _apply_responsive_layout() -> void:
+	var compact: bool = _uses_compact_layout()
+	if setup_panel != null:
+		setup_panel.custom_minimum_size.x = SETUP_PANEL_COMPACT_WIDTH if compact else SETUP_PANEL_WIDTH
+	if details_panel != null:
+		details_panel.custom_minimum_size.x = DETAILS_PANEL_COMPACT_WIDTH if compact else DETAILS_PANEL_WIDTH
+	if type_filter != null:
+		type_filter.custom_minimum_size.x = TYPE_FILTER_COMPACT_WIDTH if compact else TYPE_FILTER_WIDTH
+	if sort_picker != null:
+		sort_picker.custom_minimum_size.x = SORT_PICKER_COMPACT_WIDTH if compact else SORT_PICKER_WIDTH
+	_update_grid_columns()
+
+
+func _uses_compact_layout() -> bool:
+	return _layout_width() < COMPACT_LAYOUT_WIDTH
+
+
+func _layout_width() -> float:
+	if size.x > 1.0:
+		return size.x
+	return get_viewport_rect().size.x
+
+
+func _roster_width_budget() -> float:
+	var content_width: float = maxf(0.0, _layout_width() - LAYOUT_MARGIN_X * 2.0)
+	var side_width: float = (SETUP_PANEL_COMPACT_WIDTH if _uses_compact_layout() else SETUP_PANEL_WIDTH)
+	side_width += DETAILS_PANEL_COMPACT_WIDTH if _uses_compact_layout() else DETAILS_PANEL_WIDTH
+	side_width += MIDDLE_GAP * 2.0
+	side_width += PANEL_MARGIN_X * 2.0
+	return maxf(CELL_SIZE.x, content_width - side_width)
 
 
 func _entry_for_path(path: String) -> Dictionary:

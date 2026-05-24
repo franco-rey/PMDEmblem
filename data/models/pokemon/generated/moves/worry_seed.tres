@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_5bsak"]
+
+[resource]
+script = ExtResource("1_5bsak")
+move_id = "worry_seed"
+index_number = 388
+name = "Worry Seed"
+description = "A seed that causes worry is planted on the target. It prevents sleep by making the target's Ability Insomnia."
+type = "grass"
+accuracy = 100
+pp = 16
+tactical_range_value = 4
+target_alignment = 6
+effect_tags = Array[String](["PMDC.Dungeon.ChangeToAbilityEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence", "PMDC.Dungeon.ChangeToAbilityEvent, PMDC"])

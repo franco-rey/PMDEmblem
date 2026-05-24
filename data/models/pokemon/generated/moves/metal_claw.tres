@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_wrokc"]
+
+[resource]
+script = ExtResource("1_wrokc")
+move_id = "metal_claw"
+index_number = 232
+name = "Metal Claw"
+description = "The target is raked with steel claws. This may also raise the user's Attack stat. It can break walls."
+type = "steel"
+category = 1
+base_power = 55
+accuracy = 100
+pp = 20
+tactical_range_kind = 1
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.AdditionalEndEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.AdditionalEndEvent, PMDC"])

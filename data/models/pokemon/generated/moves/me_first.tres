@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_2slxf"]
+
+[resource]
+script = ExtResource("1_2slxf")
+move_id = "me_first"
+index_number = 382
+name = "Me First"
+description = "The user cuts ahead of the target to steal and use the target's strongest move. It fails if the target has no attacking moves."
+type = "normal"
+pp = 20
+tactical_range_value = 4
+effect_tags = Array[String](["PMDC.Dungeon.StrongestMoveEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence", "PMDC.Dungeon.StrongestMoveEvent, PMDC"])

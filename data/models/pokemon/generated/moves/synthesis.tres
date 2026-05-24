@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_cy2so"]
+
+[resource]
+script = ExtResource("1_cy2so")
+move_id = "synthesis"
+index_number = 235
+name = "Synthesis"
+description = "The user restores its own HP. The amount of HP regained varies with the weather."
+type = "grass"
+pp = 10
+tactical_range_kind = 6
+tactical_range_value = 0
+target_alignment = 1
+effect_tags = Array[String](["PMDC.Dungeon.WeatherHPEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.WeatherHPEvent, PMDC"])

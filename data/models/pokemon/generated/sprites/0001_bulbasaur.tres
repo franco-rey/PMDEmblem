@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PokemonSpriteSetResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_sprite_set_resource.gd" id="1_mhgna"]
+
+[resource]
+script = ExtResource("1_mhgna")
+idle_path = "res://assets/textures/actor/pokemon/0001_bulbasaur/idle.png"
+walk_path = "res://assets/textures/actor/pokemon/0001_bulbasaur/walk.png"
+hurt_path = "res://assets/textures/actor/pokemon/0001_bulbasaur/hurt.png"
+sleep_path = "res://assets/textures/actor/pokemon/0001_bulbasaur/sleep.png"
+hop_path = "res://assets/textures/actor/pokemon/0001_bulbasaur/hop.png"
+anim_data_path = "res://assets/textures/actor/pokemon/0001_bulbasaur/AnimData.xml"
+portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0001_bulbasaur/Normal.png"])

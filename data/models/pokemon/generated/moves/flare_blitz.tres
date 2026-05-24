@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_m8at3"]
+
+[resource]
+script = ExtResource("1_m8at3")
+move_id = "flare_blitz"
+index_number = 394
+name = "Flare Blitz"
+description = "The user cloaks itself in fire and charges the target. This also damages the user quite a lot. This may leave the target with a burn."
+type = "fire"
+category = 1
+base_power = 90
+accuracy = 100
+pp = 9
+tactical_range_value = 5
+target_alignment = 6
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.AdditionalEvent, PMDC", "PMDC.Dungeon.HPRecoilEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence", "PMDC.Dungeon.AdditionalEvent, PMDC", "PMDC.Dungeon.HPRecoilEvent, PMDC"])

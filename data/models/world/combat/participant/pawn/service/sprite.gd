@@ -7,7 +7,8 @@ extends Sprite3D
 ## `assets/textures/actor/pokemon/<dex>_<slug>/`. Sheets follow the standard
 ## SpriteCollab layout: hframes = frames-per-direction, vframes = 8 facings
 ## arranged in PMD order (Down, DownRight, Right, UpRight, Up, UpLeft, Left,
-## DownLeft). Sleep is the only state that is single-direction (vframes = 1).
+## DownLeft). Some rest/faint sheets are single-direction, while others keep
+## the same 8-direction layout as battle animations.
 ##
 ## Per-state cell width/height come from the species' `AnimData.xml` sidecar
 ## (referenced via `PokemonSpriteSetResource.anim_data_path`); falling back
@@ -24,12 +25,14 @@ const ANIM_SLEEP: String = "sleep"
 const ANIM_HOP: String = "hop"
 
 ## Mapping from our internal lowercase state to the AnimData.xml `<Name>` field.
-const ANIMDATA_NAMES: Dictionary = {
-	ANIM_IDLE: "Idle",
-	ANIM_WALK: "Walk",
-	ANIM_HURT: "Hurt",
-	ANIM_SLEEP: "Sleep",
-	ANIM_HOP: "Hop",
+const ANIMDATA_NAME_CANDIDATES: Dictionary = {
+	ANIM_IDLE: ["Idle"],
+	ANIM_WALK: ["Walk"],
+	ANIM_HURT: ["Hurt"],
+	# The packager may source the faint/rest pose from Laying, EventSleep, or
+	# Sleep depending on source coverage. Pick by actual sheet dimensions below.
+	ANIM_SLEEP: ["Laying", "EventSleep", "Sleep"],
+	ANIM_HOP: ["Hop"],
 }
 
 ## Seconds per displayed frame for each animation state. Tuned for legibility,
@@ -157,9 +160,8 @@ func _load_state_textures(base_sprite_path: String, sprite_set: PokemonSpriteSet
 
 		var cell_w: int = 0
 		var cell_h: int = 0
-		var anim_name: String = String(ANIMDATA_NAMES.get(state, ""))
-		if not anim_name.is_empty() and anim_data.has(anim_name):
-			var entry: SpriteAnimData.AnimEntry = anim_data[anim_name]
+		var entry: SpriteAnimData.AnimEntry = _select_anim_data_entry(state, tex, anim_data)
+		if entry != null:
 			cell_w = entry.frame_width
 			cell_h = entry.frame_height
 		if cell_w <= 0 or cell_h <= 0:
@@ -174,6 +176,38 @@ func _load_state_textures(base_sprite_path: String, sprite_set: PokemonSpriteSet
 		state_cell_widths[state] = cell_w
 		state_cell_heights[state] = cell_h
 		state_bottom_paddings[state] = _find_lowest_bottom_padding(tex, cell_w, cell_h, hframes_local, vframes_local)
+
+
+func _select_anim_data_entry(state: String, tex: Texture2D, anim_data: Dictionary) -> SpriteAnimData.AnimEntry:
+	var candidates: Array = ANIMDATA_NAME_CANDIDATES.get(state, [])
+	var best: SpriteAnimData.AnimEntry = null
+	var best_score: int = -999999
+	for index: int in range(candidates.size()):
+		var anim_name: String = String(candidates[index])
+		if not anim_data.has(anim_name):
+			continue
+		var entry: SpriteAnimData.AnimEntry = anim_data[anim_name]
+		if entry == null or entry.frame_width <= 0 or entry.frame_height <= 0:
+			continue
+		if tex.get_width() % entry.frame_width != 0 or tex.get_height() % entry.frame_height != 0:
+			continue
+
+		var columns: int = int(tex.get_width() / entry.frame_width)
+		var rows: int = int(tex.get_height() / entry.frame_height)
+		var score: int = 1000 - index
+		if columns == entry.frames_per_direction:
+			score += 10000
+		else:
+			score -= abs(columns - entry.frames_per_direction) * 100
+		if rows == DIRECTION_COUNT:
+			score += 500
+		elif rows == 1:
+			score += 100
+
+		if score > best_score:
+			best_score = score
+			best = entry
+	return best
 
 
 func _resolve_state_paths(base_sprite_path: String, sprite_set: PokemonSpriteSetResource) -> Dictionary:
@@ -275,7 +309,7 @@ func set_anim_state(new_state: String) -> void:
 ## so animation continues independently of physics ticks.
 func _process(delta: float) -> void:
 	var n: int = state_frame_counts.get(current_state, 1)
-	if n <= 1:
+	if current_state == ANIM_SLEEP or n <= 1:
 		curr_frame = 0
 		return
 	var dur: float = FRAME_DURATION.get(current_state, 0.15)

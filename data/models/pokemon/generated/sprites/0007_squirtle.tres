@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PokemonSpriteSetResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_sprite_set_resource.gd" id="1_u3t3v"]
+
+[resource]
+script = ExtResource("1_u3t3v")
+idle_path = "res://assets/textures/actor/pokemon/0007_squirtle/idle.png"
+walk_path = "res://assets/textures/actor/pokemon/0007_squirtle/walk.png"
+hurt_path = "res://assets/textures/actor/pokemon/0007_squirtle/hurt.png"
+sleep_path = "res://assets/textures/actor/pokemon/0007_squirtle/sleep.png"
+hop_path = "res://assets/textures/actor/pokemon/0007_squirtle/hop.png"
+anim_data_path = "res://assets/textures/actor/pokemon/0007_squirtle/AnimData.xml"
+portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0007_squirtle/Normal.png"])

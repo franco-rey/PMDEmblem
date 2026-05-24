@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PokemonSpriteSetResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_sprite_set_resource.gd" id="1_qn02d"]
+
+[resource]
+script = ExtResource("1_qn02d")
+idle_path = "res://assets/textures/actor/pokemon/0003_venusaur/idle.png"
+walk_path = "res://assets/textures/actor/pokemon/0003_venusaur/walk.png"
+hurt_path = "res://assets/textures/actor/pokemon/0003_venusaur/hurt.png"
+sleep_path = "res://assets/textures/actor/pokemon/0003_venusaur/sleep.png"
+hop_path = "res://assets/textures/actor/pokemon/0003_venusaur/hop.png"
+anim_data_path = "res://assets/textures/actor/pokemon/0003_venusaur/AnimData.xml"
+portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0003_venusaur/Normal.png"])

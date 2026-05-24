@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="PokemonFormResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_bqigx"]
+
+[resource]
+script = ExtResource("1_bqigx")
+species_id = "0009_blastoise"
+form_index = 2
+generation = 8
+type1 = "water"
+base_hp = 79
+base_atk = 83
+base_def = 100
+base_spa = 85
+base_spd = 105
+base_speed = 78
+height = 25.0
+weight = 1000.0
+gender_weights = Vector3i(0, 7, 1)
+exp_table = "medium_slow"
+join_rate = -40
+temporary = true
+intrinsic1 = "torrent"
+intrinsic2 = "none"
+intrinsic3 = "rain_dish"

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_fiblk"]
+
+[resource]
+script = ExtResource("1_fiblk")
+move_id = "tail_whip"
+index_number = 39
+name = "Tail Whip"
+description = "The user wags its tail cutely, making opposing Pokémon less wary and lowering their Defense stat."
+type = "normal"
+pp = 22
+tactical_range_kind = 5
+effect_tags = Array[String](["PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.StatusStackBattleEvent, PMDC"])

@@ -1,0 +1,75 @@
+[gd_resource type="Resource" script_class="PokemonSpeciesResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_68ylm"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/0009_blastoise__0.tres" id="2_u6f4m"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/0009_blastoise__1.tres" id="3_ncb3h"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/0009_blastoise__2.tres" id="4_qtbl7"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_species_resource.gd" id="5_7omr4"]
+
+[resource]
+script = ExtResource("5_7omr4")
+species_id = "0009_blastoise"
+dex_number = 9
+canonical_name = "Blastoise"
+forms = Array[ExtResource("1_68ylm")]([ExtResource("2_u6f4m"), ExtResource("3_ncb3h"), ExtResource("4_qtbl7")])
+level_skills = Array[Dictionary]([{
+"level": 1,
+"skill": "flash_cannon"
+}, {
+"level": 1,
+"skill": "tackle"
+}, {
+"level": 1,
+"skill": "tail_whip"
+}, {
+"level": 1,
+"skill": "water_gun"
+}, {
+"level": 1,
+"skill": "withdraw"
+}, {
+"level": 4,
+"skill": "tail_whip"
+}, {
+"level": 7,
+"skill": "water_gun"
+}, {
+"level": 10,
+"skill": "withdraw"
+}, {
+"level": 13,
+"skill": "bubble"
+}, {
+"level": 16,
+"skill": "bite"
+}, {
+"level": 20,
+"skill": "rapid_spin"
+}, {
+"level": 24,
+"skill": "protect"
+}, {
+"level": 28,
+"skill": "water_pulse"
+}, {
+"level": 32,
+"skill": "aqua_tail"
+}, {
+"level": 39,
+"skill": "skull_bash"
+}, {
+"level": 46,
+"skill": "iron_defense"
+}, {
+"level": 53,
+"skill": "rain_dance"
+}, {
+"level": 60,
+"skill": "hydro_pump"
+}])
+teach_skills = Array[String](["roar", "surf", "ice_beam", "blizzard", "hyper_beam", "strength", "earthquake", "dig", "toxic", "double_team", "waterfall", "rest", "protect", "attract", "return", "frustration", "iron_tail", "hidden_power", "rain_dance", "rock_smash", "hail", "facade", "focus_punch", "brick_break", "secret_power", "dive", "water_pulse", "rock_slide", "substitute", "endure", "swagger", "sleep_talk", "rock_tomb", "gyro_ball", "brine", "natural_gift", "fling", "focus_blast", "giga_impact", "avalanche", "flash_cannon", "rock_climb", "captivate", "whirlpool", "smack_down", "round", "scald", "bulldoze", "dragon_tail", "dark_pulse", "confide", "power_up_punch"])
+shared_skills = Array[String](["mist", "haze", "flail", "foresight", "mirror_coat", "yawn", "refresh", "mud_sport", "fake_out", "muddy_water", "aqua_ring", "aqua_jet", "water_spout", "brine", "aura_sphere", "dragon_pulse"])
+secret_skills = Array[String](["mega_punch", "ice_punch", "mega_kick", "body_slam", "double_edge", "counter", "seismic_toss", "mimic", "defense_curl", "substitute", "snore", "mud_slap", "icy_wind", "endure", "rollout", "swagger", "sleep_talk", "dynamic_punch", "hydro_cannon", "outrage", "dive", "signal_beam", "iron_defense", "aqua_tail", "zen_headbutt", "headbutt", "water_pledge", "iron_tail", "focus_punch", "water_pulse", "dragon_pulse"])
+evolution_from = "wartortle"
+skill_group1 = "monster"
+skill_group2 = "water_1"

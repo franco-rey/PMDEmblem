@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PokemonSpriteSetResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_sprite_set_resource.gd" id="1_meexu"]
+
+[resource]
+script = ExtResource("1_meexu")
+idle_path = "res://assets/textures/actor/pokemon/0008_wartortle/idle.png"
+walk_path = "res://assets/textures/actor/pokemon/0008_wartortle/walk.png"
+hurt_path = "res://assets/textures/actor/pokemon/0008_wartortle/hurt.png"
+sleep_path = "res://assets/textures/actor/pokemon/0008_wartortle/sleep.png"
+hop_path = "res://assets/textures/actor/pokemon/0008_wartortle/hop.png"
+anim_data_path = "res://assets/textures/actor/pokemon/0008_wartortle/AnimData.xml"
+portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0008_wartortle/Normal.png"])

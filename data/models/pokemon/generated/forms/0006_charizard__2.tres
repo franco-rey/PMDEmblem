@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="PokemonFormResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_gna77"]
+
+[resource]
+script = ExtResource("1_gna77")
+species_id = "0006_charizard"
+form_index = 2
+generation = 6
+type1 = "fire"
+type2 = "flying"
+base_hp = 78
+base_atk = 104
+base_def = 78
+base_spa = 159
+base_spd = 115
+base_speed = 100
+height = 1.7
+weight = 100.5
+gender_weights = Vector3i(0, 7, 1)
+exp_table = "medium_slow"
+join_rate = -40
+temporary = true
+intrinsic1 = "drought"
+intrinsic2 = "none"
+intrinsic3 = "none"

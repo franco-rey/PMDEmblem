@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="PokemonFormResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_xy3tg"]
+
+[resource]
+script = ExtResource("1_xy3tg")
+species_id = "0006_charizard"
+form_index = 3
+generation = 8
+type1 = "fire"
+type2 = "flying"
+base_hp = 78
+base_atk = 84
+base_def = 78
+base_spa = 109
+base_spd = 85
+base_speed = 100
+height = 28.0
+weight = 1000.0
+gender_weights = Vector3i(0, 7, 1)
+exp_table = "medium_slow"
+join_rate = -40
+temporary = true
+intrinsic1 = "blaze"
+intrinsic2 = "none"
+intrinsic3 = "solar_power"

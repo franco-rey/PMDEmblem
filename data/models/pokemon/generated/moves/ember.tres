@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_e0nv6"]
+
+[resource]
+script = ExtResource("1_e0nv6")
+move_id = "ember"
+index_number = 52
+name = "Ember"
+description = "The target is attacked with small flames. This may also leave the target with a burn."
+type = "fire"
+category = 2
+base_power = 40
+accuracy = 100
+pp = 15
+tactical_range_kind = 5
+tactical_range_value = 2
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.AdditionalEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.AdditionalEvent, PMDC"])

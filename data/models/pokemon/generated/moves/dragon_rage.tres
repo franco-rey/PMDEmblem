@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_dvp38"]
+
+[resource]
+script = ExtResource("1_dvp38")
+move_id = "dragon_rage"
+index_number = 82
+name = "Dragon Rage"
+description = "This attack hits the target with a shock wave of pure rage. This attack inflicts damage equal to the amount of HP the user is missing."
+type = "dragon"
+category = 2
+accuracy = 100
+pp = 12
+tactical_range_kind = 3
+tactical_range_value = 2
+target_alignment = 6
+effect_tags = Array[String](["PMDC.Dungeon.UserHPDamageEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.UserHPDamageEvent, PMDC"])

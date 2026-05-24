@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="PokemonFormResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_fiio3"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/sprites/0007_squirtle.tres" id="2_vohq3"]
+
+[resource]
+script = ExtResource("1_fiio3")
+species_id = "0007_squirtle"
+generation = 6
+type1 = "water"
+base_hp = 44
+base_atk = 48
+base_def = 65
+base_spa = 50
+base_spd = 64
+base_speed = 43
+height = 0.5
+weight = 9.0
+gender_weights = Vector3i(0, 7, 1)
+exp_table = "medium_slow"
+join_rate = 20
+sprite_set = ExtResource("2_vohq3")
+intrinsic1 = "torrent"
+intrinsic2 = "none"
+intrinsic3 = "rain_dish"

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PokemonInstanceResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_g2xm6"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/petal_dance.tres" id="2_besj0"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/worry_seed.tres" id="3_33ttd"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/synthesis.tres" id="4_h68ja"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/petal_blizzard.tres" id="5_7tid2"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_instance_resource.gd" id="6_jraxr"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/species/0003_venusaur.tres" id="7_oss0i"]
+
+[resource]
+script = ExtResource("6_jraxr")
+species = ExtResource("7_oss0i")
+level = 50
+move_slots = Array[ExtResource("1_g2xm6")]([ExtResource("2_besj0"), ExtResource("3_33ttd"), ExtResource("4_h68ja"), ExtResource("5_7tid2")])
+pp_state = Array[int]([10, 16, 10, 10])
+team = 2
+control_type = 1

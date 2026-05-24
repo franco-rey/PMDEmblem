@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_6luy5"]
+
+[resource]
+script = ExtResource("1_6luy5")
+move_id = "petal_blizzard"
+index_number = 572
+name = "Petal Blizzard"
+description = "The user stirs up a violent petal blizzard and attacks everything around it."
+type = "grass"
+category = 1
+base_power = 60
+accuracy = 90
+pp = 10
+tactical_range_kind = 5
+tactical_range_value = 4
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC"])

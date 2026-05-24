@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_qdkt0"]
+
+[resource]
+script = ExtResource("1_qdkt0")
+move_id = "bubble"
+index_number = 145
+name = "Bubble"
+description = "A spray of countless bubbles is jetted at the target. This may also lower the target's Movement Speed."
+type = "water"
+category = 2
+base_power = 30
+accuracy = 100
+pp = 18
+tactical_range_kind = 5
+tactical_range_value = 2
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.AdditionalEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.AdditionalEvent, PMDC"])

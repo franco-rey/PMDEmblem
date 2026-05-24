@@ -1,0 +1,15 @@
+Pokemon Batch Import Preflight
+==============================
+Generated: 2026-05-24T19:48:38Z
+Target species: 9
+battle_ready: 9
+
+- 0001_bulbasaur (Bulbasaur) battle_ready
+- 0002_ivysaur (Ivysaur) battle_ready
+- 0003_venusaur (Venusaur) battle_ready
+- 0004_charmander (Charmander) battle_ready
+- 0005_charmeleon (Charmeleon) battle_ready
+- 0006_charizard (Charizard) battle_ready
+- 0007_squirtle (Squirtle) battle_ready
+- 0008_wartortle (Wartortle) battle_ready
+- 0009_blastoise (Blastoise) battle_ready

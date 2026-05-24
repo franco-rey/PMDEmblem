@@ -1,0 +1,78 @@
+[gd_resource type="Resource" script_class="PokemonSpeciesResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_form_resource.gd" id="1_dip5s"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/0003_venusaur__0.tres" id="2_70kqn"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/0003_venusaur__1.tres" id="3_yty2v"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/forms/0003_venusaur__2.tres" id="4_qgcgh"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_species_resource.gd" id="5_05fef"]
+
+[resource]
+script = ExtResource("5_05fef")
+species_id = "0003_venusaur"
+dex_number = 3
+canonical_name = "Venusaur"
+forms = Array[ExtResource("1_dip5s")]([ExtResource("2_70kqn"), ExtResource("3_yty2v"), ExtResource("4_qgcgh")])
+level_skills = Array[Dictionary]([{
+"level": 1,
+"skill": "tackle"
+}, {
+"level": 1,
+"skill": "growl"
+}, {
+"level": 1,
+"skill": "leech_seed"
+}, {
+"level": 1,
+"skill": "vine_whip"
+}, {
+"level": 3,
+"skill": "growl"
+}, {
+"level": 7,
+"skill": "leech_seed"
+}, {
+"level": 9,
+"skill": "vine_whip"
+}, {
+"level": 13,
+"skill": "poison_powder"
+}, {
+"level": 13,
+"skill": "sleep_powder"
+}, {
+"level": 15,
+"skill": "take_down"
+}, {
+"level": 20,
+"skill": "razor_leaf"
+}, {
+"level": 23,
+"skill": "sweet_scent"
+}, {
+"level": 28,
+"skill": "growth"
+}, {
+"level": 31,
+"skill": "double_edge"
+}, {
+"level": 32,
+"skill": "petal_dance"
+}, {
+"level": 39,
+"skill": "worry_seed"
+}, {
+"level": 45,
+"skill": "synthesis"
+}, {
+"level": 50,
+"skill": "petal_blizzard"
+}, {
+"level": 53,
+"skill": "solar_beam"
+}])
+teach_skills = Array[String](["cut", "roar", "hyper_beam", "strength", "solar_beam", "earthquake", "toxic", "double_team", "flash", "rest", "protect", "sludge_bomb", "giga_drain", "attract", "return", "frustration", "hidden_power", "sunny_day", "rock_smash", "facade", "secret_power", "bullet_seed", "swords_dance", "substitute", "endure", "swagger", "sleep_talk", "natural_gift", "energy_ball", "giga_impact", "rock_climb", "captivate", "grass_knot", "light_screen", "safeguard", "venoshock", "round", "echoed_voice", "bulldoze", "nature_power", "confide"])
+shared_skills = Array[String](["petal_dance", "light_screen", "skull_bash", "curse", "charm", "safeguard", "grass_whistle", "magical_leaf", "amnesia", "nature_power", "ingrain", "leaf_storm", "sludge", "power_whip", "giga_drain", "endure", "grassy_terrain"])
+secret_skills = Array[String](["swords_dance", "body_slam", "double_edge", "mimic", "defense_curl", "substitute", "snore", "mud_slap", "endure", "swagger", "fury_cutter", "sleep_talk", "frenzy_plant", "outrage", "synthesis", "knock_off", "seed_bomb", "headbutt", "string_shot", "block", "worry_seed", "grass_pledge", "bind", "giga_drain"])
+evolution_from = "ivysaur"
+skill_group1 = "monster"
+skill_group2 = "grass"

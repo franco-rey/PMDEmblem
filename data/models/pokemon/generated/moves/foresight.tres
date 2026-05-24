@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_svrhc"]
+
+[resource]
+script = ExtResource("1_svrhc")
+move_id = "foresight"
+index_number = 193
+name = "Foresight"
+description = "The user identifies the target, removing its resistances and immunities. This also enables an evasive target to be hit."
+type = "normal"
+pp = 16
+tactical_range_kind = 3
+tactical_range_value = 8
+effect_tags = Array[String](["PMDC.Dungeon.StatusBattleEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.StatusBattleEvent, PMDC"])
