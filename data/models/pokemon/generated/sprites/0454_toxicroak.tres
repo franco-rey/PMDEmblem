@@ -10,3 +10,4 @@ hurt_path = "res://assets/textures/actor/pokemon/0454_toxicroak/hurt.png"
 sleep_path = "res://assets/textures/actor/pokemon/0454_toxicroak/sleep.png"
 hop_path = "res://assets/textures/actor/pokemon/0454_toxicroak/hop.png"
 anim_data_path = "res://assets/textures/actor/pokemon/0454_toxicroak/AnimData.xml"
+portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0454_toxicroak/Normal.png"])

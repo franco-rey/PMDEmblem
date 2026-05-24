@@ -10,3 +10,4 @@ hurt_path = "res://assets/textures/actor/pokemon/0448_lucario/hurt.png"
 sleep_path = "res://assets/textures/actor/pokemon/0448_lucario/sleep.png"
 hop_path = "res://assets/textures/actor/pokemon/0448_lucario/hop.png"
 anim_data_path = "res://assets/textures/actor/pokemon/0448_lucario/AnimData.xml"
+portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0448_lucario/Normal.png"])
