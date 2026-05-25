@@ -1,7 +1,4 @@
 extends SceneTree
-## Headless smoke test for M2 combat resolution.
-##
-##   godot --headless --path <project> --script tools/validation/smoke_test_combat.gd
 
 const TYPE_CHART_PATH: String = "res://data/models/pokemon/generated/types/type_chart.tres"
 const LUCARIO_PATH: String = "res://data/models/pokemon/overrides/instances/0448_lucario.tres"

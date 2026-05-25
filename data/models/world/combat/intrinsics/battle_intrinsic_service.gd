@@ -1,6 +1,5 @@
 class_name BattleIntrinsicService
 extends RefCounted
-## Lightweight M6 intrinsic resolver/reporting surface.
 
 const SUPPORTED_DAMAGE_BOOSTS: Dictionary = {
 	"blaze": "fire",

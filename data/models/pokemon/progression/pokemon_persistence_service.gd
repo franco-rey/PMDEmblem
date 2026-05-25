@@ -1,6 +1,5 @@
 class_name PokemonPersistenceService
 extends RefCounted
-## Copies runtime battle state back into run-owned Pokemon instances.
 
 
 static func prepare_for_spawn(instance: PokemonInstanceResource, refill_hp: bool = true, refill_pp: bool = true) -> void:

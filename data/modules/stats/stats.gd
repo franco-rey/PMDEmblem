@@ -1,86 +1,39 @@
 class_name Stats
 extends Node
-## Runtime stat container attached to each pawn.
-##
-## Two ways to populate it:
-##
-## - `init(stats: StatsResource)` for legacy class/mob `.tres` files.
-## - `init_from_pokemon(instance: PokemonInstanceResource)` for the M1 Pokemon
-##   data slice. The legacy fields (`max_health`, `attack_power`, `movement`,
-##   `sprite`, `expertise`) are derived from the species/form so the existing
-##   pawn pipeline keeps working unchanged. The Pokemon-specific fields
-##   (`hp_max`, six base stats, `types`, `move_slots`, `current_pp`) are
-##   exposed for M2's combat slice.
 
 enum BattleStatus { ACTIVE, FAINTED }
 
-## Dictionary to store modifiers
 var modifiers: Dictionary = {}
-## Override name for the character
 var override_name: String
-## Expertise of the character (display label - "Lucario", "Cleric", etc.)
 var expertise: String
-## Current level of the character
 var level: int = 1
 
-#region Base Stats
-## Movement Points (The radius the pawn can move)
 var movement: int
-## Jump height
 var jump: int
-## Maximum health
 var max_health: int
-## Current health
 var curr_health: int
-## Sprite path
 var sprite: String
-#endregion
 
-#region Offensive Stats
-## Attack power
 var attack_power: int
-## Attack range
 var attack_range: int
-#endregion
 
-#region Pokemon (M1+)
-## Pokemon canonical species name when initialized from a PokemonInstanceResource.
 var species_name: String = ""
-## Pokemon types (lowercase slugs). Empty for legacy-stat pawns.
 var types: Array[String] = []
-## Mirror of `max_health` named per the M1 spec, kept distinct so future code
-## can tell "hp at full" from "max hp" if temporary boosts are added later.
 var hp_max: int = 0
-## Six PMD base stats. Equal to the form's BaseHP/Atk/Def/MAtk/MDef/Speed
-## scaled to the unit's level (M1 just keeps the raw bases - level scaling and
-## the real PMD damage formula land in M2).
 var attack: int = 0
 var defense: int = 0
 var special_attack: int = 0
 var special_defense: int = 0
 var speed: int = 0
-## Up to four `PokemonMoveResource`s populated from the instance.
 var move_slots: Array[PokemonMoveResource] = []
-## PP remaining per move slot, indexed parallel to `move_slots`.
 var current_pp: Array[int] = []
-## Source of truth for derived legacy fields - kept around so debug tooling
-## can inspect the underlying instance.
 var pokemon_instance: PokemonInstanceResource = null
-## Runtime battle state. Fainting is explicit so future schedulers do not have
-## to infer action eligibility from HP alone.
 var battle_status: int = BattleStatus.ACTIVE
-## Runtime status payloads, reset for each spawned skirmish instance.
 var battle_statuses: Dictionary = {}
-## Battle-only intrinsic overrides applied by moves such as Worry Seed.
-## These are included by BattleIntrinsicService before consulting form data.
 var temporary_intrinsic_slugs: Array[String] = []
-## Temporary battle stat stages. Keys are attack/defense/special_attack/
-## special_defense/speed/accuracy/evasion; values clamp to [-6, 6].
 var stat_stages: Dictionary = {}
-#endregion
 
 
-## Initialize stats from a StatsResource (legacy demo path).
 func init(stats: StatsResource) -> void:
 	override_name = stats.override_name
 	expertise = stats.expertise
@@ -98,12 +51,6 @@ func init(stats: StatsResource) -> void:
 	reset_battle_modifiers()
 
 
-## Initialize stats from a PokemonInstanceResource (M1 Pokemon data slice).
-##
-## Derives the legacy fields (`max_health`, `attack_power`, `movement`, etc.)
-## from the species/form so the existing pawn / combat / sprite code keeps
-## working without modification, and exposes the full Pokemon stat block for
-## M2's damage resolver.
 func init_from_pokemon(instance: PokemonInstanceResource) -> void:
 	pokemon_instance = instance
 	if instance == null:
@@ -132,8 +79,6 @@ func init_from_pokemon(instance: PokemonInstanceResource) -> void:
 		special_attack = int(calculated.get("special_attack", 1))
 		special_defense = int(calculated.get("special_defense", 1))
 		speed = int(calculated.get("speed", 1))
-		# Rough legacy parity for the existing direct-damage attack (M2 swaps in
-		# a real damage formula).
 		attack_power = int(maxi(attack, special_attack) / 5.0)
 		sprite = form.sprite_set.idle_path if form.sprite_set != null else ""
 	else:
@@ -304,10 +249,9 @@ func is_active() -> bool:
 	return battle_status == BattleStatus.ACTIVE
 
 
-## Provided a health operation as a parameter (e.g. "-2", "1"), adds the value to current health. As a consequence, this function serves for both damage and healing.
 func apply_to_curr_health(new: int) -> void:
 	print("Target initial health: ", curr_health, " - Health delta: ", new)
-	curr_health = clamp(curr_health + new, 0, max_health) # Apply health change and clamp to valid range
+	curr_health = clamp(curr_health + new, 0, max_health)
 	if curr_health <= 0:
 		battle_status = BattleStatus.FAINTED
 	elif battle_status == BattleStatus.FAINTED:

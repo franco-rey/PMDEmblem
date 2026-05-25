@@ -1,12 +1,5 @@
 class_name CustomSkirmishBuilder
 extends RefCounted
-## M4 R1 builder for transient `SkirmishDefinitionResource`s.
-##
-## The main-menu inline UI and the M4 R1 smoke test share this helper so the
-## player path and the headless validation path produce byte-identical results
-## for the same seed + team + map inputs. The class is intentionally pure
-## (no scene-tree access): it lists roster / map paths, validates user input,
-## and shuffles spawn anchors with a seeded RNG.
 
 const ROSTER_DIR: String = "res://data/models/pokemon/overrides/instances/"
 const GENERATED_ROSTER_DIR: String = "res://data/models/pokemon/generated/instances/"
@@ -14,8 +7,6 @@ const MAP_DIR: String = "res://data/models/maps/definitions/"
 const RandomSkirmishGenerator = preload("res://data/modules/skirmish/random_skirmish_generator.gd")
 const MIN_TEAM_SIZE: int = 1
 const MAX_TEAM_SIZE: int = 8
-## Each side draws its placement candidates from the first N anchors after the
-## loader's sort. M4 R1 hard-caps this at 8 per side so 8v8 customs can lay out.
 const ANCHOR_POOL_SIZE: int = 8
 const ROSTER_SLUGS: Array[String] = [
 	"0475_gallade",
@@ -29,13 +20,11 @@ const ROSTER_SLUGS: Array[String] = [
 const DEFAULT_RANDOM_DIFFICULTY_TIER: int = 4
 
 
-## Returns the canonical roster path list in the order the picker should display.
 static func roster_paths() -> Array[String]:
 	var by_slug: Dictionary = {}
 	for path in _discover_roster_paths(GENERATED_ROSTER_DIR):
 		by_slug[path.get_file().get_basename()] = path
 	for path in _discover_roster_paths(ROSTER_DIR):
-		# Hand-authored overrides shadow generated templates with the same slug.
 		by_slug[path.get_file().get_basename()] = path
 
 	var out: Array[String] = []
@@ -61,8 +50,6 @@ static func battle_ready_roster_paths() -> Array[String]:
 	return out
 
 
-## Returns every `MapDefinitionResource` file currently under `MAP_DIR`,
-## sorted by file name so the picker is deterministic across milestones.
 static func map_paths() -> Array[String]:
 	var out: Array[String] = []
 	var dir: DirAccess = DirAccess.open(MAP_DIR)
@@ -80,12 +67,6 @@ static func map_paths() -> Array[String]:
 	return out
 
 
-## Parses the user-supplied seed text.
-##
-## Empty input means "generate a fresh random seed". `Time.get_ticks_usec()`
-## is good enough for non-cryptographic determinism + replay needs in M4 R1;
-## the resolved seed is echoed back to the caller so it can be displayed and
-## reused for replay.
 static func resolve_seed(text: String) -> int:
 	var trimmed: String = text.strip_edges()
 	if trimmed.is_empty():
@@ -98,30 +79,13 @@ static func resolve_seed(text: String) -> int:
 static func _generate_seed() -> int:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.randomize()
-	# Constrain to a positive 31-bit range so the seed prints cleanly and so
-	# `SkirmishDefinitionResource.seed`'s int stays well away from any negative
-	# sentinels callers might introduce later.
 	return int(rng.randi() & 0x7FFFFFFF)
 
 
-## Builds the index permutation used to assign team members to spawn anchors.
-##
-## Given an integer `seed`, the same `(seed, team_size, pool_size)` always
-## produces the same `Array[int]` of unique anchor indices in `[0, pool_size)`.
-## `team_size` must be <= `pool_size`.
 static func build_spawn_order(seed: int, team_size: int, pool_size: int) -> Array[int]:
 	return RandomSkirmishGenerator.build_spawn_order(seed, team_size, pool_size)
 
 
-## Constructs a transient `SkirmishDefinitionResource` ready for the loader.
-##
-## Returns a `Dictionary` with one of:
-##   - `{"ok": true, "definition": SkirmishDefinitionResource, "seed": int}`
-##   - `{"ok": false, "error": String}`
-##
-## The caller is responsible for showing the error and for passing
-## `definition` to `SkirmishLoader.load_skirmish()`. The builder does not
-## touch the scene tree.
 static func build(player_paths: Array[String], enemy_paths: Array[String], map_path: String, seed_text: String) -> Dictionary:
 	if player_paths.size() < MIN_TEAM_SIZE or player_paths.size() > MAX_TEAM_SIZE:
 		return {"ok": false, "error": "Player team must be %d-%d Pokemon" % [MIN_TEAM_SIZE, MAX_TEAM_SIZE]}
@@ -177,9 +141,6 @@ static func build(player_paths: Array[String], enemy_paths: Array[String], map_p
 	return {"ok": true, "definition": definition, "seed": seed}
 
 
-## Picks `count` roster Pokemon at random (with replacement, matching the
-## explicit-builder's duplicate-allowed contract). `seed` drives the choice
-## deterministically; pass `0` to draw a fresh non-deterministic sample.
 static func random_roster_paths(count: int, seed: int = 0) -> Array[String]:
 	var out: Array[String] = []
 	var pool: Array[String] = battle_ready_roster_paths()
@@ -204,11 +165,6 @@ static func random_roster_paths(count: int, seed: int = 0) -> Array[String]:
 	return out
 
 
-## Builds an NvN skirmish whose teams are rolled fresh each call.
-##
-## A non-empty `seed_text` makes both team picks AND spawn placement
-## reproducible (different XOR masks keep player/enemy rolls independent).
-## Returns the same `{"ok"/"error" + definition + seed}` shape as `build`.
 static func build_random(team_size: int, map_path: String, seed_text: String = "") -> Dictionary:
 	if team_size < MIN_TEAM_SIZE or team_size > MAX_TEAM_SIZE:
 		return {"ok": false, "error": "Team size must be %d-%d" % [MIN_TEAM_SIZE, MAX_TEAM_SIZE]}
@@ -235,12 +191,6 @@ static func build_random(team_size: int, map_path: String, seed_text: String = "
 	return result
 
 
-## Builds a skirmish with an explicit player team and generated enemy team.
-##
-## This is the M5 compatibility surface that M5.5 and M7 can reuse without
-## depending on main-menu controls. The explicit player team keeps the same
-## duplicate-allowed contract as `build`; generated enemies avoid duplicates
-## while the requested size fits the roster.
 static func build_with_random_enemy(
 	player_paths: Array[String],
 	map_path: String,
@@ -367,10 +317,6 @@ static func _is_battle_ready_path(path: String) -> bool:
 	return false
 
 
-## Walks the map's scene and counts `SpawnPlayer*` / `SpawnEnemy*` anchors
-## using the same `prefix + optional integer suffix` rule the loader applies
-## at spawn time. Instantiating the scene is the most reliable read across
-## inherited / packed scenes; the temporary instance is freed before returning.
 static func _count_map_anchors(map: MapDefinitionResource) -> Dictionary:
 	var counts: Dictionary = {"player": 0, "enemy": 0}
 	if map == null or map.scene_path.is_empty():

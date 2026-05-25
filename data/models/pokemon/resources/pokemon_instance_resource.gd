@@ -1,17 +1,7 @@
 class_name PokemonInstanceResource
 extends Resource
-## A single battle-ready Pokemon. References a species + form, plus per-unit
-## state (level, current HP, move slots with PP, team / control affiliation,
-## tactical movement override).
-##
-## This is the resource pawn `Expertise` nodes will reference once the M1
-## compatibility layer is in place. Generated species/form/move resources are
-## kept under `data/models/pokemon/generated/`; instance overrides live under
-## `data/models/pokemon/overrides/instances/` so hand-tuned battle units can be
-## edited without touching the importer's output.
 
 const MAX_MOVE_SLOTS: int = 4
-## Sentinel for `current_hp` meaning "fill from form base HP at spawn time".
 const CURRENT_HP_AUTO: int = 0
 
 enum Team {
@@ -31,7 +21,6 @@ enum ControlType {
 @export var form_index: int = 0
 @export var level: int = 1
 @export var experience: int = 0
-## 0 = auto-fill to max HP at spawn. Otherwise treated as the unit's current HP.
 @export var current_hp: int = CURRENT_HP_AUTO
 
 @export var move_slots: Array[PokemonMoveResource] = []
@@ -42,17 +31,12 @@ enum ControlType {
 @export var control_type: int = ControlType.PLAYER
 @export var nickname: String = ""
 
-## Tactical-movement-tile override. 0 means "derive from species/form" (M1
-## leaves the legacy placeholder values in place via this override; M2+ may
-## introduce a real Speed-to-tile mapping).
 @export var movement_override: int = 0
 
 @export var recruited: bool = false
 @export var nature_id: String = ""
 @export var permanent_modifiers: Dictionary = {}
 @export var held_item: PokemonItemResource
-## Free-form runtime modifiers for run/battle systems that do not warrant a
-## first-class exported field yet.
 @export var runtime_modifiers: Dictionary = {}
 @export var temporary_statuses: Array[String] = []
 

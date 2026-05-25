@@ -1,12 +1,9 @@
 class_name TacticsUIService
 extends RefCounted
-## Service class for managing UI-related functionalities in the Tactics game.
 
-## Reference to the TacticsControlsResource.
 var controls: TacticsControlsResource
 
 
-## Initializes the TacticsUIService with the necessary controls resource.
 func _init(_controls: TacticsControlsResource) -> void:
 	controls = _controls
 
@@ -109,15 +106,13 @@ func _replace_signal_connections(signal_ref: Signal, callable: Callable) -> void
 		signal_ref.connect(callable)
 
 
-## Updates the controller hints based on the current input device.
 func update_controller_hints(ctrl: TacticsControls) -> void:
 	if controls.is_joystick:
-		ctrl.get_node("%ControllerHints").texture = ctrl.layout_xbox # Set Xbox layout if using joystick
+		ctrl.get_node("%ControllerHints").texture = ctrl.layout_xbox
 	else:
-		ctrl.get_node("%ControllerHints").texture = ctrl.layout_pc # Set PC layout otherwise
+		ctrl.get_node("%ControllerHints").texture = ctrl.layout_pc
 
 
-## Sets the visibility of the actions menu and updates action button states.
 func set_actions_menu_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls) -> void:
 	var picker: VBoxContainer = ensure_move_picker(ctrl)
 	if v and picker != null:
@@ -129,13 +124,12 @@ func set_actions_menu_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls)
 		var move_button: Button = actions.get_node_or_null("Move") as Button
 		if move_button != null and move_button.is_inside_tree():
 			move_button.grab_focus()
-	
+
 	if not p:
 		actions.visible = false
-		return # Exit if no pawn is provided
-	actions.visible = v and p.can_act() # Show menu if pawn can act
-	
-	# Update action button states based on pawn's capabilities
+		return
+	actions.visible = v and p.can_act()
+
 	var action_move: Button = actions.get_node_or_null("Move") as Button
 	var action_attack: Button = actions.get_node_or_null("Attack") as Button
 	if action_move != null:

@@ -1,5 +1,4 @@
 extends SceneTree
-## M6 smoke: intrinsic resources resolve and hooks report deterministically.
 
 const BULBASAUR_PATH: String = "res://data/models/pokemon/generated/instances/0001_bulbasaur.tres"
 const CURRENT_SEVEN: Array[String] = [

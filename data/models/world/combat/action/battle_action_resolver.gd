@@ -1,6 +1,5 @@
 class_name BattleActionResolver
 extends RefCounted
-## M6 move action orchestrator: PP, accuracy, target expansion, effects, logs.
 
 const TYPE_CHART_PATH: String = "res://data/models/pokemon/generated/types/type_chart.tres"
 const STATUS_COUNTER: String = "counter"

@@ -1,5 +1,4 @@
 extends SceneTree
-## M7 smoke: expanded current-roster animation manifests are project-owned.
 
 var failures: int = 0
 

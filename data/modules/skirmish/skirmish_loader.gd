@@ -1,9 +1,5 @@
 class_name SkirmishLoader
 extends Node
-## Runtime assembler for SkirmishDefinitionResource battles.
-##
-## The loader is the only M4 code that knows how to turn skirmish data into a
-## live TacticsLevel: map scene, participant nodes, spawned pawns, and seed.
 
 signal skirmish_loaded(level: TacticsLevel)
 signal skirmish_ended(result: int, definition: SkirmishDefinitionResource)
@@ -183,15 +179,6 @@ func _spawn_team(team: Array[PokemonInstanceResource], parent: Node3D, anchors: 
 		pawn.transform = parent_transform.affine_inverse() * anchor_transform
 
 
-## Resolves the per-side anchor index list used by `_spawn_team`.
-##
-## Manual / authored skirmishes omit the metadata key and get the default
-## sequential `[0, 1, ..., team_size - 1]` mapping, preserving M4 behavior.
-##
-## The custom builder (M4 R1) writes a pre-shuffled `Array[int]` index list
-## into `generation_metadata["player_spawn_order"]` /
-## `["enemy_spawn_order"]`. Each index must be unique and reference an
-## existing sorted anchor.
 func _resolve_spawn_order(definition: SkirmishDefinitionResource, metadata_key: String, team_size: int, anchor_count: int) -> Array[int]:
 	var out: Array[int] = []
 	if team_size <= 0:

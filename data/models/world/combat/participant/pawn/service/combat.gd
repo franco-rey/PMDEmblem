@@ -1,6 +1,5 @@
 class_name TacticsPawnCombatService
 extends RefCounted
-## Service class for managing combat actions of pawns in the tactics game
 
 const TYPE_CHART_PATH: String = "res://data/models/pokemon/generated/types/type_chart.tres"
 
@@ -13,20 +12,12 @@ func _init() -> void:
 	_fallback_rng.seed = 0
 
 
-## Executes an attack from one pawn to another
-##
-## @param pawn: The attacking TacticsPawn
-## @param target_pawn: The TacticsPawn being attacked
-## @param delta: Time elapsed since the last frame
-## @return: Whether the attack was completed
 func attack_target_pawn(pawn: TacticsPawn, target_pawn: TacticsPawn, delta: float) -> bool:
 	if pawn == null or target_pawn == null or not pawn.is_alive() or not target_pawn.is_alive():
 		return true
 
-	# Make the attacking pawn face the target
 	pawn.serv.movement.look_at_direction(pawn, target_pawn.global_position - pawn.global_position)
-	
-	# Check if the pawn can attack and enough time has passed for the attack animation
+
 	if pawn.res.can_attack and pawn.res.wait_delay > TacticsPawnResource.MIN_TIME_FOR_ATTACK / 4.0:
 		var move_index: int = _selected_move_index(pawn, target_pawn)
 		var move: PokemonMoveResource = _selected_move_for(pawn, move_index)
@@ -46,16 +37,13 @@ func attack_target_pawn(pawn: TacticsPawn, target_pawn: TacticsPawn, delta: floa
 			action_resolver.execute(pawn, target_pawn, move_index, _battle_level(pawn))
 			pawn.res.set_attacking(false)
 
-		# Print debug information if debug mode is enabled
 		if DebugLog.debug_enabled:
 			print_rich("[color=pink]Attacked ", target_pawn, ".[/color]")
-	
-	# If the minimum time for attack hasn't passed, increment the wait delay
+
 	if pawn.res.wait_delay < TacticsPawnResource.MIN_TIME_FOR_ATTACK:
 		pawn.res.wait_delay += delta
 		return false
-	
-	# Reset the wait delay and return true to indicate the attack is complete
+
 	pawn.res.wait_delay = 0.0
 	return true
 

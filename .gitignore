@@ -1,4 +1,3 @@
-# Godot-specific ignores
 .godot/
 .import/
 export.cfg
@@ -7,10 +6,8 @@ export_presets.cfg
 assets/visuals/raw_asset/**/*.import
 assets/textures/pokemon/portraits/**/*.import
 
-# Imported translations (automatically generated from CSV files)
 *.translation
 
-# Mono-specific ignores
 .mono/
 data_*/
 

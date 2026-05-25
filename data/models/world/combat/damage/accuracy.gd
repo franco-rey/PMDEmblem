@@ -1,6 +1,5 @@
 class_name AccuracyResolver
 extends RefCounted
-## Deterministic move accuracy helper. The battle owns the RNG and passes it in.
 
 
 static func roll(move: PokemonMoveResource, rng: RandomNumberGenerator) -> bool:

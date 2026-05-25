@@ -1,5 +1,4 @@
 extends SceneTree
-## M6 smoke: skirmish entrants receive four learnset moves and selected slots log.
 
 const CHARMANDER_PATH: String = "res://data/models/pokemon/generated/instances/0004_charmander.tres"
 const MAGMORTAR_PATH: String = "res://data/models/pokemon/overrides/instances/0467_magmortar.tres"

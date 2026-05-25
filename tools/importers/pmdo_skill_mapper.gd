@@ -1,18 +1,11 @@
 @tool
 class_name PMDOSkillMapper
 extends RefCounted
-## Maps PMDODump `Skill/<slug>.json` payloads onto `PokemonMoveResource` fields.
-##
-## PMD's tactical model is a roguelike grid where moves are described via
-## `HitboxAction` subclasses. We translate those into our enum-based tactical
-## range model. Anything we don't recognize is recorded as `unsupported` so the
-## move still imports and shows up in the validation report.
 
 const RESULT_KIND := "kind"
 const RESULT_VALUE := "value"
 const RESULT_RAW := "raw_type"
 
-## PMD `$type` strings the importer knows how to map.
 const ATTACK_ACTION_TYPE: String = "RogueEssence.Dungeon.AttackAction, RogueEssence"
 const PROJECTILE_ACTION_TYPE: String = "RogueEssence.Dungeon.ProjectileAction, RogueEssence"
 const OFFSET_ACTION_TYPE: String = "RogueEssence.Dungeon.OffsetAction, RogueEssence"
@@ -22,7 +15,6 @@ const DASH_ACTION_TYPE: String = "RogueEssence.Dungeon.DashAction, RogueEssence"
 const THROW_ACTION_TYPE: String = "RogueEssence.Dungeon.ThrowAction, RogueEssence"
 const WAVE_MOTION_ACTION_TYPE: String = "RogueEssence.Dungeon.WaveMotionAction, RogueEssence"
 
-## PMD damage event we already plan to support in M2.
 const SUPPORTED_HIT_EVENTS: Array = [
 	"PMDC.Dungeon.DamageFormulaEvent, PMDC",
 	"PMDC.Dungeon.StatusBattleEvent, PMDC",
@@ -52,9 +44,6 @@ const SUPPORTED_HIT_EVENTS: Array = [
 ]
 
 
-## Translate a PMD `HitboxAction` dictionary into a `{kind, value, raw_type}`
-## triple. Falls back to `UNSUPPORTED`/1 with the raw type recorded so the
-## report can show what was skipped.
 static func map_hitbox(hitbox: Dictionary) -> Dictionary:
 	var raw_type: String = String(hitbox.get("$type", ""))
 	var kind: int = PokemonMoveResource.TacticalRangeKind.UNSUPPORTED
@@ -95,8 +84,6 @@ static func map_hitbox(hitbox: Dictionary) -> Dictionary:
 	return {RESULT_KIND: kind, RESULT_VALUE: value, RESULT_RAW: raw_type}
 
 
-## Return the human-readable label for a `TacticalRangeKind` value, used by
-## reports.
 static func kind_label(kind: int) -> String:
 	match kind:
 		PokemonMoveResource.TacticalRangeKind.MELEE: return "melee"
@@ -111,9 +98,6 @@ static func kind_label(kind: int) -> String:
 		_: return "unsupported"
 
 
-## Walks every `OnHits`, `BeforeActions`, `AfterActions` entry and returns
-## `(all_tags, unsupported_tags)`. Unsupported = anything whose `$type` isn't
-## in `SUPPORTED_HIT_EVENTS`.
 static func extract_effect_tags(skill_data: Dictionary) -> Dictionary:
 	var all_tags: Array[String] = []
 	var unsupported: Array[String] = []
@@ -150,8 +134,6 @@ static func extract_effect_records(skill_data: Dictionary, move_slug: String, st
 	return records
 
 
-## PMD events are usually wrapped as `{Key: ..., Value: { "$type": ... }}`.
-## Some are flat. This handles both.
 static func _entry_type(entry: Variant) -> String:
 	if not (entry is Dictionary):
 		return ""
@@ -423,8 +405,6 @@ static func _is_supported(tag: String) -> bool:
 	return false
 
 
-## Reads `BasePowerState.Power` from the SkillStates list. Returns 0 if the
-## move has no power state (status moves like Hypnosis).
 static func extract_base_power(skill_data: Dictionary) -> int:
 	var states: Variant = skill_data.get("SkillStates", [])
 	if not (states is Array):

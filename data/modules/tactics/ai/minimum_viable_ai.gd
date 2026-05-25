@@ -1,6 +1,5 @@
 class_name MinimumViableAI
 extends RefCounted
-## Naive M6 AI: first legal usable move, nearest legal target, deterministic order.
 
 
 func choose_action(

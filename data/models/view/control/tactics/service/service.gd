@@ -1,28 +1,17 @@
 class_name TacticsControlsService
 extends RefCounted
-## Service class for managing tactics controls and related functionalities.
 
-## Reference to the TacticsControlsResource.
 var controls: TacticsControlsResource
-## Reference to the TacticsCameraResource.
 var t_cam: TacticsCameraResource
-## Reference to the TacticsParticipantResource.
 var participant: TacticsParticipantResource
-## Reference to the TacticsArenaResource.
 var arena: TacticsArenaResource
-## Node for capturing mouse clicks.
 var mouse_click_capture: Node
-## Service for handling input-related operations.
 var input_service: TacticsControlsInputService
-## Service for managing UI-related operations.
 var ui_service: TacticsUIService
-## Service for handling camera-related operations.
 var camera_service: TacticsControlsCameraService
-## Service for managing pawn selection operations.
 var pawn_selection_service: TacticsControlsSelectionService
 
 
-## Initializes the TacticsControlsService with necessary resources and services.
 func _init(_controls: TacticsControlsResource, _t_cam: TacticsCameraResource, _participant: TacticsParticipantResource, _arena: TacticsArenaResource, _mouse_click_capture: Node) -> void:
 	controls = _controls
 	t_cam = _t_cam
@@ -35,7 +24,6 @@ func _init(_controls: TacticsControlsResource, _t_cam: TacticsCameraResource, _p
 	pawn_selection_service = TacticsControlsSelectionService.new(participant, arena, controls, t_cam, input_service)
 
 
-## Sets up signal connections and performs initial checks.
 func setup(ctrl: TacticsControls) -> void:
 	ui_service.ensure_move_picker(ctrl)
 	if not controls:
@@ -56,13 +44,11 @@ func setup(ctrl: TacticsControls) -> void:
 		push_error("TacticsControls needs an ArenaResource from /data/models/world/combat/arena/")
 
 
-## Performs physics processing tasks.
 func physics_process(_delta: float, ctrl: TacticsControls) -> void:
 	input_service.update_mouse_mode()
 	ui_service.update_controller_hints(ctrl)
 
 
-## Handles input events.
 func handle_input(event: InputEvent) -> void:
 	input_service.handle_input(event)
 	if event.is_action_pressed("ui_cancel"):
@@ -71,32 +57,26 @@ func handle_input(event: InputEvent) -> void:
 		player_wants_to_cancel()
 
 
-## Delegates camera movement to the camera service.
 func move_camera(delta: float) -> void:
 	camera_service.move_camera(delta, controls.is_joystick)
 
 
-## Delegates camera rotation inputs to the camera service.
 func camera_rotation_inputs(delta: float) -> void:
 	camera_service.handle_rotation_inputs(delta)
 
 
-## Delegates setting actions menu visibility to the UI service.
 func set_actions_menu_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls) -> void:
 	ui_service.set_actions_menu_visibility(v, p, ctrl)
 
 
-## Delegates pawn selection to the pawn selection service.
 func select_pawn(player: TacticsPlayer, ctrl: TacticsControls) -> void:
 	pawn_selection_service.select_pawn(player, ctrl)
 
 
-## Delegates new location selection to the pawn selection service.
 func select_new_location(ctrl: TacticsControls) -> void:
 	pawn_selection_service.select_new_location(ctrl)
 
 
-## Delegates pawn attack selection to the pawn selection service.
 func select_pawn_to_attack(ctrl: TacticsControls) -> void:
 	pawn_selection_service.select_pawn_to_attack(ctrl)
 
@@ -109,27 +89,22 @@ func refresh_hover_preview() -> void:
 	pawn_selection_service.refresh_hover_preview()
 
 
-## Handles player's move action.
 func player_wants_to_move() -> void:
 	pawn_selection_service.player_wants_to_move()
 
 
-## Handles player's cancel action.
 func player_wants_to_cancel() -> void:
 	pawn_selection_service.player_wants_to_cancel()
 
 
-## Handles player's wait action.
 func player_wants_to_wait() -> void:
 	pawn_selection_service.player_wants_to_wait()
 
 
-## Handles player's skip turn action.
 func player_wants_to_skip_turn() -> void:
 	pawn_selection_service.player_wants_to_skip_turn()
 
 
-## Handles player's attack action.
 func player_wants_to_attack() -> void:
 	pawn_selection_service.player_wants_to_attack()
 

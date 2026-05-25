@@ -1,9 +1,5 @@
 extends Node
-## A placeholder script that is meant to be replaced by your own level loader system
 
-#region: --- Props ---
-## Picker entries. `kind = "static"` loads a fixed `.tres`; `kind = "random"`
-## rerolls Pokemon picks every launch via `CustomSkirmishBuilder.build_random`.
 const MANUAL_SKIRMISHES: Array[Dictionary] = [
 	{
 		"kind": "static",
@@ -63,23 +59,16 @@ const MANUAL_SKIRMISHES: Array[Dictionary] = [
 const MENU_CONTROL_SIZE: Vector2 = Vector2(400, 48)
 const MENU_FONT_SIZE: int = 20
 
-## The current instance of the TacticsLevel
 var level_instance: TacticsLevel
 var skirmish_loader: SkirmishLoader
 
-## Reference to the World node
 @onready var world: Node3D = $World
-## Reference to the manual skirmish picker
 @onready var skirmish_picker: OptionButton = $UI/MapSelector/SkirmishMenu/SkirmishPicker
-## Reference to the launch button
 @onready var launch_button: Button = $UI/MapSelector/SkirmishMenu/LaunchButton
 @onready var custom_toggle_button: Button = $UI/MapSelector/SkirmishMenu/CustomToggleButton
 @onready var skirmish_lobby: SkirmishLobby = $UI/SkirmishLobby
 @onready var tactics_controls: Control = $TacticsControls
-#endregion
 
-#region: --- Processing ---
-## Called when the node enters the scene tree for the first time
 func _ready() -> void:
 	_style_main_menu()
 	_set_tactics_controls_enabled(false)
@@ -92,10 +81,7 @@ func _ready() -> void:
 		skirmish_lobby.launch_requested.connect(_on_lobby_launch_requested)
 		skirmish_lobby.close_requested.connect(_on_lobby_close_requested)
 	launch_button.grab_focus()
-#endregion
 
-#region: --- Signals ---
-## Called when the launch button is pressed
 func _on_launch_button_pressed() -> void:
 	load_selected_skirmish()
 
@@ -105,26 +91,20 @@ func _on_custom_toggle_pressed() -> void:
 	_set_tactics_controls_enabled(false)
 	if skirmish_lobby != null:
 		skirmish_lobby.open()
-#endregion
 
-#region: --- Methods ---
-## Unloads the current level instance
 func unload_level() -> void:
 	if skirmish_loader != null and level_instance == skirmish_loader.current_level:
 		skirmish_loader.unload_current()
 	elif is_instance_valid(level_instance):
 		level_instance.queue_free()
-	level_instance = null # Reset the level instance variable
+	level_instance = null
 
-## Loads the current level instance -- clears existing level in the process
-##
-## @param level_name: The name of the level to load
 func load_level(level_name: String) -> void:
-	unload_level() # Unload the current level
-	var level_path: String = "res://assets/maps/level/%s_level.tscn" % level_name # Construct the level path
-	level_instance = load(level_path).instantiate() # Load and instantiate the new level
-	world.add_child(level_instance) # Add the new level to the World node
-	$UI/MapSelector.visible = false # Hide the map selector UI
+	unload_level()
+	var level_path: String = "res://assets/maps/level/%s_level.tscn" % level_name
+	level_instance = load(level_path).instantiate()
+	world.add_child(level_instance)
+	$UI/MapSelector.visible = false
 	_set_tactics_controls_enabled(true)
 
 
@@ -152,15 +132,11 @@ func _resolve_skirmish_definition(entry: Dictionary) -> SkirmishDefinitionResour
 
 
 func _build_random_skirmish(entry: Dictionary) -> SkirmishDefinitionResource:
-	# Random modes reuse the M4 R1 custom builder so spawn shuffling, anchor
-	# validation, and seed plumbing match the explicit-pick path exactly.
 	var team_size: int = int(entry.get("team_size", 1))
 	var maps: Array[String] = CustomSkirmishBuilder.map_paths()
 	if maps.is_empty():
 		push_error("Main: no maps available for random skirmish")
 		return null
-	# M6.5 will introduce real map variety; until then test_arena is the only
-	# map and is the deterministic first entry after sort.
 	var result: Dictionary = CustomSkirmishBuilder.build_random(team_size, maps[0], "")
 	if not result.get("ok", false):
 		push_error("Main: random skirmish build failed: %s" % result.get("error", "?"))
@@ -239,4 +215,3 @@ func _set_tactics_controls_enabled(enabled: bool) -> void:
 		return
 	tactics_controls.visible = enabled
 	tactics_controls.process_mode = Node.PROCESS_MODE_INHERIT if enabled else Node.PROCESS_MODE_DISABLED
-#endregion

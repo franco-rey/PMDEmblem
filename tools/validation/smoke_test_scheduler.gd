@@ -1,11 +1,4 @@
 extends SceneTree
-## Headless smoke test for M3's Speed-ordered initiative scheduler.
-##
-##   godot --headless --path <project> --script tools/validation/smoke_test_scheduler.gd
-##
-## Builds synthetic [BattleUnit]s with mixed Speeds across teams and exercises
-## the scheduler's API: ordering, deterministic ties, remove, insert, rebuild,
-## fainted skipping, and battle-end detection. Exits 0 on success.
 
 var failures: int = 0
 var created_stats: Array[Stats] = []
@@ -71,7 +64,6 @@ func _test_determinism_same_seed() -> void:
 
 
 func _test_player_team_precedence() -> void:
-	# Same Speed, different teams - Player (0) should precede Enemy (1).
 	var p1 := _make_unit(90, PokemonInstanceResource.Team.PLAYER, 0)
 	var e1 := _make_unit(90, PokemonInstanceResource.Team.ENEMY, 1)
 	var p2 := _make_unit(90, PokemonInstanceResource.Team.PLAYER, 2)
@@ -108,7 +100,7 @@ func _test_insert_unit() -> void:
 	var s := BattleScheduler.new()
 	s.start_battle([a, b, c, d], 42)
 
-	s.complete_active_unit()  # a done, b is now active
+	s.complete_active_unit()
 	var hot := _make_unit(200, PokemonInstanceResource.Team.ALLY, 99)
 	s.insert_unit(hot)
 	_assert_eq([s.get_active_unit()], [b], "active b not displaced by insertion")
@@ -126,7 +118,6 @@ func _test_rebuild_queue() -> void:
 	var s := BattleScheduler.new()
 	s.start_battle([a, b, c, d], 42)
 
-	# Advance partially through the round.
 	s.complete_active_unit()
 	s.complete_active_unit()
 	s.rebuild_queue()
@@ -140,7 +131,7 @@ func _test_fainted_skipped() -> void:
 	var s := BattleScheduler.new()
 	s.start_battle([a, b, c], 42)
 	b.stats.battle_status = Stats.BattleStatus.FAINTED
-	s.complete_active_unit()  # a complete; should skip b (fainted) and land on c
+	s.complete_active_unit()
 	_assert_eq([s.get_active_unit()], [c], "fainted unit is skipped without removal")
 
 
@@ -161,7 +152,6 @@ func _test_peek_upcoming() -> void:
 	var d := _make_unit(25, PokemonInstanceResource.Team.ENEMY, 3)
 	var s := BattleScheduler.new()
 	s.start_battle([a, b, c, d], 42)
-	# After start_battle, a is active and {b, c, d} are queued.
 	var upcoming: Array = s.peek_upcoming(3)
 	_assert_eq(upcoming, [b, c, d], "peek_upcoming returns the next N queued units")
 

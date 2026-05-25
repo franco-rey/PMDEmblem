@@ -1,16 +1,6 @@
 @tool
 class_name PMDOImporter
 extends RefCounted
-## PMDODump -> Godot Pokemon resource importer.
-##
-## Reads the batch manifest written by `pokemon_batch_packager.py`, then emits
-## .tres files into `res://data/models/pokemon/generated/` and reports under
-## `res://data/models/pokemon/import_reports/`.
-##
-## Two ways to invoke it:
-## 1. From the Godot editor: open `pmdo_importer_editor.gd` in the script editor
-##    and choose File -> Run.
-## 2. Headless: `godot --headless --path <project> --script tools/importers/pmdo_run.gd`.
 
 const _SkillMapper: GDScript = preload("res://tools/importers/pmdo_skill_mapper.gd")
 const _Paths: GDScript = preload("res://tools/importers/pmdo_paths.gd")
@@ -86,16 +76,12 @@ func run() -> void:
 	else:
 		push_error("PMDOImporter: failed to write %s" % _Paths.REPORT_JSON_PATH)
 
-	# Suppress unused warnings for callers that don't care about return values.
 	if type_chart == null:
 		pass
 
 	print_rich("[color=cyan]PMDOImporter: done[/color]")
 
 
-# ---------------------------------------------------------------------------
-# Filesystem prep
-# ---------------------------------------------------------------------------
 
 func _ensure_directories() -> void:
 	var dirs: Array[String] = [
@@ -119,9 +105,6 @@ func _ensure_directories() -> void:
 				push_error("PMDOImporter: could not create %s (err %d)" % [d, err])
 
 
-# ---------------------------------------------------------------------------
-# Type chart
-# ---------------------------------------------------------------------------
 
 func _import_type_chart(report: PokemonValidation, source_roots: Dictionary) -> TypeChartResource:
 	var raw: Variant = _read_json_absolute(_universal_path(source_roots))
@@ -157,8 +140,6 @@ func _import_type_chart(report: PokemonValidation, source_roots: Dictionary) -> 
 		packed_eff.append(float(v))
 	chart.effectiveness_table = packed_eff
 
-	# PMDODump's `none` matchup row is all NEUTRAL, so neutral-on-neutral sums
-	# to LEVEL_NEUTRAL * 2 = 8. Keep this in sync with TypeChartResource.
 	chart.neutral_index = TypeChartResource.LEVEL_NEUTRAL * 2
 
 	var matrix: Array = element_state.get("TypeMatchup", [])
@@ -179,8 +160,6 @@ func _import_type_chart(report: PokemonValidation, source_roots: Dictionary) -> 
 		report.set_type_chart_summary(false, ordered_types.size(), packed_levels.size(), [])
 		return null
 
-	# Bucket counts as ordered list - one entry per Effectiveness slot, plus an
-	# "other" tail for any out-of-range levels we encountered.
 	var bucket_array: Array[int] = []
 	bucket_array.resize(packed_eff.size())
 	for k in bucket_counts.keys():
@@ -211,9 +190,6 @@ func _find_element_table_state(node: Variant) -> Dictionary:
 	return {}
 
 
-# ---------------------------------------------------------------------------
-# Sprite sets
-# ---------------------------------------------------------------------------
 
 func _import_sprite_sets(import_entries: Array, report: PokemonValidation) -> Dictionary:
 	var out: Dictionary = {}
@@ -464,9 +440,6 @@ func _first_animation_key(sprite_set: PokemonSpriteSetResource, candidates: Arra
 	return "idle"
 
 
-# ---------------------------------------------------------------------------
-# Moves
-# ---------------------------------------------------------------------------
 
 func _import_moves(import_entries: Array, source_roots: Dictionary, report: PokemonValidation) -> Dictionary:
 	var out: Dictionary = {}
@@ -554,9 +527,6 @@ func _import_move(slug: String, source_roots: Dictionary, report: PokemonValidat
 	return save_path
 
 
-# ---------------------------------------------------------------------------
-# Statuses + intrinsics
-# ---------------------------------------------------------------------------
 
 func _import_status_resources(moves: Dictionary, report: PokemonValidation, visual_manifest: Dictionary) -> void:
 	var statuses: Dictionary = {}
@@ -696,9 +666,6 @@ func _supported_intrinsic_hooks(slug: String) -> Array[String]:
 	return []
 
 
-# ---------------------------------------------------------------------------
-# Items
-# ---------------------------------------------------------------------------
 
 func _import_item_resources(source_roots: Dictionary, report: PokemonValidation, visual_manifest: Dictionary) -> void:
 	var item_dir: String = _item_dir_path(source_roots)
@@ -998,9 +965,6 @@ func _stat_from_pmdo_index(index: int) -> String:
 	return ""
 
 
-# ---------------------------------------------------------------------------
-# Species + forms
-# ---------------------------------------------------------------------------
 
 func _import_species(import_entries: Array, sprite_sets: Dictionary, moves: Dictionary, source_roots: Dictionary, report: PokemonValidation) -> Dictionary:
 	var out: Dictionary = {}
@@ -1015,9 +979,6 @@ func _import_species(import_entries: Array, sprite_sets: Dictionary, moves: Dict
 
 
 func _import_one_species(entry_data: Dictionary, sprite_sets: Dictionary, moves: Dictionary, source_roots: Dictionary, report: PokemonValidation) -> String:
-	# `slug` is the bare PMDODump identifier (e.g. "gallade"); `project_slug`
-	# carries the in-project numbered prefix (e.g. "0475_gallade") that every
-	# generated file and every cross-resource reference uses.
 	var slug: String = String(entry_data.get("pmdo_slug", ""))
 	var project_slug: String = String(entry_data.get("slug", _Paths.project_slug_for(slug, int(entry_data.get("dex_number", 0)))))
 	var entry := PokemonValidation.SpeciesEntry.new()
@@ -1241,9 +1202,6 @@ func _typed_string_array(values: Array) -> Array[String]:
 	return out
 
 
-# ---------------------------------------------------------------------------
-# Generated default instances
-# ---------------------------------------------------------------------------
 
 func _author_generated_instances(import_entries: Array, species_map: Dictionary, moves: Dictionary, report: PokemonValidation) -> void:
 	for raw_entry in import_entries:
@@ -1297,9 +1255,6 @@ func _author_generated_instances(import_entries: Array, species_map: Dictionary,
 		report.record_instance(save_path)
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
 
 func _read_json_absolute(absolute_path: String) -> Variant:
 	if not FileAccess.file_exists(absolute_path):
@@ -1315,8 +1270,6 @@ func _read_json_absolute(absolute_path: String) -> Variant:
 	return parsed
 
 
-## PMD localized strings come as `{ DefaultText: "...", LocalTexts: { ... } }`.
-## We just take the default for M1.
 func _localized(node: Variant) -> String:
 	if node is Dictionary:
 		var d: Dictionary = node
@@ -1327,9 +1280,6 @@ func _localized(node: Variant) -> String:
 	return ""
 
 
-## Reads a dictionary-typed field from `parent` (which itself may be a Variant
-## holding a Dictionary). Returns an empty Dictionary on any type mismatch so
-## callers can keep their type annotations clean without unsafe casts.
 func _dict_field(parent: Variant, key: String) -> Dictionary:
 	if not (parent is Dictionary):
 		return {}

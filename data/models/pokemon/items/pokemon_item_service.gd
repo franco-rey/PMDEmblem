@@ -1,6 +1,5 @@
 class_name PokemonItemService
 extends RefCounted
-## Runtime item use, held-item equip, and deterministic item reporting.
 
 const GENERATED_ITEMS_DIR: String = "res://data/models/pokemon/generated/items/"
 

@@ -1,11 +1,5 @@
 class_name RandomSkirmishGenerator
 extends RefCounted
-## M5 deterministic generator for transient SkirmishDefinitionResource battles.
-##
-## The generator owns random enemy selection, tier-derived levels, transient
-## enemy instance authoring, map selection, and spawn-order metadata. It does
-## not touch the scene tree; callers hand the returned definition to
-## SkirmishLoader.
 
 const MIN_TEAM_SIZE: int = 1
 const MAX_TEAM_SIZE: int = 8

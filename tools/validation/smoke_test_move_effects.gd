@@ -1,5 +1,4 @@
 extends SceneTree
-## M6 smoke: deterministic move effect families.
 
 const ATTACKER_PATH: String = "res://data/models/pokemon/generated/instances/0004_charmander.tres"
 const DEFENDER_PATH: String = "res://data/models/pokemon/overrides/instances/0467_magmortar.tres"

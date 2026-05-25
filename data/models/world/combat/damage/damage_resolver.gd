@@ -1,6 +1,5 @@
 class_name DamageResolver
 extends RefCounted
-## Pokemon-flavored deterministic damage resolver for M2 combat.
 
 const STAB_MULTIPLIER: float = 1.5
 

@@ -1,6 +1,5 @@
 class_name PokemonLearnsetService
 extends RefCounted
-## Level-up move and four-slot replacement helpers.
 
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
 

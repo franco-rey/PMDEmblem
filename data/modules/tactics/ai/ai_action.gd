@@ -1,6 +1,5 @@
 class_name AIAction
 extends RefCounted
-## Minimum viable AI decision payload.
 
 var move_index: int = -1
 var target_unit: TacticsPawn = null

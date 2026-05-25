@@ -1,5 +1,4 @@
 extends SceneTree
-## M6 smoke: move animation selection/fallback logs.
 
 const BULBASAUR_PATH: String = "res://data/models/pokemon/generated/instances/0001_bulbasaur.tres"
 

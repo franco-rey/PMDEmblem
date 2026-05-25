@@ -1,5 +1,4 @@
 extends SceneTree
-## M7 smoke: same seed + scripted move choices produce identical event logs.
 
 const ATTACKER_PATH: String = "res://data/models/pokemon/generated/instances/0004_charmander.tres"
 const DEFENDER_PATH: String = "res://data/models/pokemon/generated/instances/0007_squirtle.tres"

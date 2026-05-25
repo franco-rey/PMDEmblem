@@ -1,6 +1,5 @@
 class_name PokemonIntrinsicResource
 extends Resource
-## Generated PMD intrinsic/ability metadata.
 
 @export var intrinsic_id: String = ""
 @export var display_name: String = ""

@@ -1,14 +1,8 @@
 class_name DebugLog
 extends RefCounted
-## Static class for handling debug logging functionality.
-##
-## This class provides methods to enable/disable debugging and log various game states
-## without spamming the console. It uses color-coded rich text for better readability.
 
-## Enables or disables debug mode.
 static var debug_enabled: bool = true
 
-## Dictionary of color codes for different debug message types.
 const DEBUG_COLORS: Dictionary = {
 	"magenta": "FF00FF",
 	"yellow": "FFFF00",
@@ -19,7 +13,6 @@ const DEBUG_COLORS: Dictionary = {
 	"red": "FF0000"
 }
 
-## Dictionary to store temporary and old values for various debug states.
 static var debug_dict: Dictionary = {
 	"participant_turn": {"tmp": null, "old": null},
 	"turn_stage": {"tmp": null, "old": null},
@@ -36,30 +29,20 @@ static var debug_dict: Dictionary = {
 }
 
 
-## Enables or disables debug logging.
-##
-## @param enabled: Boolean value to enable (true) or disable (false) debug logging.
 static func set_debug_enabled(enabled: bool) -> void:
 	debug_enabled = enabled
 
 
-## Logs debug messages without spamming the console.
-##
-## This function checks if the debug state has changed before logging,
-## preventing repeated messages for unchanged states.
-##
-## @param debug_name: The name of the debug state to update.
-## @param argument: The new value of the debug state.
 static func debug_nospam(debug_name: String, argument: Variant) -> void:
 	if not debug_enabled:
 		return
-	
+
 	if debug_name in debug_dict:
 		var _d: Dictionary = debug_dict[debug_name]
-		
+
 		match debug_name:
 			"participant_turn":
-				_d.tmp = "Player" if argument else "Opponent" # Set tmp value based on argument
+				_d.tmp = "Player" if argument else "Opponent"
 				compare_debug_values("[ --- Turn Update --- ] 👾 Switched participant: ", _d, "magenta")
 			"turn_stage":
 				_d.tmp = argument
@@ -98,18 +81,10 @@ static func debug_nospam(debug_name: String, argument: Variant) -> void:
 				compare_debug_values("[ 🏒 ] Not moving. No nearest target found for ", _d, "red")
 
 
-## Compares and prints debug values if they have changed.
-##
-## This function checks if the temporary value differs from the old value,
-## and if so, prints a color-coded message and updates the old value.
-##
-## @param message: The message to print before the debug value.
-## @param dict_entry: The dictionary containing temporary and old values.
-## @param warning_color: The color to use for the debug message.
 static func compare_debug_values(message: String, dict_entry: Dictionary, warning_color: String) -> void:
 	if dict_entry.old != dict_entry.tmp:
 		var message_color: String = "[color=#" + DEBUG_COLORS[warning_color] + "]"
 		var close_color: String = "[/color]"
-		print_rich(message_color, message, "[i][u]", dict_entry.tmp, "[/u][/i]", close_color) # Print color-coded message
+		print_rich(message_color, message, "[i][u]", dict_entry.tmp, "[/u][/i]", close_color)
 	if dict_entry.old == null or dict_entry.old != dict_entry.tmp:
-		dict_entry.old = dict_entry.tmp # Update old value if it's null or different from tmp
+		dict_entry.old = dict_entry.tmp

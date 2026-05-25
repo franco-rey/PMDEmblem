@@ -1,9 +1,5 @@
 class_name SkirmishDefinitionResource
 extends Resource
-## A single authored or generated battle setup.
-##
-## Manual skirmishes, future random skirmishes, and roguelite encounters all
-## flow through this resource before the loader assembles a TacticsLevel.
 
 const OBJECTIVE_DEFEAT_ALL_ENEMIES: int = 0
 const OBJECTIVE_DEFEND_TILE: int = 1

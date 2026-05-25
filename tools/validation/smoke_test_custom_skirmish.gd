@@ -1,22 +1,4 @@
 extends SceneTree
-## Headless smoke test for M4 R1 custom skirmishes.
-##
-## Validates the custom skirmish builder and M5.5 lobby entrypoint against the spec in
-## `plan/milestones/M4_R1_custom_skirmishes.md`:
-##
-##   - The main scene exposes the premade dropdown + Launch button and opens
-##     the dedicated SkirmishLobby for custom setup.
-##   - `CustomSkirmishBuilder` lists the 7 current Pokemon and the `test_arena`
-##     map; `test_arena` ships >= 8 player and 8 enemy anchors.
-##   - 1v1 and 8v8 (with duplicates) custom builds produce loader-ready
-##     `SkirmishDefinitionResource`s, and the loader spawns each pawn on a
-##     unique anchor drawn from the first 8 of each side.
-##   - Same `(seed, teams, map)` -> identical team composition and identical
-##     spawn-anchor assignment across builds.
-##   - Empty seed input resolves to a fresh integer the caller can replay.
-##
-## Recipe:
-##   godot --headless --path . --script tools/validation/smoke_test_custom_skirmish.gd
 
 const MAIN_SCENE_PATH: String = "res://assets/scene/main.tscn"
 const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/test_arena.tres"
@@ -64,9 +46,6 @@ func _check_main_scene_controls() -> void:
 		_fail("main scene instantiates")
 		return
 	root.add_child(instance)
-	# Adding under root inside SceneTree._init() does not flush _ready
-	# synchronously; wait one process frame so the @onready vars and
-	# `_populate_custom_pickers` actually run before we inspect items.
 	await process_frame
 
 	_assert_true(instance.get_node_or_null("UI/MapSelector/SkirmishMenu/SkirmishPicker") != null, "main scene keeps premade SkirmishPicker")

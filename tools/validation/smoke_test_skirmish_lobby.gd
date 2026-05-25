@@ -1,8 +1,4 @@
 extends SceneTree
-## Headless smoke test for the M5.5 skirmish setup lobby.
-##
-## Recipe:
-##   godot --headless --path . --script tools/validation/smoke_test_skirmish_lobby.gd
 
 const LOBBY_SCENE_PATH: String = "res://assets/scene/skirmish_lobby.tscn"
 const EXTERNAL_PATH_MARKERS: Array[String] = [

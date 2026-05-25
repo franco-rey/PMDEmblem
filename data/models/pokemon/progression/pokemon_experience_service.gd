@@ -1,6 +1,5 @@
 class_name PokemonExperienceService
 extends RefCounted
-## EXP table and level transition service backed by generated form data.
 
 const MIN_LEVEL: int = 1
 const MAX_LEVEL: int = 100

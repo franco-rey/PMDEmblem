@@ -1,6 +1,5 @@
 class_name CurrentRosterReadiness
 extends RefCounted
-## M7 current-roster readiness report used by hardening smoke tests.
 
 const REPORT_JSON_PATH: String = "res://data/models/pokemon/import_reports/current_roster_readiness_report.json"
 const REPORT_TEXT_PATH: String = "res://data/models/pokemon/import_reports/current_roster_readiness_report.txt"

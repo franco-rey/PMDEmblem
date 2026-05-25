@@ -1,6 +1,5 @@
 class_name BattleAnimationResolver
 extends RefCounted
-## Chooses semantic battle animation states and logs exact/fallback decisions.
 
 const FALLBACKS: Dictionary = {
 	"physical_attack": ["physical_attack", "attack", "hop", "idle"],
@@ -43,7 +42,7 @@ func _select(pawn: TacticsPawn, move: PokemonMoveResource, requested: String, pu
 	var chosen: String = ""
 	var candidates: Array = FALLBACKS.get(requested, [requested, "idle"])
 	if sprite_set != null:
-		if move != null and sprite_set.move_animation_map.has(move.move_id):
+		if purpose == "move_use" and move != null and sprite_set.move_animation_map.has(move.move_id):
 			var exact: String = String(sprite_set.move_animation_map[move.move_id])
 			if sprite_set.has_animation_state(exact):
 				chosen = exact

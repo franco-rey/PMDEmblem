@@ -1,5 +1,4 @@
 extends SceneTree
-## M8 smoke: generated item resources, bag, consumables, held effects, reports.
 
 const BULBASAUR_PATH: String = "res://data/models/pokemon/generated/instances/0001_bulbasaur.tres"
 

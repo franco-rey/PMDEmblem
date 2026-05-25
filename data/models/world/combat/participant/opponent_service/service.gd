@@ -1,25 +1,14 @@
 class_name TacticsOpponentService
 extends RefCounted
-## Service class for TacticsOpponent
 
-## Resource containing participant data and configurations
 var res: TacticsParticipantResource
-## Resource for camera-related data and configurations
 var camera: TacticsCameraResource
-## Resource for control-related data and configurations
 var controls: TacticsControlsResource
-## Reference to the TacticsArena node
 var arena: TacticsArena
 var minimum_viable_ai := MinimumViableAI.new()
 var type_chart: TypeChartResource = load("res://data/models/pokemon/generated/types/type_chart.tres") as TypeChartResource
 
 
-## Initializes the TacticsOpponentService
-##
-## @param _res: The TacticsParticipantResource to use
-## @param _camera: The TacticsCameraResource to use
-## @param _controls: The TacticsControlsResource to use
-## @param _arena: The TacticsArena node to use
 func _init(_res: TacticsParticipantResource, _camera: TacticsCameraResource, _controls: TacticsControlsResource, _arena: TacticsArena) -> void:
 	res = _res
 	camera = _camera
@@ -27,10 +16,6 @@ func _init(_res: TacticsParticipantResource, _camera: TacticsCameraResource, _co
 	arena = _arena
 
 
-## Checks if all opponent pawns are properly configured
-##
-## @param opponent: The TacticsOpponent node to check
-## @return: Whether all pawns are configured
 func is_pawn_configured(opponent: TacticsOpponent) -> bool:
 	for pawn: TacticsPawn in opponent.get_children():
 		if not pawn.center():
@@ -38,9 +23,6 @@ func is_pawn_configured(opponent: TacticsOpponent) -> bool:
 	return true
 
 
-## Selects a pawn for the opponent to control
-##
-## @param opponent: The TacticsOpponent node
 func choose_pawn(opponent: TacticsOpponent) -> void:
 	arena.reset_all_tile_markers()
 	for p: TacticsPawn in opponent.get_children():
@@ -52,16 +34,12 @@ func choose_pawn(opponent: TacticsOpponent) -> void:
 			return
 
 
-## Initiates the opponent's pawn to chase the nearest enemy
-##
-## @param opponent: The TacticsOpponent node
-## @param player_node: The player's node
 func chase_nearest_enemy(opponent: TacticsOpponent, player_node: Node) -> void:
 	if res.curr_pawn.res.can_move:
 		arena.reset_all_tile_markers()
 		arena.process_surrounding_tiles(res.curr_pawn.get_tile(), res.curr_pawn.stats.movement, opponent.get_children())
 		arena.mark_reachable_tiles(res.curr_pawn.get_tile(), res.curr_pawn.stats.movement)
-		
+
 		var action: AIAction = minimum_viable_ai.choose_action(
 			res.curr_pawn,
 			opponent.get_children(),
@@ -86,7 +64,6 @@ func chase_nearest_enemy(opponent: TacticsOpponent, player_node: Node) -> void:
 		push_error("Tried to make a pawn that cannot move chase nearest enemy: ", res.curr_pawn)
 
 
-## Checks if the opponent's pawn has finished moving
 func is_pawn_done_moving() -> void:
 	if res.curr_pawn.res.pathfinding_tilestack.is_empty():
 		if DebugLog.debug_enabled:
@@ -94,7 +71,6 @@ func is_pawn_done_moving() -> void:
 		res.stage = res.STAGE_SELECT_LOCATION
 
 
-## Selects a pawn for the opponent to attack
 func choose_pawn_to_attack() -> void:
 	arena.reset_all_tile_markers()
 	var move_index: int = res.curr_pawn.res.selected_move_index
@@ -102,7 +78,7 @@ func choose_pawn_to_attack() -> void:
 	var range_value: int = max(1, move.tactical_range_value) if move != null else res.curr_pawn.stats.attack_range
 	arena.process_surrounding_tiles(res.curr_pawn.get_tile(), range_value)
 	arena.mark_attackable_tiles(res.curr_pawn.get_tile(), range_value)
-	
+
 	var action: AIAction = minimum_viable_ai.choose_action(
 		res.curr_pawn,
 		res.curr_pawn.get_parent().get_children(),
@@ -125,7 +101,7 @@ func choose_pawn_to_attack() -> void:
 	else:
 		if DebugLog.debug_enabled:
 			print_rich("[color=orange]No target detected.[/color]")
-		
+
 	res.stage = res.STAGE_MOVE_PAWN
 
 

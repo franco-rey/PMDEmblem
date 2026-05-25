@@ -1,6 +1,5 @@
 class_name SkirmishMoveLoadout
 extends RefCounted
-## Deterministic transient four-move loadouts for skirmish entrants.
 
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
 const MAX_MOVE_SLOTS: int = PokemonInstanceResource.MAX_MOVE_SLOTS

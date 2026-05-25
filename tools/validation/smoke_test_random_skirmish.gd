@@ -1,11 +1,4 @@
 extends SceneTree
-## Headless smoke test for the M5 skirmish-mode engine.
-##
-## Validates the canonical RandomSkirmishGenerator and the compatibility
-## facade on CustomSkirmishBuilder.
-##
-## Recipe:
-##   godot --headless --path . --script tools/validation/smoke_test_random_skirmish.gd
 
 const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/test_arena.tres"
 const RandomSkirmishGenerator = preload("res://data/modules/skirmish/random_skirmish_generator.gd")

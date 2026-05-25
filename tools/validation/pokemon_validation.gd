@@ -1,13 +1,6 @@
 @tool
 class_name PokemonValidation
 extends RefCounted
-## Aggregates findings from the PMDODump importer and writes a flat text
-## report to `res://data/models/pokemon/import_reports/pokemon_import_report.txt`.
-##
-## Required by `plan.md` M1: "Add validation reports for missing data,
-## unsupported move effects, missing sprites, and bad sprite dimensions."
-## Designed so a developer can scan the report top-to-bottom and answer
-## "what didn't import cleanly?" in under a minute.
 
 class SpeciesEntry:
 	extends RefCounted
@@ -107,7 +100,6 @@ func set_type_chart_summary(loaded: bool, count: int, matrix_size: int, buckets:
 	effectiveness_buckets = buckets
 
 
-## Persist the report. Returns true on success.
 func write(path: String) -> bool:
 	var dir_path: String = path.get_base_dir()
 	if not DirAccess.dir_exists_absolute(dir_path):

@@ -1,6 +1,5 @@
 class_name SkirmishLobby
 extends Control
-## Scalable M5.5 skirmish setup surface.
 
 signal launch_requested(definition: SkirmishDefinitionResource, seed: int)
 signal close_requested
