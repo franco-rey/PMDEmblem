@@ -66,6 +66,7 @@ func run() -> void:
 	var type_chart: TypeChartResource = _import_type_chart(report, source_roots)
 	var sprite_sets: Dictionary = _import_sprite_sets(import_entries, report)
 	var moves: Dictionary = _import_moves(import_entries, source_roots, report)
+	_finalize_sprite_sets(import_entries, sprite_sets, moves, report)
 	var species_map: Dictionary = _import_species(import_entries, sprite_sets, moves, source_roots, report)
 	_import_status_resources(moves, report)
 	_import_intrinsic_resources(species_map, report)
@@ -242,7 +243,7 @@ func _build_sprite_set(entry: Dictionary, report: PokemonValidation) -> PokemonS
 	sprite_set.sleep_path = String(assets.get("sleep", ""))
 	sprite_set.hop_path = String(assets.get("hop", ""))
 	sprite_set.anim_data_path = String(assets.get("anim_data", ""))
-	sprite_set.animation_states = _default_animation_states(sprite_set)
+	sprite_set.animation_states = _animation_states_from_manifest(sprite_set, entry)
 	if assets.has("portrait_normal"):
 		sprite_set.portrait_paths = [String(assets["portrait_normal"])]
 
@@ -263,6 +264,40 @@ func _build_sprite_set(entry: Dictionary, report: PokemonValidation) -> PokemonS
 	return sprite_set
 
 
+func _animation_states_from_manifest(sprite_set: PokemonSpriteSetResource, entry: Dictionary) -> Dictionary:
+	var states: Dictionary = _default_animation_states(sprite_set)
+	var assets: Dictionary = entry.get("assets", {})
+	var raw_states: Variant = assets.get("animation_states", {})
+	if raw_states is Dictionary:
+		for state_key_v in (raw_states as Dictionary).keys():
+			var state_key: String = String(state_key_v)
+			var raw_entry: Variant = (raw_states as Dictionary)[state_key_v]
+			if not (raw_entry is Dictionary):
+				continue
+			var state_entry: Dictionary = raw_entry
+			var path: String = String(state_entry.get("path", ""))
+			if path.is_empty():
+				continue
+			var metadata: Dictionary = state_entry.get("metadata", {})
+			states[state_key] = {
+				"path": path,
+				"source_name": String(state_entry.get("source_name", state_key.capitalize())),
+				"source_filename": String(state_entry.get("source_filename", "")),
+				"checksum": String(state_entry.get("checksum", "")),
+				"cell_size": Vector2i(int(metadata.get("frame_width", 0)), int(metadata.get("frame_height", 0))),
+				"directions": _directions_for_state(state_key),
+				"frame_count": int(metadata.get("frame_count", 0)),
+				"timing": _typed_int_array(metadata.get("durations", [])),
+				"source_index": int(metadata.get("index", 0)),
+				"copy_of": String(metadata.get("copy_of", "")),
+				"rush_frame": int(metadata.get("rush_frame", 0)),
+				"hit_frame": int(metadata.get("hit_frame", 0)),
+				"return_frame": int(metadata.get("return_frame", 0)),
+			}
+	_apply_animation_aliases(states)
+	return states
+
+
 func _default_animation_states(sprite_set: PokemonSpriteSetResource) -> Dictionary:
 	var states: Dictionary = {}
 	var path_by_key: Dictionary = {
@@ -272,11 +307,6 @@ func _default_animation_states(sprite_set: PokemonSpriteSetResource) -> Dictiona
 		"sleep": sprite_set.sleep_path,
 		"faint": sprite_set.sleep_path,
 		"hop": sprite_set.hop_path,
-		"attack": sprite_set.hop_path,
-		"physical_attack": sprite_set.hop_path,
-		"special_attack": sprite_set.hop_path,
-		"status_attack": sprite_set.idle_path,
-		"miss": sprite_set.idle_path,
 	}
 	for key in path_by_key.keys():
 		var path: String = String(path_by_key[key])
@@ -286,11 +316,109 @@ func _default_animation_states(sprite_set: PokemonSpriteSetResource) -> Dictiona
 			"path": path,
 			"source_name": key.capitalize(),
 			"cell_size": Vector2i.ZERO,
-			"directions": 8,
+			"directions": _directions_for_state(key),
 			"frame_count": 0,
 			"timing": [],
 		}
 	return states
+
+
+func _apply_animation_aliases(states: Dictionary) -> void:
+	_alias_animation_state(states, "attack", ["attack", "hop", "idle"])
+	_alias_animation_state(states, "physical_attack", ["physical_attack", "attack", "strike", "swing", "double", "hop"])
+	_alias_animation_state(states, "special_attack", ["special_attack", "shoot", "cast", "charge", "attack", "hop"])
+	_alias_animation_state(states, "status_attack", ["status_attack", "cast", "buff", "charge", "shake", "nod", "idle"])
+	_alias_animation_state(states, "heal", ["heal", "buff", "charge", "shake", "status_attack", "idle"])
+	_alias_animation_state(states, "buff", ["buff", "charge", "shake", "nod", "status_attack", "idle"])
+	_alias_animation_state(states, "debuff", ["debuff", "cringe", "shake", "status_attack", "idle"])
+	_alias_animation_state(states, "miss", ["miss", "idle"])
+	_alias_animation_state(states, "faint", ["faint", "sleep", "hurt", "idle"])
+
+
+func _alias_animation_state(states: Dictionary, alias_key: String, candidates: Array[String]) -> void:
+	if states.has(alias_key):
+		return
+	for candidate in candidates:
+		if not states.has(candidate):
+			continue
+		var entry: Variant = states[candidate]
+		if not (entry is Dictionary):
+			continue
+		var alias_entry: Dictionary = (entry as Dictionary).duplicate(true)
+		alias_entry["alias_of"] = candidate
+		states[alias_key] = alias_entry
+		return
+
+
+func _directions_for_state(state_key: String) -> int:
+	return 1 if state_key in ["sleep", "faint"] else 8
+
+
+func _typed_int_array(values: Variant) -> Array[int]:
+	var out: Array[int] = []
+	if values is Array:
+		for value in values:
+			out.append(int(value))
+	return out
+
+
+func _finalize_sprite_sets(import_entries: Array, sprite_sets: Dictionary, moves: Dictionary, report: PokemonValidation) -> void:
+	for raw_entry in import_entries:
+		if not (raw_entry is Dictionary):
+			continue
+		var entry: Dictionary = raw_entry
+		var project_slug: String = String(entry.get("slug", ""))
+		var sprite_path: String = String(sprite_sets.get(project_slug, ""))
+		if sprite_path.is_empty() or not ResourceLoader.exists(sprite_path):
+			continue
+		var sprite_set: PokemonSpriteSetResource = load(sprite_path) as PokemonSpriteSetResource
+		if sprite_set == null:
+			continue
+		sprite_set.move_animation_map = _move_animation_map_for_entry(entry, moves, sprite_set)
+		var err: int = ResourceSaver.save(sprite_set, sprite_path)
+		if err != OK:
+			report.add_error("Failed to finalize sprite set for %s (err %d)" % [project_slug, err])
+
+
+func _move_animation_map_for_entry(entry: Dictionary, moves: Dictionary, sprite_set: PokemonSpriteSetResource) -> Dictionary:
+	var out: Dictionary = {}
+	var seen: Dictionary = {}
+	for key in ["import_moves", "default_moves"]:
+		for move_slug_var in _entry_move_array(entry, key):
+			var move_slug: String = String(move_slug_var)
+			if move_slug.is_empty() or seen.has(move_slug):
+				continue
+			seen[move_slug] = true
+			var move_path: String = String(moves.get(move_slug, ""))
+			if move_path.is_empty() or not ResourceLoader.exists(move_path):
+				continue
+			var move: PokemonMoveResource = load(move_path) as PokemonMoveResource
+			if move == null:
+				continue
+			out[move.move_id] = _animation_key_for_move(move, sprite_set)
+	return out
+
+
+func _animation_key_for_move(move: PokemonMoveResource, sprite_set: PokemonSpriteSetResource) -> String:
+	var requested: String = move.animation_key
+	if not requested.is_empty() and sprite_set.has_animation_state(requested):
+		return requested
+	match move.category:
+		PokemonMoveResource.CATEGORY_PHYSICAL:
+			return _first_animation_key(sprite_set, ["physical_attack", "attack", "strike", "swing", "hop", "idle"])
+		PokemonMoveResource.CATEGORY_SPECIAL:
+			if move.tactical_range_kind == PokemonMoveResource.TacticalRangeKind.PROJECTILE:
+				return _first_animation_key(sprite_set, ["shoot", "special_attack", "attack", "hop", "idle"])
+			return _first_animation_key(sprite_set, ["special_attack", "shoot", "cast", "attack", "hop", "idle"])
+		_:
+			return _first_animation_key(sprite_set, ["status_attack", "buff", "charge", "shake", "idle"])
+
+
+func _first_animation_key(sprite_set: PokemonSpriteSetResource, candidates: Array[String]) -> String:
+	for key in candidates:
+		if sprite_set.has_animation_state(key):
+			return key
+	return "idle"
 
 
 # ---------------------------------------------------------------------------

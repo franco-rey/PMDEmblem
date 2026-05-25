@@ -58,7 +58,10 @@ func is_pawn_configured(player: TacticsPlayer) -> bool:
 func show_available_pawn_actions() -> void:
 	controls.set_actions_menu_visibility(true, res.curr_pawn)
 	arena.reset_all_tile_markers()
-	arena.mark_hover_tile(res.curr_pawn.get_tile())
+	if controls.preview_mode == TacticsControlsResource.PREVIEW_MOVEMENT:
+		arena.mark_movement_preview(res.curr_pawn)
+	else:
+		arena.mark_hover_tile(res.curr_pawn.get_tile())
 
 
 ## Displays available movement options for the current pawn

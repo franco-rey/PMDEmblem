@@ -105,6 +105,10 @@ func select_move(ctrl: TacticsControls) -> void:
 	pawn_selection_service.select_move(ctrl)
 
 
+func refresh_hover_preview() -> void:
+	pawn_selection_service.refresh_hover_preview()
+
+
 ## Handles player's move action.
 func player_wants_to_move() -> void:
 	pawn_selection_service.player_wants_to_move()

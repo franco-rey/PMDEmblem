@@ -32,7 +32,8 @@ extends Resource
 
 @export var sprite_set: PokemonSpriteSetResource
 
-## PMD intrinsic slugs. M1 records but does not apply them.
+## PMD intrinsic slugs. M6/M7 resolve these to generated intrinsic resources
+## where hooks are supported, otherwise readiness reports keep them explicit.
 @export var intrinsic1: String = ""
 @export var intrinsic2: String = ""
 @export var intrinsic3: String = ""

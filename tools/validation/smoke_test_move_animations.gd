@@ -14,6 +14,7 @@ func _init() -> void:
 	pawn.name = "AnimPawn"
 	pawn.stats = Stats.new()
 	pawn.stats.init_from_pokemon(load(BULBASAUR_PATH) as PokemonInstanceResource)
+	pawn.add_child(pawn.stats)
 	var resolver := BattleAnimationResolver.new()
 	var log := BattleLog.new()
 
@@ -29,6 +30,7 @@ func _init() -> void:
 	_assert_true(_has_purpose(log, "miss"), "miss animation logged")
 	_assert_true(_has_purpose(log, "faint"), "faint animation logged")
 	_assert_true(_count_animation_events(log) >= 6, "all animation requests produced events")
+	log.events.clear()
 	pawn.free()
 
 	if failures > 0:

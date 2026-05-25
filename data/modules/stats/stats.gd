@@ -294,7 +294,7 @@ func is_active() -> bool:
 
 ## Provided a health operation as a parameter (e.g. "-2", "1"), adds the value to current health. As a consequence, this function serves for both damage and healing.
 func apply_to_curr_health(new: int) -> void:
-	print("Target initial health: ", curr_health, " - Applying damage: ", new)
+	print("Target initial health: ", curr_health, " - Health delta: ", new)
 	curr_health = clamp(curr_health + new, 0, max_health) # Apply health change and clamp to valid range
 	if curr_health <= 0:
 		battle_status = BattleStatus.FAINTED

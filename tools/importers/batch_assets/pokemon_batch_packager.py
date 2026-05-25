@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from asset_rules import (
+    copy_expanded_animation_states,
     copy_portrait,
     copy_sprite_set,
     find_first_complete_sprite_dir,
@@ -172,6 +173,12 @@ def _package_entry(entry: dict[str, Any], sources: Any, dry_run: bool) -> dict[s
         credits_source_dir=sprite_collab_source,
         dry_run=dry_run,
     )
+    expanded_assets, expanded_checksums, expanded_warnings, _expanded_copies = copy_expanded_animation_states(
+        project_root=PROJECT_ROOT,
+        source_dir=sprite_source,
+        destination_dir=actor_dest,
+        dry_run=dry_run,
+    )
     portrait_assets, portrait_checksums, portrait_warnings, _portrait_copies = copy_portrait(
         project_root=PROJECT_ROOT,
         source_dir=portrait_source,
@@ -184,7 +191,10 @@ def _package_entry(entry: dict[str, Any], sources: Any, dry_run: bool) -> dict[s
     usable_moves = [move for move in import_moves if (sources.skill_dir / f"{move}.json").exists()]
     default_moves = usable_moves[-4:]
 
-    warnings = sprite_warnings + portrait_warnings
+    if expanded_assets:
+        sprite_assets["animation_states"] = expanded_assets
+
+    warnings = sprite_warnings + expanded_warnings + portrait_warnings
     disabled_reason = ""
     has_required_sprites = all(not warning.startswith("missing sprite state") for warning in sprite_warnings) and "missing AnimData.xml" not in sprite_warnings
     if not has_required_sprites:
@@ -216,7 +226,7 @@ def _package_entry(entry: dict[str, Any], sources: Any, dry_run: bool) -> dict[s
             "portrait_collab_dir": str(portrait_collab_source) if portrait_collab_source else "",
         },
         "assets": assets,
-        "checksums": {**sprite_checksums, **portrait_checksums},
+        "checksums": {**sprite_checksums, **expanded_checksums, **portrait_checksums},
         "moves": {
             "import_moves": import_moves,
             "usable_move_count": len(usable_moves),

@@ -8,6 +8,7 @@ extends SceneTree
 ## fainted skipping, and battle-end detection. Exits 0 on success.
 
 var failures: int = 0
+var created_stats: Array[Stats] = []
 
 
 func _init() -> void:
@@ -22,10 +23,12 @@ func _init() -> void:
 	_test_peek_upcoming()
 
 	if failures > 0:
+		_cleanup()
 		push_error("smoke: scheduler failed %d check(s)" % failures)
 		quit(1)
 	else:
 		print("smoke: scheduler clean")
+		_cleanup()
 		quit(0)
 
 
@@ -33,6 +36,7 @@ func _make_unit(speed_val: int, team: int, insertion: int) -> BattleUnit:
 	var stats := Stats.new()
 	stats.speed = speed_val
 	stats.battle_status = Stats.BattleStatus.ACTIVE
+	created_stats.append(stats)
 	return BattleUnit.new(null, stats, team, PokemonInstanceResource.ControlType.AI, insertion)
 
 
@@ -194,3 +198,10 @@ func _assert_true(value: bool, label: String) -> void:
 func _fail(label: String) -> void:
 	failures += 1
 	push_error("smoke: fail - %s" % label)
+
+
+func _cleanup() -> void:
+	for stats in created_stats:
+		if is_instance_valid(stats):
+			stats.free()
+	created_stats.clear()

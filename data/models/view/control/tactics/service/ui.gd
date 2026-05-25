@@ -44,9 +44,12 @@ func _ensure_move_buttons(picker: VBoxContainer, ctrl: TacticsControls) -> void:
 		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		if button.text.is_empty():
 			button.text = "-"
-		if not button.has_meta("move_picker_connected"):
-			button.pressed.connect(ctrl._player_wants_to_select_move.bind(i))
-			button.set_meta("move_picker_connected", true)
+		_replace_signal_connections(button.pressed, ctrl._player_wants_to_select_move.bind(i))
+		_replace_signal_connections(button.button_down, ctrl._player_wants_to_select_move.bind(i))
+		_replace_signal_connections(button.gui_input, _on_move_picker_slot_gui_input.bind(ctrl, i))
+		if controls != null:
+			_replace_signal_connections(button.mouse_entered, _on_move_picker_slot_mouse_entered.bind(ctrl, i))
+			_replace_signal_connections(button.mouse_exited, _on_move_picker_slot_mouse_exited.bind(ctrl, i))
 	var cancel_button: Button = picker.get_node_or_null("Cancel") as Button
 	if cancel_button == null:
 		cancel_button = Button.new()
@@ -59,6 +62,31 @@ func _ensure_move_buttons(picker: VBoxContainer, ctrl: TacticsControls) -> void:
 	_replace_signal_connections(cancel_button.pressed, ctrl._player_wants_to_cancel_move_picker)
 	_replace_signal_connections(cancel_button.button_down, ctrl._player_wants_to_cancel_move_picker)
 	_replace_signal_connections(cancel_button.gui_input, _on_move_picker_cancel_gui_input.bind(ctrl))
+
+
+func _on_move_picker_slot_gui_input(event: InputEvent, ctrl: TacticsControls, slot_index: int) -> void:
+	if ctrl == null:
+		return
+	if event is InputEventMouseButton:
+		var mouse_event: InputEventMouseButton = event as InputEventMouseButton
+		if mouse_event.button_index == MOUSE_BUTTON_LEFT and mouse_event.pressed:
+			ctrl._player_wants_to_select_move(slot_index)
+			if ctrl.get_viewport() != null:
+				ctrl.get_viewport().set_input_as_handled()
+
+
+func _on_move_picker_slot_mouse_entered(ctrl: TacticsControls, slot_index: int) -> void:
+	if ctrl == null or ctrl.serv == null or controls == null:
+		return
+	controls.preview_move_slot(slot_index)
+	ctrl.serv.refresh_hover_preview()
+
+
+func _on_move_picker_slot_mouse_exited(ctrl: TacticsControls, slot_index: int) -> void:
+	if ctrl == null or ctrl.serv == null or controls == null:
+		return
+	controls.clear_preview_move_slot(slot_index)
+	ctrl.serv.refresh_hover_preview()
 
 
 func _on_move_picker_cancel_gui_input(event: InputEvent, ctrl: TacticsControls) -> void:
@@ -111,10 +139,27 @@ func set_actions_menu_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls)
 	var action_move: Button = actions.get_node_or_null("Move") as Button
 	var action_attack: Button = actions.get_node_or_null("Attack") as Button
 	if action_move != null:
+		if controls != null:
+			_replace_signal_connections(action_move.mouse_entered, _on_move_action_mouse_entered.bind(ctrl))
+			_replace_signal_connections(action_move.mouse_exited, _on_move_action_mouse_exited.bind(ctrl))
 		action_move.disabled = not p.res.can_move
 	var has_usable_move: bool = p.stats.move_slots.is_empty() or p.stats.first_usable_move_index(false) >= 0
 	if action_attack != null:
 		action_attack.disabled = not p.res.can_attack or not has_usable_move
+
+
+func _on_move_action_mouse_entered(ctrl: TacticsControls) -> void:
+	if ctrl == null or ctrl.serv == null or controls == null:
+		return
+	controls.preview_movement()
+	ctrl.serv.refresh_hover_preview()
+
+
+func _on_move_action_mouse_exited(ctrl: TacticsControls) -> void:
+	if ctrl == null or ctrl.serv == null or controls == null:
+		return
+	controls.clear_preview_movement()
+	ctrl.serv.refresh_hover_preview()
 
 
 func set_move_picker_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls, all_units: Array[TacticsPawn]) -> void:

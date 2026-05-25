@@ -209,6 +209,7 @@ func _on_turn_started(unit: BattleUnit) -> void:
 	var pawn: TacticsPawn = unit.pawn
 	if not pawn.is_alive():
 		return
+	_expire_turn_start_statuses(pawn)
 	pawn.reset_turn()
 	pawn.res.has_acted_this_round = false
 	pawn.res.use_legacy_attack_fallback = false
@@ -232,6 +233,21 @@ func _on_turn_started(unit: BattleUnit) -> void:
 		"unit": pawn,
 		"team": unit.team,
 	})
+
+
+func _expire_turn_start_statuses(pawn: TacticsPawn) -> void:
+	if pawn == null or pawn.stats == null:
+		return
+	for status_id: String in ["protect", "counter"]:
+		var removed: Dictionary = pawn.stats.remove_battle_status(status_id)
+		if removed.is_empty():
+			continue
+		battle_log.append({
+			"kind": "status_removed",
+			"unit": pawn,
+			"status_id": status_id,
+			"source": "turn_start_expired",
+		})
 
 
 func _on_turn_completed(unit: BattleUnit) -> void:
