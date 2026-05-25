@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_6756n"]
+
+[resource]
+script = ExtResource("1_6756n")
+move_id = "lick"
+index_number = 122
+name = "Lick"
+description = "The target is licked with a long tongue. This may also leave the target with paralysis."
+type = "ghost"
+category = 1
+base_power = 40
+accuracy = 100
+pp = 20
+tactical_range_kind = 1
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.AdditionalEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "damage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
+"target": "hit_target"
+}, {
+"chance": 50,
+"family": "status",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.StatusBattleEvent, PMDC",
+"status_id": "paralyze",
+"target": "hit_target"
+}])
+animation_key = "physical_attack"

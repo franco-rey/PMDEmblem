@@ -37,6 +37,7 @@ func _init(_controls: TacticsControlsResource, _t_cam: TacticsCameraResource, _p
 
 ## Sets up signal connections and performs initial checks.
 func setup(ctrl: TacticsControls) -> void:
+	ui_service.ensure_move_picker(ctrl)
 	if not controls:
 		push_error("TacticsControls needs a ControlResource from /data/models/view/controls/tactics/")
 	else:
@@ -47,6 +48,7 @@ func setup(ctrl: TacticsControls) -> void:
 		controls.connect("called_set_cursor_shape_to_arrow", ctrl.set_cursor_shape_to_arrow)
 		controls.connect("called_select_pawn", ctrl.select_pawn)
 		controls.connect("called_select_pawn_to_attack", ctrl.select_pawn_to_attack)
+		controls.connect("called_select_move", ctrl.select_move)
 		controls.connect("called_select_new_location", ctrl.select_new_location)
 	if not t_cam:
 		push_error("TacticsCamera needs a CameraResource (T Cam) from /data/models/view/camera/tactics/")
@@ -63,6 +65,10 @@ func physics_process(_delta: float, ctrl: TacticsControls) -> void:
 ## Handles input events.
 func handle_input(event: InputEvent) -> void:
 	input_service.handle_input(event)
+	if event.is_action_pressed("ui_cancel"):
+		if event is InputEventKey and (event as InputEventKey).echo:
+			return
+		player_wants_to_cancel()
 
 
 ## Delegates camera movement to the camera service.
@@ -95,6 +101,10 @@ func select_pawn_to_attack(ctrl: TacticsControls) -> void:
 	pawn_selection_service.select_pawn_to_attack(ctrl)
 
 
+func select_move(ctrl: TacticsControls) -> void:
+	pawn_selection_service.select_move(ctrl)
+
+
 ## Handles player's move action.
 func player_wants_to_move() -> void:
 	pawn_selection_service.player_wants_to_move()
@@ -118,3 +128,7 @@ func player_wants_to_skip_turn() -> void:
 ## Handles player's attack action.
 func player_wants_to_attack() -> void:
 	pawn_selection_service.player_wants_to_attack()
+
+
+func player_wants_to_select_move(slot_index: int) -> void:
+	pawn_selection_service.player_wants_to_select_move(slot_index)

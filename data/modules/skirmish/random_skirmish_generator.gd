@@ -176,7 +176,7 @@ static func _build_enemy_team(roster_templates: Array[PokemonInstanceResource], 
 		var template: PokemonInstanceResource = available[pick_index]
 		if not allow_duplicates:
 			available.remove_at(pick_index)
-		out.append(_make_enemy_instance(template, tier, rng))
+		out.append(_make_enemy_instance(template, tier, rng, i))
 	return out
 
 
@@ -184,7 +184,7 @@ static func _is_template_less_than(a: PokemonInstanceResource, b: PokemonInstanc
 	return a.species.species_id < b.species.species_id
 
 
-static func _make_enemy_instance(template: PokemonInstanceResource, tier: Dictionary, rng: RandomNumberGenerator) -> PokemonInstanceResource:
+static func _make_enemy_instance(template: PokemonInstanceResource, tier: Dictionary, rng: RandomNumberGenerator, slot_index: int) -> PokemonInstanceResource:
 	var instance := PokemonInstanceResource.new()
 	instance.species = template.species
 	instance.form_index = template.form_index
@@ -200,6 +200,7 @@ static func _make_enemy_instance(template: PokemonInstanceResource, tier: Dictio
 	instance.pp_state = []
 	for move in instance.move_slots:
 		instance.pp_state.append(move.pp if move != null else 0)
+	SkirmishMoveLoadout.assign_loadout(instance, int(rng.seed), "enemy", slot_index)
 	return instance
 
 

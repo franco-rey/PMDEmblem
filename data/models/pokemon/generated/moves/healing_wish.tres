@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_1x6no"]
+
+[resource]
+script = ExtResource("1_1x6no")
+move_id = "healing_wish"
+index_number = 361
+name = "Healing Wish"
+description = "The user's HP drops to 1. In return, the rest of the party will have its HP restored and status conditions cured."
+type = "psychic"
+pp = 6
+tactical_range_kind = 5
+tactical_range_value = 4
+target_alignment = 2
+effect_tags = Array[String](["PMDC.Dungeon.RestoreHPEvent, PMDC", "PMDC.Dungeon.RemoveStateStatusBattleEvent, PMDC", "PMDC.Dungeon.AddContextStateEvent, PMDC", "PMDC.Dungeon.HPTo1Event, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.RestoreHPEvent, PMDC", "PMDC.Dungeon.RemoveStateStatusBattleEvent, PMDC", "PMDC.Dungeon.AddContextStateEvent, PMDC", "PMDC.Dungeon.HPTo1Event, PMDC"])
+animation_key = "status_attack"

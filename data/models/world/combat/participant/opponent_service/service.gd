@@ -46,7 +46,7 @@ func choose_pawn(opponent: TacticsOpponent) -> void:
 	for p: TacticsPawn in opponent.get_children():
 		if p.can_act() and p.is_alive():
 			res.curr_pawn = p
-			p.res.selected_move_index = p.stats.first_usable_move_index(true)
+			p.res.selected_move_index = p.stats.first_usable_move_index(false)
 			p.res.use_legacy_attack_fallback = false
 			res.stage = res.STAGE_SHOW_ACTIONS
 			return
@@ -114,8 +114,9 @@ func choose_pawn_to_attack() -> void:
 		res.curr_pawn.res.use_legacy_attack_fallback = false
 		res.attackable_pawn = action.target_unit
 	else:
-		res.curr_pawn.res.use_legacy_attack_fallback = true
-		res.attackable_pawn = arena.get_weakest_attackable_pawn(res.targets.get_children())
+		res.curr_pawn.res.use_legacy_attack_fallback = false
+		res.attackable_pawn = null
+		_log_no_usable_move(res.curr_pawn)
 	if res.attackable_pawn:
 		if DebugLog.debug_enabled:
 			print_rich("[color=orange]Weakest target detected:", res.attackable_pawn, "[/color]")
@@ -126,3 +127,17 @@ func choose_pawn_to_attack() -> void:
 			print_rich("[color=orange]No target detected.[/color]")
 		
 	res.stage = res.STAGE_MOVE_PAWN
+
+
+func _log_no_usable_move(pawn: TacticsPawn) -> void:
+	if pawn == null:
+		return
+	var node: Node = pawn
+	while node != null:
+		if node is TacticsLevel:
+			(node as TacticsLevel).battle_log.append({
+				"kind": "no_usable_move",
+				"attacker": pawn,
+			})
+			return
+		node = node.get_parent()

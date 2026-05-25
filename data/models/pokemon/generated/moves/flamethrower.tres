@@ -17,4 +17,17 @@ tactical_range_kind = 3
 tactical_range_value = 5
 target_alignment = 6
 effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.AdditionalEvent, PMDC"])
-unsupported_effect_tags = Array[String](["PMDC.Dungeon.AdditionalEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "damage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
+"target": "hit_target"
+}, {
+"chance": 25,
+"family": "status",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.StatusBattleEvent, PMDC",
+"status_id": "burn",
+"target": "hit_target"
+}])
+animation_key = "special_attack"

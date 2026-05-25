@@ -29,6 +29,7 @@ func _init(_res: TacticsParticipantResource, _camera: TacticsCameraResource, _co
 ## @param player: The TacticsPlayer node
 ## @param participant: The TacticsParticipant node
 func handle_player_turn(delta: float, player: TacticsPlayer, participant: TacticsParticipant) -> void:
+	res.targets = participant.get_node("%TacticsOpponent")
 	if res.turn_just_started:
 		camera.target = player.get_children().front()
 		res.turn_just_started = false
@@ -43,6 +44,7 @@ func handle_player_turn(delta: float, player: TacticsPlayer, participant: Tactic
 		res.STAGE_SHOW_MOVEMENTS: player.show_available_movements()
 		res.STAGE_SELECT_LOCATION: controls.select_new_location()
 		res.STAGE_MOVE_PAWN: player.move_pawn()
+		res.STAGE_SELECT_MOVE: controls.select_move()
 		res.STAGE_DISPLAY_TARGETS: player.display_attackable_targets()
 		res.STAGE_SELECT_ATTACK_TARGET: controls.select_pawn_to_attack()
 		res.STAGE_ATTACK: participant.serv.combat_service.attack_pawn(delta, true)

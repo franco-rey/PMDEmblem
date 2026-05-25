@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="PokemonIntrinsicResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_intrinsic_resource.gd" id="1_x5kcv"]
+
+[resource]
+script = ExtResource("1_x5kcv")
+intrinsic_id = "overgrow"
+display_name = "Overgrow"
+supported_hook_families = Array[String](["battle_start", "before_damage"])
+report_summary = "Supported low-HP same-type damage boost."

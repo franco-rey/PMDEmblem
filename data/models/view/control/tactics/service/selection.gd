@@ -80,6 +80,7 @@ func select_new_location(ctrl: TacticsControls) -> void:
 ## Handles the selection of a pawn to attack.
 func select_pawn_to_attack(ctrl: TacticsControls) -> void:
 	controls.set_actions_menu_visibility(true, participant.curr_pawn)
+	(ctrl.serv.ui_service as TacticsUIService).set_move_picker_visibility(false, participant.curr_pawn, ctrl, [])
 	if participant.attackable_pawn:
 		controls.set_actions_menu_visibility(false, participant.attackable_pawn)
 		participant.attackable_pawn.show_pawn_stats(false)
@@ -114,7 +115,12 @@ func player_wants_to_move() -> void:
 func player_wants_to_cancel() -> void:
 	if participant.display_opponent_stats:
 		participant.display_opponent_stats = false
-	participant.stage = 1 if participant.stage > 1 else 0
+	if participant.stage in [participant.STAGE_DISPLAY_TARGETS, participant.STAGE_SELECT_ATTACK_TARGET] and _has_pokemon_moves(participant.curr_pawn):
+		participant.stage = participant.STAGE_SELECT_MOVE
+	elif participant.stage == participant.STAGE_SELECT_MOVE:
+		participant.stage = participant.STAGE_SHOW_ACTIONS
+	else:
+		participant.stage = 1 if participant.stage > 1 else 0
 
 
 ## Handles the player's intention to wait.
@@ -135,10 +141,65 @@ func player_wants_to_skip_turn() -> void:
 ## Handles the player's intention to attack.
 func player_wants_to_attack() -> void:
 	if participant.curr_pawn != null and participant.curr_pawn.stats.move_slots.size() > 0:
-		var move_index: int = participant.curr_pawn.stats.first_usable_move_index(false)
-		if move_index < 0:
+		if participant.curr_pawn.stats.first_usable_move_index(false) < 0:
 			participant.curr_pawn.res.can_attack = false
 			participant.stage = 1
 			return
-		participant.curr_pawn.res.selected_move_index = move_index
-	participant.stage = 5
+		participant.stage = participant.STAGE_SELECT_MOVE
+		return
+	participant.stage = participant.STAGE_DISPLAY_TARGETS
+
+
+func select_move(ctrl: TacticsControls) -> void:
+	controls.set_actions_menu_visibility(false, participant.curr_pawn)
+	var units: Array[TacticsPawn] = _all_units_for_selection()
+	(ctrl.serv.ui_service as TacticsUIService).set_move_picker_visibility(true, participant.curr_pawn, ctrl, units)
+
+
+func player_wants_to_select_move(slot_index: int) -> void:
+	var pawn: TacticsPawn = participant.curr_pawn
+	if pawn == null or pawn.stats == null:
+		return
+	if slot_index < 0 or slot_index >= pawn.stats.move_slots.size():
+		return
+	var move: PokemonMoveResource = pawn.stats.move_slots[slot_index]
+	if move == null or not pawn.stats.has_pp(slot_index):
+		return
+	if not Targeting.has_legal_target(pawn, move, _all_units_for_selection()):
+		return
+	pawn.res.selected_move_index = slot_index
+	_log_move_selected(pawn, move, slot_index)
+	participant.stage = participant.STAGE_DISPLAY_TARGETS
+
+
+func _has_pokemon_moves(pawn: TacticsPawn) -> bool:
+	return pawn != null and pawn.stats != null and not pawn.stats.move_slots.is_empty()
+
+
+func _all_units_for_selection() -> Array[TacticsPawn]:
+	var out: Array[TacticsPawn] = []
+	if participant.curr_pawn != null and participant.curr_pawn.get_parent() != null:
+		for child: Node in participant.curr_pawn.get_parent().get_children():
+			if child is TacticsPawn:
+				out.append(child)
+	if participant.targets != null:
+		for child: Node in participant.targets.get_children():
+			if child is TacticsPawn and not out.has(child):
+				out.append(child)
+	out.sort_custom(func(a: TacticsPawn, b: TacticsPawn) -> bool: return a.name < b.name)
+	return out
+
+
+func _log_move_selected(pawn: TacticsPawn, move: PokemonMoveResource, slot_index: int) -> void:
+	var node: Node = pawn
+	while node != null:
+		if node is TacticsLevel:
+			var level: TacticsLevel = node as TacticsLevel
+			level.battle_log.append({
+				"kind": "move_selected",
+				"attacker": pawn,
+				"move_id": move.move_id,
+				"slot_index": slot_index,
+			})
+			return
+		node = node.get_parent()

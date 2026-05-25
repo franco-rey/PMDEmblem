@@ -15,4 +15,17 @@ accuracy = 100
 pp = 10
 tactical_range_value = 2
 effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.StatusBattleEvent, PMDC"])
-unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence", "PMDC.Dungeon.StatusBattleEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"])
+effect_records = Array[Dictionary]([{
+"family": "damage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
+"target": "hit_target"
+}, {
+"family": "status",
+"source_bucket": "AfterActions",
+"source_event": "PMDC.Dungeon.StatusBattleEvent, PMDC",
+"status_id": "petal_dance",
+"target": "self"
+}])
+animation_key = "special_attack"

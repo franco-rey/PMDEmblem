@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_xp1sh"]
+
+[resource]
+script = ExtResource("1_xp1sh")
+move_id = "leer"
+index_number = 43
+name = "Leer"
+description = "The user gives opposing Pokémon an intimidating leer that lowers the Defense stat."
+type = "normal"
+accuracy = 100
+pp = 16
+tactical_range_kind = 3
+tactical_range_value = 8
+effect_tags = Array[String](["PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"delta": -1,
+"family": "stat_stage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.StatusStackBattleEvent, PMDC",
+"stat": "defense",
+"status_id": "mod_defense",
+"target": "hit_target"
+}])
+animation_key = "status_attack"

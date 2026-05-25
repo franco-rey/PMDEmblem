@@ -15,3 +15,4 @@ tactical_range_value = 0
 target_alignment = 1
 effect_tags = Array[String](["PMDC.Dungeon.WeatherStackEvent, PMDC"])
 unsupported_effect_tags = Array[String](["PMDC.Dungeon.WeatherStackEvent, PMDC"])
+animation_key = "status_attack"

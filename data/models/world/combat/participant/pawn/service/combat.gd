@@ -5,6 +5,7 @@ extends RefCounted
 const TYPE_CHART_PATH: String = "res://data/models/pokemon/generated/types/type_chart.tres"
 
 var damage_resolver := DamageResolver.new()
+var action_resolver := BattleActionResolver.new()
 var _fallback_rng := RandomNumberGenerator.new()
 
 
@@ -27,23 +28,22 @@ func attack_target_pawn(pawn: TacticsPawn, target_pawn: TacticsPawn, delta: floa
 	
 	# Check if the pawn can attack and enough time has passed for the attack animation
 	if pawn.res.can_attack and pawn.res.wait_delay > TacticsPawnResource.MIN_TIME_FOR_ATTACK / 4.0:
-		var move_index: int = _selected_move_index(pawn)
+		var move_index: int = _selected_move_index(pawn, target_pawn)
 		var move: PokemonMoveResource = _selected_move_for(pawn, move_index)
 		if move == null:
 			if pawn.stats.move_slots.is_empty() or pawn.res.use_legacy_attack_fallback:
 				_apply_legacy_attack(pawn, target_pawn)
 			else:
 				_log_event(pawn, {
-					"kind": "move_rejected",
+					"kind": "no_usable_move",
 					"attacker": pawn,
-					"reason": "no_pp",
 				})
 			pawn.res.use_legacy_attack_fallback = false
 			pawn.res.set_attacking(false)
 		else:
 			pawn.res.selected_move_index = move_index
 			pawn.res.use_legacy_attack_fallback = false
-			_resolve_pokemon_attack(pawn, target_pawn, move, move_index)
+			action_resolver.execute(pawn, target_pawn, move_index, _battle_level(pawn))
 			pawn.res.set_attacking(false)
 
 		# Print debug information if debug mode is enabled
@@ -136,12 +136,24 @@ func _apply_legacy_attack(pawn: TacticsPawn, target_pawn: TacticsPawn) -> void:
 		})
 
 
-func _selected_move_index(pawn: TacticsPawn) -> int:
+func _selected_move_index(pawn: TacticsPawn, target_pawn: TacticsPawn) -> int:
 	var selected: int = pawn.res.selected_move_index
-	if pawn.stats.has_pp(selected):
+	if pawn.stats.has_pp(selected) and _move_can_use_on_target(pawn, target_pawn, pawn.stats.move_slots[selected]):
 		return selected
-	var fallback: int = pawn.stats.first_usable_move_index(false)
-	return fallback
+	for i in range(pawn.stats.move_slots.size()):
+		if not pawn.stats.has_pp(i):
+			continue
+		if _move_can_use_on_target(pawn, target_pawn, pawn.stats.move_slots[i]):
+			return i
+	return -1
+
+
+func _move_can_use_on_target(pawn: TacticsPawn, target_pawn: TacticsPawn, move: PokemonMoveResource) -> bool:
+	if pawn == null or target_pawn == null or move == null:
+		return false
+	if move.tactical_range_kind in [PokemonMoveResource.TacticalRangeKind.AREA, PokemonMoveResource.TacticalRangeKind.LINE]:
+		return Targeting.has_legal_target(pawn, move, _battle_units_for(pawn))
+	return Targeting.alignment_allows(pawn, target_pawn, move)
 
 
 func _selected_move_for(pawn: TacticsPawn, move_index: int) -> PokemonMoveResource:
@@ -163,6 +175,17 @@ func _battle_level(pawn: TacticsPawn) -> TacticsLevel:
 			return node as TacticsLevel
 		node = node.get_parent()
 	return null
+
+
+func _battle_units_for(pawn: TacticsPawn) -> Array[TacticsPawn]:
+	var out: Array[TacticsPawn] = []
+	var battle_level: TacticsLevel = _battle_level(pawn)
+	if battle_level != null and battle_level.player != null and battle_level.opponent != null:
+		for team in [battle_level.player, battle_level.opponent]:
+			for child in team.get_children():
+				if child is TacticsPawn:
+					out.append(child as TacticsPawn)
+	return out
 
 
 func _log_event(pawn: TacticsPawn, event: Dictionary) -> void:

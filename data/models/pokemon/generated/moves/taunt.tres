@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_qa6b4"]
+
+[resource]
+script = ExtResource("1_qa6b4")
+move_id = "taunt"
+index_number = 269
+name = "Taunt"
+description = "The target is taunted into a rage that allows it to use only attack moves."
+type = "dark"
+accuracy = 100
+pp = 20
+tactical_range_value = 4
+effect_tags = Array[String](["PMDC.Dungeon.StatusBattleEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence"])
+effect_records = Array[Dictionary]([{
+"family": "status",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.StatusBattleEvent, PMDC",
+"status_id": "taunted",
+"target": "hit_target"
+}])
+animation_key = "status_attack"

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_cqf8i"]
+
+[resource]
+script = ExtResource("1_cqf8i")
+move_id = "misty_terrain"
+index_number = 581
+name = "Misty Terrain"
+description = "The user covers the entire floor with mist. This protects Pokémon from status conditions."
+type = "fairy"
+pp = 10
+tactical_range_kind = 6
+tactical_range_value = 0
+target_alignment = 1
+effect_tags = Array[String](["PMDC.Dungeon.GiveMapStatusEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.GiveMapStatusEvent, PMDC"])
+animation_key = "status_attack"

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="PokemonIntrinsicResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_intrinsic_resource.gd" id="1_req3m"]
+
+[resource]
+script = ExtResource("1_req3m")
+intrinsic_id = "justified"
+display_name = "Justified"
+supported_hook_families = Array[String](["battle_start"])
+unsupported_hook_families = Array[String](["before_accuracy", "before_damage", "after_damage", "status_application", "target_legality"])
+report_summary = "Recorded for M6; combat-specific hooks are explicit unsupported entries."

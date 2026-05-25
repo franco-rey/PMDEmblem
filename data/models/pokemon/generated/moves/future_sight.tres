@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_tt3xk"]
+
+[resource]
+script = ExtResource("1_tt3xk")
+move_id = "future_sight"
+index_number = 248
+name = "Future Sight"
+description = "Two turns after this move is used, a hunk of psychic energy attacks the target's area."
+type = "psychic"
+category = 2
+base_power = 80
+accuracy = 80
+pp = 13
+tactical_range_value = 3
+effect_tags = Array[String](["PMDC.Dungeon.FutureAttackEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence", "PMDC.Dungeon.FutureAttackEvent, PMDC"])
+animation_key = "special_attack"

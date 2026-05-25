@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonInstanceResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_ijr45"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/fire_punch.tres" id="2_hlvyl"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/lava_plume.tres" id="3_wsubt"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/sunny_day.tres" id="4_ebc4m"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/flamethrower.tres" id="5_de8cf"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_instance_resource.gd" id="6_bmchq"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/species/0467_magmortar.tres" id="7_6p7fx"]
+
+[resource]
+script = ExtResource("6_bmchq")
+species = ExtResource("7_6p7fx")
+level = 50
+move_slots = Array[ExtResource("1_ijr45")]([ExtResource("2_hlvyl"), ExtResource("3_wsubt"), ExtResource("4_ebc4m"), ExtResource("5_de8cf")])
+pp_state = Array[int]([18, 14, 10, 8])
+team = 2
+control_type = 1
+movement_override = 5

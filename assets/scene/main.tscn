@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://bmyhbnmo3jhkv"]
+[gd_scene format=3 uid="uid://bmyhbnmo3jhkv"]
 
 [ext_resource type="Script" uid="uid://by4ux8vevwib8" path="res://data/main.gd" id="1_pra24"]
 [ext_resource type="PackedScene" uid="uid://1ujfoei6r514" path="res://data/modules/tactics/camera/camera.tscn" id="2_j6uwt"]
@@ -17,6 +17,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
 [node name="MapSelector" type="CenterContainer" parent="UI" unique_id=2120837445]
@@ -28,29 +30,26 @@ anchor_bottom = 1.0
 [node name="SkirmishMenu" type="VBoxContainer" parent="UI/MapSelector" unique_id=1117382491]
 layout_mode = 2
 
-[node name="SkirmishPicker" type="OptionButton" parent="UI/MapSelector/SkirmishMenu"]
+[node name="SkirmishPicker" type="OptionButton" parent="UI/MapSelector/SkirmishMenu" unique_id=1362520120]
 layout_mode = 2
 
-[node name="LaunchButton" type="Button" parent="UI/MapSelector/SkirmishMenu"]
+[node name="LaunchButton" type="Button" parent="UI/MapSelector/SkirmishMenu" unique_id=1281913610]
 layout_mode = 2
 text = "Launch"
 
-[node name="CustomToggleButton" type="Button" parent="UI/MapSelector/SkirmishMenu"]
+[node name="CustomToggleButton" type="Button" parent="UI/MapSelector/SkirmishMenu" unique_id=252478082]
 layout_mode = 2
 text = "Custom Skirmish"
 
-[node name="SkirmishLobby" parent="UI" instance=ExtResource("4_hvmmo")]
+[node name="SkirmishLobby" parent="UI" unique_id=1961408425 instance=ExtResource("4_hvmmo")]
 visible = false
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="TacticsControls" parent="." unique_id=191703792 instance=ExtResource("3_swndv")]
 
 [node name="World" type="Node3D" parent="." unique_id=79446120]
+
+[node name="Node" type="Node" parent="." unique_id=1509493399]
 
 [connection signal="pressed" from="UI/MapSelector/SkirmishMenu/LaunchButton" to="." method="_on_launch_button_pressed"]
 [connection signal="pressed" from="UI/MapSelector/SkirmishMenu/CustomToggleButton" to="." method="_on_custom_toggle_pressed"]

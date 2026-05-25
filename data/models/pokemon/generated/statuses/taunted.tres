@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="PokemonStatusResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_status_resource.gd" id="1_rr0ed"]
+
+[resource]
+script = ExtResource("1_rr0ed")
+status_id = "taunted"
+display_name = "Taunted"
+visual_key = "taunted"
+source_event_tags = Array[String](["PMDC.Dungeon.StatusBattleEvent, PMDC"])
+supported_hook_families = Array[String](["status"])

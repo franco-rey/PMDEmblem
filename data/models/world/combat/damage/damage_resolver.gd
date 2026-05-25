@@ -28,20 +28,31 @@ func resolve(
 
 	if not result.hit:
 		return result
-	if not move.is_damaging():
-		result.damage = 0
-		return result
-	if result.effectiveness <= 0.0:
-		result.damage = 0
-		return result
+	result.damage = calculate_damage(attacker, defender, move, result.effectiveness, result.stab)
+	return result
 
-	var attack_stat: int = attacker.attack if move.category == PokemonMoveResource.CATEGORY_PHYSICAL else attacker.special_attack
-	var defense_stat: int = defender.defense if move.category == PokemonMoveResource.CATEGORY_PHYSICAL else defender.special_defense
+
+func calculate_damage(
+		attacker: Stats,
+		defender: Stats,
+		move: PokemonMoveResource,
+		effectiveness: float,
+		stab: bool,
+		extra_multiplier: float = 1.0
+) -> int:
+	if attacker == null or defender == null or move == null:
+		return 0
+	if not move.is_damaging():
+		return 0
+	if effectiveness <= 0.0:
+		return 0
+
+	var attack_stat: int = attacker.battle_stat("attack") if move.category == PokemonMoveResource.CATEGORY_PHYSICAL else attacker.battle_stat("special_attack")
+	var defense_stat: int = defender.battle_stat("defense") if move.category == PokemonMoveResource.CATEGORY_PHYSICAL else defender.battle_stat("special_defense")
 	var base: float = (float(attacker.level) * 0.4 + 2.0) * float(move.base_power) * float(maxi(attack_stat, 1)) / float(maxi(defense_stat, 1))
 	var damage: int = int(floor(base / 50.0 + 2.0))
-	var multiplier: float = result.effectiveness * (STAB_MULTIPLIER if result.stab else 1.0)
-	result.damage = maxi(1, int(floor(float(damage) * multiplier)))
-	return result
+	var multiplier: float = effectiveness * (STAB_MULTIPLIER if stab else 1.0) * extra_multiplier
+	return maxi(1, int(floor(float(damage) * multiplier)))
 
 
 func _effectiveness(move: PokemonMoveResource, defender: Stats, type_chart: TypeChartResource) -> float:

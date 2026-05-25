@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_oupp7"]
+
+[resource]
+script = ExtResource("1_oupp7")
+move_id = "nasty_plot"
+index_number = 417
+name = "Nasty Plot"
+description = "The user stimulates its brain by thinking bad thoughts. This sharply raises the user's Sp. Atk."
+type = "dark"
+pp = 12
+tactical_range_kind = 6
+tactical_range_value = 0
+target_alignment = 1
+effect_tags = Array[String](["PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"delta": 2,
+"family": "stat_stage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.StatusStackBattleEvent, PMDC",
+"stat": "special_attack",
+"status_id": "mod_special_attack",
+"target": "hit_target"
+}])
+animation_key = "status_attack"

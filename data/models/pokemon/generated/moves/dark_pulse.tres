@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_3kb11"]
+
+[resource]
+script = ExtResource("1_3kb11")
+move_id = "dark_pulse"
+index_number = 399
+name = "Dark Pulse"
+description = "The user releases a horrible aura imbued with dark thoughts. This may also make the target flinch."
+type = "dark"
+category = 2
+base_power = 75
+accuracy = 100
+pp = 15
+tactical_range_kind = 5
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.AdditionalEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "damage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
+"target": "hit_target"
+}, {
+"chance": 35,
+"family": "status",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.StatusBattleEvent, PMDC",
+"status_id": "flinch",
+"target": "hit_target"
+}])
+animation_key = "special_attack"

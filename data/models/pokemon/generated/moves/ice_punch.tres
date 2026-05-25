@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_w1j2b"]
+
+[resource]
+script = ExtResource("1_w1j2b")
+move_id = "ice_punch"
+index_number = 8
+name = "Ice Punch"
+description = "The target is punched with an icy fist. This may also leave the target frozen."
+type = "ice"
+category = 1
+base_power = 75
+accuracy = 100
+pp = 18
+tactical_range_kind = 1
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.AdditionalEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "damage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
+"target": "hit_target"
+}, {
+"chance": 50,
+"family": "status",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.StatusBattleEvent, PMDC",
+"status_id": "freeze",
+"target": "hit_target"
+}])
+animation_key = "physical_attack"

@@ -1,8 +1,8 @@
 Pokemon Batch Import Preflight
 ==============================
-Generated: 2026-05-24T19:48:38Z
-Target species: 9
-battle_ready: 9
+Generated: 2026-05-24T23:27:26Z
+Target species: 16
+battle_ready: 16
 
 - 0001_bulbasaur (Bulbasaur) battle_ready
 - 0002_ivysaur (Ivysaur) battle_ready
@@ -13,3 +13,10 @@ battle_ready: 9
 - 0007_squirtle (Squirtle) battle_ready
 - 0008_wartortle (Wartortle) battle_ready
 - 0009_blastoise (Blastoise) battle_ready
+- 0094_gengar (Gengar) battle_ready
+- 0282_gardevoir (Gardevoir) battle_ready
+- 0356_dusclops (Dusclops) battle_ready
+- 0448_lucario (Lucario) battle_ready
+- 0454_toxicroak (Toxicroak) battle_ready
+- 0467_magmortar (Magmortar) battle_ready
+- 0475_gallade (Gallade) battle_ready

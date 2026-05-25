@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_4oybn"]
+
+[resource]
+script = ExtResource("1_4oybn")
+move_id = "confuse_ray"
+index_number = 109
+name = "Confuse Ray"
+description = "The target is exposed to a sinister ray that triggers confusion."
+type = "ghost"
+accuracy = 100
+pp = 10
+tactical_range_kind = 3
+tactical_range_value = 6
+effect_tags = Array[String](["PMDC.Dungeon.StatusBattleEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "status",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.StatusBattleEvent, PMDC",
+"status_id": "confuse",
+"target": "hit_target"
+}])
+animation_key = "status_attack"

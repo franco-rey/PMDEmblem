@@ -12,4 +12,13 @@ type = "normal"
 pp = 22
 tactical_range_kind = 5
 effect_tags = Array[String](["PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
-unsupported_effect_tags = Array[String](["PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"delta": -1,
+"family": "stat_stage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.StatusStackBattleEvent, PMDC",
+"stat": "defense",
+"status_id": "mod_defense",
+"target": "hit_target"
+}])
+animation_key = "status_attack"

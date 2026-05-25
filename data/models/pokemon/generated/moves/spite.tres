@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_ujgcq"]
+
+[resource]
+script = ExtResource("1_ujgcq")
+move_id = "spite"
+index_number = 180
+name = "Spite"
+description = "The user unleashes its grudge on the move last used by the target, reducing its PP."
+type = "ghost"
+accuracy = 100
+pp = 18
+tactical_range_value = 3
+effect_tags = Array[String](["PMDC.Dungeon.SpiteEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence", "PMDC.Dungeon.SpiteEvent, PMDC"])
+animation_key = "status_attack"

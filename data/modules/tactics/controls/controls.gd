@@ -105,6 +105,11 @@ func select_pawn_to_attack() -> void:
 	serv.select_pawn_to_attack(self)
 
 
+## Handles selecting a Pokemon move slot before target selection.
+func select_move() -> void:
+	serv.select_move(self)
+
+
 ## Handles the player's intention to move
 func _player_wants_to_move() -> void:
 	serv.player_wants_to_move()
@@ -113,6 +118,19 @@ func _player_wants_to_move() -> void:
 ## Handles the player's intention to cancel an action
 func _player_wants_to_cancel() -> void:
 	serv.player_wants_to_cancel()
+
+
+## Handles the move-picker cancel button. The guard keeps mouse press/release
+## signal pairs from canceling twice and falling through past the actions menu.
+func _player_wants_to_cancel_move_picker() -> void:
+	var picker: Control = get_node_or_null("HBox/MovePicker") as Control
+	if participant == null or participant.stage != participant.STAGE_SELECT_MOVE:
+		return
+	if picker != null and not picker.visible:
+		return
+	serv.player_wants_to_cancel()
+	if participant.stage == participant.STAGE_SHOW_ACTIONS:
+		serv.set_actions_menu_visibility(true, participant.curr_pawn, self)
 
 
 ## Handles the player's intention to wait
@@ -128,4 +146,8 @@ func _player_wants_to_skip_turn() -> void:
 ## Handles the player's intention to attack
 func _player_wants_to_attack() -> void:
 	serv.player_wants_to_attack()
+
+
+func _player_wants_to_select_move(slot_index: int) -> void:
+	serv.player_wants_to_select_move(slot_index)
 #endregion

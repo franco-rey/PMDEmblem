@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="PokemonIntrinsicResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_intrinsic_resource.gd" id="1_5oxxt"]
+
+[resource]
+script = ExtResource("1_5oxxt")
+intrinsic_id = "blaze"
+display_name = "Blaze"
+supported_hook_families = Array[String](["battle_start", "before_damage"])
+report_summary = "Supported low-HP same-type damage boost."

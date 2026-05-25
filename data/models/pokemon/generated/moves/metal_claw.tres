@@ -15,4 +15,19 @@ accuracy = 100
 pp = 20
 tactical_range_kind = 1
 effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.AdditionalEndEvent, PMDC"])
-unsupported_effect_tags = Array[String](["PMDC.Dungeon.AdditionalEndEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "damage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
+"target": "hit_target"
+}, {
+"chance": 35,
+"delta": 1,
+"family": "stat_stage",
+"source_bucket": "AfterActions",
+"source_event": "PMDC.Dungeon.StatusStackBattleEvent, PMDC",
+"stat": "attack",
+"status_id": "mod_attack",
+"target": "self"
+}])
+animation_key = "physical_attack"
