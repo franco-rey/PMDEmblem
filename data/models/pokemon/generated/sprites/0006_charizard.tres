@@ -4,11 +4,11 @@
 
 [resource]
 script = ExtResource("1_5xy16")
-idle_path = "res://assets/textures/actor/pokemon/0006_charizard/idle.png"
-walk_path = "res://assets/textures/actor/pokemon/0006_charizard/walk.png"
-hurt_path = "res://assets/textures/actor/pokemon/0006_charizard/hurt.png"
-sleep_path = "res://assets/textures/actor/pokemon/0006_charizard/sleep.png"
-hop_path = "res://assets/textures/actor/pokemon/0006_charizard/hop.png"
+idle_path = "res://assets/textures/actor/pokemon/0006_charizard/animations/idle.png"
+walk_path = "res://assets/textures/actor/pokemon/0006_charizard/animations/walk.png"
+hurt_path = "res://assets/textures/actor/pokemon/0006_charizard/animations/hurt.png"
+sleep_path = "res://assets/textures/actor/pokemon/0006_charizard/animations/sleep.png"
+hop_path = "res://assets/textures/actor/pokemon/0006_charizard/animations/hop.png"
 anim_data_path = "res://assets/textures/actor/pokemon/0006_charizard/AnimData.xml"
 portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0006_charizard/Normal.png", "res://assets/textures/pokemon/portraits/0006_charizard/Angry.png", "res://assets/textures/pokemon/portraits/0006_charizard/Crying.png", "res://assets/textures/pokemon/portraits/0006_charizard/Determined.png", "res://assets/textures/pokemon/portraits/0006_charizard/Dizzy.png", "res://assets/textures/pokemon/portraits/0006_charizard/Happy.png", "res://assets/textures/pokemon/portraits/0006_charizard/Inspired.png", "res://assets/textures/pokemon/portraits/0006_charizard/Joyous.png", "res://assets/textures/pokemon/portraits/0006_charizard/Pain.png", "res://assets/textures/pokemon/portraits/0006_charizard/Sad.png", "res://assets/textures/pokemon/portraits/0006_charizard/Shouting.png", "res://assets/textures/pokemon/portraits/0006_charizard/Sigh.png", "res://assets/textures/pokemon/portraits/0006_charizard/Special0.png", "res://assets/textures/pokemon/portraits/0006_charizard/Stunned.png", "res://assets/textures/pokemon/portraits/0006_charizard/Surprised.png", "res://assets/textures/pokemon/portraits/0006_charizard/Teary-Eyed.png", "res://assets/textures/pokemon/portraits/0006_charizard/Worried.png"])
 animation_states = {

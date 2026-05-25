@@ -4,11 +4,11 @@
 
 [resource]
 script = ExtResource("1_b2oir")
-idle_path = "res://assets/textures/actor/pokemon/0094_gengar/idle.png"
-walk_path = "res://assets/textures/actor/pokemon/0094_gengar/walk.png"
-hurt_path = "res://assets/textures/actor/pokemon/0094_gengar/hurt.png"
-sleep_path = "res://assets/textures/actor/pokemon/0094_gengar/sleep.png"
-hop_path = "res://assets/textures/actor/pokemon/0094_gengar/hop.png"
+idle_path = "res://assets/textures/actor/pokemon/0094_gengar/animations/idle.png"
+walk_path = "res://assets/textures/actor/pokemon/0094_gengar/animations/walk.png"
+hurt_path = "res://assets/textures/actor/pokemon/0094_gengar/animations/hurt.png"
+sleep_path = "res://assets/textures/actor/pokemon/0094_gengar/animations/sleep.png"
+hop_path = "res://assets/textures/actor/pokemon/0094_gengar/animations/hop.png"
 anim_data_path = "res://assets/textures/actor/pokemon/0094_gengar/AnimData.xml"
 portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0094_gengar/Normal.png", "res://assets/textures/pokemon/portraits/0094_gengar/Angry.png", "res://assets/textures/pokemon/portraits/0094_gengar/Crying.png", "res://assets/textures/pokemon/portraits/0094_gengar/Determined.png", "res://assets/textures/pokemon/portraits/0094_gengar/Dizzy.png", "res://assets/textures/pokemon/portraits/0094_gengar/Happy.png", "res://assets/textures/pokemon/portraits/0094_gengar/Inspired.png", "res://assets/textures/pokemon/portraits/0094_gengar/Joyous.png", "res://assets/textures/pokemon/portraits/0094_gengar/Pain.png", "res://assets/textures/pokemon/portraits/0094_gengar/Sad.png", "res://assets/textures/pokemon/portraits/0094_gengar/Shouting.png", "res://assets/textures/pokemon/portraits/0094_gengar/Sigh.png", "res://assets/textures/pokemon/portraits/0094_gengar/Special0.png", "res://assets/textures/pokemon/portraits/0094_gengar/Special1.png", "res://assets/textures/pokemon/portraits/0094_gengar/Special2.png", "res://assets/textures/pokemon/portraits/0094_gengar/Special3.png", "res://assets/textures/pokemon/portraits/0094_gengar/Stunned.png", "res://assets/textures/pokemon/portraits/0094_gengar/Surprised.png", "res://assets/textures/pokemon/portraits/0094_gengar/Teary-Eyed.png", "res://assets/textures/pokemon/portraits/0094_gengar/Worried.png"])
 animation_states = {

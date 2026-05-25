@@ -4,11 +4,11 @@
 
 [resource]
 script = ExtResource("1_7li38")
-idle_path = "res://assets/textures/actor/pokemon/0467_magmortar/idle.png"
-walk_path = "res://assets/textures/actor/pokemon/0467_magmortar/walk.png"
-hurt_path = "res://assets/textures/actor/pokemon/0467_magmortar/hurt.png"
-sleep_path = "res://assets/textures/actor/pokemon/0467_magmortar/sleep.png"
-hop_path = "res://assets/textures/actor/pokemon/0467_magmortar/hop.png"
+idle_path = "res://assets/textures/actor/pokemon/0467_magmortar/animations/idle.png"
+walk_path = "res://assets/textures/actor/pokemon/0467_magmortar/animations/walk.png"
+hurt_path = "res://assets/textures/actor/pokemon/0467_magmortar/animations/hurt.png"
+sleep_path = "res://assets/textures/actor/pokemon/0467_magmortar/animations/sleep.png"
+hop_path = "res://assets/textures/actor/pokemon/0467_magmortar/animations/hop.png"
 anim_data_path = "res://assets/textures/actor/pokemon/0467_magmortar/AnimData.xml"
 portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0467_magmortar/Normal.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Angry.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Crying.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Determined.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Dizzy.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Happy.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Inspired.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Joyous.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Pain.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Sad.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Shouting.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Sigh.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Special0.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Special1.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Special2.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Stunned.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Surprised.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Teary-Eyed.png", "res://assets/textures/pokemon/portraits/0467_magmortar/Worried.png"])
 animation_states = {

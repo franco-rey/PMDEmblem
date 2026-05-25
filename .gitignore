@@ -4,7 +4,11 @@ export.cfg
 export_presets.cfg
 
 assets/visuals/raw_asset/**/*.import
+assets/textures/actor/pokemon/**/*.import
 assets/textures/pokemon/portraits/**/*.import
+data/models/pokemon/generated/
+assets/textures/pokemon/
+assets/textures/actor/pokemon/
 
 *.translation
 
@@ -42,4 +46,25 @@ __pycache__/
 *.py[cod]
 tools/importers/local_sources.json
 
-assets/visuals/raw_asset/
+assets/visuals/raw_asset/*
+!assets/visuals/raw_asset/BG/
+assets/visuals/raw_asset/BG/*
+!assets/visuals/raw_asset/BG/.gdignore
+!assets/visuals/raw_asset/Beam/
+assets/visuals/raw_asset/Beam/*
+!assets/visuals/raw_asset/Beam/.gdignore
+!assets/visuals/raw_asset/Object/
+assets/visuals/raw_asset/Object/*
+!assets/visuals/raw_asset/Object/.gdignore
+!assets/visuals/raw_asset/Particle/
+assets/visuals/raw_asset/Particle/*
+!assets/visuals/raw_asset/Particle/.gdignore
+!assets/visuals/raw_asset/Tile/
+assets/visuals/raw_asset/Tile/*
+!assets/visuals/raw_asset/Tile/.gdignore
+!assets/visuals/raw_asset/TileDtef/
+assets/visuals/raw_asset/TileDtef/*
+!assets/visuals/raw_asset/TileDtef/.gdignore
+!assets/visuals/raw_asset/font/
+assets/visuals/raw_asset/font/*
+!assets/visuals/raw_asset/font/.gdignore

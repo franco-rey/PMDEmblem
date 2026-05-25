@@ -4,11 +4,11 @@
 
 [resource]
 script = ExtResource("1_meexu")
-idle_path = "res://assets/textures/actor/pokemon/0008_wartortle/idle.png"
-walk_path = "res://assets/textures/actor/pokemon/0008_wartortle/walk.png"
-hurt_path = "res://assets/textures/actor/pokemon/0008_wartortle/hurt.png"
-sleep_path = "res://assets/textures/actor/pokemon/0008_wartortle/sleep.png"
-hop_path = "res://assets/textures/actor/pokemon/0008_wartortle/hop.png"
+idle_path = "res://assets/textures/actor/pokemon/0008_wartortle/animations/idle.png"
+walk_path = "res://assets/textures/actor/pokemon/0008_wartortle/animations/walk.png"
+hurt_path = "res://assets/textures/actor/pokemon/0008_wartortle/animations/hurt.png"
+sleep_path = "res://assets/textures/actor/pokemon/0008_wartortle/animations/sleep.png"
+hop_path = "res://assets/textures/actor/pokemon/0008_wartortle/animations/hop.png"
 anim_data_path = "res://assets/textures/actor/pokemon/0008_wartortle/AnimData.xml"
 portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0008_wartortle/Normal.png", "res://assets/textures/pokemon/portraits/0008_wartortle/Angry.png", "res://assets/textures/pokemon/portraits/0008_wartortle/Crying.png", "res://assets/textures/pokemon/portraits/0008_wartortle/Determined.png", "res://assets/textures/pokemon/portraits/0008_wartortle/Dizzy.png", "res://assets/textures/pokemon/portraits/0008_wartortle/Happy.png", "res://assets/textures/pokemon/portraits/0008_wartortle/Inspired.png", "res://assets/textures/pokemon/portraits/0008_wartortle/Joyous.png", "res://assets/textures/pokemon/portraits/0008_wartortle/Pain.png", "res://assets/textures/pokemon/portraits/0008_wartortle/Sad.png", "res://assets/textures/pokemon/portraits/0008_wartortle/Shouting.png", "res://assets/textures/pokemon/portraits/0008_wartortle/Sigh.png", "res://assets/textures/pokemon/portraits/0008_wartortle/Stunned.png", "res://assets/textures/pokemon/portraits/0008_wartortle/Surprised.png", "res://assets/textures/pokemon/portraits/0008_wartortle/Teary-Eyed.png", "res://assets/textures/pokemon/portraits/0008_wartortle/Worried.png"])
 animation_states = {

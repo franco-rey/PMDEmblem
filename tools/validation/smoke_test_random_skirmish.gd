@@ -11,6 +11,7 @@ var failures: int = 0
 
 func _init() -> void:
 	_check_generator_directly()
+	_check_regression_seed_702_has_resolving_enemy_moves()
 	_check_fixed_seed_is_deterministic()
 	_check_different_seeds_vary()
 	_check_explicit_player_vs_random_enemy()
@@ -60,8 +61,19 @@ func _check_generator_directly() -> void:
 		_assert_true(not enemy.recruited, "generated enemy is not recruited")
 		_assert_true(enemy.level >= 40 and enemy.level <= 50, "tier 4 enemy level is 40-50")
 		_assert_true(not enemy.move_slots.is_empty(), "generated enemy has at least one move")
+		_assert_true(SkirmishMoveLoadout.has_resolving_attack(enemy.move_slots), "generated enemy has a resolving attack")
 		_assert_true(enemy.pp_state.size() == enemy.move_slots.size(), "generated enemy pp_state matches moves")
 	_assert_true(_loader_accepts(definition), "direct generated definition is loader-ready after spawn orders")
+
+
+func _check_regression_seed_702_has_resolving_enemy_moves() -> void:
+	var result: Dictionary = CustomSkirmishBuilder.build_random(2, TEST_ARENA_MAP_PATH, "702")
+	_assert_true(result.get("ok", false), "C-004 seed 702 random 2v2 builds")
+	if not result.get("ok", false):
+		return
+	var definition: SkirmishDefinitionResource = result["definition"]
+	for enemy in definition.enemy_team:
+		_assert_true(SkirmishMoveLoadout.has_resolving_attack(enemy.move_slots), "C-004 seed 702 enemy has a resolving attack")
 
 
 func _check_fixed_seed_is_deterministic() -> void:

@@ -4,11 +4,11 @@
 
 [resource]
 script = ExtResource("1_tginq")
-idle_path = "res://assets/textures/actor/pokemon/0356_dusclops/idle.png"
-walk_path = "res://assets/textures/actor/pokemon/0356_dusclops/walk.png"
-hurt_path = "res://assets/textures/actor/pokemon/0356_dusclops/hurt.png"
-sleep_path = "res://assets/textures/actor/pokemon/0356_dusclops/sleep.png"
-hop_path = "res://assets/textures/actor/pokemon/0356_dusclops/hop.png"
+idle_path = "res://assets/textures/actor/pokemon/0356_dusclops/animations/idle.png"
+walk_path = "res://assets/textures/actor/pokemon/0356_dusclops/animations/walk.png"
+hurt_path = "res://assets/textures/actor/pokemon/0356_dusclops/animations/hurt.png"
+sleep_path = "res://assets/textures/actor/pokemon/0356_dusclops/animations/sleep.png"
+hop_path = "res://assets/textures/actor/pokemon/0356_dusclops/animations/hop.png"
 anim_data_path = "res://assets/textures/actor/pokemon/0356_dusclops/AnimData.xml"
 portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0356_dusclops/Normal.png", "res://assets/textures/pokemon/portraits/0356_dusclops/Angry.png", "res://assets/textures/pokemon/portraits/0356_dusclops/Crying.png", "res://assets/textures/pokemon/portraits/0356_dusclops/Determined.png", "res://assets/textures/pokemon/portraits/0356_dusclops/Dizzy.png", "res://assets/textures/pokemon/portraits/0356_dusclops/Happy.png", "res://assets/textures/pokemon/portraits/0356_dusclops/Inspired.png", "res://assets/textures/pokemon/portraits/0356_dusclops/Joyous.png", "res://assets/textures/pokemon/portraits/0356_dusclops/Pain.png", "res://assets/textures/pokemon/portraits/0356_dusclops/Sad.png", "res://assets/textures/pokemon/portraits/0356_dusclops/Shouting.png", "res://assets/textures/pokemon/portraits/0356_dusclops/Sigh.png", "res://assets/textures/pokemon/portraits/0356_dusclops/Special0.png", "res://assets/textures/pokemon/portraits/0356_dusclops/Stunned.png", "res://assets/textures/pokemon/portraits/0356_dusclops/Surprised.png", "res://assets/textures/pokemon/portraits/0356_dusclops/Teary-Eyed.png", "res://assets/textures/pokemon/portraits/0356_dusclops/Worried.png"])
 animation_states = {

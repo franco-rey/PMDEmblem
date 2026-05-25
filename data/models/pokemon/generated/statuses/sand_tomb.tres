@@ -7,5 +7,5 @@ script = ExtResource("1_3usk8")
 status_id = "sand_tomb"
 display_name = "Sand Tomb"
 visual_key = "sand_tomb"
-source_event_tags = Array[String](["PMDC.Dungeon.RemoveStatusBattleEvent, PMDC"])
-supported_hook_families = Array[String](["status_remove"])
+source_event_tags = Array[String](["PMDC.Dungeon.RemoveStatusBattleEvent, PMDC", "PMDC.Dungeon.StatusBattleEvent, PMDC"])
+supported_hook_families = Array[String](["status_remove", "status"])

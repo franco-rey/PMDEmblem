@@ -41,13 +41,10 @@ def render_text_report(payload: dict[str, Any]) -> str:
         lines.append("---------------------------")
         for entry in excluded:
             lines.append(
-                "- %04d %s (%s): %s"
-                % [
-                    int(entry.get("dex_number", 0)),
-                    entry.get("slug", "?"),
-                    entry.get("display_name", "?"),
-                    entry.get("reason", "pmdo_unreleased"),
-                ]
+                f"- {int(entry.get('dex_number', 0)):04d} "
+                f"{entry.get('slug', '?')} "
+                f"({entry.get('display_name', '?')}): "
+                f"{entry.get('reason', 'pmdo_unreleased')}"
             )
         lines.append("")
 

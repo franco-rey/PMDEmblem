@@ -473,27 +473,27 @@
 				"minimal_states": {
 					"hop": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0475_gallade/hop.png",
+						"path": "res://assets/textures/actor/pokemon/0475_gallade/animations/hop.png",
 						"project_owned": true
 					},
 					"hurt": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0475_gallade/hurt.png",
+						"path": "res://assets/textures/actor/pokemon/0475_gallade/animations/hurt.png",
 						"project_owned": true
 					},
 					"idle": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0475_gallade/idle.png",
+						"path": "res://assets/textures/actor/pokemon/0475_gallade/animations/idle.png",
 						"project_owned": true
 					},
 					"sleep": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0475_gallade/sleep.png",
+						"path": "res://assets/textures/actor/pokemon/0475_gallade/animations/sleep.png",
 						"project_owned": true
 					},
 					"walk": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0475_gallade/walk.png",
+						"path": "res://assets/textures/actor/pokemon/0475_gallade/animations/walk.png",
 						"project_owned": true
 					}
 				},
@@ -1271,27 +1271,27 @@
 				"minimal_states": {
 					"hop": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0448_lucario/hop.png",
+						"path": "res://assets/textures/actor/pokemon/0448_lucario/animations/hop.png",
 						"project_owned": true
 					},
 					"hurt": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0448_lucario/hurt.png",
+						"path": "res://assets/textures/actor/pokemon/0448_lucario/animations/hurt.png",
 						"project_owned": true
 					},
 					"idle": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0448_lucario/idle.png",
+						"path": "res://assets/textures/actor/pokemon/0448_lucario/animations/idle.png",
 						"project_owned": true
 					},
 					"sleep": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0448_lucario/sleep.png",
+						"path": "res://assets/textures/actor/pokemon/0448_lucario/animations/sleep.png",
 						"project_owned": true
 					},
 					"walk": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0448_lucario/walk.png",
+						"path": "res://assets/textures/actor/pokemon/0448_lucario/animations/walk.png",
 						"project_owned": true
 					}
 				},
@@ -1842,27 +1842,27 @@
 				"minimal_states": {
 					"hop": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0282_gardevoir/hop.png",
+						"path": "res://assets/textures/actor/pokemon/0282_gardevoir/animations/hop.png",
 						"project_owned": true
 					},
 					"hurt": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0282_gardevoir/hurt.png",
+						"path": "res://assets/textures/actor/pokemon/0282_gardevoir/animations/hurt.png",
 						"project_owned": true
 					},
 					"idle": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0282_gardevoir/idle.png",
+						"path": "res://assets/textures/actor/pokemon/0282_gardevoir/animations/idle.png",
 						"project_owned": true
 					},
 					"sleep": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0282_gardevoir/sleep.png",
+						"path": "res://assets/textures/actor/pokemon/0282_gardevoir/animations/sleep.png",
 						"project_owned": true
 					},
 					"walk": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0282_gardevoir/walk.png",
+						"path": "res://assets/textures/actor/pokemon/0282_gardevoir/animations/walk.png",
 						"project_owned": true
 					}
 				},
@@ -2358,27 +2358,27 @@
 				"minimal_states": {
 					"hop": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0454_toxicroak/hop.png",
+						"path": "res://assets/textures/actor/pokemon/0454_toxicroak/animations/hop.png",
 						"project_owned": true
 					},
 					"hurt": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0454_toxicroak/hurt.png",
+						"path": "res://assets/textures/actor/pokemon/0454_toxicroak/animations/hurt.png",
 						"project_owned": true
 					},
 					"idle": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0454_toxicroak/idle.png",
+						"path": "res://assets/textures/actor/pokemon/0454_toxicroak/animations/idle.png",
 						"project_owned": true
 					},
 					"sleep": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0454_toxicroak/sleep.png",
+						"path": "res://assets/textures/actor/pokemon/0454_toxicroak/animations/sleep.png",
 						"project_owned": true
 					},
 					"walk": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0454_toxicroak/walk.png",
+						"path": "res://assets/textures/actor/pokemon/0454_toxicroak/animations/walk.png",
 						"project_owned": true
 					}
 				},
@@ -2854,27 +2854,27 @@
 				"minimal_states": {
 					"hop": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0467_magmortar/hop.png",
+						"path": "res://assets/textures/actor/pokemon/0467_magmortar/animations/hop.png",
 						"project_owned": true
 					},
 					"hurt": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0467_magmortar/hurt.png",
+						"path": "res://assets/textures/actor/pokemon/0467_magmortar/animations/hurt.png",
 						"project_owned": true
 					},
 					"idle": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0467_magmortar/idle.png",
+						"path": "res://assets/textures/actor/pokemon/0467_magmortar/animations/idle.png",
 						"project_owned": true
 					},
 					"sleep": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0467_magmortar/sleep.png",
+						"path": "res://assets/textures/actor/pokemon/0467_magmortar/animations/sleep.png",
 						"project_owned": true
 					},
 					"walk": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0467_magmortar/walk.png",
+						"path": "res://assets/textures/actor/pokemon/0467_magmortar/animations/walk.png",
 						"project_owned": true
 					}
 				},
@@ -3659,27 +3659,27 @@
 				"minimal_states": {
 					"hop": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0094_gengar/hop.png",
+						"path": "res://assets/textures/actor/pokemon/0094_gengar/animations/hop.png",
 						"project_owned": true
 					},
 					"hurt": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0094_gengar/hurt.png",
+						"path": "res://assets/textures/actor/pokemon/0094_gengar/animations/hurt.png",
 						"project_owned": true
 					},
 					"idle": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0094_gengar/idle.png",
+						"path": "res://assets/textures/actor/pokemon/0094_gengar/animations/idle.png",
 						"project_owned": true
 					},
 					"sleep": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0094_gengar/sleep.png",
+						"path": "res://assets/textures/actor/pokemon/0094_gengar/animations/sleep.png",
 						"project_owned": true
 					},
 					"walk": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0094_gengar/walk.png",
+						"path": "res://assets/textures/actor/pokemon/0094_gengar/animations/walk.png",
 						"project_owned": true
 					}
 				},
@@ -4168,27 +4168,27 @@
 				"minimal_states": {
 					"hop": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0356_dusclops/hop.png",
+						"path": "res://assets/textures/actor/pokemon/0356_dusclops/animations/hop.png",
 						"project_owned": true
 					},
 					"hurt": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0356_dusclops/hurt.png",
+						"path": "res://assets/textures/actor/pokemon/0356_dusclops/animations/hurt.png",
 						"project_owned": true
 					},
 					"idle": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0356_dusclops/idle.png",
+						"path": "res://assets/textures/actor/pokemon/0356_dusclops/animations/idle.png",
 						"project_owned": true
 					},
 					"sleep": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0356_dusclops/sleep.png",
+						"path": "res://assets/textures/actor/pokemon/0356_dusclops/animations/sleep.png",
 						"project_owned": true
 					},
 					"walk": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0356_dusclops/walk.png",
+						"path": "res://assets/textures/actor/pokemon/0356_dusclops/animations/walk.png",
 						"project_owned": true
 					}
 				},
@@ -5001,27 +5001,27 @@
 				"minimal_states": {
 					"hop": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0001_bulbasaur/hop.png",
+						"path": "res://assets/textures/actor/pokemon/0001_bulbasaur/animations/hop.png",
 						"project_owned": true
 					},
 					"hurt": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0001_bulbasaur/hurt.png",
+						"path": "res://assets/textures/actor/pokemon/0001_bulbasaur/animations/hurt.png",
 						"project_owned": true
 					},
 					"idle": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0001_bulbasaur/idle.png",
+						"path": "res://assets/textures/actor/pokemon/0001_bulbasaur/animations/idle.png",
 						"project_owned": true
 					},
 					"sleep": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0001_bulbasaur/sleep.png",
+						"path": "res://assets/textures/actor/pokemon/0001_bulbasaur/animations/sleep.png",
 						"project_owned": true
 					},
 					"walk": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0001_bulbasaur/walk.png",
+						"path": "res://assets/textures/actor/pokemon/0001_bulbasaur/animations/walk.png",
 						"project_owned": true
 					}
 				},
@@ -5544,27 +5544,27 @@
 				"minimal_states": {
 					"hop": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0002_ivysaur/hop.png",
+						"path": "res://assets/textures/actor/pokemon/0002_ivysaur/animations/hop.png",
 						"project_owned": true
 					},
 					"hurt": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0002_ivysaur/hurt.png",
+						"path": "res://assets/textures/actor/pokemon/0002_ivysaur/animations/hurt.png",
 						"project_owned": true
 					},
 					"idle": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0002_ivysaur/idle.png",
+						"path": "res://assets/textures/actor/pokemon/0002_ivysaur/animations/idle.png",
 						"project_owned": true
 					},
 					"sleep": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0002_ivysaur/sleep.png",
+						"path": "res://assets/textures/actor/pokemon/0002_ivysaur/animations/sleep.png",
 						"project_owned": true
 					},
 					"walk": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0002_ivysaur/walk.png",
+						"path": "res://assets/textures/actor/pokemon/0002_ivysaur/animations/walk.png",
 						"project_owned": true
 					}
 				},
@@ -6073,27 +6073,27 @@
 				"minimal_states": {
 					"hop": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0003_venusaur/hop.png",
+						"path": "res://assets/textures/actor/pokemon/0003_venusaur/animations/hop.png",
 						"project_owned": true
 					},
 					"hurt": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0003_venusaur/hurt.png",
+						"path": "res://assets/textures/actor/pokemon/0003_venusaur/animations/hurt.png",
 						"project_owned": true
 					},
 					"idle": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0003_venusaur/idle.png",
+						"path": "res://assets/textures/actor/pokemon/0003_venusaur/animations/idle.png",
 						"project_owned": true
 					},
 					"sleep": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0003_venusaur/sleep.png",
+						"path": "res://assets/textures/actor/pokemon/0003_venusaur/animations/sleep.png",
 						"project_owned": true
 					},
 					"walk": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0003_venusaur/walk.png",
+						"path": "res://assets/textures/actor/pokemon/0003_venusaur/animations/walk.png",
 						"project_owned": true
 					}
 				},
@@ -6902,27 +6902,27 @@
 				"minimal_states": {
 					"hop": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0004_charmander/hop.png",
+						"path": "res://assets/textures/actor/pokemon/0004_charmander/animations/hop.png",
 						"project_owned": true
 					},
 					"hurt": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0004_charmander/hurt.png",
+						"path": "res://assets/textures/actor/pokemon/0004_charmander/animations/hurt.png",
 						"project_owned": true
 					},
 					"idle": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0004_charmander/idle.png",
+						"path": "res://assets/textures/actor/pokemon/0004_charmander/animations/idle.png",
 						"project_owned": true
 					},
 					"sleep": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0004_charmander/sleep.png",
+						"path": "res://assets/textures/actor/pokemon/0004_charmander/animations/sleep.png",
 						"project_owned": true
 					},
 					"walk": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0004_charmander/walk.png",
+						"path": "res://assets/textures/actor/pokemon/0004_charmander/animations/walk.png",
 						"project_owned": true
 					}
 				},
@@ -7731,27 +7731,27 @@
 				"minimal_states": {
 					"hop": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0005_charmeleon/hop.png",
+						"path": "res://assets/textures/actor/pokemon/0005_charmeleon/animations/hop.png",
 						"project_owned": true
 					},
 					"hurt": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0005_charmeleon/hurt.png",
+						"path": "res://assets/textures/actor/pokemon/0005_charmeleon/animations/hurt.png",
 						"project_owned": true
 					},
 					"idle": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0005_charmeleon/idle.png",
+						"path": "res://assets/textures/actor/pokemon/0005_charmeleon/animations/idle.png",
 						"project_owned": true
 					},
 					"sleep": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0005_charmeleon/sleep.png",
+						"path": "res://assets/textures/actor/pokemon/0005_charmeleon/animations/sleep.png",
 						"project_owned": true
 					},
 					"walk": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0005_charmeleon/walk.png",
+						"path": "res://assets/textures/actor/pokemon/0005_charmeleon/animations/walk.png",
 						"project_owned": true
 					}
 				},
@@ -8257,27 +8257,27 @@
 				"minimal_states": {
 					"hop": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0006_charizard/hop.png",
+						"path": "res://assets/textures/actor/pokemon/0006_charizard/animations/hop.png",
 						"project_owned": true
 					},
 					"hurt": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0006_charizard/hurt.png",
+						"path": "res://assets/textures/actor/pokemon/0006_charizard/animations/hurt.png",
 						"project_owned": true
 					},
 					"idle": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0006_charizard/idle.png",
+						"path": "res://assets/textures/actor/pokemon/0006_charizard/animations/idle.png",
 						"project_owned": true
 					},
 					"sleep": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0006_charizard/sleep.png",
+						"path": "res://assets/textures/actor/pokemon/0006_charizard/animations/sleep.png",
 						"project_owned": true
 					},
 					"walk": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0006_charizard/walk.png",
+						"path": "res://assets/textures/actor/pokemon/0006_charizard/animations/walk.png",
 						"project_owned": true
 					}
 				},
@@ -9085,27 +9085,27 @@
 				"minimal_states": {
 					"hop": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0007_squirtle/hop.png",
+						"path": "res://assets/textures/actor/pokemon/0007_squirtle/animations/hop.png",
 						"project_owned": true
 					},
 					"hurt": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0007_squirtle/hurt.png",
+						"path": "res://assets/textures/actor/pokemon/0007_squirtle/animations/hurt.png",
 						"project_owned": true
 					},
 					"idle": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0007_squirtle/idle.png",
+						"path": "res://assets/textures/actor/pokemon/0007_squirtle/animations/idle.png",
 						"project_owned": true
 					},
 					"sleep": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0007_squirtle/sleep.png",
+						"path": "res://assets/textures/actor/pokemon/0007_squirtle/animations/sleep.png",
 						"project_owned": true
 					},
 					"walk": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0007_squirtle/walk.png",
+						"path": "res://assets/textures/actor/pokemon/0007_squirtle/animations/walk.png",
 						"project_owned": true
 					}
 				},
@@ -9641,27 +9641,27 @@
 				"minimal_states": {
 					"hop": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0008_wartortle/hop.png",
+						"path": "res://assets/textures/actor/pokemon/0008_wartortle/animations/hop.png",
 						"project_owned": true
 					},
 					"hurt": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0008_wartortle/hurt.png",
+						"path": "res://assets/textures/actor/pokemon/0008_wartortle/animations/hurt.png",
 						"project_owned": true
 					},
 					"idle": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0008_wartortle/idle.png",
+						"path": "res://assets/textures/actor/pokemon/0008_wartortle/animations/idle.png",
 						"project_owned": true
 					},
 					"sleep": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0008_wartortle/sleep.png",
+						"path": "res://assets/textures/actor/pokemon/0008_wartortle/animations/sleep.png",
 						"project_owned": true
 					},
 					"walk": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0008_wartortle/walk.png",
+						"path": "res://assets/textures/actor/pokemon/0008_wartortle/animations/walk.png",
 						"project_owned": true
 					}
 				},
@@ -10184,27 +10184,27 @@
 				"minimal_states": {
 					"hop": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0009_blastoise/hop.png",
+						"path": "res://assets/textures/actor/pokemon/0009_blastoise/animations/hop.png",
 						"project_owned": true
 					},
 					"hurt": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0009_blastoise/hurt.png",
+						"path": "res://assets/textures/actor/pokemon/0009_blastoise/animations/hurt.png",
 						"project_owned": true
 					},
 					"idle": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0009_blastoise/idle.png",
+						"path": "res://assets/textures/actor/pokemon/0009_blastoise/animations/idle.png",
 						"project_owned": true
 					},
 					"sleep": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0009_blastoise/sleep.png",
+						"path": "res://assets/textures/actor/pokemon/0009_blastoise/animations/sleep.png",
 						"project_owned": true
 					},
 					"walk": {
 						"exists": true,
-						"path": "res://assets/textures/actor/pokemon/0009_blastoise/walk.png",
+						"path": "res://assets/textures/actor/pokemon/0009_blastoise/animations/walk.png",
 						"project_owned": true
 					}
 				},

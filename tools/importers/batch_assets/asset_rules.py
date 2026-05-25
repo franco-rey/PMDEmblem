@@ -132,7 +132,8 @@ def copy_sprite_set(
             source = _find_source(source_dir, SPRITE_STATE_SOURCES["walk"]) if source_dir is not None else None
             if source is not None:
                 substitutions["idle"] = "idle_static_from_walk"
-        destination = destination_dir / f"{state}.png"
+        destination_state = "walk" if state == "idle" and substitutions.get("idle") == "idle_static_from_walk" else state
+        destination = destination_dir / "animations" / f"{destination_state}.png"
         result = _copy_optional(project_root, source, destination, dry_run)
         copies.append(result)
         assets[state] = result.res_path
@@ -150,14 +151,6 @@ def copy_sprite_set(
         checksums["anim_data"] = result.checksum
     if result.missing:
         warnings.append("missing AnimData.xml")
-
-    credits_dir = source_dir if source_dir is not None and (source_dir / "credits.txt").exists() else credits_source_dir
-    credits = credits_dir / "credits.txt" if credits_dir is not None and (credits_dir / "credits.txt").exists() else None
-    if credits is not None:
-        result = _copy_optional(project_root, credits, destination_dir / "credits.txt", dry_run)
-        copies.append(result)
-        assets["sprite_credits"] = result.res_path
-        checksums["sprite_credits"] = result.checksum
 
     if substitutions:
         assets["sprite_substitutions"] = substitutions
@@ -245,15 +238,15 @@ def copy_portrait(
     if "portrait_normal" not in assets:
         warnings.append("missing Normal portrait")
 
-    credits_dir = source_dir if source_dir is not None and (source_dir / "credits.txt").exists() else credits_source_dir
-    credits = credits_dir / "credits.txt" if credits_dir is not None and (credits_dir / "credits.txt").exists() else None
-    if credits is not None:
-        result = _copy_optional(project_root, credits, destination_dir / "credits.txt", dry_run)
-        copies.append(result)
-        assets["portrait_credits"] = result.res_path
-        checksums["portrait_credits"] = result.checksum
-
     return assets, checksums, warnings, copies
+
+
+def read_credit_text(source_dir: Path | None, fallback_dir: Path | None = None) -> str:
+    credits_dir = source_dir if source_dir is not None and (source_dir / "credits.txt").exists() else fallback_dir
+    credits = credits_dir / "credits.txt" if credits_dir is not None and (credits_dir / "credits.txt").exists() else None
+    if credits is None:
+        return ""
+    return credits.read_text(encoding="utf-8", errors="replace").strip()
 
 
 def _has_required_sprite_sources(candidate: Path) -> bool:

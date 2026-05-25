@@ -14,6 +14,7 @@ from asset_rules import (
     find_first_portrait_dir,
     generation_from_dex,
     project_slug,
+    read_credit_text,
 )
 from manifest import MANIFEST_PATH, REPORT_JSON_PATH, render_text_report, write_json
 from source_config import PROJECT_ROOT, load_config
@@ -75,6 +76,7 @@ def main() -> int:
 
     print(_summary_line(manifest_species, args.dry_run))
     if args.write:
+        _write_consolidated_credits(entries, sources, payload["generated_at"])
         write_json(PROJECT_ROOT / MANIFEST_PATH, payload)
         write_json(PROJECT_ROOT / REPORT_JSON_PATH, report)
         report_txt = PROJECT_ROOT / "data/models/pokemon/import_reports/pokemon_batch_preflight_report.txt"
@@ -154,6 +156,52 @@ def _discover_entries(sources: Any, only: set[str], generations: list[int], dex_
         })
     out.sort(key=lambda item: (int(item["dex_number"]), str(item["pmdo_slug"])))
     return out
+
+
+def _write_consolidated_credits(entries: list[dict[str, Any]], sources: Any, generated_at: str) -> None:
+    actor_blocks: list[str] = []
+    portrait_blocks: list[str] = []
+    for entry in entries:
+        dex = int(entry["dex_number"])
+        slug = str(entry["slug"])
+        form_index = int(entry["default_form_index"])
+        sprite_source = find_first_complete_sprite_dir(sources.raw_sprite_dir, dex, form_index)
+        portrait_source = find_first_portrait_dir(sources.raw_portrait_dir, dex, form_index)
+        sprite_collab_source = find_first_complete_sprite_dir(sources.sprite_collab_sprite_dir, dex, form_index) if sources.sprite_collab_sprite_dir else None
+        portrait_collab_source = find_first_portrait_dir(sources.sprite_collab_portrait_dir, dex, form_index) if sources.sprite_collab_portrait_dir else None
+        actor_blocks.append(_credit_block(entry, "actor", sprite_source, sprite_collab_source, sources))
+        portrait_blocks.append(_credit_block(entry, "portrait", portrait_source, portrait_collab_source, sources))
+
+    output = [
+        "Pokemon Texture Credits",
+        "=======================",
+        f"Generated: {generated_at}",
+        "",
+        "Actor Sprites",
+        "-------------",
+        *actor_blocks,
+        "",
+        "Portraits",
+        "---------",
+        *portrait_blocks,
+        "",
+    ]
+    path = PROJECT_ROOT / "assets/textures/credits.txt"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(output), encoding="utf-8")
+
+
+def _credit_block(entry: dict[str, Any], label: str, source_dir: Path | None, fallback_dir: Path | None, sources: Any) -> str:
+    source_root = sources.raw_asset_root if source_dir is not None else sources.sprite_collab_root
+    chosen_dir = source_dir if source_dir is not None and (source_dir / "credits.txt").exists() else fallback_dir
+    source = _source_rel(source_root, chosen_dir)
+    credit_text = read_credit_text(source_dir, fallback_dir) or "No source credits found."
+    return "\n".join([
+        f"[{entry.get('slug', '?')}] {entry.get('display_name', '?')} ({label})",
+        f"source: {source}",
+        credit_text,
+        "",
+    ])
 
 
 def _discover_excluded_unreleased(sources: Any, only: set[str], generations: list[int], dex_min: int, dex_max: int) -> list[dict[str, Any]]:

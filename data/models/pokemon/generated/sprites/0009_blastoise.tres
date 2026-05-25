@@ -4,11 +4,11 @@
 
 [resource]
 script = ExtResource("1_tt42v")
-idle_path = "res://assets/textures/actor/pokemon/0009_blastoise/idle.png"
-walk_path = "res://assets/textures/actor/pokemon/0009_blastoise/walk.png"
-hurt_path = "res://assets/textures/actor/pokemon/0009_blastoise/hurt.png"
-sleep_path = "res://assets/textures/actor/pokemon/0009_blastoise/sleep.png"
-hop_path = "res://assets/textures/actor/pokemon/0009_blastoise/hop.png"
+idle_path = "res://assets/textures/actor/pokemon/0009_blastoise/animations/idle.png"
+walk_path = "res://assets/textures/actor/pokemon/0009_blastoise/animations/walk.png"
+hurt_path = "res://assets/textures/actor/pokemon/0009_blastoise/animations/hurt.png"
+sleep_path = "res://assets/textures/actor/pokemon/0009_blastoise/animations/sleep.png"
+hop_path = "res://assets/textures/actor/pokemon/0009_blastoise/animations/hop.png"
 anim_data_path = "res://assets/textures/actor/pokemon/0009_blastoise/AnimData.xml"
 portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0009_blastoise/Normal.png", "res://assets/textures/pokemon/portraits/0009_blastoise/Angry.png", "res://assets/textures/pokemon/portraits/0009_blastoise/Crying.png", "res://assets/textures/pokemon/portraits/0009_blastoise/Determined.png", "res://assets/textures/pokemon/portraits/0009_blastoise/Dizzy.png", "res://assets/textures/pokemon/portraits/0009_blastoise/Happy.png", "res://assets/textures/pokemon/portraits/0009_blastoise/Inspired.png", "res://assets/textures/pokemon/portraits/0009_blastoise/Joyous.png", "res://assets/textures/pokemon/portraits/0009_blastoise/Pain.png", "res://assets/textures/pokemon/portraits/0009_blastoise/Sad.png", "res://assets/textures/pokemon/portraits/0009_blastoise/Shouting.png", "res://assets/textures/pokemon/portraits/0009_blastoise/Sigh.png", "res://assets/textures/pokemon/portraits/0009_blastoise/Special0.png", "res://assets/textures/pokemon/portraits/0009_blastoise/Stunned.png", "res://assets/textures/pokemon/portraits/0009_blastoise/Surprised.png", "res://assets/textures/pokemon/portraits/0009_blastoise/Teary-Eyed.png", "res://assets/textures/pokemon/portraits/0009_blastoise/Worried.png"])
 animation_states = {

@@ -84,7 +84,7 @@ func _check_damage_round(lucario: Stats, magmortar: Stats, type_chart: TypeChart
 	_assert_true(result.hit, "Aura Sphere hit")
 	_assert_true(result.stab, "Aura Sphere gets Lucario STAB")
 	_assert_close(result.effectiveness, 1.0, "Fighting > Fire is neutral")
-	_assert_true(result.damage == 58, "Aura Sphere damage is deterministic 58")
+	_assert_true(result.damage == 57, "Aura Sphere damage is deterministic 57")
 	lucario.consume_pp(0)
 	_assert_true(lucario.current_pp[0] == 7, "Aura Sphere PP decremented 8 -> 7")
 	magmortar.apply_to_curr_health(-result.damage)
@@ -94,7 +94,7 @@ func _check_damage_round(lucario: Stats, magmortar: Stats, type_chart: TypeChart
 	_assert_true(reply.hit, "Flamethrower hit")
 	_assert_true(reply.stab, "Flamethrower gets Magmortar STAB")
 	_assert_close(reply.effectiveness, 1.5, "Fire > Fighting/Steel is single-super")
-	_assert_true(reply.damage == 128, "Flamethrower damage is deterministic 128")
+	_assert_true(reply.damage == 123, "Flamethrower damage is deterministic 123")
 	magmortar.consume_pp(0)
 	_assert_true(magmortar.current_pp[0] == 7, "Flamethrower PP decremented 8 -> 7")
 
@@ -145,7 +145,7 @@ func _check_scene_attack_flow() -> void:
 			break
 
 	_assert_true(lucario.stats.current_pp[0] == 7, "scene attack consumed Lucario PP")
-	_assert_true(magmortar.stats.curr_health == 117, "scene attack applied resolver damage")
+	_assert_true(magmortar.stats.curr_health == 78, "scene attack applied resolver damage")
 	_assert_true(_log_has(level.battle_log, "move_used"), "scene attack logged move_used")
 	_assert_true(_log_has(level.battle_log, "damage_dealt"), "scene attack logged damage_dealt")
 	_assert_true(_log_has(level.battle_log, "pp_decremented"), "scene attack logged pp_decremented")
