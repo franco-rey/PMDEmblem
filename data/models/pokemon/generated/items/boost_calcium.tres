@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_hrell"]
+
+[resource]
+script = ExtResource("1_hrell")
+item_id = "boost_calcium"
+name = "Calcium"
+description = "A drink that permanently raises the Pokémon's Special Attack."
+category = "medicine"
+use_kind = 1
+price = 750
+usage_type = 5
+sort_category = 9
+sprite_key = "Medicine_Red"
+icon_path = "res://assets/visuals/raw_asset/Item/Medicine_Red.None.png"
+icon_index = 7
+item_states = Array[String](["PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.DrinkState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.DrinkState, PMDC", "PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.RestoreBellyEvent, PMDC", "PMDC.Dungeon.VitaminEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.RestoreBellyEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"amount": 4,
+"family": "permanent_stat",
+"source_event": "PMDC.Dungeon.VitaminEvent, PMDC",
+"stat": "special_attack"
+}])
+source_json_path = "DumpAsset/Data/Item/boost_calcium.json"

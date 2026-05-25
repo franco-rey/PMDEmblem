@@ -7,5 +7,5 @@ script = ExtResource("1_7qvvs")
 status_id = "mod_attack"
 display_name = "Mod Attack"
 visual_key = "mod_attack"
-source_event_tags = Array[String](["PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
-supported_hook_families = Array[String](["stat_stage"])
+source_event_tags = Array[String](["PMDC.Dungeon.StatusStackBattleEvent, PMDC", "PMDC.Dungeon.WeatherStackEvent, PMDC"])
+supported_hook_families = Array[String](["stat_stage", "weather_stat_stage"])

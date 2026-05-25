@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_m04xf"]
+
+[resource]
+script = ExtResource("1_m04xf")
+item_id = "loot_spacetime_globe"
+name = "Spacetime Globe"
+released = false
+category = "category_15"
+price = 1000000
+sort_category = 15
+icon_index = -1
+source_json_path = "DumpAsset/Data/Item/loot_spacetime_globe.json"

@@ -11,9 +11,9 @@ description = "The target is taunted into a rage that allows it to use only atta
 type = "dark"
 accuracy = 100
 pp = 20
+tactical_range_kind = 3
 tactical_range_value = 4
 effect_tags = Array[String](["PMDC.Dungeon.StatusBattleEvent, PMDC"])
-unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence"])
 effect_records = Array[Dictionary]([{
 "family": "status",
 "source_bucket": "OnHits",

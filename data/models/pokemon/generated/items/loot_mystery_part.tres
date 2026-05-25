@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_gyah0"]
+
+[resource]
+script = ExtResource("1_gyah0")
+item_id = "loot_mystery_part"
+name = "Mystery Part"
+description = "A mysterious mechanical part that has lain undisturbed for eons, veiled by legendary mystery. It is said to have an effect on mysterious distortions."
+released = false
+category = "category_15"
+price = 40000
+sort_category = 15
+sprite_key = "Piece_Yellow"
+icon_path = "res://assets/visuals/raw_asset/Item/Piece_Yellow.None.png"
+icon_index = -1
+source_json_path = "DumpAsset/Data/Item/loot_mystery_part.json"

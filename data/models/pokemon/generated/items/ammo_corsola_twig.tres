@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_rnuca"]
+
+[resource]
+script = ExtResource("1_rnuca")
+item_id = "ammo_corsola_twig"
+name = "Corsola Twig"
+description = "A weapon to be hurled. It flies in a straight line to inflict damage and sharply lowers the Sp.Atk of any Pokémon it hits."
+category = "category_2"
+use_kind = 1
+price = 2
+max_stack = 9
+usage_type = 3
+sort_category = 2
+sprite_key = "Stick_Pink"
+icon_path = "res://assets/visuals/raw_asset/Item/Stick_Pink.None.png"
+icon_index = 1
+item_states = Array[String](["PMDC.Dungeon.AmmoState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.AdditionalEffectState, PMDC", "PMDC.Dungeon.AdditionalEvent, PMDC", "PMDC.Dungeon.AmmoState, PMDC", "PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.AdditionalEvent, PMDC", "PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
+source_json_path = "DumpAsset/Data/Item/ammo_corsola_twig.json"

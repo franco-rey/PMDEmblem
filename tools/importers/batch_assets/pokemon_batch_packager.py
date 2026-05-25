@@ -41,6 +41,7 @@ def main() -> int:
     generations = _parse_generations(args.generations)
     dex_min, dex_max = _parse_dex_range(args.dex_range)
     entries = _discover_entries(sources, only, generations, dex_min, dex_max)
+    excluded_unreleased = _discover_excluded_unreleased(sources, only, generations, dex_min, dex_max)
     if args.limit > 0:
         entries = entries[: args.limit]
 
@@ -59,8 +60,8 @@ def main() -> int:
             "released_only": True,
             "only": sorted(only),
             "limit": args.limit,
+            "excluded_unreleased": excluded_unreleased,
         },
-        "source_roots": sources.to_manifest(),
         "species": manifest_species,
     }
 
@@ -69,6 +70,7 @@ def main() -> int:
         "generated_at": payload["generated_at"],
         "source": "pokemon_batch_packager",
         "summary": _summary(manifest_species),
+        "excluded_unreleased": excluded_unreleased,
         "species": manifest_species,
     }
 
@@ -155,6 +157,37 @@ def _discover_entries(sources: Any, only: set[str], generations: list[int], dex_
     return out
 
 
+def _discover_excluded_unreleased(sources: Any, only: set[str], generations: list[int], dex_min: int, dex_max: int) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for path in sorted(sources.monster_dir.glob("*.json")):
+        raw = _load_json(path)
+        obj = raw.get("Object", {}) if isinstance(raw, dict) else {}
+        if not isinstance(obj, dict):
+            continue
+        dex = int(obj.get("IndexNum", 0) or 0)
+        bare_slug = path.stem
+        pslug = project_slug(dex, bare_slug)
+        national_generation = generation_from_dex(dex)
+        if only and bare_slug not in only and pslug not in only:
+            continue
+        if dex < dex_min or dex > dex_max:
+            continue
+        if national_generation not in generations:
+            continue
+        if bool(obj.get("Released", True)):
+            continue
+        out.append({
+            "slug": pslug,
+            "pmdo_slug": bare_slug,
+            "dex_number": dex,
+            "display_name": _localized(obj.get("Name", {})) or bare_slug.capitalize(),
+            "generation": national_generation,
+            "reason": "pmdo_unreleased",
+        })
+    out.sort(key=lambda item: (int(item["dex_number"]), str(item["pmdo_slug"])))
+    return out
+
+
 def _package_entry(entry: dict[str, Any], sources: Any, dry_run: bool) -> dict[str, Any]:
     dex = int(entry["dex_number"])
     slug = str(entry["slug"])
@@ -197,10 +230,13 @@ def _package_entry(entry: dict[str, Any], sources: Any, dry_run: bool) -> dict[s
     warnings = sprite_warnings + expanded_warnings + portrait_warnings
     disabled_reason = ""
     has_required_sprites = all(not warning.startswith("missing sprite state") for warning in sprite_warnings) and "missing AnimData.xml" not in sprite_warnings
+    has_full_game_data = bool(entry["released"]) and bool(entry["level_skills"]) and bool(default_moves) and has_required_sprites and "portrait_normal" in portrait_assets
     if not has_required_sprites:
         disabled_reason = "missing_required_sprites"
     elif not default_moves:
         disabled_reason = "missing_usable_move"
+    elif "portrait_normal" not in portrait_assets:
+        disabled_reason = "missing_normal_portrait"
 
     status = "battle_ready" if not disabled_reason else "metadata_only"
     assets = {**sprite_assets, **portrait_assets}
@@ -217,13 +253,14 @@ def _package_entry(entry: dict[str, Any], sources: Any, dry_run: bool) -> dict[s
         "default_form_index": form_index,
         "status": status,
         "disabled_reason": disabled_reason,
+        "full_game_data": has_full_game_data and not disabled_reason,
         "warnings": warnings,
         "source": {
             "monster_json": entry["monster_json"],
-            "sprite_dir": str(sprite_source) if sprite_source else "",
-            "portrait_dir": str(portrait_source) if portrait_source else "",
-            "sprite_collab_dir": str(sprite_collab_source) if sprite_collab_source else "",
-            "portrait_collab_dir": str(portrait_collab_source) if portrait_collab_source else "",
+            "sprite_dir": _source_rel(sources.raw_asset_root, sprite_source),
+            "portrait_dir": _source_rel(sources.raw_asset_root, portrait_source),
+            "sprite_collab_dir": _source_rel(sources.sprite_collab_root, sprite_collab_source),
+            "portrait_collab_dir": _source_rel(sources.sprite_collab_root, portrait_collab_source),
         },
         "assets": assets,
         "checksums": {**sprite_checksums, **expanded_checksums, **portrait_checksums},
@@ -233,6 +270,15 @@ def _package_entry(entry: dict[str, Any], sources: Any, dry_run: bool) -> dict[s
             "default_moves": default_moves,
         },
     }
+
+
+def _source_rel(root: Path | None, path: Path | None) -> str:
+    if root is None or path is None:
+        return ""
+    try:
+        return path.resolve().relative_to(root.resolve()).as_posix()
+    except ValueError:
+        return path.as_posix()
 
 
 def _summary(species: list[dict[str, Any]]) -> dict[str, int]:

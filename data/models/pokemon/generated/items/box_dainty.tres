@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_sh7fm"]
+
+[resource]
+script = ExtResource("1_sh7fm")
+item_id = "box_dainty"
+name = "Dainty Box"
+description = "A box that is dainty and fashionable. There is something tasty inside!"
+category = "category_16"
+price = 1000
+usage_type = 7
+sort_category = 16
+sprite_key = "Chest_Red"
+icon_path = "res://assets/visuals/raw_asset/Item/Chest_Red.None.png"
+icon_index = 17
+source_json_path = "DumpAsset/Data/Item/box_dainty.json"

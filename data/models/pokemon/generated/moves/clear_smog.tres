@@ -15,11 +15,19 @@ pp = 16
 tactical_range_kind = 3
 tactical_range_value = 4
 effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.OnHitEvent, PMDC"])
-unsupported_effect_tags = Array[String](["PMDC.Dungeon.OnHitEvent, PMDC"])
 effect_records = Array[Dictionary]([{
 "family": "damage",
 "source_bucket": "OnHits",
 "source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
 "target": "hit_target"
+}, {
+"chance": 100,
+"family": "cure_statuses",
+"require_contact": false,
+"require_damage": true,
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.RemoveStateStatusBattleEvent, PMDC",
+"target": "hit_target",
+"wrapped_source_event": "PMDC.Dungeon.OnHitEvent, PMDC"
 }])
 animation_key = "special_attack"

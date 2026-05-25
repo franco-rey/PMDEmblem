@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_wdmi6"]
+
+[resource]
+script = ExtResource("1_wdmi6")
+item_id = "xcl_family_piplup_04"
+name = "Sea Ore"
+description = "An exclusive item for the Piplup family. When kept in the bag, the Pokémon recovers faster from status problems."
+category = "material"
+use_kind = 3
+price = 1600
+rarity = 2
+cannot_drop = true
+bag_effect = true
+usage_type = 8
+sort_category = 17
+sprite_key = "Box_Yellow"
+icon_path = "res://assets/visuals/raw_asset/Item/Box_Yellow.None.png"
+icon_index = 10
+item_states = Array[String](["PMDC.Dungeon.ExclusiveState, PMDC", "PMDC.Dungeon.FamilyState, PMDC", "RogueEssence.Dungeon.MaterialState, RogueEssence"])
+source_effect_tags = Array[String](["PMDC.Dungeon.ExclusiveState, PMDC", "PMDC.Dungeon.FamilyState, PMDC"])
+source_json_path = "DumpAsset/Data/Item/xcl_family_piplup_04.json"

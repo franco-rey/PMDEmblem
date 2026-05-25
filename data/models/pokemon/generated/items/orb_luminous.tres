@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_2xgyb"]
+
+[resource]
+script = ExtResource("1_2xgyb")
+item_id = "orb_luminous"
+name = "Luminous Orb"
+description = "A mapping orb that reveals the entire floor."
+category = "orb"
+use_kind = 1
+price = 150
+usage_type = 1
+sort_category = 11
+sprite_key = "Orb_Tan"
+icon_path = "res://assets/visuals/raw_asset/Item/Orb_Tan.None.png"
+icon_index = 9
+item_states = Array[String](["PMDC.Dungeon.OrbState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.BattleLogBattleEvent, PMDC", "PMDC.Dungeon.LuminousEvent, PMDC", "PMDC.Dungeon.MapOutEvent, PMDC", "PMDC.Dungeon.OrbState, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.BattleLogBattleEvent, PMDC", "PMDC.Dungeon.LuminousEvent, PMDC", "PMDC.Dungeon.MapOutEvent, PMDC"])
+source_json_path = "DumpAsset/Data/Item/orb_luminous.json"

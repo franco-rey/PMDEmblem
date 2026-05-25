@@ -13,9 +13,9 @@ category = 2
 base_power = 90
 accuracy = 100
 pp = 10
+tactical_range_kind = 2
 tactical_range_value = 2
 effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.StatusBattleEvent, PMDC"])
-unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"])
 effect_records = Array[Dictionary]([{
 "family": "damage",
 "source_bucket": "OnHits",

@@ -15,8 +15,12 @@ accuracy = 100
 pp = 20
 tactical_range_kind = 1
 effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.AddContextStateEvent, PMDC", "PMDC.Dungeon.RemoveStatusBattleEvent, PMDC"])
-unsupported_effect_tags = Array[String](["PMDC.Dungeon.AddContextStateEvent, PMDC"])
 effect_records = Array[Dictionary]([{
+"family": "tactical_noop",
+"source_bucket": "BeforeActions",
+"source_event": "PMDC.Dungeon.AddContextStateEvent, PMDC",
+"target": "self"
+}, {
 "family": "damage",
 "source_bucket": "OnHits",
 "source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",

@@ -6,5 +6,6 @@
 script = ExtResource("1_x5kcv")
 intrinsic_id = "overgrow"
 display_name = "Overgrow"
+source_event_tags = Array[String](["PMDC.Dungeon.PinchEvent, PMDC", "RogueEssence.Data.IntrinsicData, RogueEssence"])
 supported_hook_families = Array[String](["battle_start", "before_damage"])
-report_summary = "Supported low-HP same-type damage boost."
+report_summary = "Supported skirmish hooks imported from intrinsic metadata."

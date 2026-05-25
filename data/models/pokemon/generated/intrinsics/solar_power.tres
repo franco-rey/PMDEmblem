@@ -6,6 +6,6 @@
 script = ExtResource("1_cf67o")
 intrinsic_id = "solar_power"
 display_name = "Solar Power"
-supported_hook_families = Array[String](["battle_start"])
-unsupported_hook_families = Array[String](["before_accuracy", "before_damage", "after_damage", "status_application", "target_legality"])
-report_summary = "Recorded for M6; combat-specific hooks are explicit unsupported entries."
+source_event_tags = Array[String](["PMDC.Dungeon.ChipDamageEvent, PMDC", "PMDC.Dungeon.MultiplyCategoryEvent, PMDC", "PMDC.Dungeon.OnAggressionEvent, PMDC", "PMDC.Dungeon.WeatherNeededEvent, PMDC", "RogueEssence.Data.IntrinsicData, RogueEssence"])
+supported_hook_families = Array[String](["battle_start", "field_condition", "turn_start"])
+report_summary = "Supported skirmish hooks imported from intrinsic metadata."

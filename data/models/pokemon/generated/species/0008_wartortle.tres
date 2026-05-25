@@ -63,5 +63,13 @@ teach_skills = Array[String](["surf", "ice_beam", "blizzard", "strength", "dig",
 shared_skills = Array[String](["mist", "haze", "flail", "foresight", "mirror_coat", "yawn", "refresh", "mud_sport", "fake_out", "muddy_water", "aqua_ring", "aqua_jet", "water_spout", "brine", "aura_sphere", "dragon_pulse"])
 secret_skills = Array[String](["mega_punch", "ice_punch", "mega_kick", "body_slam", "double_edge", "counter", "seismic_toss", "mimic", "defense_curl", "substitute", "snore", "mud_slap", "icy_wind", "endure", "rollout", "swagger", "sleep_talk", "dynamic_punch", "dive", "iron_defense", "aqua_tail", "zen_headbutt", "headbutt", "water_pledge", "iron_tail", "focus_punch", "water_pulse", "dragon_pulse"])
 evolution_from = "squirtle"
+evolutions = Array[Dictionary]([{
+"requirements": Array[Dictionary]([{
+"kind": "level",
+"level": 36,
+"source_event": "PMDC.Data.EvoLevel, PMDC"
+}]),
+"result": "blastoise"
+}])
 skill_group1 = "monster"
 skill_group2 = "water_1"

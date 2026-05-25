@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_wag7l"]
+
+[resource]
+script = ExtResource("1_wag7l")
+item_id = "evo_deep_sea_tooth"
+name = "Deep Sea Tooth"
+description = "A supersharp fang with a subtle gleam. It allows a certain kind of Pokémon to evolve."
+category = "evolution"
+use_kind = 2
+price = 1000
+sort_category = 14
+sprite_key = "Fang_LightBlue"
+icon_path = "res://assets/visuals/raw_asset/Item/Fang_LightBlue.None.png"
+icon_index = -1
+item_states = Array[String](["PMDC.Dungeon.EvoState, PMDC", "PMDC.Dungeon.HeldState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.EvoState, PMDC", "PMDC.Dungeon.HeldState, PMDC"])
+source_json_path = "DumpAsset/Data/Item/evo_deep_sea_tooth.json"

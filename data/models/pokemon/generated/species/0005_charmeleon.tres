@@ -54,5 +54,13 @@ teach_skills = Array[String](["cut", "flamethrower", "strength", "dig", "toxic",
 shared_skills = Array[String](["swords_dance", "bite", "rock_slide", "belly_drum", "outrage", "ancient_power", "beat_up", "dragon_dance", "metal_claw", "crunch", "flare_blitz", "dragon_rush", "counter", "focus_punch", "dragon_pulse", "air_cutter"])
 secret_skills = Array[String](["mega_punch", "fire_punch", "swords_dance", "mega_kick", "body_slam", "double_edge", "counter", "seismic_toss", "mimic", "defense_curl", "swift", "rock_slide", "substitute", "snore", "mud_slap", "endure", "swagger", "fury_cutter", "sleep_talk", "dynamic_punch", "thunder_punch", "heat_wave", "headbutt", "fire_pledge", "outrage", "iron_tail", "focus_punch", "dragon_pulse"])
 evolution_from = "charmander"
+evolutions = Array[Dictionary]([{
+"requirements": Array[Dictionary]([{
+"kind": "level",
+"level": 36,
+"source_event": "PMDC.Data.EvoLevel, PMDC"
+}]),
+"result": "charizard"
+}])
 skill_group1 = "monster"
 skill_group2 = "dragon"

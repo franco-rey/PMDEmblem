@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_jxwy7"]
+
+[resource]
+script = ExtResource("1_jxwy7")
+item_id = "berry_yache"
+name = "Yache Berry"
+description = "This berry has a refreshing flavor that strikes a good balance of dryness and sourness. It tastes better chilled. It changes the Pokémon to the Ice-type."
+category = "berry"
+use_kind = 1
+price = 50
+usage_type = 4
+sort_category = 6
+sprite_key = "Berry_Yache"
+icon_path = "res://assets/visuals/raw_asset/Item/Berry_Yache.None.png"
+icon_index = 3
+item_states = Array[String](["PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.BerryState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.BerryState, PMDC", "PMDC.Dungeon.ChangeToElementEvent, PMDC", "PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.RestoreBellyEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.ChangeToElementEvent, PMDC", "PMDC.Dungeon.RestoreBellyEvent, PMDC"])
+source_json_path = "DumpAsset/Data/Item/berry_yache.json"

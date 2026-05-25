@@ -71,6 +71,9 @@ var pokemon_instance: PokemonInstanceResource = null
 var battle_status: int = BattleStatus.ACTIVE
 ## Runtime status payloads, reset for each spawned skirmish instance.
 var battle_statuses: Dictionary = {}
+## Battle-only intrinsic overrides applied by moves such as Worry Seed.
+## These are included by BattleIntrinsicService before consulting form data.
+var temporary_intrinsic_slugs: Array[String] = []
 ## Temporary battle stat stages. Keys are attack/defense/special_attack/
 ## special_defense/speed/accuracy/evasion; values clamp to [-6, 6].
 var stat_stages: Dictionary = {}
@@ -121,16 +124,17 @@ func init_from_pokemon(instance: PokemonInstanceResource) -> void:
 
 	if form != null:
 		types = form.types()
-		hp_max = form.base_hp + level * 2
+		var calculated: Dictionary = PokemonStatCalculator.calculate_for_instance(instance)
+		hp_max = int(calculated.get("hp", 1))
 		max_health = hp_max
-		attack = form.base_atk
-		defense = form.base_def
-		special_attack = form.base_spa
-		special_defense = form.base_spd
-		speed = form.base_speed
+		attack = int(calculated.get("attack", 1))
+		defense = int(calculated.get("defense", 1))
+		special_attack = int(calculated.get("special_attack", 1))
+		special_defense = int(calculated.get("special_defense", 1))
+		speed = int(calculated.get("speed", 1))
 		# Rough legacy parity for the existing direct-damage attack (M2 swaps in
 		# a real damage formula).
-		attack_power = int(maxi(form.base_atk, form.base_spa) / 5.0)
+		attack_power = int(maxi(attack, special_attack) / 5.0)
 		sprite = form.sprite_set.idle_path if form.sprite_set != null else ""
 	else:
 		types = []
@@ -200,7 +204,15 @@ func first_usable_move_index(require_damaging: bool = false) -> int:
 
 func reset_battle_modifiers() -> void:
 	battle_statuses = {}
+	temporary_intrinsic_slugs = []
 	stat_stages = {}
+
+
+func set_temporary_intrinsic(intrinsic_id: String, _payload: Dictionary = {}) -> void:
+	var key: String = intrinsic_id.strip_edges().to_lower()
+	if key.is_empty() or key == "none":
+		return
+	temporary_intrinsic_slugs = [key]
 
 
 func apply_battle_status(status_id: String, payload: Dictionary = {}) -> Dictionary:

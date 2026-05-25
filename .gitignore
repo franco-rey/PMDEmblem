@@ -4,6 +4,9 @@
 export.cfg
 export_presets.cfg
 
+assets/visuals/raw_asset/**/*.import
+assets/textures/pokemon/portraits/**/*.import
+
 # Imported translations (automatically generated from CSV files)
 *.translation
 
@@ -12,6 +15,8 @@ export_presets.cfg
 data_*/
 
 .vscode/
+.claude/
+.cursor/
 .DS_Store
 
 docs/img/*.import
@@ -35,3 +40,9 @@ plan/
 unfiled/
 logs.txt
 logs/
+
+__pycache__/
+*.py[cod]
+tools/importers/local_sources.json
+
+assets/visuals/raw_asset/

@@ -14,5 +14,12 @@ tactical_range_kind = 6
 tactical_range_value = 0
 target_alignment = 1
 effect_tags = Array[String](["PMDC.Dungeon.GiveMapStatusEvent, PMDC"])
-unsupported_effect_tags = Array[String](["PMDC.Dungeon.GiveMapStatusEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"condition_id": "rain",
+"counter": 0,
+"family": "field_condition",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.GiveMapStatusEvent, PMDC",
+"target": "field"
+}])
 animation_key = "status_attack"

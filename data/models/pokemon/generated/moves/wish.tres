@@ -13,5 +13,12 @@ pp = 16
 tactical_range_kind = 5
 target_alignment = 3
 effect_tags = Array[String](["PMDC.Dungeon.StatusHPBattleEvent, PMDC"])
-unsupported_effect_tags = Array[String](["PMDC.Dungeon.StatusHPBattleEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "status",
+"hp_divisor": 2,
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.StatusHPBattleEvent, PMDC",
+"status_id": "wish",
+"target": "hit_target"
+}])
 animation_key = "status_attack"

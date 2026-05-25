@@ -1,8 +1,9 @@
 Pokemon Import Report
 =====================
-Started: 2026-05-24T17:34:03
+Started: 2026-05-24T21:02:25
 Species imported: 16
 Moves imported: 128
+Items imported: 2452
 Instance templates written: 16
 Errors: 0
 Aggregate warnings: 0
@@ -112,18 +113,16 @@ Moves
 -----
 - tackle (#33, Tackle) OK
     type=normal category=1 power=45 acc=100 pp=22
-    range=unsupported/2 alignment=4
+    range=line/2 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
 - growl (#45, Growl) OK
     type=normal category=3 power=0 acc=100 pp=15
     range=area/4 alignment=4
     effect tags: PMDC.Dungeon.StatusStackBattleEvent, PMDC
 - leech_seed (#73, Leech Seed) OK
     type=grass category=3 power=0 acc=85 pp=12
-    range=unsupported/3 alignment=4
+    range=projectile/3 alignment=4
     effect tags: PMDC.Dungeon.StatusBattleEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence
 - vine_whip (#22, Vine Whip) OK
     type=grass category=1 power=45 acc=100 pp=20
     range=melee/1 alignment=4
@@ -138,9 +137,8 @@ Moves
     effect tags: PMDC.Dungeon.StatusBattleEvent, PMDC
 - take_down (#36, Take Down) OK
     type=normal category=1 power=80 acc=80 pp=17
-    range=unsupported/4 alignment=6
+    range=line/4 alignment=6
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.HPRecoilEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
 - razor_leaf (#75, Razor Leaf) OK
     type=grass category=1 power=55 acc=100 pp=14
     range=projectile/6 alignment=6
@@ -153,36 +151,30 @@ Moves
     type=normal category=3 power=0 acc=-1 pp=18
     range=self/0 alignment=1
     effect tags: PMDC.Dungeon.WeatherStackEvent, PMDC
-    UNSUPPORTED effect tags: PMDC.Dungeon.WeatherStackEvent, PMDC
 - double_edge (#38, Double-Edge) OK
     type=normal category=1 power=90 acc=100 pp=8
-    range=unsupported/5 alignment=6
+    range=line/5 alignment=6
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.HPRecoilEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
 - worry_seed (#388, Worry Seed) OK
     type=grass category=3 power=0 acc=100 pp=16
-    range=unsupported/4 alignment=6
+    range=projectile/4 alignment=6
     effect tags: PMDC.Dungeon.ChangeToAbilityEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence, PMDC.Dungeon.ChangeToAbilityEvent, PMDC
 - synthesis (#235, Synthesis) OK
     type=grass category=3 power=0 acc=-1 pp=10
     range=self/0 alignment=1
     effect tags: PMDC.Dungeon.WeatherHPEvent, PMDC
 - seed_bomb (#402, Seed Bomb) OK
     type=grass category=1 power=60 acc=100 pp=10
-    range=unsupported/3 alignment=4
+    range=projectile/3 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence
 - solar_beam (#76, Solar Beam) OK
     type=grass category=2 power=90 acc=100 pp=8
-    range=unsupported/8 alignment=6
+    range=line/8 alignment=6
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.WaveMotionAction, RogueEssence
 - petal_dance (#80, Petal Dance) OK
     type=grass category=2 power=90 acc=100 pp=10
-    range=unsupported/2 alignment=4
+    range=line/2 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.StatusBattleEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
 - petal_blizzard (#572, Petal Blizzard) OK
     type=grass category=1 power=60 acc=90 pp=10
     range=area/4 alignment=4
@@ -227,7 +219,6 @@ Moves
     type=fire category=2 power=45 acc=100 pp=16
     range=melee/1 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.OnHitEvent, PMDC
-    UNSUPPORTED effect tags: PMDC.Dungeon.OnHitEvent, PMDC
 - inferno (#517, Inferno) OK
     type=fire category=2 power=90 acc=50 pp=10
     range=melee/1 alignment=6
@@ -242,9 +233,8 @@ Moves
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
 - flare_blitz (#394, Flare Blitz) OK
     type=fire category=1 power=90 acc=100 pp=9
-    range=unsupported/5 alignment=6
+    range=line/5 alignment=6
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.AdditionalEvent, PMDC, PMDC.Dungeon.HPRecoilEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
 - heat_wave (#257, Heat Wave) OK
     type=fire category=2 power=65 acc=90 pp=8
     range=area/4 alignment=4
@@ -255,9 +245,8 @@ Moves
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
 - wing_attack (#17, Wing Attack) OK
     type=flying category=1 power=50 acc=100 pp=16
-    range=unsupported/2 alignment=4
+    range=line/2 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
 - tail_whip (#39, Tail Whip) OK
     type=normal category=3 power=0 acc=-1 pp=22
     range=area/1 alignment=4
@@ -282,7 +271,6 @@ Moves
     type=normal category=1 power=40 acc=100 pp=20
     range=melee/1 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.AddContextStateEvent, PMDC, PMDC.Dungeon.RemoveStatusBattleEvent, PMDC
-    UNSUPPORTED effect tags: PMDC.Dungeon.AddContextStateEvent, PMDC
 - protect (#182, Protect) OK
     type=normal category=3 power=0 acc=-1 pp=10
     range=self/0 alignment=1
@@ -297,9 +285,8 @@ Moves
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
 - skull_bash (#130, Skull Bash) OK
     type=normal category=1 power=110 acc=100 pp=14
-    range=unsupported/6 alignment=4
+    range=line/6 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
 - iron_defense (#334, Iron Defense) OK
     type=steel category=3 power=0 acc=-1 pp=14
     range=self/0 alignment=1
@@ -308,7 +295,6 @@ Moves
     type=water category=3 power=0 acc=-1 pp=10
     range=self/0 alignment=1
     effect tags: PMDC.Dungeon.GiveMapStatusEvent, PMDC
-    UNSUPPORTED effect tags: PMDC.Dungeon.GiveMapStatusEvent, PMDC
 - hydro_pump (#56, Hydro Pump) OK
     type=water category=2 power=100 acc=75 pp=8
     range=projectile/8 alignment=6
@@ -327,9 +313,8 @@ Moves
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.AdditionalEvent, PMDC
 - spite (#180, Spite) OK
     type=ghost category=3 power=0 acc=100 pp=18
-    range=unsupported/3 alignment=4
+    range=projectile/3 alignment=4
     effect tags: PMDC.Dungeon.SpiteEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence, PMDC.Dungeon.SpiteEvent, PMDC
 - mean_look (#212, Mean Look) OK
     type=normal category=3 power=0 acc=100 pp=18
     range=projectile/8 alignment=4
@@ -342,16 +327,14 @@ Moves
     type=ghost category=2 power=0 acc=100 pp=15
     range=area/1 alignment=4
     effect tags: PMDC.Dungeon.LevelDamageEvent, PMDC
-    UNSUPPORTED effect tags: PMDC.Dungeon.LevelDamageEvent, PMDC
 - confuse_ray (#109, Confuse Ray) OK
     type=ghost category=3 power=0 acc=100 pp=10
     range=projectile/6 alignment=4
     effect tags: PMDC.Dungeon.StatusBattleEvent, PMDC
 - sucker_punch (#389, Sucker Punch) OK
     type=dark category=1 power=70 acc=100 pp=16
-    range=unsupported/3 alignment=4
+    range=line/3 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
 - shadow_punch (#325, Shadow Punch) OK
     type=ghost category=1 power=60 acc=-1 pp=20
     range=melee/1 alignment=4
@@ -366,9 +349,8 @@ Moves
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.AdditionalEvent, PMDC
 - dream_eater (#138, Dream Eater) OK
     type=psychic category=2 power=35 acc=100 pp=16
-    range=unsupported/3 alignment=4
+    range=projectile/3 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.HPDrainEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence, PMDC.Dungeon.HPDrainEvent, PMDC
 - dark_pulse (#399, Dark Pulse) OK
     type=dark category=2 power=75 acc=100 pp=15
     range=area/1 alignment=4
@@ -389,12 +371,10 @@ Moves
     type=psychic category=3 power=0 acc=-1 pp=6
     range=area/4 alignment=2
     effect tags: PMDC.Dungeon.RestoreHPEvent, PMDC, PMDC.Dungeon.RemoveStateStatusBattleEvent, PMDC, PMDC.Dungeon.AddContextStateEvent, PMDC, PMDC.Dungeon.HPTo1Event, PMDC
-    UNSUPPORTED effect tags: PMDC.Dungeon.RestoreHPEvent, PMDC, PMDC.Dungeon.RemoveStateStatusBattleEvent, PMDC, PMDC.Dungeon.AddContextStateEvent, PMDC, PMDC.Dungeon.HPTo1Event, PMDC
 - misty_terrain (#581, Misty Terrain) OK
     type=fairy category=3 power=0 acc=-1 pp=10
     range=self/0 alignment=1
     effect tags: PMDC.Dungeon.GiveMapStatusEvent, PMDC
-    UNSUPPORTED effect tags: PMDC.Dungeon.GiveMapStatusEvent, PMDC
 - moonblast (#585, Moonblast) OK
     type=fairy category=2 power=75 acc=100 pp=9
     range=projectile/6 alignment=6
@@ -407,7 +387,6 @@ Moves
     type=psychic category=3 power=0 acc=-1 pp=18
     range=self/0 alignment=1
     effect tags: PMDC.Dungeon.RandomGroupWarpEvent, PMDC
-    UNSUPPORTED effect tags: PMDC.Dungeon.RandomGroupWarpEvent, PMDC
 - disarming_voice (#574, Disarming Voice) OK
     type=fairy category=2 power=35 acc=-1 pp=18
     range=projectile/3 alignment=4
@@ -416,7 +395,6 @@ Moves
     type=normal category=3 power=0 acc=-1 pp=16
     range=area/1 alignment=3
     effect tags: PMDC.Dungeon.StatusHPBattleEvent, PMDC
-    UNSUPPORTED effect tags: PMDC.Dungeon.StatusHPBattleEvent, PMDC
 - magical_leaf (#345, Magical Leaf) OK
     type=grass category=2 power=55 acc=-1 pp=14
     range=projectile/4 alignment=4
@@ -425,12 +403,10 @@ Moves
     type=psychic category=3 power=0 acc=-1 pp=18
     range=projectile/4 alignment=6
     effect tags: PMDC.Dungeon.RestoreHPEvent, PMDC
-    UNSUPPORTED effect tags: PMDC.Dungeon.RestoreHPEvent, PMDC
 - draining_kiss (#577, Draining Kiss) OK
     type=fairy category=2 power=50 acc=100 pp=18
     range=melee/1 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.HPDrainEvent, PMDC
-    UNSUPPORTED effect tags: PMDC.Dungeon.HPDrainEvent, PMDC
 - calm_mind (#347, Calm Mind) OK
     type=psychic category=3 power=0 acc=-1 pp=14
     range=self/0 alignment=1
@@ -443,17 +419,14 @@ Moves
     type=psychic category=3 power=0 acc=100 pp=11
     range=area/3 alignment=4
     effect tags: PMDC.Dungeon.DisableBattleEvent, PMDC
-    UNSUPPORTED effect tags: PMDC.Dungeon.DisableBattleEvent, PMDC
 - future_sight (#248, Future Sight) OK
     type=psychic category=2 power=80 acc=80 pp=13
-    range=unsupported/3 alignment=4
+    range=projectile/3 alignment=4
     effect tags: PMDC.Dungeon.FutureAttackEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence, PMDC.Dungeon.FutureAttackEvent, PMDC
 - captivate (#445, Captivate) OK
     type=normal category=3 power=0 acc=100 pp=15
-    range=unsupported/2 alignment=4
+    range=projectile/2 alignment=4
     effect tags: PMDC.Dungeon.StatusStackBattleEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence
 - astonish (#310, Astonish) OK
     type=ghost category=1 power=35 acc=100 pp=22
     range=melee/1 alignment=4
@@ -462,12 +435,10 @@ Moves
     type=normal category=1 power=25 acc=70 pp=16
     range=melee/1 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.OnHitEvent, PMDC
-    UNSUPPORTED effect tags: PMDC.Dungeon.OnHitEvent, PMDC
 - disable (#50, Disable) OK
     type=normal category=3 power=0 acc=100 pp=16
     range=projectile/6 alignment=4
     effect tags: PMDC.Dungeon.DisableBattleEvent, PMDC
-    UNSUPPORTED effect tags: PMDC.Dungeon.DisableBattleEvent, PMDC
 - fire_punch (#7, Fire Punch) OK
     type=fire category=1 power=75 acc=100 pp=18
     range=melee/1 alignment=4
@@ -476,7 +447,6 @@ Moves
     type=psychic category=3 power=0 acc=-1 pp=15
     range=self/0 alignment=1
     effect tags: PMDC.Dungeon.GiveMapStatusEvent, PMDC
-    UNSUPPORTED effect tags: PMDC.Dungeon.GiveMapStatusEvent, PMDC
 - ice_punch (#8, Ice Punch) OK
     type=ice category=1 power=75 acc=100 pp=18
     range=melee/1 alignment=4
@@ -495,14 +465,12 @@ Moves
     effect tags: PMDC.Dungeon.StatusBattleEvent, PMDC
 - shadow_sneak (#425, Shadow Sneak) OK
     type=ghost category=1 power=40 acc=100 pp=16
-    range=unsupported/3 alignment=4
+    range=line/3 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
 - pursuit (#228, Pursuit) OK
     type=dark category=3 power=0 acc=-1 pp=15
-    range=unsupported/4 alignment=4
+    range=projectile/4 alignment=4
     effect tags: PMDC.Dungeon.StatusBattleEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence
 - will_o_wisp (#261, Will-O-Wisp) OK
     type=fire category=3 power=0 acc=75 pp=18
     range=projectile/6 alignment=4
@@ -529,27 +497,24 @@ Moves
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
 - extreme_speed (#245, Extreme Speed) OK
     type=normal category=1 power=70 acc=100 pp=10
-    range=unsupported/6 alignment=4
+    range=line/6 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
 - metal_claw (#232, Metal Claw) OK
     type=steel category=1 power=55 acc=100 pp=20
     range=melee/1 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.AdditionalEndEvent, PMDC
 - quick_attack (#98, Quick Attack) OK
     type=normal category=1 power=40 acc=100 pp=20
-    range=unsupported/3 alignment=4
+    range=line/3 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
 - counter (#68, Counter) OK
     type=fighting category=3 power=0 acc=-1 pp=15
     range=self/0 alignment=1
     effect tags: PMDC.Dungeon.StatusBattleEvent, PMDC
 - feint (#364, Feint) OK
     type=normal category=1 power=40 acc=100 pp=20
-    range=unsupported/4 alignment=4
+    range=line/4 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
 - power_up_punch (#612, Power-Up Punch) OK
     type=fighting category=1 power=40 acc=100 pp=12
     range=melee/1 alignment=4
@@ -564,18 +529,16 @@ Moves
     effect tags: PMDC.Dungeon.StatusStackBattleEvent, PMDC
 - bone_rush (#198, Bone Rush) OK
     type=ground category=1 power=20 acc=50 pp=18
-    range=unsupported/1 alignment=4
+    range=line/1 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
 - quick_guard (#501, Quick Guard) OK
     type=fighting category=3 power=0 acc=-1 pp=13
     range=area/2 alignment=3
     effect tags: PMDC.Dungeon.StatusBattleEvent, PMDC
 - me_first (#382, Me First) OK
     type=normal category=3 power=0 acc=-1 pp=20
-    range=unsupported/4 alignment=4
+    range=projectile/4 alignment=4
     effect tags: PMDC.Dungeon.StrongestMoveEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence, PMDC.Dungeon.StrongestMoveEvent, PMDC
 - mud_slap (#189, Mud-Slap) OK
     type=ground category=2 power=25 acc=100 pp=16
     range=projectile/2 alignment=4
@@ -586,9 +549,8 @@ Moves
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.AdditionalEvent, PMDC
 - taunt (#269, Taunt) OK
     type=dark category=3 power=0 acc=100 pp=20
-    range=unsupported/4 alignment=4
+    range=projectile/4 alignment=4
     effect tags: PMDC.Dungeon.StatusBattleEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence
 - feint_attack (#185, Feint Attack) OK
     type=dark category=1 power=60 acc=-1 pp=19
     range=melee/1 alignment=4
@@ -599,14 +561,12 @@ Moves
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
 - swagger (#207, Swagger) OK
     type=normal category=3 power=0 acc=90 pp=14
-    range=unsupported/3 alignment=6
+    range=projectile/3 alignment=6
     effect tags: PMDC.Dungeon.StatusStackBattleEvent, PMDC, PMDC.Dungeon.StatusBattleEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence
 - mud_bomb (#426, Mud Bomb) OK
     type=ground category=2 power=40 acc=80 pp=13
-    range=unsupported/3 alignment=4
+    range=projectile/3 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.AdditionalEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence
 - venoshock (#474, Venoshock) OK
     type=poison category=2 power=50 acc=100 pp=16
     range=melee/1 alignment=4
@@ -617,9 +577,8 @@ Moves
     effect tags: PMDC.Dungeon.StatusStackBattleEvent, PMDC
 - poison_jab (#398, Poison Jab) OK
     type=poison category=1 power=60 acc=100 pp=16
-    range=unsupported/2 alignment=4
+    range=line/2 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.AdditionalEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
 - smog (#123, Smog) OK
     type=poison category=2 power=40 acc=85 pp=16
     range=area/2 alignment=4
@@ -628,7 +587,6 @@ Moves
     type=poison category=2 power=40 acc=-1 pp=16
     range=projectile/4 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC, PMDC.Dungeon.OnHitEvent, PMDC
-    UNSUPPORTED effect tags: PMDC.Dungeon.OnHitEvent, PMDC
 - lava_plume (#436, Lava Plume) OK
     type=fire category=2 power=75 acc=100 pp=14
     range=area/2 alignment=6
@@ -637,16 +595,14 @@ Moves
     type=fire category=3 power=0 acc=-1 pp=10
     range=self/0 alignment=1
     effect tags: PMDC.Dungeon.GiveMapStatusEvent, PMDC
-    UNSUPPORTED effect tags: PMDC.Dungeon.GiveMapStatusEvent, PMDC
 - leaf_blade (#348, Leaf Blade) OK
     type=grass category=1 power=80 acc=100 pp=16
     range=melee/1 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
 - night_slash (#400, Night Slash) OK
     type=dark category=1 power=70 acc=100 pp=15
-    range=unsupported/2 alignment=4
+    range=line/2 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
-    UNSUPPORTED effect tags: HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
 - fury_cutter (#210, Fury Cutter) OK
     type=bug category=1 power=20 acc=90 pp=21
     range=melee/1 alignment=4
@@ -667,6 +623,48 @@ Moves
     type=normal category=1 power=60 acc=100 pp=24
     range=melee/1 alignment=4
     effect tags: PMDC.Dungeon.DamageFormulaEvent, PMDC
+
+Items
+-----
+Imported: 2452
+Categories: {"berry":45,"category_0":1,"category_12":4,"category_13":1,"category_15":20,"category_16":6,"category_18":5,"category_2":9,"category_3":17,"category_8":15,"evolution":30,"food":12,"gummi":19,"held":74,"material":1988,"medicine":22,"orb":41,"seed":19,"tm":124}
+Mapped RawAsset icons: 2420
+Unmapped RawAsset icons: 32
+Supported runtime effect records: 282
+Passive held effect records: 5
+Unsupported/report-only item effect tags: 436
+    unmapped icon: berry_aspear sprite_key=
+    unmapped icon: berry_cheri sprite_key=
+    unmapped icon: berry_chesto sprite_key=
+    unmapped icon: berry_custap sprite_key=
+    unmapped icon: berry_hondew sprite_key=
+    unmapped icon: berry_kee sprite_key=
+    unmapped icon: berry_kelpsy sprite_key=
+    unmapped icon: berry_maranga sprite_key=
+    unmapped icon: berry_pecha sprite_key=
+    unmapped icon: berry_persim sprite_key=
+    unmapped icon: berry_qualot sprite_key=
+    unmapped icon: berry_rawst sprite_key=
+    unmapped icon: berry_tamato sprite_key=
+    unmapped icon: empty sprite_key=
+    unmapped icon: food_chestnut sprite_key=
+    unmapped icon: loot_adamant_orb sprite_key=
+    unmapped icon: loot_blue_orb sprite_key=
+    unmapped icon: loot_jade_orb sprite_key=
+    unmapped icon: loot_lustrous_orb sprite_key=
+    unmapped icon: loot_red_orb sprite_key=
+    unmapped icon: loot_spacetime_globe sprite_key=
+    unmapped icon: medicine_full_restore sprite_key=
+    unmapped icon: medicine_guard_spec sprite_key=
+    unmapped icon: orb_all_hit sprite_key=
+    unmapped icon: orb_all_power_up sprite_key=
+    unmapped icon: orb_health sprite_key=
+    unmapped icon: seed_training sprite_key=
+    unmapped icon: seed_vanish sprite_key=
+    unmapped icon: wand_infatuation sprite_key=
+    unmapped icon: wand_stayaway sprite_key=
+    unmapped icon: wand_surround sprite_key=
+    unmapped icon: wand_totter sprite_key=
 
 Instance templates
 ------------------

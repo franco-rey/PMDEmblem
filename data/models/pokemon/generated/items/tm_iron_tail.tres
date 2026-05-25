@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_6rf6v"]
+
+[resource]
+script = ExtResource("1_6rf6v")
+item_id = "tm_iron_tail"
+name = "TM Iron Tail"
+description = "Teaches the move Iron Tail to a Pokémon."
+category = "tm"
+use_kind = 4
+price = 500
+usage_type = 6
+sort_category = 13
+sprite_key = "Disc_Blue"
+icon_path = "res://assets/visuals/raw_asset/Item/Disc_Blue.None.png"
+icon_index = 13
+item_states = Array[String](["RogueEssence.Dungeon.ItemIDState, RogueEssence"])
+source_effect_tags = Array[String](["PMDC.Dungeon.MoveLearnEvent, PMDC", "PMDC.Dungeon.TMEvent, PMDC", "RogueEssence.Dungeon.ItemIDState, RogueEssence", "RogueEssence.Ground.LearnItemEvent, RogueEssence"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.TMEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "teach_move",
+"move_id": "iron_tail",
+"source_event": "RogueEssence.Ground.LearnItemEvent, RogueEssence"
+}, {
+"family": "teach_move",
+"move_id": "iron_tail",
+"source_event": "PMDC.Dungeon.MoveLearnEvent, PMDC"
+}])
+source_json_path = "DumpAsset/Data/Item/tm_iron_tail.json"

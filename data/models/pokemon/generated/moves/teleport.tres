@@ -14,5 +14,10 @@ tactical_range_kind = 6
 tactical_range_value = 0
 target_alignment = 1
 effect_tags = Array[String](["PMDC.Dungeon.RandomGroupWarpEvent, PMDC"])
-unsupported_effect_tags = Array[String](["PMDC.Dungeon.RandomGroupWarpEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "tactical_noop",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.RandomGroupWarpEvent, PMDC",
+"target": "self"
+}])
 animation_key = "status_attack"

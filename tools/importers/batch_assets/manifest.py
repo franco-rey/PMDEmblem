@@ -29,9 +29,27 @@ def render_text_report(payload: dict[str, Any]) -> str:
         f"Generated: {payload.get('generated_at', '')}",
         f"Target species: {len(species)}",
     ]
+    excluded = payload.get("target", {}).get("excluded_unreleased", [])
+    if excluded:
+        lines.append(f"Excluded unreleased: {len(excluded)}")
     for status in sorted(status_counts):
         lines.append(f"{status}: {status_counts[status]}")
     lines.append("")
+
+    if excluded:
+        lines.append("Excluded unreleased Pokemon")
+        lines.append("---------------------------")
+        for entry in excluded:
+            lines.append(
+                "- %04d %s (%s): %s"
+                % [
+                    int(entry.get("dex_number", 0)),
+                    entry.get("slug", "?"),
+                    entry.get("display_name", "?"),
+                    entry.get("reason", "pmdo_unreleased"),
+                ]
+            )
+        lines.append("")
 
     for entry in species:
         line = f"- {entry.get('slug', '?')} ({entry.get('display_name', '?')}) {entry.get('status', '?')}"
@@ -39,7 +57,10 @@ def render_text_report(payload: dict[str, Any]) -> str:
         if disabled_reason:
             line += f" [{disabled_reason}]"
         lines.append(line)
+        substitutions = entry.get("assets", {}).get("sprite_substitutions", {})
+        if substitutions:
+            for state, reason in sorted(substitutions.items()):
+                lines.append(f"    substitution: {state} -> {reason}")
         for warning in entry.get("warnings", []):
             lines.append(f"    warning: {warning}")
     return "\n".join(lines) + "\n"
-

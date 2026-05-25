@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_srfvf"]
+
+[resource]
+script = ExtResource("1_srfvf")
+item_id = "loot_pearl"
+name = "Pearl"
+description = "A rather small pearl that has a very nice silvery sheen to it. It sells for a moderately high price."
+category = "category_15"
+price = 500
+max_stack = 9
+sort_category = 15
+sprite_key = "Pearl"
+icon_path = "res://assets/visuals/raw_asset/Item/Pearl.None.png"
+icon_index = -1
+source_json_path = "DumpAsset/Data/Item/loot_pearl.json"

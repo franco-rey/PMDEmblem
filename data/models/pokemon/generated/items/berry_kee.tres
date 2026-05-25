@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_bpfjc"]
+
+[resource]
+script = ExtResource("1_bpfjc")
+item_id = "berry_kee"
+name = "Kee Berry"
+released = false
+category = "berry"
+use_kind = 1
+price = 50
+usage_type = 4
+sort_category = 6
+icon_index = 3
+item_states = Array[String](["PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.BerryState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.BerryState, PMDC", "PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.RestoreBellyEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.RestoreBellyEvent, PMDC"])
+source_json_path = "DumpAsset/Data/Item/berry_kee.json"

@@ -10,7 +10,13 @@ name = "Me First"
 description = "The user cuts ahead of the target to steal and use the target's strongest move. It fails if the target has no attacking moves."
 type = "normal"
 pp = 20
+tactical_range_kind = 3
 tactical_range_value = 4
 effect_tags = Array[String](["PMDC.Dungeon.StrongestMoveEvent, PMDC"])
-unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence", "PMDC.Dungeon.StrongestMoveEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "tactical_noop",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.StrongestMoveEvent, PMDC",
+"target": "self"
+}])
 animation_key = "status_attack"

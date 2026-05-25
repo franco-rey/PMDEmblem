@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_0g1bo"]
+
+[resource]
+script = ExtResource("1_0g1bo")
+item_id = "seed_vile"
+name = "Vile Seed"
+description = "A seed that lowers the Pokémon's Defense and Special Defense to their lowest levels."
+category = "seed"
+use_kind = 1
+price = 50
+usage_type = 4
+sort_category = 7
+sprite_key = "Seed_DarkBlue"
+icon_path = "res://assets/visuals/raw_asset/Item/Seed_DarkBlue.None.png"
+icon_index = 4
+item_states = Array[String](["PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.SeedState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.RestoreBellyEvent, PMDC", "PMDC.Dungeon.SeedState, PMDC", "PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.RestoreBellyEvent, PMDC", "PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
+source_json_path = "DumpAsset/Data/Item/seed_vile.json"

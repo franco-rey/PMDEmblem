@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_gtir6"]
+
+[resource]
+script = ExtResource("1_gtir6")
+item_id = "herb_mental"
+name = "Mental Herb"
+description = "An herb that removes all move-binding effects, and prevents moves from being sealed."
+category = "category_8"
+use_kind = 1
+price = 100
+usage_type = 4
+sort_category = 8
+sprite_key = "Herb_Blue"
+icon_path = "res://assets/visuals/raw_asset/Item/Herb_Blue.None.png"
+icon_index = 5
+item_states = Array[String](["PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.HerbState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.HerbState, PMDC", "PMDC.Dungeon.RemoveStatusBattleEvent, PMDC", "PMDC.Dungeon.RestoreBellyEvent, PMDC", "PMDC.Dungeon.StatusBattleEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.RemoveStatusBattleEvent, PMDC", "PMDC.Dungeon.RestoreBellyEvent, PMDC", "PMDC.Dungeon.StatusBattleEvent, PMDC"])
+source_json_path = "DumpAsset/Data/Item/herb_mental.json"

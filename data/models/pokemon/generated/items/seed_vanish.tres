@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_d2jcy"]
+
+[resource]
+script = ExtResource("1_d2jcy")
+item_id = "seed_vanish"
+name = "Vanish Seed"
+released = false
+category = "seed"
+use_kind = 1
+price = 50
+usage_type = 4
+sort_category = 7
+icon_index = 4
+item_states = Array[String](["PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.SeedState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.RestoreBellyEvent, PMDC", "PMDC.Dungeon.SeedState, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.RestoreBellyEvent, PMDC"])
+source_json_path = "DumpAsset/Data/Item/seed_vanish.json"

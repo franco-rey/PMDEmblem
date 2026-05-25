@@ -18,6 +18,9 @@ const PROJECTILE_ACTION_TYPE: String = "RogueEssence.Dungeon.ProjectileAction, R
 const OFFSET_ACTION_TYPE: String = "RogueEssence.Dungeon.OffsetAction, RogueEssence"
 const SELF_ACTION_TYPE: String = "RogueEssence.Dungeon.SelfAction, RogueEssence"
 const AREA_ACTION_TYPE: String = "RogueEssence.Dungeon.AreaAction, RogueEssence"
+const DASH_ACTION_TYPE: String = "RogueEssence.Dungeon.DashAction, RogueEssence"
+const THROW_ACTION_TYPE: String = "RogueEssence.Dungeon.ThrowAction, RogueEssence"
+const WAVE_MOTION_ACTION_TYPE: String = "RogueEssence.Dungeon.WaveMotionAction, RogueEssence"
 
 ## PMD damage event we already plan to support in M2.
 const SUPPORTED_HIT_EVENTS: Array = [
@@ -30,6 +33,22 @@ const SUPPORTED_HIT_EVENTS: Array = [
 	"PMDC.Dungeon.UserHPDamageEvent, PMDC",
 	"PMDC.Dungeon.AdditionalEvent, PMDC",
 	"PMDC.Dungeon.AdditionalEndEvent, PMDC",
+	"PMDC.Dungeon.OnHitEvent, PMDC",
+	"PMDC.Dungeon.ChangeToAbilityEvent, PMDC",
+	"PMDC.Dungeon.GiveMapStatusEvent, PMDC",
+	"PMDC.Dungeon.WeatherStackEvent, PMDC",
+	"PMDC.Dungeon.AddContextStateEvent, PMDC",
+	"PMDC.Dungeon.DisableBattleEvent, PMDC",
+	"PMDC.Dungeon.FutureAttackEvent, PMDC",
+	"PMDC.Dungeon.HPDrainEvent, PMDC",
+	"PMDC.Dungeon.HPTo1Event, PMDC",
+	"PMDC.Dungeon.LevelDamageEvent, PMDC",
+	"PMDC.Dungeon.RandomGroupWarpEvent, PMDC",
+	"PMDC.Dungeon.RemoveStateStatusBattleEvent, PMDC",
+	"PMDC.Dungeon.RestoreHPEvent, PMDC",
+	"PMDC.Dungeon.SpiteEvent, PMDC",
+	"PMDC.Dungeon.StatusHPBattleEvent, PMDC",
+	"PMDC.Dungeon.StrongestMoveEvent, PMDC",
 ]
 
 
@@ -60,6 +79,15 @@ static func map_hitbox(hitbox: Dictionary) -> Dictionary:
 			value = 0
 		AREA_ACTION_TYPE:
 			kind = PokemonMoveResource.TacticalRangeKind.AREA
+			value = int(hitbox.get("Range", 1))
+		DASH_ACTION_TYPE:
+			kind = PokemonMoveResource.TacticalRangeKind.LINE
+			value = int(hitbox.get("Range", 1))
+		THROW_ACTION_TYPE:
+			kind = PokemonMoveResource.TacticalRangeKind.PROJECTILE
+			value = int(hitbox.get("Range", 1))
+		WAVE_MOTION_ACTION_TYPE:
+			kind = PokemonMoveResource.TacticalRangeKind.LINE
 			value = int(hitbox.get("Range", 1))
 		_:
 			kind = PokemonMoveResource.TacticalRangeKind.UNSUPPORTED
@@ -198,6 +226,120 @@ static func _append_records_for_entry(records: Array[Dictionary], entry: Variant
 				"target": "hit_target",
 				"amount": 40 if move_slug == "dragon_rage" else int(value.get("Damage", 0)),
 			})
+		"PMDC.Dungeon.OnHitEvent, PMDC":
+			var on_hit_chance: int = int(value.get("Chance", 100))
+			var require_damage: bool = bool(value.get("RequireDamage", false))
+			var require_contact: bool = bool(value.get("RequireContact", false))
+			var on_hit_events: Variant = value.get("BaseEvents", [])
+			if on_hit_events is Array:
+				for on_hit_event in on_hit_events:
+					var on_hit_before: int = records.size()
+					_append_records_for_entry(records, on_hit_event, source_bucket, move_slug, skill_data)
+					for i in range(on_hit_before, records.size()):
+						records[i]["chance"] = on_hit_chance
+						records[i]["require_damage"] = require_damage
+						records[i]["require_contact"] = require_contact
+						records[i]["wrapped_source_event"] = tag
+		"PMDC.Dungeon.ChangeToAbilityEvent, PMDC":
+			records.append({
+				"family": "ability_change",
+				"source_event": tag,
+				"source_bucket": source_bucket,
+				"target": _target_for_event(value),
+				"target_ability": String(value.get("TargetAbility", "")),
+			})
+		"PMDC.Dungeon.GiveMapStatusEvent, PMDC":
+			records.append({
+				"family": "field_condition",
+				"source_event": tag,
+				"source_bucket": source_bucket,
+				"target": "field",
+				"condition_id": String(value.get("StatusID", "")),
+				"counter": int(value.get("Counter", 0)),
+			})
+		"PMDC.Dungeon.WeatherStackEvent, PMDC":
+			var weather_status_id: String = String(value.get("StatusID", ""))
+			if weather_status_id.begins_with("mod_"):
+				records.append({
+					"family": "weather_stat_stage",
+					"source_event": tag,
+					"source_bucket": source_bucket,
+					"target": _target_for_event(value),
+					"weather_id": String(value.get("WeatherID", "")),
+					"stat": weather_status_id.substr(4),
+					"delta": 1,
+					"weather_delta": 2,
+					"status_id": weather_status_id,
+				})
+			elif not weather_status_id.is_empty():
+				records.append({
+					"family": "status",
+					"source_event": tag,
+					"source_bucket": source_bucket,
+					"target": _target_for_event(value),
+					"status_id": weather_status_id,
+				})
+		"PMDC.Dungeon.RestoreHPEvent, PMDC":
+			records.append({
+				"family": "heal",
+				"source_event": tag,
+				"source_bucket": source_bucket,
+				"target": _target_for_event(value),
+				"percent": _fraction(value, "Numerator", "Denominator"),
+			})
+		"PMDC.Dungeon.HPDrainEvent, PMDC":
+			records.append({
+				"family": "drain",
+				"source_event": tag,
+				"source_bucket": source_bucket,
+				"target": "self",
+				"fraction": _fraction(value, "Numerator", "Denominator", 0.5),
+			})
+		"PMDC.Dungeon.LevelDamageEvent, PMDC":
+			records.append({
+				"family": "level_damage",
+				"source_event": tag,
+				"source_bucket": source_bucket,
+				"target": _target_for_event(value),
+				"numerator": int(value.get("Numerator", 1)),
+				"denominator": int(value.get("Denominator", 1)),
+			})
+		"PMDC.Dungeon.DisableBattleEvent, PMDC", "PMDC.Dungeon.FutureAttackEvent, PMDC", "PMDC.Dungeon.StatusHPBattleEvent, PMDC":
+			var status_id: String = String(value.get("StatusID", ""))
+			if not status_id.is_empty():
+				var status_record: Dictionary = _status_record(value, tag, source_bucket)
+				if tag == "PMDC.Dungeon.StatusHPBattleEvent, PMDC":
+					status_record["hp_divisor"] = int(value.get("HPFraction", 0))
+				records.append(status_record)
+		"PMDC.Dungeon.RemoveStateStatusBattleEvent, PMDC":
+			records.append({
+				"family": "cure_statuses",
+				"source_event": tag,
+				"source_bucket": source_bucket,
+				"target": _target_for_event(value),
+			})
+		"PMDC.Dungeon.HPTo1Event, PMDC":
+			records.append({
+				"family": "hp_to_1",
+				"source_event": tag,
+				"source_bucket": source_bucket,
+				"target": _target_for_event(value),
+			})
+		"PMDC.Dungeon.SpiteEvent, PMDC":
+			records.append({
+				"family": "pp_damage",
+				"source_event": tag,
+				"source_bucket": source_bucket,
+				"target": "hit_target",
+				"amount": int(value.get("PP", 0)),
+			})
+		"PMDC.Dungeon.AddContextStateEvent, PMDC", "PMDC.Dungeon.RandomGroupWarpEvent, PMDC", "PMDC.Dungeon.StrongestMoveEvent, PMDC":
+			records.append({
+				"family": "tactical_noop",
+				"source_event": tag,
+				"source_bucket": source_bucket,
+				"target": "self",
+			})
 		"PMDC.Dungeon.AdditionalEvent, PMDC", "PMDC.Dungeon.AdditionalEndEvent, PMDC":
 			var chance: int = _additional_effect_chance(skill_data)
 			var base_events: Variant = value.get("BaseEvents", [])
@@ -255,6 +397,13 @@ static func _additional_effect_chance(skill_data: Dictionary) -> int:
 		if state is Dictionary and String((state as Dictionary).get("$type", "")) == "PMDC.Dungeon.AdditionalEffectState, PMDC":
 			return int((state as Dictionary).get("EffectChance", 100))
 	return 100
+
+
+static func _fraction(value: Dictionary, numerator_key: String, denominator_key: String, fallback: float = 0.0) -> float:
+	var denominator: int = int(value.get(denominator_key, 0))
+	if denominator <= 0:
+		return fallback
+	return float(value.get(numerator_key, 1)) / float(denominator)
 
 
 static func animation_key_for(category: int) -> String:

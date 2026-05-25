@@ -5,6 +5,7 @@ import re
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 from xml.etree import ElementTree
 
 
@@ -99,7 +100,7 @@ def find_first_complete_sprite_dir(base: Path, dex_number: int, form_index: int 
     for candidate in candidate_asset_dirs(base, dex_number, form_index):
         if not candidate.is_dir():
             continue
-        if (candidate / "AnimData.xml").exists() and all(_find_source(candidate, names) for names in SPRITE_STATE_SOURCES.values()):
+        if (candidate / "AnimData.xml").exists() and _has_required_sprite_sources(candidate):
             return candidate
     return None
 
@@ -118,14 +119,19 @@ def copy_sprite_set(
     destination_dir: Path,
     credits_source_dir: Path | None = None,
     dry_run: bool,
-) -> tuple[dict[str, str], dict[str, str], list[str], list[CopyResult]]:
-    assets: dict[str, str] = {}
+) -> tuple[dict[str, Any], dict[str, str], list[str], list[CopyResult]]:
+    assets: dict[str, Any] = {}
     checksums: dict[str, str] = {}
     warnings: list[str] = []
     copies: list[CopyResult] = []
+    substitutions: dict[str, str] = {}
 
     for state, source_names in SPRITE_STATE_SOURCES.items():
         source = _find_source(source_dir, source_names) if source_dir is not None else None
+        if source is None and state == "idle":
+            source = _find_source(source_dir, SPRITE_STATE_SOURCES["walk"]) if source_dir is not None else None
+            if source is not None:
+                substitutions["idle"] = "idle_static_from_walk"
         destination = destination_dir / f"{state}.png"
         result = _copy_optional(project_root, source, destination, dry_run)
         copies.append(result)
@@ -152,6 +158,9 @@ def copy_sprite_set(
         copies.append(result)
         assets["sprite_credits"] = result.res_path
         checksums["sprite_credits"] = result.checksum
+
+    if substitutions:
+        assets["sprite_substitutions"] = substitutions
 
     return assets, checksums, warnings, copies
 
@@ -210,20 +219,30 @@ def copy_portrait(
     destination_dir: Path,
     credits_source_dir: Path | None = None,
     dry_run: bool,
-) -> tuple[dict[str, str], dict[str, str], list[str], list[CopyResult]]:
-    assets: dict[str, str] = {}
+) -> tuple[dict[str, Any], dict[str, str], list[str], list[CopyResult]]:
+    assets: dict[str, Any] = {}
     checksums: dict[str, str] = {}
     warnings: list[str] = []
     copies: list[CopyResult] = []
+    expressions: dict[str, str] = {}
 
-    source = source_dir / "Normal.png" if source_dir is not None and (source_dir / "Normal.png").exists() else None
-    destination = destination_dir / "Normal.png"
-    result = _copy_optional(project_root, source, destination, dry_run)
-    copies.append(result)
-    if result.source is not None:
-        assets["portrait_normal"] = result.res_path
-        checksums["portrait_normal"] = result.checksum
-    else:
+    if source_dir is not None:
+        for source in sorted(source_dir.glob("*.png")):
+            if not source.is_file() or source.name.startswith("."):
+                continue
+            destination = destination_dir / source.name
+            result = _copy_optional(project_root, source, destination, dry_run)
+            copies.append(result)
+            expression = source.stem
+            expressions[expression] = result.res_path
+            checksums[f"portrait:{expression}"] = result.checksum
+            if expression == "Normal":
+                assets["portrait_normal"] = result.res_path
+                checksums["portrait_normal"] = result.checksum
+
+    if expressions:
+        assets["portrait_expressions"] = expressions
+    if "portrait_normal" not in assets:
         warnings.append("missing Normal portrait")
 
     credits_dir = source_dir if source_dir is not None and (source_dir / "credits.txt").exists() else credits_source_dir
@@ -235,6 +254,17 @@ def copy_portrait(
         checksums["portrait_credits"] = result.checksum
 
     return assets, checksums, warnings, copies
+
+
+def _has_required_sprite_sources(candidate: Path) -> bool:
+    for state, names in SPRITE_STATE_SOURCES.items():
+        source = _find_source(candidate, names)
+        if source is not None:
+            continue
+        if state == "idle" and _find_source(candidate, SPRITE_STATE_SOURCES["walk"]) is not None:
+            continue
+        return False
+    return True
 
 
 def _find_source(source_dir: Path | None, source_names: tuple[str, ...]) -> Path | None:

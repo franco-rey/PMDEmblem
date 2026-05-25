@@ -14,13 +14,8 @@ extends RefCounted
 ## (`monster_json_path`, `skill_json_path`, SpriteCollab folder layout) use
 ## the bare slug.
 
-## Absolute path to the PMDODump checkout. Sibling repo on disk - not part of
-## the Godot project.
-const PMDO_ROOT: String = "/Users/franco/Documents/GitHub/PMDODump"
-
-const PMDO_MONSTER_DIR: String = "/Users/franco/Documents/GitHub/PMDODump/DumpAsset/Data/Monster"
-const PMDO_SKILL_DIR: String = "/Users/franco/Documents/GitHub/PMDODump/DumpAsset/Data/Skill"
-const PMDO_UNIVERSAL_PATH: String = "/Users/franco/Documents/GitHub/PMDODump/DumpAsset/Data/Universal.json"
+const PMDO_ROOT_ENV: String = "PMD_EMBLEM_PMDO_ROOT"
+const PMDO_ROOT_FALLBACK: String = "res://../PMDODump"
 
 ## In-project output roots.
 const GENERATED_TYPES_DIR: String = "res://data/models/pokemon/generated/types"
@@ -29,6 +24,7 @@ const GENERATED_FORMS_DIR: String = "res://data/models/pokemon/generated/forms"
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves"
 const GENERATED_STATUSES_DIR: String = "res://data/models/pokemon/generated/statuses"
 const GENERATED_INTRINSICS_DIR: String = "res://data/models/pokemon/generated/intrinsics"
+const GENERATED_ITEMS_DIR: String = "res://data/models/pokemon/generated/items"
 const GENERATED_SPRITES_DIR: String = "res://data/models/pokemon/generated/sprites"
 const GENERATED_INSTANCES_DIR: String = "res://data/models/pokemon/generated/instances"
 const GENERATED_MANIFESTS_DIR: String = "res://data/models/pokemon/generated/manifests"
@@ -39,6 +35,7 @@ const TYPE_CHART_PATH: String = "res://data/models/pokemon/generated/types/type_
 const IMPORT_MANIFEST_PATH: String = "res://data/models/pokemon/generated/manifests/pokemon_import_manifest.json"
 const REPORT_PATH: String = "res://data/models/pokemon/import_reports/pokemon_import_report.txt"
 const REPORT_JSON_PATH: String = "res://data/models/pokemon/import_reports/pokemon_import_report.json"
+const VISUAL_ASSET_MANIFEST_PATH: String = "res://data/models/visuals/generated/visual_asset_manifest.json"
 
 ## Root directory holding per-species Pokemon sprite folders. Each species
 ## owns one subfolder named `<dex>_<slug>` (e.g. `0475_gallade`) containing the
@@ -63,12 +60,39 @@ static func project_slug_for(bare_slug: String, dex_number: int = 0) -> String:
 	return "%04d_%s" % [dex_number, bare_slug]
 
 
+static func pmdo_root() -> String:
+	var configured: String = OS.get_environment(PMDO_ROOT_ENV)
+	if not configured.is_empty():
+		return configured
+	return ProjectSettings.globalize_path(PMDO_ROOT_FALLBACK)
+
+
+static func pmdo_monster_dir() -> String:
+	return "%s/DumpAsset/Data/Monster" % pmdo_root()
+
+
+static func pmdo_skill_dir() -> String:
+	return "%s/DumpAsset/Data/Skill" % pmdo_root()
+
+
+static func pmdo_item_dir() -> String:
+	return "%s/DumpAsset/Data/Item" % pmdo_root()
+
+
+static func pmdo_growth_dir() -> String:
+	return "%s/DumpAsset/Data/GrowthGroup" % pmdo_root()
+
+
+static func pmdo_universal_path() -> String:
+	return "%s/DumpAsset/Data/Universal.json" % pmdo_root()
+
+
 static func monster_json_path(bare_slug: String) -> String:
-	return "%s/%s.json" % [PMDO_MONSTER_DIR, bare_slug]
+	return "%s/%s.json" % [pmdo_monster_dir(), bare_slug]
 
 
 static func skill_json_path(slug: String) -> String:
-	return "%s/%s.json" % [PMDO_SKILL_DIR, slug]
+	return "%s/%s.json" % [pmdo_skill_dir(), slug]
 
 
 static func generated_species_path(bare_slug: String, dex_number: int = 0) -> String:
@@ -97,6 +121,10 @@ static func generated_status_path(slug: String) -> String:
 
 static func generated_intrinsic_path(slug: String) -> String:
 	return "%s/%s.tres" % [GENERATED_INTRINSICS_DIR, slug]
+
+
+static func generated_item_path(slug: String) -> String:
+	return "%s/%s.tres" % [GENERATED_ITEMS_DIR, slug]
 
 
 static func generated_sprite_path(bare_slug: String, dex_number: int = 0) -> String:

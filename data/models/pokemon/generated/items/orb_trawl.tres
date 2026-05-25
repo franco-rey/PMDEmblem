@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_slq67"]
+
+[resource]
+script = ExtResource("1_slq67")
+item_id = "orb_trawl"
+name = "Trawl Orb"
+description = "An orb that pulls unclaimed items on the floor to the user."
+category = "orb"
+use_kind = 1
+price = 150
+usage_type = 1
+sort_category = 11
+sprite_key = "Orb_Yellow"
+icon_path = "res://assets/visuals/raw_asset/Item/Orb_Yellow.None.png"
+icon_index = 9
+item_states = Array[String](["PMDC.Dungeon.OrbState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.OrbState, PMDC", "PMDC.Dungeon.TrawlEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.TrawlEvent, PMDC"])
+source_json_path = "DumpAsset/Data/Item/orb_trawl.json"

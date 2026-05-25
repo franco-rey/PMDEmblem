@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_e8gx5"]
+
+[resource]
+script = ExtResource("1_e8gx5")
+item_id = "held_wide_lens"
+name = "Wide Lens"
+description = "A magnifying lens that boosts the Pokémon's Accuracy."
+category = "held"
+use_kind = 2
+price = 200
+sort_category = 1
+sprite_key = "Specs_LightBlue"
+icon_path = "res://assets/visuals/raw_asset/Item/Specs_LightBlue.None.png"
+icon_index = -1
+item_states = Array[String](["PMDC.Dungeon.EquipState, PMDC", "PMDC.Dungeon.HeldState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.EquipState, PMDC", "PMDC.Dungeon.HeldState, PMDC"])
+source_json_path = "DumpAsset/Data/Item/held_wide_lens.json"

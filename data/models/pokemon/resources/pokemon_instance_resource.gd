@@ -30,11 +30,13 @@ enum ControlType {
 @export var species: PokemonSpeciesResource
 @export var form_index: int = 0
 @export var level: int = 1
+@export var experience: int = 0
 ## 0 = auto-fill to max HP at spawn. Otherwise treated as the unit's current HP.
 @export var current_hp: int = CURRENT_HP_AUTO
 
 @export var move_slots: Array[PokemonMoveResource] = []
 @export var pp_state: Array[int] = []
+@export var known_move_ids: Array[String] = []
 
 @export var team: int = Team.PLAYER
 @export var control_type: int = ControlType.PLAYER
@@ -46,8 +48,11 @@ enum ControlType {
 @export var movement_override: int = 0
 
 @export var recruited: bool = false
-## Free-form runtime modifiers reserved for later milestones (status, item
-## effects, buffs). M1 just exposes the slot.
+@export var nature_id: String = ""
+@export var permanent_modifiers: Dictionary = {}
+@export var held_item: PokemonItemResource
+## Free-form runtime modifiers for run/battle systems that do not warrant a
+## first-class exported field yet.
 @export var runtime_modifiers: Dictionary = {}
 @export var temporary_statuses: Array[String] = []
 
