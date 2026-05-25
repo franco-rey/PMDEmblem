@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_f1cf3"]
+
+[resource]
+script = ExtResource("1_f1cf3")
+move_id = "swagger"
+index_number = 207
+name = "Swagger"
+description = "The user enrages and confuses the target. However, this also sharply raises the target's Attack stat."
+type = "normal"
+accuracy = 90
+pp = 14
+tactical_range_value = 3
+target_alignment = 6
+effect_tags = Array[String](["PMDC.Dungeon.StatusStackBattleEvent, PMDC", "PMDC.Dungeon.StatusBattleEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence"])
+effect_records = Array[Dictionary]([{
+"delta": 2,
+"family": "stat_stage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.StatusStackBattleEvent, PMDC",
+"stat": "attack",
+"status_id": "mod_attack",
+"target": "hit_target"
+}, {
+"family": "status",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.StatusBattleEvent, PMDC",
+"status_id": "confuse",
+"target": "hit_target"
+}])
+animation_key = "status_attack"

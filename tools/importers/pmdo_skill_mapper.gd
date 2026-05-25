@@ -22,6 +22,14 @@ const AREA_ACTION_TYPE: String = "RogueEssence.Dungeon.AreaAction, RogueEssence"
 ## PMD damage event we already plan to support in M2.
 const SUPPORTED_HIT_EVENTS: Array = [
 	"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+	"PMDC.Dungeon.StatusBattleEvent, PMDC",
+	"PMDC.Dungeon.StatusStackBattleEvent, PMDC",
+	"PMDC.Dungeon.RemoveStatusBattleEvent, PMDC",
+	"PMDC.Dungeon.WeatherHPEvent, PMDC",
+	"PMDC.Dungeon.HPRecoilEvent, PMDC",
+	"PMDC.Dungeon.UserHPDamageEvent, PMDC",
+	"PMDC.Dungeon.AdditionalEvent, PMDC",
+	"PMDC.Dungeon.AdditionalEndEvent, PMDC",
 ]
 
 
@@ -96,6 +104,24 @@ static func extract_effect_tags(skill_data: Dictionary) -> Dictionary:
 	return {"all": all_tags, "unsupported": unsupported}
 
 
+static func extract_effect_records(skill_data: Dictionary, move_slug: String, strikes: int) -> Array[Dictionary]:
+	var records: Array[Dictionary] = []
+	if strikes > 1:
+		records.append({
+			"family": "multi_hit",
+			"source_event": "Object.Strikes",
+			"target": "hit_target",
+			"params": {"hit_count": strikes},
+		})
+	for key in ["BeforeActions", "OnHits", "AfterActions"]:
+		var arr: Variant = skill_data.get(key, [])
+		if not (arr is Array):
+			continue
+		for entry in arr:
+			_append_records_for_entry(records, entry, key, move_slug, skill_data)
+	return records
+
+
 ## PMD events are usually wrapped as `{Key: ..., Value: { "$type": ... }}`.
 ## Some are flat. This handles both.
 static func _entry_type(entry: Variant) -> String:
@@ -109,6 +135,136 @@ static func _entry_type(entry: Variant) -> String:
 		if inner.has("$type"):
 			return String(inner["$type"])
 	return ""
+
+
+static func _entry_value(entry: Variant) -> Dictionary:
+	if not (entry is Dictionary):
+		return {}
+	var dict: Dictionary = entry
+	if dict.has("Value") and dict["Value"] is Dictionary:
+		return dict["Value"]
+	if dict.has("$type"):
+		return dict
+	return {}
+
+
+static func _append_records_for_entry(records: Array[Dictionary], entry: Variant, source_bucket: String, move_slug: String, skill_data: Dictionary) -> void:
+	var value: Dictionary = _entry_value(entry)
+	if value.is_empty():
+		return
+	var tag: String = String(value.get("$type", ""))
+	match tag:
+		"PMDC.Dungeon.DamageFormulaEvent, PMDC":
+			records.append({
+				"family": "damage",
+				"source_event": tag,
+				"source_bucket": source_bucket,
+				"target": "hit_target",
+			})
+		"PMDC.Dungeon.StatusBattleEvent, PMDC":
+			records.append(_status_record(value, tag, source_bucket))
+		"PMDC.Dungeon.StatusStackBattleEvent, PMDC":
+			records.append(_status_stack_record(value, tag, source_bucket))
+		"PMDC.Dungeon.RemoveStatusBattleEvent, PMDC":
+			records.append({
+				"family": "status_remove",
+				"source_event": tag,
+				"source_bucket": source_bucket,
+				"target": _target_for_event(value),
+				"status_id": String(value.get("StatusID", "")),
+			})
+		"PMDC.Dungeon.WeatherHPEvent, PMDC":
+			records.append({
+				"family": "heal",
+				"source_event": tag,
+				"source_bucket": source_bucket,
+				"target": _target_for_event(value),
+				"hp_divisor": int(value.get("HPDiv", 0)),
+			})
+		"PMDC.Dungeon.HPRecoilEvent, PMDC":
+			records.append({
+				"family": "recoil",
+				"source_event": tag,
+				"source_bucket": source_bucket,
+				"target": "self",
+				"fraction": int(value.get("Fraction", 0)),
+				"max_hp": bool(value.get("MaxHP", true)),
+			})
+		"PMDC.Dungeon.UserHPDamageEvent, PMDC":
+			records.append({
+				"family": "fixed_damage",
+				"source_event": tag,
+				"source_bucket": source_bucket,
+				"target": "hit_target",
+				"amount": 40 if move_slug == "dragon_rage" else int(value.get("Damage", 0)),
+			})
+		"PMDC.Dungeon.AdditionalEvent, PMDC", "PMDC.Dungeon.AdditionalEndEvent, PMDC":
+			var chance: int = _additional_effect_chance(skill_data)
+			var base_events: Variant = value.get("BaseEvents", [])
+			if base_events is Array:
+				for base_event in base_events:
+					var before_count: int = records.size()
+					_append_records_for_entry(records, base_event, source_bucket, move_slug, skill_data)
+					for i in range(before_count, records.size()):
+						records[i]["chance"] = chance
+
+
+static func _status_record(value: Dictionary, tag: String, source_bucket: String) -> Dictionary:
+	return {
+		"family": "status",
+		"source_event": tag,
+		"source_bucket": source_bucket,
+		"target": _target_for_event(value),
+		"status_id": String(value.get("StatusID", "")),
+	}
+
+
+static func _status_stack_record(value: Dictionary, tag: String, source_bucket: String) -> Dictionary:
+	var status_id: String = String(value.get("StatusID", ""))
+	if status_id.begins_with("mod_"):
+		return {
+			"family": "stat_stage",
+			"source_event": tag,
+			"source_bucket": source_bucket,
+			"target": _target_for_event(value),
+			"stat": status_id.substr(4),
+			"delta": int(value.get("Stack", 0)),
+			"status_id": status_id,
+		}
+	return {
+		"family": "status",
+		"source_event": tag,
+		"source_bucket": source_bucket,
+		"target": _target_for_event(value),
+		"status_id": status_id,
+		"stack": int(value.get("Stack", 0)),
+	}
+
+
+static func _target_for_event(value: Dictionary) -> String:
+	if bool(value.get("SelfInflicted", false)) or not bool(value.get("AffectTarget", true)):
+		return "self"
+	return "hit_target"
+
+
+static func _additional_effect_chance(skill_data: Dictionary) -> int:
+	var states: Variant = skill_data.get("SkillStates", [])
+	if not (states is Array):
+		return 100
+	for state in states:
+		if state is Dictionary and String((state as Dictionary).get("$type", "")) == "PMDC.Dungeon.AdditionalEffectState, PMDC":
+			return int((state as Dictionary).get("EffectChance", 100))
+	return 100
+
+
+static func animation_key_for(category: int) -> String:
+	match category:
+		PokemonMoveResource.CATEGORY_PHYSICAL:
+			return "physical_attack"
+		PokemonMoveResource.CATEGORY_SPECIAL:
+			return "special_attack"
+		_:
+			return "status_attack"
 
 
 static func _is_supported(tag: String) -> bool:

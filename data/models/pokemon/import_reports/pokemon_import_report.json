@@ -1,6 +1,6 @@
 {
 	"errors": [],
-	"generated_at": "2026-05-24T12:49:08",
+	"generated_at": "2026-05-24T16:59:54",
 	"instance_paths_written": [
 		"res://data/models/pokemon/generated/instances/0001_bulbasaur.tres",
 		"res://data/models/pokemon/generated/instances/0002_ivysaur.tres",
@@ -10,7 +10,14 @@
 		"res://data/models/pokemon/generated/instances/0006_charizard.tres",
 		"res://data/models/pokemon/generated/instances/0007_squirtle.tres",
 		"res://data/models/pokemon/generated/instances/0008_wartortle.tres",
-		"res://data/models/pokemon/generated/instances/0009_blastoise.tres"
+		"res://data/models/pokemon/generated/instances/0009_blastoise.tres",
+		"res://data/models/pokemon/generated/instances/0094_gengar.tres",
+		"res://data/models/pokemon/generated/instances/0282_gardevoir.tres",
+		"res://data/models/pokemon/generated/instances/0356_dusclops.tres",
+		"res://data/models/pokemon/generated/instances/0448_lucario.tres",
+		"res://data/models/pokemon/generated/instances/0454_toxicroak.tres",
+		"res://data/models/pokemon/generated/instances/0467_magmortar.tres",
+		"res://data/models/pokemon/generated/instances/0475_gallade.tres"
 	],
 	"moves": [
 		{
@@ -49,9 +56,7 @@
 			"slug": "growl",
 			"target_alignment": 4,
 			"type": "normal",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.StatusStackBattleEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 85,
@@ -70,8 +75,7 @@
 			"target_alignment": 4,
 			"type": "grass",
 			"unsupported_effect_tags": [
-				"HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence",
-				"PMDC.Dungeon.StatusBattleEvent, PMDC"
+				"HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence"
 			]
 		},
 		{
@@ -108,9 +112,7 @@
 			"slug": "poison_powder",
 			"target_alignment": 4,
 			"type": "poison",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.StatusBattleEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 70,
@@ -128,9 +130,7 @@
 			"slug": "sleep_powder",
 			"target_alignment": 4,
 			"type": "grass",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.StatusBattleEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 80,
@@ -150,8 +150,7 @@
 			"target_alignment": 6,
 			"type": "normal",
 			"unsupported_effect_tags": [
-				"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence",
-				"PMDC.Dungeon.HPRecoilEvent, PMDC"
+				"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
 			]
 		},
 		{
@@ -188,9 +187,7 @@
 			"slug": "sweet_scent",
 			"target_alignment": 4,
 			"type": "normal",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.StatusStackBattleEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": -1,
@@ -230,8 +227,7 @@
 			"target_alignment": 6,
 			"type": "normal",
 			"unsupported_effect_tags": [
-				"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence",
-				"PMDC.Dungeon.HPRecoilEvent, PMDC"
+				"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
 			]
 		},
 		{
@@ -271,9 +267,7 @@
 			"slug": "synthesis",
 			"target_alignment": 1,
 			"type": "grass",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.WeatherHPEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 100,
@@ -333,8 +327,7 @@
 			"target_alignment": 4,
 			"type": "grass",
 			"unsupported_effect_tags": [
-				"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence",
-				"PMDC.Dungeon.StatusBattleEvent, PMDC"
+				"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
 			]
 		},
 		{
@@ -390,9 +383,7 @@
 			"slug": "ember",
 			"target_alignment": 4,
 			"type": "fire",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.AdditionalEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 100,
@@ -410,9 +401,7 @@
 			"slug": "smokescreen",
 			"target_alignment": 4,
 			"type": "normal",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.StatusStackBattleEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 100,
@@ -430,9 +419,7 @@
 			"slug": "dragon_rage",
 			"target_alignment": 6,
 			"type": "dragon",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.UserHPDamageEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 70,
@@ -450,9 +437,7 @@
 			"slug": "scary_face",
 			"target_alignment": 4,
 			"type": "normal",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.StatusStackBattleEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 100,
@@ -471,9 +456,7 @@
 			"slug": "fire_fang",
 			"target_alignment": 4,
 			"type": "fire",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.AdditionalEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 100,
@@ -528,9 +511,7 @@
 			"slug": "flamethrower",
 			"target_alignment": 6,
 			"type": "fire",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.AdditionalEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 100,
@@ -570,9 +551,7 @@
 			"slug": "inferno",
 			"target_alignment": 6,
 			"type": "fire",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.AdditionalEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 100,
@@ -591,9 +570,7 @@
 			"slug": "air_slash",
 			"target_alignment": 4,
 			"type": "flying",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.AdditionalEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 100,
@@ -632,9 +609,7 @@
 			"target_alignment": 6,
 			"type": "fire",
 			"unsupported_effect_tags": [
-				"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence",
-				"PMDC.Dungeon.AdditionalEvent, PMDC",
-				"PMDC.Dungeon.HPRecoilEvent, PMDC"
+				"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
 			]
 		},
 		{
@@ -709,9 +684,7 @@
 			"slug": "tail_whip",
 			"target_alignment": 4,
 			"type": "normal",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.StatusStackBattleEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 100,
@@ -747,9 +720,7 @@
 			"slug": "withdraw",
 			"target_alignment": 1,
 			"type": "water",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.StatusStackBattleEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 100,
@@ -768,9 +739,7 @@
 			"slug": "bubble",
 			"target_alignment": 4,
 			"type": "water",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.AdditionalEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 100,
@@ -789,9 +758,7 @@
 			"slug": "bite",
 			"target_alignment": 4,
 			"type": "dark",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.AdditionalEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 100,
@@ -812,8 +779,7 @@
 			"target_alignment": 4,
 			"type": "normal",
 			"unsupported_effect_tags": [
-				"PMDC.Dungeon.AddContextStateEvent, PMDC",
-				"PMDC.Dungeon.RemoveStatusBattleEvent, PMDC"
+				"PMDC.Dungeon.AddContextStateEvent, PMDC"
 			]
 		},
 		{
@@ -832,9 +798,7 @@
 			"slug": "protect",
 			"target_alignment": 1,
 			"type": "normal",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.StatusBattleEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 100,
@@ -853,9 +817,7 @@
 			"slug": "water_pulse",
 			"target_alignment": 4,
 			"type": "water",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.AdditionalEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": 90,
@@ -911,9 +873,7 @@
 			"slug": "iron_defense",
 			"target_alignment": 1,
 			"type": "steel",
-			"unsupported_effect_tags": [
-				"PMDC.Dungeon.StatusStackBattleEvent, PMDC"
-			]
+			"unsupported_effect_tags": []
 		},
 		{
 			"accuracy": -1,
@@ -970,9 +930,1541 @@
 			"slug": "flash_cannon",
 			"target_alignment": 6,
 			"type": "steel",
-			"unsupported_effect_tags": [
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 50,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 95,
+			"name": "Hypnosis",
+			"pp": 16,
+			"range_kind": "projectile",
+			"range_value": 6,
+			"slug": "hypnosis",
+			"target_alignment": 4,
+			"type": "psychic",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 40,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
 				"PMDC.Dungeon.AdditionalEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 122,
+			"name": "Lick",
+			"pp": 20,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "lick",
+			"target_alignment": 4,
+			"type": "ghost",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.SpiteEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 180,
+			"name": "Spite",
+			"pp": 18,
+			"range_kind": "unsupported",
+			"range_value": 3,
+			"slug": "spite",
+			"target_alignment": 4,
+			"type": "ghost",
+			"unsupported_effect_tags": [
+				"HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence",
+				"PMDC.Dungeon.SpiteEvent, PMDC"
 			]
+		},
+		{
+			"accuracy": 100,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 212,
+			"name": "Mean Look",
+			"pp": 18,
+			"range_kind": "projectile",
+			"range_value": 8,
+			"slug": "mean_look",
+			"target_alignment": 4,
+			"type": "normal",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusStackBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 174,
+			"name": "Curse",
+			"pp": 17,
+			"range_kind": "self",
+			"range_value": 0,
+			"slug": "curse",
+			"target_alignment": 1,
+			"type": "none",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 0,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.LevelDamageEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 101,
+			"name": "Night Shade",
+			"pp": 15,
+			"range_kind": "area",
+			"range_value": 1,
+			"slug": "night_shade",
+			"target_alignment": 4,
+			"type": "ghost",
+			"unsupported_effect_tags": [
+				"PMDC.Dungeon.LevelDamageEvent, PMDC"
+			]
+		},
+		{
+			"accuracy": 100,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 109,
+			"name": "Confuse Ray",
+			"pp": 10,
+			"range_kind": "projectile",
+			"range_value": 6,
+			"slug": "confuse_ray",
+			"target_alignment": 4,
+			"type": "ghost",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 70,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 389,
+			"name": "Sucker Punch",
+			"pp": 16,
+			"range_kind": "unsupported",
+			"range_value": 3,
+			"slug": "sucker_punch",
+			"target_alignment": 4,
+			"type": "dark",
+			"unsupported_effect_tags": [
+				"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
+			]
+		},
+		{
+			"accuracy": -1,
+			"base_power": 60,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 325,
+			"name": "Shadow Punch",
+			"pp": 20,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "shadow_punch",
+			"target_alignment": 4,
+			"type": "ghost",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 50,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 371,
+			"name": "Payback",
+			"pp": 18,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "payback",
+			"target_alignment": 4,
+			"type": "dark",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 70,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.AdditionalEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 247,
+			"name": "Shadow Ball",
+			"pp": 8,
+			"range_kind": "projectile",
+			"range_value": 6,
+			"slug": "shadow_ball",
+			"target_alignment": 6,
+			"type": "ghost",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 35,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.HPDrainEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 138,
+			"name": "Dream Eater",
+			"pp": 16,
+			"range_kind": "unsupported",
+			"range_value": 3,
+			"slug": "dream_eater",
+			"target_alignment": 4,
+			"type": "psychic",
+			"unsupported_effect_tags": [
+				"HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence",
+				"PMDC.Dungeon.HPDrainEvent, PMDC"
+			]
+		},
+		{
+			"accuracy": 100,
+			"base_power": 75,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.AdditionalEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 399,
+			"name": "Dark Pulse",
+			"pp": 15,
+			"range_kind": "area",
+			"range_value": 1,
+			"slug": "dark_pulse",
+			"target_alignment": 4,
+			"type": "dark",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 194,
+			"name": "Destiny Bond",
+			"pp": 12,
+			"range_kind": "projectile",
+			"range_value": 6,
+			"slug": "destiny_bond",
+			"target_alignment": 4,
+			"type": "ghost",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 50,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.AdditionalEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 93,
+			"name": "Confusion",
+			"pp": 21,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "confusion",
+			"target_alignment": 4,
+			"type": "psychic",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusStackBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 104,
+			"name": "Double Team",
+			"pp": 18,
+			"range_kind": "self",
+			"range_value": 0,
+			"slug": "double_team",
+			"target_alignment": 1,
+			"type": "normal",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.RestoreHPEvent, PMDC",
+				"PMDC.Dungeon.RemoveStateStatusBattleEvent, PMDC",
+				"PMDC.Dungeon.AddContextStateEvent, PMDC",
+				"PMDC.Dungeon.HPTo1Event, PMDC"
+			],
+			"imported": true,
+			"index_number": 361,
+			"name": "Healing Wish",
+			"pp": 6,
+			"range_kind": "area",
+			"range_value": 4,
+			"slug": "healing_wish",
+			"target_alignment": 2,
+			"type": "psychic",
+			"unsupported_effect_tags": [
+				"PMDC.Dungeon.RestoreHPEvent, PMDC",
+				"PMDC.Dungeon.RemoveStateStatusBattleEvent, PMDC",
+				"PMDC.Dungeon.AddContextStateEvent, PMDC",
+				"PMDC.Dungeon.HPTo1Event, PMDC"
+			]
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.GiveMapStatusEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 581,
+			"name": "Misty Terrain",
+			"pp": 10,
+			"range_kind": "self",
+			"range_value": 0,
+			"slug": "misty_terrain",
+			"target_alignment": 1,
+			"type": "fairy",
+			"unsupported_effect_tags": [
+				"PMDC.Dungeon.GiveMapStatusEvent, PMDC"
+			]
+		},
+		{
+			"accuracy": 100,
+			"base_power": 75,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.AdditionalEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 585,
+			"name": "Moonblast",
+			"pp": 9,
+			"range_kind": "projectile",
+			"range_value": 6,
+			"slug": "moonblast",
+			"target_alignment": 6,
+			"type": "fairy",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 20,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 500,
+			"name": "Stored Power",
+			"pp": 14,
+			"range_kind": "area",
+			"range_value": 1,
+			"slug": "stored_power",
+			"target_alignment": 4,
+			"type": "psychic",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.RandomGroupWarpEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 100,
+			"name": "Teleport",
+			"pp": 18,
+			"range_kind": "self",
+			"range_value": 0,
+			"slug": "teleport",
+			"target_alignment": 1,
+			"type": "psychic",
+			"unsupported_effect_tags": [
+				"PMDC.Dungeon.RandomGroupWarpEvent, PMDC"
+			]
+		},
+		{
+			"accuracy": -1,
+			"base_power": 35,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 574,
+			"name": "Disarming Voice",
+			"pp": 18,
+			"range_kind": "projectile",
+			"range_value": 3,
+			"slug": "disarming_voice",
+			"target_alignment": 4,
+			"type": "fairy",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusHPBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 273,
+			"name": "Wish",
+			"pp": 16,
+			"range_kind": "area",
+			"range_value": 1,
+			"slug": "wish",
+			"target_alignment": 3,
+			"type": "normal",
+			"unsupported_effect_tags": [
+				"PMDC.Dungeon.StatusHPBattleEvent, PMDC"
+			]
+		},
+		{
+			"accuracy": -1,
+			"base_power": 55,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 345,
+			"name": "Magical Leaf",
+			"pp": 14,
+			"range_kind": "projectile",
+			"range_value": 4,
+			"slug": "magical_leaf",
+			"target_alignment": 4,
+			"type": "grass",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.RestoreHPEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 505,
+			"name": "Heal Pulse",
+			"pp": 18,
+			"range_kind": "projectile",
+			"range_value": 4,
+			"slug": "heal_pulse",
+			"target_alignment": 6,
+			"type": "psychic",
+			"unsupported_effect_tags": [
+				"PMDC.Dungeon.RestoreHPEvent, PMDC"
+			]
+		},
+		{
+			"accuracy": 100,
+			"base_power": 50,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.HPDrainEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 577,
+			"name": "Draining Kiss",
+			"pp": 18,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "draining_kiss",
+			"target_alignment": 4,
+			"type": "fairy",
+			"unsupported_effect_tags": [
+				"PMDC.Dungeon.HPDrainEvent, PMDC"
+			]
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusStackBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 347,
+			"name": "Calm Mind",
+			"pp": 14,
+			"range_kind": "self",
+			"range_value": 0,
+			"slug": "calm_mind",
+			"target_alignment": 1,
+			"type": "psychic",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 70,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.AdditionalEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 94,
+			"name": "Psychic",
+			"pp": 9,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "psychic",
+			"target_alignment": 4,
+			"type": "psychic",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.DisableBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 286,
+			"name": "Imprison",
+			"pp": 11,
+			"range_kind": "area",
+			"range_value": 3,
+			"slug": "imprison",
+			"target_alignment": 4,
+			"type": "psychic",
+			"unsupported_effect_tags": [
+				"PMDC.Dungeon.DisableBattleEvent, PMDC"
+			]
+		},
+		{
+			"accuracy": 80,
+			"base_power": 80,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.FutureAttackEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 248,
+			"name": "Future Sight",
+			"pp": 13,
+			"range_kind": "unsupported",
+			"range_value": 3,
+			"slug": "future_sight",
+			"target_alignment": 4,
+			"type": "psychic",
+			"unsupported_effect_tags": [
+				"HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence",
+				"PMDC.Dungeon.FutureAttackEvent, PMDC"
+			]
+		},
+		{
+			"accuracy": 100,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusStackBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 445,
+			"name": "Captivate",
+			"pp": 15,
+			"range_kind": "unsupported",
+			"range_value": 2,
+			"slug": "captivate",
+			"target_alignment": 4,
+			"type": "normal",
+			"unsupported_effect_tags": [
+				"HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence"
+			]
+		},
+		{
+			"accuracy": 100,
+			"base_power": 35,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.AdditionalEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 310,
+			"name": "Astonish",
+			"pp": 22,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "astonish",
+			"target_alignment": 4,
+			"type": "ghost",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 70,
+			"base_power": 25,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.OnHitEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 20,
+			"name": "Bind",
+			"pp": 16,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "bind",
+			"target_alignment": 4,
+			"type": "normal",
+			"unsupported_effect_tags": [
+				"PMDC.Dungeon.OnHitEvent, PMDC"
+			]
+		},
+		{
+			"accuracy": 100,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.DisableBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 50,
+			"name": "Disable",
+			"pp": 16,
+			"range_kind": "projectile",
+			"range_value": 6,
+			"slug": "disable",
+			"target_alignment": 4,
+			"type": "normal",
+			"unsupported_effect_tags": [
+				"PMDC.Dungeon.DisableBattleEvent, PMDC"
+			]
+		},
+		{
+			"accuracy": 100,
+			"base_power": 75,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.AdditionalEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 7,
+			"name": "Fire Punch",
+			"pp": 18,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "fire_punch",
+			"target_alignment": 4,
+			"type": "fire",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.GiveMapStatusEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 356,
+			"name": "Gravity",
+			"pp": 15,
+			"range_kind": "self",
+			"range_value": 0,
+			"slug": "gravity",
+			"target_alignment": 1,
+			"type": "psychic",
+			"unsupported_effect_tags": [
+				"PMDC.Dungeon.GiveMapStatusEvent, PMDC"
+			]
+		},
+		{
+			"accuracy": 100,
+			"base_power": 75,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.AdditionalEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 8,
+			"name": "Ice Punch",
+			"pp": 18,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "ice_punch",
+			"target_alignment": 4,
+			"type": "ice",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusStackBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 43,
+			"name": "Leer",
+			"pp": 16,
+			"range_kind": "projectile",
+			"range_value": 8,
+			"slug": "leer",
+			"target_alignment": 4,
+			"type": "normal",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 75,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.AdditionalEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 9,
+			"name": "Thunder Punch",
+			"pp": 18,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "thunder_punch",
+			"target_alignment": 4,
+			"type": "electric",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 193,
+			"name": "Foresight",
+			"pp": 16,
+			"range_kind": "projectile",
+			"range_value": 8,
+			"slug": "foresight",
+			"target_alignment": 4,
+			"type": "normal",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 40,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 425,
+			"name": "Shadow Sneak",
+			"pp": 16,
+			"range_kind": "unsupported",
+			"range_value": 3,
+			"slug": "shadow_sneak",
+			"target_alignment": 4,
+			"type": "ghost",
+			"unsupported_effect_tags": [
+				"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
+			]
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 228,
+			"name": "Pursuit",
+			"pp": 15,
+			"range_kind": "unsupported",
+			"range_value": 4,
+			"slug": "pursuit",
+			"target_alignment": 4,
+			"type": "dark",
+			"unsupported_effect_tags": [
+				"HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence"
+			]
+		},
+		{
+			"accuracy": 75,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 261,
+			"name": "Will-O-Wisp",
+			"pp": 18,
+			"range_kind": "projectile",
+			"range_value": 6,
+			"slug": "will_o_wisp",
+			"target_alignment": 4,
+			"type": "fire",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 45,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 506,
+			"name": "Hex",
+			"pp": 15,
+			"range_kind": "projectile",
+			"range_value": 4,
+			"slug": "hex",
+			"target_alignment": 4,
+			"type": "ghost",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 70,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 396,
+			"name": "Aura Sphere",
+			"pp": 8,
+			"range_kind": "projectile",
+			"range_value": 6,
+			"slug": "aura_sphere",
+			"target_alignment": 4,
+			"type": "fighting",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 120,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.StatusStackBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 370,
+			"name": "Close Combat",
+			"pp": 14,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "close_combat",
+			"target_alignment": 4,
+			"type": "fighting",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 197,
+			"name": "Detect",
+			"pp": 14,
+			"range_kind": "self",
+			"range_value": 0,
+			"slug": "detect",
+			"target_alignment": 1,
+			"type": "fighting",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 75,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 406,
+			"name": "Dragon Pulse",
+			"pp": 8,
+			"range_kind": "projectile",
+			"range_value": 6,
+			"slug": "dragon_pulse",
+			"target_alignment": 6,
+			"type": "dragon",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 70,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 245,
+			"name": "Extreme Speed",
+			"pp": 10,
+			"range_kind": "unsupported",
+			"range_value": 6,
+			"slug": "extreme_speed",
+			"target_alignment": 4,
+			"type": "normal",
+			"unsupported_effect_tags": [
+				"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
+			]
+		},
+		{
+			"accuracy": 100,
+			"base_power": 55,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.AdditionalEndEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 232,
+			"name": "Metal Claw",
+			"pp": 20,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "metal_claw",
+			"target_alignment": 4,
+			"type": "steel",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 40,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 98,
+			"name": "Quick Attack",
+			"pp": 20,
+			"range_kind": "unsupported",
+			"range_value": 3,
+			"slug": "quick_attack",
+			"target_alignment": 4,
+			"type": "normal",
+			"unsupported_effect_tags": [
+				"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
+			]
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 68,
+			"name": "Counter",
+			"pp": 15,
+			"range_kind": "self",
+			"range_value": 0,
+			"slug": "counter",
+			"target_alignment": 1,
+			"type": "fighting",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 40,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 364,
+			"name": "Feint",
+			"pp": 20,
+			"range_kind": "unsupported",
+			"range_value": 4,
+			"slug": "feint",
+			"target_alignment": 4,
+			"type": "normal",
+			"unsupported_effect_tags": [
+				"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
+			]
+		},
+		{
+			"accuracy": 100,
+			"base_power": 40,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.AdditionalEndEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 612,
+			"name": "Power-Up Punch",
+			"pp": 12,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "power_up_punch",
+			"target_alignment": 4,
+			"type": "fighting",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusStackBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 14,
+			"name": "Swords Dance",
+			"pp": 12,
+			"range_kind": "self",
+			"range_value": 0,
+			"slug": "swords_dance",
+			"target_alignment": 1,
+			"type": "normal",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 75,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusStackBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 319,
+			"name": "Metal Sound",
+			"pp": 16,
+			"range_kind": "projectile",
+			"range_value": 4,
+			"slug": "metal_sound",
+			"target_alignment": 4,
+			"type": "steel",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 50,
+			"base_power": 20,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 198,
+			"name": "Bone Rush",
+			"pp": 18,
+			"range_kind": "unsupported",
+			"range_value": 1,
+			"slug": "bone_rush",
+			"target_alignment": 4,
+			"type": "ground",
+			"unsupported_effect_tags": [
+				"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
+			]
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 501,
+			"name": "Quick Guard",
+			"pp": 13,
+			"range_kind": "area",
+			"range_value": 2,
+			"slug": "quick_guard",
+			"target_alignment": 3,
+			"type": "fighting",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StrongestMoveEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 382,
+			"name": "Me First",
+			"pp": 20,
+			"range_kind": "unsupported",
+			"range_value": 4,
+			"slug": "me_first",
+			"target_alignment": 4,
+			"type": "normal",
+			"unsupported_effect_tags": [
+				"HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence",
+				"PMDC.Dungeon.StrongestMoveEvent, PMDC"
+			]
+		},
+		{
+			"accuracy": 100,
+			"base_power": 25,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.AdditionalEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 189,
+			"name": "Mud-Slap",
+			"pp": 16,
+			"range_kind": "projectile",
+			"range_value": 2,
+			"slug": "mud_slap",
+			"target_alignment": 4,
+			"type": "ground",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 40,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.AdditionalEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 40,
+			"name": "Poison Sting",
+			"pp": 22,
+			"range_kind": "projectile",
+			"range_value": 2,
+			"slug": "poison_sting",
+			"target_alignment": 4,
+			"type": "poison",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 269,
+			"name": "Taunt",
+			"pp": 20,
+			"range_kind": "unsupported",
+			"range_value": 4,
+			"slug": "taunt",
+			"target_alignment": 4,
+			"type": "dark",
+			"unsupported_effect_tags": [
+				"HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence"
+			]
+		},
+		{
+			"accuracy": -1,
+			"base_power": 60,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 185,
+			"name": "Feint Attack",
+			"pp": 19,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "feint_attack",
+			"target_alignment": 4,
+			"type": "dark",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 60,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 279,
+			"name": "Revenge",
+			"pp": 16,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "revenge",
+			"target_alignment": 4,
+			"type": "fighting",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 90,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusStackBattleEvent, PMDC",
+				"PMDC.Dungeon.StatusBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 207,
+			"name": "Swagger",
+			"pp": 14,
+			"range_kind": "unsupported",
+			"range_value": 3,
+			"slug": "swagger",
+			"target_alignment": 6,
+			"type": "normal",
+			"unsupported_effect_tags": [
+				"HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence"
+			]
+		},
+		{
+			"accuracy": 80,
+			"base_power": 40,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.AdditionalEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 426,
+			"name": "Mud Bomb",
+			"pp": 13,
+			"range_kind": "unsupported",
+			"range_value": 3,
+			"slug": "mud_bomb",
+			"target_alignment": 4,
+			"type": "ground",
+			"unsupported_effect_tags": [
+				"HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence"
+			]
+		},
+		{
+			"accuracy": 100,
+			"base_power": 50,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 474,
+			"name": "Venoshock",
+			"pp": 16,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "venoshock",
+			"target_alignment": 4,
+			"type": "poison",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusStackBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 417,
+			"name": "Nasty Plot",
+			"pp": 12,
+			"range_kind": "self",
+			"range_value": 0,
+			"slug": "nasty_plot",
+			"target_alignment": 1,
+			"type": "dark",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 60,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.AdditionalEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 398,
+			"name": "Poison Jab",
+			"pp": 16,
+			"range_kind": "unsupported",
+			"range_value": 2,
+			"slug": "poison_jab",
+			"target_alignment": 4,
+			"type": "poison",
+			"unsupported_effect_tags": [
+				"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
+			]
+		},
+		{
+			"accuracy": 85,
+			"base_power": 40,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.AdditionalEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 123,
+			"name": "Smog",
+			"pp": 16,
+			"range_kind": "area",
+			"range_value": 2,
+			"slug": "smog",
+			"target_alignment": 4,
+			"type": "poison",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 40,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.OnHitEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 499,
+			"name": "Clear Smog",
+			"pp": 16,
+			"range_kind": "projectile",
+			"range_value": 4,
+			"slug": "clear_smog",
+			"target_alignment": 4,
+			"type": "poison",
+			"unsupported_effect_tags": [
+				"PMDC.Dungeon.OnHitEvent, PMDC"
+			]
+		},
+		{
+			"accuracy": 100,
+			"base_power": 75,
+			"category": 2,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC",
+				"PMDC.Dungeon.AdditionalEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 436,
+			"name": "Lava Plume",
+			"pp": 14,
+			"range_kind": "area",
+			"range_value": 2,
+			"slug": "lava_plume",
+			"target_alignment": 6,
+			"type": "fire",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.GiveMapStatusEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 241,
+			"name": "Sunny Day",
+			"pp": 10,
+			"range_kind": "self",
+			"range_value": 0,
+			"slug": "sunny_day",
+			"target_alignment": 1,
+			"type": "fire",
+			"unsupported_effect_tags": [
+				"PMDC.Dungeon.GiveMapStatusEvent, PMDC"
+			]
+		},
+		{
+			"accuracy": 100,
+			"base_power": 80,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 348,
+			"name": "Leaf Blade",
+			"pp": 16,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "leaf_blade",
+			"target_alignment": 4,
+			"type": "grass",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 70,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 400,
+			"name": "Night Slash",
+			"pp": 15,
+			"range_kind": "unsupported",
+			"range_value": 2,
+			"slug": "night_slash",
+			"target_alignment": 4,
+			"type": "dark",
+			"unsupported_effect_tags": [
+				"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
+			]
+		},
+		{
+			"accuracy": 90,
+			"base_power": 20,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 210,
+			"name": "Fury Cutter",
+			"pp": 21,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "fury_cutter",
+			"target_alignment": 4,
+			"type": "bug",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 469,
+			"name": "Wide Guard",
+			"pp": 15,
+			"range_kind": "area",
+			"range_value": 2,
+			"slug": "wide_guard",
+			"target_alignment": 3,
+			"type": "rock",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 70,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 427,
+			"name": "Psycho Cut",
+			"pp": 16,
+			"range_kind": "projectile",
+			"range_value": 2,
+			"slug": "psycho_cut",
+			"target_alignment": 4,
+			"type": "psychic",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": -1,
+			"base_power": 0,
+			"category": 3,
+			"effect_tags": [
+				"PMDC.Dungeon.StatusStackBattleEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 270,
+			"name": "Helping Hand",
+			"pp": 12,
+			"range_kind": "area",
+			"range_value": 3,
+			"slug": "helping_hand",
+			"target_alignment": 2,
+			"type": "normal",
+			"unsupported_effect_tags": []
+		},
+		{
+			"accuracy": 100,
+			"base_power": 60,
+			"category": 1,
+			"effect_tags": [
+				"PMDC.Dungeon.DamageFormulaEvent, PMDC"
+			],
+			"imported": true,
+			"index_number": 206,
+			"name": "False Swipe",
+			"pp": 24,
+			"range_kind": "melee",
+			"range_value": 1,
+			"slug": "false_swipe",
+			"target_alignment": 4,
+			"type": "normal",
+			"unsupported_effect_tags": []
 		}
 	],
 	"schema_version": 1,
@@ -1174,15 +2666,169 @@
 			"status": "battle_ready",
 			"type1": "water",
 			"type2": "none"
+		},
+		{
+			"base_stats": [
+				60,
+				65,
+				60,
+				130,
+				75,
+				110
+			],
+			"canonical_name": "Gengar",
+			"dex": 94,
+			"disabled_reason": "",
+			"generation": 1,
+			"imported": true,
+			"notes": [],
+			"signature_move": "shadow_ball",
+			"slug": "0094_gengar",
+			"sprite_warnings": [],
+			"status": "battle_ready",
+			"type1": "ghost",
+			"type2": "poison"
+		},
+		{
+			"base_stats": [
+				68,
+				65,
+				65,
+				125,
+				115,
+				80
+			],
+			"canonical_name": "Gardevoir",
+			"dex": 282,
+			"disabled_reason": "",
+			"generation": 3,
+			"imported": true,
+			"notes": [],
+			"signature_move": "imprison",
+			"slug": "0282_gardevoir",
+			"sprite_warnings": [],
+			"status": "battle_ready",
+			"type1": "psychic",
+			"type2": "fairy"
+		},
+		{
+			"base_stats": [
+				40,
+				70,
+				130,
+				60,
+				130,
+				25
+			],
+			"canonical_name": "Dusclops",
+			"dex": 356,
+			"disabled_reason": "",
+			"generation": 3,
+			"imported": true,
+			"notes": [],
+			"signature_move": "curse",
+			"slug": "0356_dusclops",
+			"sprite_warnings": [],
+			"status": "battle_ready",
+			"type1": "ghost",
+			"type2": "none"
+		},
+		{
+			"base_stats": [
+				70,
+				110,
+				70,
+				115,
+				70,
+				90
+			],
+			"canonical_name": "Lucario",
+			"dex": 448,
+			"disabled_reason": "",
+			"generation": 4,
+			"imported": true,
+			"notes": [],
+			"signature_move": "bone_rush",
+			"slug": "0448_lucario",
+			"sprite_warnings": [],
+			"status": "battle_ready",
+			"type1": "fighting",
+			"type2": "steel"
+		},
+		{
+			"base_stats": [
+				83,
+				106,
+				65,
+				86,
+				65,
+				85
+			],
+			"canonical_name": "Toxicroak",
+			"dex": 454,
+			"disabled_reason": "",
+			"generation": 4,
+			"imported": true,
+			"notes": [],
+			"signature_move": "sucker_punch",
+			"slug": "0454_toxicroak",
+			"sprite_warnings": [],
+			"status": "battle_ready",
+			"type1": "poison",
+			"type2": "fighting"
+		},
+		{
+			"base_stats": [
+				75,
+				95,
+				67,
+				125,
+				95,
+				83
+			],
+			"canonical_name": "Magmortar",
+			"dex": 467,
+			"disabled_reason": "",
+			"generation": 4,
+			"imported": true,
+			"notes": [],
+			"signature_move": "fire_punch",
+			"slug": "0467_magmortar",
+			"sprite_warnings": [],
+			"status": "battle_ready",
+			"type1": "fire",
+			"type2": "none"
+		},
+		{
+			"base_stats": [
+				68,
+				125,
+				65,
+				65,
+				115,
+				80
+			],
+			"canonical_name": "Gallade",
+			"dex": 475,
+			"disabled_reason": "",
+			"generation": 4,
+			"imported": true,
+			"notes": [],
+			"signature_move": "helping_hand",
+			"slug": "0475_gallade",
+			"sprite_warnings": [],
+			"status": "battle_ready",
+			"type1": "psychic",
+			"type2": "fighting"
 		}
 	],
 	"summary": {
 		"errors": 0,
-		"instances_written": 9,
-		"moves_imported": 48,
-		"species_imported": 9,
+		"instances_written": 16,
+		"moves_imported": 128,
+		"species_imported": 16,
 		"status_counts": {
-			"battle_ready": 9
+			"battle_ready": 16
 		},
 		"warnings": 0
 	},

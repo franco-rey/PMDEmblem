@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_e32cx"]
+
+[resource]
+script = ExtResource("1_e32cx")
+move_id = "dream_eater"
+index_number = 138
+name = "Dream Eater"
+description = "The user eats the dreams of a target, doing more damage if it is sleeping. It absorbs half the damage caused to heal its own HP."
+type = "psychic"
+category = 2
+base_power = 35
+accuracy = 100
+pp = 16
+tactical_range_value = 3
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.HPDrainEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence", "PMDC.Dungeon.HPDrainEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "damage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
+"target": "hit_target"
+}])
+animation_key = "special_attack"

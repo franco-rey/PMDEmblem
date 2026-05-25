@@ -27,6 +27,8 @@ const GENERATED_TYPES_DIR: String = "res://data/models/pokemon/generated/types"
 const GENERATED_SPECIES_DIR: String = "res://data/models/pokemon/generated/species"
 const GENERATED_FORMS_DIR: String = "res://data/models/pokemon/generated/forms"
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves"
+const GENERATED_STATUSES_DIR: String = "res://data/models/pokemon/generated/statuses"
+const GENERATED_INTRINSICS_DIR: String = "res://data/models/pokemon/generated/intrinsics"
 const GENERATED_SPRITES_DIR: String = "res://data/models/pokemon/generated/sprites"
 const GENERATED_INSTANCES_DIR: String = "res://data/models/pokemon/generated/instances"
 const GENERATED_MANIFESTS_DIR: String = "res://data/models/pokemon/generated/manifests"
@@ -87,6 +89,14 @@ static func generated_form_path_for_project_slug(project_slug: String, form_inde
 
 static func generated_move_path(slug: String) -> String:
 	return "%s/%s.tres" % [GENERATED_MOVES_DIR, slug]
+
+
+static func generated_status_path(slug: String) -> String:
+	return "%s/%s.tres" % [GENERATED_STATUSES_DIR, slug]
+
+
+static func generated_intrinsic_path(slug: String) -> String:
+	return "%s/%s.tres" % [GENERATED_INTRINSICS_DIR, slug]
 
 
 static func generated_sprite_path(bare_slug: String, dex_number: int = 0) -> String:

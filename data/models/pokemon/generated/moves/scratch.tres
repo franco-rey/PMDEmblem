@@ -15,3 +15,10 @@ accuracy = 100
 pp = 24
 tactical_range_kind = 1
 effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "damage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
+"target": "hit_target"
+}])
+animation_key = "physical_attack"

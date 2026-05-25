@@ -1,6 +1,6 @@
 class_name MinimumViableAI
 extends RefCounted
-## Naive M2 AI: first legal damaging move, nearest target, deterministic order.
+## Naive M6 AI: first legal usable move, nearest legal target, deterministic order.
 
 
 func choose_action(
@@ -26,8 +26,6 @@ func choose_action(
 		if move == null:
 			continue
 		if not unit.stats.has_pp(i):
-			continue
-		if not move.is_damaging() or not move.can_target_foes():
 			continue
 		var targets: Array[TacticsPawn] = Targeting.filter_by_alignment(
 			Targeting.compute_range(unit, move),

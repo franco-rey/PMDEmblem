@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonInstanceResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_1ifbs"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/helping_hand.tres" id="2_jyljk"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/feint.tres" id="3_a851k"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/false_swipe.tres" id="4_qso1g"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/protect.tres" id="5_kog6f"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_instance_resource.gd" id="6_wfrrf"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/species/0475_gallade.tres" id="7_uu7vd"]
+
+[resource]
+script = ExtResource("6_wfrrf")
+species = ExtResource("7_uu7vd")
+level = 50
+move_slots = Array[ExtResource("1_1ifbs")]([ExtResource("2_jyljk"), ExtResource("3_a851k"), ExtResource("4_qso1g"), ExtResource("5_kog6f")])
+pp_state = Array[int]([12, 20, 24, 10])
+team = 2
+control_type = 1
+movement_override = 3

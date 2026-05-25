@@ -15,3 +15,4 @@ tactical_range_value = 4
 target_alignment = 6
 effect_tags = Array[String](["PMDC.Dungeon.ChangeToAbilityEvent, PMDC"])
 unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence", "PMDC.Dungeon.ChangeToAbilityEvent, PMDC"])
+animation_key = "status_attack"

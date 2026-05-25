@@ -69,6 +69,11 @@ var pokemon_instance: PokemonInstanceResource = null
 ## Runtime battle state. Fainting is explicit so future schedulers do not have
 ## to infer action eligibility from HP alone.
 var battle_status: int = BattleStatus.ACTIVE
+## Runtime status payloads, reset for each spawned skirmish instance.
+var battle_statuses: Dictionary = {}
+## Temporary battle stat stages. Keys are attack/defense/special_attack/
+## special_defense/speed/accuracy/evasion; values clamp to [-6, 6].
+var stat_stages: Dictionary = {}
 #endregion
 
 
@@ -87,6 +92,7 @@ func init(stats: StatsResource) -> void:
 	hp_max = max_health
 	pokemon_instance = null
 	battle_status = BattleStatus.ACTIVE
+	reset_battle_modifiers()
 
 
 ## Initialize stats from a PokemonInstanceResource (M1 Pokemon data slice).
@@ -101,6 +107,7 @@ func init_from_pokemon(instance: PokemonInstanceResource) -> void:
 		push_error("Stats.init_from_pokemon called with null instance")
 		return
 	battle_status = BattleStatus.ACTIVE
+	reset_battle_modifiers()
 
 	var species: PokemonSpeciesResource = instance.species
 	var form: PokemonFormResource = instance.resolved_form() if species != null else null
@@ -189,6 +196,96 @@ func first_usable_move_index(require_damaging: bool = false) -> int:
 		if has_pp(i):
 			return i
 	return -1
+
+
+func reset_battle_modifiers() -> void:
+	battle_statuses = {}
+	stat_stages = {}
+
+
+func apply_battle_status(status_id: String, payload: Dictionary = {}) -> Dictionary:
+	if status_id.is_empty():
+		return {}
+	var before: Variant = battle_statuses.get(status_id, null)
+	battle_statuses[status_id] = payload.duplicate(true)
+	return {
+		"status_id": status_id,
+		"before": before,
+		"after": battle_statuses[status_id],
+	}
+
+
+func remove_battle_status(status_id: String) -> Dictionary:
+	if status_id.is_empty() or not battle_statuses.has(status_id):
+		return {}
+	var before: Variant = battle_statuses[status_id]
+	battle_statuses.erase(status_id)
+	return {
+		"status_id": status_id,
+		"before": before,
+		"after": null,
+	}
+
+
+func change_stat_stage(stat_id: String, delta: int) -> Dictionary:
+	var normalized: String = _normalize_stat_id(stat_id)
+	if normalized.is_empty():
+		return {}
+	var before: int = int(stat_stages.get(normalized, 0))
+	var after: int = clampi(before + delta, -6, 6)
+	stat_stages[normalized] = after
+	return {
+		"stat": normalized,
+		"before": before,
+		"after": after,
+		"delta": after - before,
+	}
+
+
+func get_stat_stage(stat_id: String) -> int:
+	var normalized: String = _normalize_stat_id(stat_id)
+	return int(stat_stages.get(normalized, 0)) if not normalized.is_empty() else 0
+
+
+func battle_stat(stat_id: String) -> int:
+	var normalized: String = _normalize_stat_id(stat_id)
+	var base_value: int = _base_stat_value(normalized)
+	if base_value <= 0:
+		return base_value
+	return maxi(1, int(floor(float(base_value) * _stage_multiplier(get_stat_stage(normalized)))))
+
+
+func _normalize_stat_id(stat_id: String) -> String:
+	var key: String = stat_id.to_lower()
+	if key.begins_with("mod_"):
+		key = key.substr(4)
+	match key:
+		"atk": return "attack"
+		"def": return "defense"
+		"spa", "special_atk", "specialattack": return "special_attack"
+		"spd", "special_def", "specialdefense": return "special_defense"
+		"spe": return "speed"
+		"attack", "defense", "special_attack", "special_defense", "speed", "accuracy", "evasion":
+			return key
+	return ""
+
+
+func _base_stat_value(stat_id: String) -> int:
+	match stat_id:
+		"attack": return attack
+		"defense": return defense
+		"special_attack": return special_attack
+		"special_defense": return special_defense
+		"speed": return speed
+		"accuracy", "evasion": return 100
+	return 0
+
+
+func _stage_multiplier(stage: int) -> float:
+	var clamped: int = clampi(stage, -6, 6)
+	if clamped >= 0:
+		return float(2 + clamped) / 2.0
+	return 2.0 / float(2 - clamped)
 
 
 func is_active() -> bool:

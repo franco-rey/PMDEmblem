@@ -98,3 +98,48 @@ layout_mode = 2
 mouse_filter = 1
 mouse_default_cursor_shape = 2
 text = "Cancel"
+
+[node name="MovePicker" type="VBoxContainer" parent="HBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_filter = 0
+alignment = 2
+
+[node name="MoveSlot0" type="Button" parent="HBox/MovePicker"]
+custom_minimum_size = Vector2(240, 58)
+layout_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 2
+text = "-"
+
+[node name="MoveSlot1" type="Button" parent="HBox/MovePicker"]
+custom_minimum_size = Vector2(240, 58)
+layout_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 2
+text = "-"
+
+[node name="MoveSlot2" type="Button" parent="HBox/MovePicker"]
+custom_minimum_size = Vector2(240, 58)
+layout_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 2
+text = "-"
+
+[node name="MoveSlot3" type="Button" parent="HBox/MovePicker"]
+custom_minimum_size = Vector2(240, 58)
+layout_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 2
+text = "-"
+
+[node name="Cancel" type="Button" parent="HBox/MovePicker"]
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 2
+text = "Cancel"
+
+[connection signal="button_down" from="HBox/MovePicker/Cancel" to="." method="_player_wants_to_cancel_move_picker"]
+[connection signal="pressed" from="HBox/MovePicker/Cancel" to="." method="_player_wants_to_cancel_move_picker"]

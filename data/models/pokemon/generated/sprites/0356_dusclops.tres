@@ -11,3 +11,93 @@ sleep_path = "res://assets/textures/actor/pokemon/0356_dusclops/sleep.png"
 hop_path = "res://assets/textures/actor/pokemon/0356_dusclops/hop.png"
 anim_data_path = "res://assets/textures/actor/pokemon/0356_dusclops/AnimData.xml"
 portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0356_dusclops/Normal.png"])
+animation_states = {
+"attack": {
+"cell_size": Vector2i(0, 0),
+"directions": 8,
+"frame_count": 0,
+"path": "res://assets/textures/actor/pokemon/0356_dusclops/hop.png",
+"source_name": "Attack",
+"timing": []
+},
+"faint": {
+"cell_size": Vector2i(0, 0),
+"directions": 8,
+"frame_count": 0,
+"path": "res://assets/textures/actor/pokemon/0356_dusclops/sleep.png",
+"source_name": "Faint",
+"timing": []
+},
+"hop": {
+"cell_size": Vector2i(0, 0),
+"directions": 8,
+"frame_count": 0,
+"path": "res://assets/textures/actor/pokemon/0356_dusclops/hop.png",
+"source_name": "Hop",
+"timing": []
+},
+"hurt": {
+"cell_size": Vector2i(0, 0),
+"directions": 8,
+"frame_count": 0,
+"path": "res://assets/textures/actor/pokemon/0356_dusclops/hurt.png",
+"source_name": "Hurt",
+"timing": []
+},
+"idle": {
+"cell_size": Vector2i(0, 0),
+"directions": 8,
+"frame_count": 0,
+"path": "res://assets/textures/actor/pokemon/0356_dusclops/idle.png",
+"source_name": "Idle",
+"timing": []
+},
+"miss": {
+"cell_size": Vector2i(0, 0),
+"directions": 8,
+"frame_count": 0,
+"path": "res://assets/textures/actor/pokemon/0356_dusclops/idle.png",
+"source_name": "Miss",
+"timing": []
+},
+"physical_attack": {
+"cell_size": Vector2i(0, 0),
+"directions": 8,
+"frame_count": 0,
+"path": "res://assets/textures/actor/pokemon/0356_dusclops/hop.png",
+"source_name": "Physical Attack",
+"timing": []
+},
+"sleep": {
+"cell_size": Vector2i(0, 0),
+"directions": 8,
+"frame_count": 0,
+"path": "res://assets/textures/actor/pokemon/0356_dusclops/sleep.png",
+"source_name": "Sleep",
+"timing": []
+},
+"special_attack": {
+"cell_size": Vector2i(0, 0),
+"directions": 8,
+"frame_count": 0,
+"path": "res://assets/textures/actor/pokemon/0356_dusclops/hop.png",
+"source_name": "Special Attack",
+"timing": []
+},
+"status_attack": {
+"cell_size": Vector2i(0, 0),
+"directions": 8,
+"frame_count": 0,
+"path": "res://assets/textures/actor/pokemon/0356_dusclops/idle.png",
+"source_name": "Status Attack",
+"timing": []
+},
+"walk": {
+"cell_size": Vector2i(0, 0),
+"directions": 8,
+"frame_count": 0,
+"path": "res://assets/textures/actor/pokemon/0356_dusclops/walk.png",
+"source_name": "Walk",
+"timing": []
+}
+}

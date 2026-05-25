@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonInstanceResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_q4ged"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/sucker_punch.tres" id="2_l6n7e"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/venoshock.tres" id="3_6xabs"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/nasty_plot.tres" id="4_t1gxt"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/moves/poison_jab.tres" id="5_x50tp"]
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_instance_resource.gd" id="6_k5f6p"]
+[ext_resource type="Resource" path="res://data/models/pokemon/generated/species/0454_toxicroak.tres" id="7_t2pgx"]
+
+[resource]
+script = ExtResource("6_k5f6p")
+species = ExtResource("7_t2pgx")
+level = 50
+move_slots = Array[ExtResource("1_q4ged")]([ExtResource("2_l6n7e"), ExtResource("3_6xabs"), ExtResource("4_t1gxt"), ExtResource("5_x50tp")])
+pp_state = Array[int]([16, 16, 12, 16])
+team = 2
+control_type = 1
+movement_override = 4

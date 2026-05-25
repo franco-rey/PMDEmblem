@@ -15,3 +15,18 @@ accuracy = 50
 pp = 18
 effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC"])
 unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"])
+effect_records = Array[Dictionary]([{
+"family": "multi_hit",
+"params": {
+"hit_count": 5
+},
+"source_event": "Object.Strikes",
+"target": "hit_target"
+}, {
+"family": "damage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
+"target": "hit_target"
+}])
+strike_count = 5
+animation_key = "physical_attack"

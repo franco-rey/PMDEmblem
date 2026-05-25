@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_d0gjj"]
+
+[resource]
+script = ExtResource("1_d0gjj")
+move_id = "pursuit"
+index_number = 228
+name = "Pursuit"
+description = "The user chases down the target, preventing it from getting away."
+type = "dark"
+pp = 15
+tactical_range_value = 4
+effect_tags = Array[String](["PMDC.Dungeon.StatusBattleEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence"])
+effect_records = Array[Dictionary]([{
+"family": "status",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.StatusBattleEvent, PMDC",
+"status_id": "chasing",
+"target": "self"
+}])
+animation_key = "status_attack"

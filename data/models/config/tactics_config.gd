@@ -40,7 +40,7 @@ static var view: Dictionary = {
 
 ## Array of UI element names used to filter out UI elements when parsing the mouse cursor position.
 static var ui_elem: Array[String] = [
-	"%Actions", "%Hints",
+	"%Actions", "%MovePicker", "%Hints",
 ]
 #endregion
 

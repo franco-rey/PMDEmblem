@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-24T19:48:38Z",
+  "generated_at": "2026-05-24T23:27:26Z",
   "mode": "write",
   "schema_version": 1,
   "source_roots": {
@@ -598,10 +598,489 @@
       },
       "status": "battle_ready",
       "warnings": []
+    },
+    {
+      "assets": {
+        "anim_data": "res://assets/textures/actor/pokemon/0094_gengar/AnimData.xml",
+        "hop": "res://assets/textures/actor/pokemon/0094_gengar/hop.png",
+        "hurt": "res://assets/textures/actor/pokemon/0094_gengar/hurt.png",
+        "idle": "res://assets/textures/actor/pokemon/0094_gengar/idle.png",
+        "portrait_credits": "res://assets/textures/pokemon/portraits/0094_gengar/credits.txt",
+        "portrait_normal": "res://assets/textures/pokemon/portraits/0094_gengar/Normal.png",
+        "sleep": "res://assets/textures/actor/pokemon/0094_gengar/sleep.png",
+        "sprite_credits": "res://assets/textures/actor/pokemon/0094_gengar/credits.txt",
+        "walk": "res://assets/textures/actor/pokemon/0094_gengar/walk.png"
+      },
+      "checksums": {
+        "anim_data": "sha256:0bacc41b6aff9d9e88b35be1a0a59ea2cfa60c73b3ff908af1c0872d1355096f",
+        "hop": "sha256:daffa2fb584dda45d6db7b399bb187f56371404792994a4ce30b46f2e54be594",
+        "hurt": "sha256:74e2457a2e7429a8417fc46ff39c48fae7fa04f2a19d01533cf4f5db8969e49a",
+        "idle": "sha256:b361da86327436f28508f8b0bb1c5cc59807cc75d1e586ab19f218f7db175169",
+        "portrait_credits": "sha256:0583e3fa8ff4e44713e569a99113c5f60980dd8534d071081527abf234b4c36c",
+        "portrait_normal": "sha256:fc8b85ba9fb6267f6c7e8737154aa2058c6edfacb476f45055ab93e3dd209385",
+        "sleep": "sha256:4c522592c20ae7ee708c39bd6d0a34374f14d356c9349c1f3924801620ca351c",
+        "sprite_credits": "sha256:f0281bac7d5f6cd5641f3c475cfd0a9fc1dd2ee65ff61c46302c482274a33649",
+        "walk": "sha256:be39dae12dae3715a3328628c4c6bc542fc9805d483e877d420d8dac31279a0d"
+      },
+      "default_form_index": 0,
+      "dex_number": 94,
+      "disabled_reason": "",
+      "display_name": "Gengar",
+      "generation": 1,
+      "moves": {
+        "default_moves": [
+          "shadow_ball",
+          "dream_eater",
+          "dark_pulse",
+          "destiny_bond"
+        ],
+        "import_moves": [
+          "hypnosis",
+          "lick",
+          "spite",
+          "mean_look",
+          "curse",
+          "night_shade",
+          "confuse_ray",
+          "sucker_punch",
+          "shadow_punch",
+          "payback",
+          "shadow_ball",
+          "dream_eater",
+          "dark_pulse",
+          "destiny_bond"
+        ],
+        "usable_move_count": 14
+      },
+      "pmdo_slug": "gengar",
+      "released": true,
+      "slug": "0094_gengar",
+      "source": {
+        "monster_json": "DumpAsset/Data/Monster/gengar.json",
+        "portrait_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/portrait/0094",
+        "portrait_dir": "/Users/franco/Documents/GitHub/RawAsset/Portrait/0094",
+        "sprite_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/sprite/0094",
+        "sprite_dir": "/Users/franco/Documents/GitHub/RawAsset/Sprite/0094"
+      },
+      "status": "battle_ready",
+      "warnings": []
+    },
+    {
+      "assets": {
+        "anim_data": "res://assets/textures/actor/pokemon/0282_gardevoir/AnimData.xml",
+        "hop": "res://assets/textures/actor/pokemon/0282_gardevoir/hop.png",
+        "hurt": "res://assets/textures/actor/pokemon/0282_gardevoir/hurt.png",
+        "idle": "res://assets/textures/actor/pokemon/0282_gardevoir/idle.png",
+        "portrait_credits": "res://assets/textures/pokemon/portraits/0282_gardevoir/credits.txt",
+        "portrait_normal": "res://assets/textures/pokemon/portraits/0282_gardevoir/Normal.png",
+        "sleep": "res://assets/textures/actor/pokemon/0282_gardevoir/sleep.png",
+        "sprite_credits": "res://assets/textures/actor/pokemon/0282_gardevoir/credits.txt",
+        "walk": "res://assets/textures/actor/pokemon/0282_gardevoir/walk.png"
+      },
+      "checksums": {
+        "anim_data": "sha256:655ccdb89ae914d07d45bc260dc2c367593275e71a2aaceebfc92303189a0a83",
+        "hop": "sha256:0dc20321e8740035f227760646f4fd3faffde504512b4ebf1adbe3919c44f4e8",
+        "hurt": "sha256:10272146972f9a456512dba68d3b04a1fc8a50ac9448fe18395cbbce7781adda",
+        "idle": "sha256:2fe861f10c7f0fa574e73891ee98753598755a958416c879f03e5d8b3a19f7c6",
+        "portrait_credits": "sha256:24f2213b41b6313552ccaa7046dde9f155def3a81e21a1a66a2e5d533f4bdea6",
+        "portrait_normal": "sha256:6a18b3f35e1007a9ab3acb98df69e5e0cf50220714abf57a33ba5dc2d6b935fe",
+        "sleep": "sha256:890121b721a3a8bc06d713b0d56deaa19df02e75b39197d30d0273504949cfef",
+        "sprite_credits": "sha256:c713f84d6ab37e2c31374ebc202c3b55ef055d315ff1138c0fc7cb155c168671",
+        "walk": "sha256:c6b11a75ad15cfb7fb703dcbe30a2d5189d662eab46748ef0494bee04d8df93c"
+      },
+      "default_form_index": 0,
+      "dex_number": 282,
+      "disabled_reason": "",
+      "display_name": "Gardevoir",
+      "generation": 3,
+      "moves": {
+        "default_moves": [
+          "imprison",
+          "future_sight",
+          "captivate",
+          "hypnosis"
+        ],
+        "import_moves": [
+          "confusion",
+          "double_team",
+          "growl",
+          "healing_wish",
+          "misty_terrain",
+          "moonblast",
+          "stored_power",
+          "teleport",
+          "disarming_voice",
+          "wish",
+          "magical_leaf",
+          "heal_pulse",
+          "draining_kiss",
+          "calm_mind",
+          "psychic",
+          "imprison",
+          "future_sight",
+          "captivate",
+          "hypnosis"
+        ],
+        "usable_move_count": 19
+      },
+      "pmdo_slug": "gardevoir",
+      "released": true,
+      "slug": "0282_gardevoir",
+      "source": {
+        "monster_json": "DumpAsset/Data/Monster/gardevoir.json",
+        "portrait_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/portrait/0282",
+        "portrait_dir": "/Users/franco/Documents/GitHub/RawAsset/Portrait/0282",
+        "sprite_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/sprite/0282",
+        "sprite_dir": "/Users/franco/Documents/GitHub/RawAsset/Sprite/0282"
+      },
+      "status": "battle_ready",
+      "warnings": []
+    },
+    {
+      "assets": {
+        "anim_data": "res://assets/textures/actor/pokemon/0356_dusclops/AnimData.xml",
+        "hop": "res://assets/textures/actor/pokemon/0356_dusclops/hop.png",
+        "hurt": "res://assets/textures/actor/pokemon/0356_dusclops/hurt.png",
+        "idle": "res://assets/textures/actor/pokemon/0356_dusclops/idle.png",
+        "portrait_credits": "res://assets/textures/pokemon/portraits/0356_dusclops/credits.txt",
+        "portrait_normal": "res://assets/textures/pokemon/portraits/0356_dusclops/Normal.png",
+        "sleep": "res://assets/textures/actor/pokemon/0356_dusclops/sleep.png",
+        "sprite_credits": "res://assets/textures/actor/pokemon/0356_dusclops/credits.txt",
+        "walk": "res://assets/textures/actor/pokemon/0356_dusclops/walk.png"
+      },
+      "checksums": {
+        "anim_data": "sha256:9b13c8ccd66f5459ebdd57de69b3d6c3c1f6b39b85180af0764d33305f5825a3",
+        "hop": "sha256:81dcf6ec24f30b907cd569136ab056cbb47cda342fb0a0289f39f8fb2f0232b1",
+        "hurt": "sha256:d299f1edce9ef703b5f47349dce6383fad3466b55fb998c225c0db486c56421b",
+        "idle": "sha256:165a210f06178cde57a670abd2aa72c397ea91772cb17db893d060b9adcec666",
+        "portrait_credits": "sha256:edc5e7972629c026f641fc2ee6b833b6eedfb83c88bea7f831d3996148369bee",
+        "portrait_normal": "sha256:22fa8327277ba879b92ff524eae4e6d99c50698a67d76b14ed02acf75369a05d",
+        "sleep": "sha256:1d7f42cacdd0fd404e2977a16efd5934514907705d6428db091d7baf04b331d5",
+        "sprite_credits": "sha256:e3220caf2fa644c867140576cea0108cd15718d35fe1f8a990585e9763ff5af3",
+        "walk": "sha256:e15d73c67444534877641de7a84c6cd6ee97d91811448ba5434b2b988a9ca4b3"
+      },
+      "default_form_index": 0,
+      "dex_number": 356,
+      "disabled_reason": "",
+      "display_name": "Dusclops",
+      "generation": 3,
+      "moves": {
+        "default_moves": [
+          "curse",
+          "shadow_punch",
+          "hex",
+          "shadow_ball"
+        ],
+        "import_moves": [
+          "astonish",
+          "bind",
+          "disable",
+          "fire_punch",
+          "future_sight",
+          "gravity",
+          "ice_punch",
+          "leer",
+          "night_shade",
+          "thunder_punch",
+          "foresight",
+          "shadow_sneak",
+          "pursuit",
+          "will_o_wisp",
+          "confuse_ray",
+          "curse",
+          "shadow_punch",
+          "hex",
+          "shadow_ball"
+        ],
+        "usable_move_count": 19
+      },
+      "pmdo_slug": "dusclops",
+      "released": true,
+      "slug": "0356_dusclops",
+      "source": {
+        "monster_json": "DumpAsset/Data/Monster/dusclops.json",
+        "portrait_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/portrait/0356",
+        "portrait_dir": "/Users/franco/Documents/GitHub/RawAsset/Portrait/0356",
+        "sprite_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/sprite/0356",
+        "sprite_dir": "/Users/franco/Documents/GitHub/RawAsset/Sprite/0356"
+      },
+      "status": "battle_ready",
+      "warnings": []
+    },
+    {
+      "assets": {
+        "anim_data": "res://assets/textures/actor/pokemon/0448_lucario/AnimData.xml",
+        "hop": "res://assets/textures/actor/pokemon/0448_lucario/hop.png",
+        "hurt": "res://assets/textures/actor/pokemon/0448_lucario/hurt.png",
+        "idle": "res://assets/textures/actor/pokemon/0448_lucario/idle.png",
+        "portrait_credits": "res://assets/textures/pokemon/portraits/0448_lucario/credits.txt",
+        "portrait_normal": "res://assets/textures/pokemon/portraits/0448_lucario/Normal.png",
+        "sleep": "res://assets/textures/actor/pokemon/0448_lucario/sleep.png",
+        "sprite_credits": "res://assets/textures/actor/pokemon/0448_lucario/credits.txt",
+        "walk": "res://assets/textures/actor/pokemon/0448_lucario/walk.png"
+      },
+      "checksums": {
+        "anim_data": "sha256:b9a8785ce3580c0a19c99d3c8a1452982f6b7d6ec6425f05e978286ef1450053",
+        "hop": "sha256:c03ae1ca58ac914cdbf556d162c199c46b9804a75a110ef1ae2e71f95118062b",
+        "hurt": "sha256:d8ae76af2b5f3a18b4a4cb8dd17437c456e88d4806f814f79c6d0f7d4667e3da",
+        "idle": "sha256:f0690ed348514471d79ef01b65344ba25568f0d836bd08c7d7f8d37606d9fdc2",
+        "portrait_credits": "sha256:9c602788c0d12e2e71f9203b26d44849bdc529d490024a269d4a12928df96b2a",
+        "portrait_normal": "sha256:837e3ca08860dfae38b5d741d8d38e0ffb179c0f50581e1b2a311b11748312e3",
+        "sleep": "sha256:3b0f1eeea451fb49a9c29c41429278585007af0408868246be03f893e7628b35",
+        "sprite_credits": "sha256:33b2dcc3c44347ce059e416b98c3418b36ab7db41b5d3544e717f331b11d2f5b",
+        "walk": "sha256:62544fbc4a0d033a146413bd95f91b78d8c1b947559a4cebb9e8561810d8428a"
+      },
+      "default_form_index": 0,
+      "dex_number": 448,
+      "disabled_reason": "",
+      "display_name": "Lucario",
+      "generation": 4,
+      "moves": {
+        "default_moves": [
+          "bone_rush",
+          "quick_guard",
+          "me_first",
+          "calm_mind"
+        ],
+        "import_moves": [
+          "aura_sphere",
+          "close_combat",
+          "detect",
+          "dragon_pulse",
+          "extreme_speed",
+          "foresight",
+          "metal_claw",
+          "quick_attack",
+          "counter",
+          "feint",
+          "power_up_punch",
+          "swords_dance",
+          "metal_sound",
+          "bone_rush",
+          "quick_guard",
+          "me_first",
+          "calm_mind"
+        ],
+        "usable_move_count": 17
+      },
+      "pmdo_slug": "lucario",
+      "released": true,
+      "slug": "0448_lucario",
+      "source": {
+        "monster_json": "DumpAsset/Data/Monster/lucario.json",
+        "portrait_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/portrait/0448",
+        "portrait_dir": "/Users/franco/Documents/GitHub/RawAsset/Portrait/0448",
+        "sprite_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/sprite/0448",
+        "sprite_dir": "/Users/franco/Documents/GitHub/RawAsset/Sprite/0448"
+      },
+      "status": "battle_ready",
+      "warnings": []
+    },
+    {
+      "assets": {
+        "anim_data": "res://assets/textures/actor/pokemon/0454_toxicroak/AnimData.xml",
+        "hop": "res://assets/textures/actor/pokemon/0454_toxicroak/hop.png",
+        "hurt": "res://assets/textures/actor/pokemon/0454_toxicroak/hurt.png",
+        "idle": "res://assets/textures/actor/pokemon/0454_toxicroak/idle.png",
+        "portrait_credits": "res://assets/textures/pokemon/portraits/0454_toxicroak/credits.txt",
+        "portrait_normal": "res://assets/textures/pokemon/portraits/0454_toxicroak/Normal.png",
+        "sleep": "res://assets/textures/actor/pokemon/0454_toxicroak/sleep.png",
+        "sprite_credits": "res://assets/textures/actor/pokemon/0454_toxicroak/credits.txt",
+        "walk": "res://assets/textures/actor/pokemon/0454_toxicroak/walk.png"
+      },
+      "checksums": {
+        "anim_data": "sha256:c222c355805af7149528c88c2b8923ba1e04f38c4ae04f017e7dcfb3b0c8e060",
+        "hop": "sha256:abfc55f681e71232b31e8cdad7f481b478cfd16c8225f8776aaf7039db1b013c",
+        "hurt": "sha256:556b8651c00e748d930ca8bfddaf25eb371ef9460aa6be5f31b2345dc54c3844",
+        "idle": "sha256:6a98ac199316ff4f7d83d67c52d797c5ddf69b48575bf76595ff9425dda752a5",
+        "portrait_credits": "sha256:23f4d605a54a10c8cfd7595582b5a63d859f3c94a4d70437afe1f149399d7099",
+        "portrait_normal": "sha256:7e7ef26ddf11b533c28baae409c8f0b891182e9dc590b51b7082809eaefc7298",
+        "sleep": "sha256:7f9156e70bddc87232b34feb591c8523dc996eae118a3a621b62a1fc3905539b",
+        "sprite_credits": "sha256:23f4d605a54a10c8cfd7595582b5a63d859f3c94a4d70437afe1f149399d7099",
+        "walk": "sha256:3250ab0893b7d15f5e2be9e16670f2dc04308eda4d984599cfe5103113faea0d"
+      },
+      "default_form_index": 0,
+      "dex_number": 454,
+      "disabled_reason": "",
+      "display_name": "Toxicroak",
+      "generation": 4,
+      "moves": {
+        "default_moves": [
+          "sucker_punch",
+          "venoshock",
+          "nasty_plot",
+          "poison_jab"
+        ],
+        "import_moves": [
+          "astonish",
+          "mud_slap",
+          "poison_sting",
+          "taunt",
+          "pursuit",
+          "feint_attack",
+          "revenge",
+          "swagger",
+          "mud_bomb",
+          "sucker_punch",
+          "venoshock",
+          "nasty_plot",
+          "poison_jab"
+        ],
+        "usable_move_count": 13
+      },
+      "pmdo_slug": "toxicroak",
+      "released": true,
+      "slug": "0454_toxicroak",
+      "source": {
+        "monster_json": "DumpAsset/Data/Monster/toxicroak.json",
+        "portrait_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/portrait/0454",
+        "portrait_dir": "/Users/franco/Documents/GitHub/RawAsset/Portrait/0454",
+        "sprite_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/sprite/0454",
+        "sprite_dir": "/Users/franco/Documents/GitHub/RawAsset/Sprite/0454"
+      },
+      "status": "battle_ready",
+      "warnings": []
+    },
+    {
+      "assets": {
+        "anim_data": "res://assets/textures/actor/pokemon/0467_magmortar/AnimData.xml",
+        "hop": "res://assets/textures/actor/pokemon/0467_magmortar/hop.png",
+        "hurt": "res://assets/textures/actor/pokemon/0467_magmortar/hurt.png",
+        "idle": "res://assets/textures/actor/pokemon/0467_magmortar/idle.png",
+        "portrait_credits": "res://assets/textures/pokemon/portraits/0467_magmortar/credits.txt",
+        "portrait_normal": "res://assets/textures/pokemon/portraits/0467_magmortar/Normal.png",
+        "sleep": "res://assets/textures/actor/pokemon/0467_magmortar/sleep.png",
+        "sprite_credits": "res://assets/textures/actor/pokemon/0467_magmortar/credits.txt",
+        "walk": "res://assets/textures/actor/pokemon/0467_magmortar/walk.png"
+      },
+      "checksums": {
+        "anim_data": "sha256:dfdbce48876dcd1225e4c7eae35a61329d0976045805cd8a1f735ecbab14374b",
+        "hop": "sha256:5fda454ab989fd333dc1d330b5a191663c50f119c37275e402fae250ec4ad578",
+        "hurt": "sha256:15668bde5865bca71bc6f6b588200707b28a1dc1f26da8cac0ffc20eb2e4cec9",
+        "idle": "sha256:a2575829f44e61396e76c5352e49ddca5272a3fee6d7e7efeb7ee6ce89a867d5",
+        "portrait_credits": "sha256:deac03c0cc1e3a7f2ce7834c78920d793fa3512f6c932f3fa543638a0e37dc89",
+        "portrait_normal": "sha256:8baee2fb1f510b3b5219d2249dc6b0f56bd8f4ea62185497162cfd5c87b3bae3",
+        "sleep": "sha256:2716b9a7da8ac256fbdec12d20716a5ae57f3eaacf72869824d3ec91cbe8eb1f",
+        "sprite_credits": "sha256:ebf4eda8ecca48d722e9dfe112aa0890a489de2c5df0b44789cb47bb4bcb0bb4",
+        "walk": "sha256:46a00a7bc3b23ad6209cc952ad3d57467425fa3f7caecdff3ee7f195c50e676f"
+      },
+      "default_form_index": 0,
+      "dex_number": 467,
+      "disabled_reason": "",
+      "display_name": "Magmortar",
+      "generation": 4,
+      "moves": {
+        "default_moves": [
+          "fire_punch",
+          "lava_plume",
+          "sunny_day",
+          "flamethrower"
+        ],
+        "import_moves": [
+          "ember",
+          "leer",
+          "smog",
+          "smokescreen",
+          "thunder_punch",
+          "feint_attack",
+          "fire_spin",
+          "clear_smog",
+          "flame_burst",
+          "confuse_ray",
+          "fire_punch",
+          "lava_plume",
+          "sunny_day",
+          "flamethrower"
+        ],
+        "usable_move_count": 14
+      },
+      "pmdo_slug": "magmortar",
+      "released": true,
+      "slug": "0467_magmortar",
+      "source": {
+        "monster_json": "DumpAsset/Data/Monster/magmortar.json",
+        "portrait_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/portrait/0467",
+        "portrait_dir": "/Users/franco/Documents/GitHub/RawAsset/Portrait/0467",
+        "sprite_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/sprite/0467",
+        "sprite_dir": "/Users/franco/Documents/GitHub/RawAsset/Sprite/0467"
+      },
+      "status": "battle_ready",
+      "warnings": []
+    },
+    {
+      "assets": {
+        "anim_data": "res://assets/textures/actor/pokemon/0475_gallade/AnimData.xml",
+        "hop": "res://assets/textures/actor/pokemon/0475_gallade/hop.png",
+        "hurt": "res://assets/textures/actor/pokemon/0475_gallade/hurt.png",
+        "idle": "res://assets/textures/actor/pokemon/0475_gallade/idle.png",
+        "portrait_credits": "res://assets/textures/pokemon/portraits/0475_gallade/credits.txt",
+        "portrait_normal": "res://assets/textures/pokemon/portraits/0475_gallade/Normal.png",
+        "sleep": "res://assets/textures/actor/pokemon/0475_gallade/sleep.png",
+        "sprite_credits": "res://assets/textures/actor/pokemon/0475_gallade/credits.txt",
+        "walk": "res://assets/textures/actor/pokemon/0475_gallade/walk.png"
+      },
+      "checksums": {
+        "anim_data": "sha256:5078c66c8331f7a9a8115285f4e017c236a037eedda473781ef6cedef85f2d26",
+        "hop": "sha256:e7d09d44a454b02ba4c5ad269700ff9bd82bbac1f3be23320ced1e5279d473f1",
+        "hurt": "sha256:8ae05afba946c16e876c64a1e3e4091e340b9ab1c03a40c135cbdf10896e978f",
+        "idle": "sha256:5b6ecbbb4bd2dd6292b68de7a1970e4ae00e50fda9d9bc2ee7b3d93aff744285",
+        "portrait_credits": "sha256:db263cdf15e95cf17c5a840e46f24acea3613ededa1c7b6805e53bc6b08d017a",
+        "portrait_normal": "sha256:b6a2e2ebfa76a9423126535141262d3ea6722cdb22652b46637a567bef6c0817",
+        "sleep": "sha256:cb12e25d35c1fdd9d61c9db2223b1816402bc138339898785543fcfc4f8db416",
+        "sprite_credits": "sha256:98a58f60889ade1e40520efd69f465456a66be9c422b11f64868fbaad800347d",
+        "walk": "sha256:9929e43f85c7295b4cbe491b80d9eaee34f33d7480fa9d653f134128e1ac5452"
+      },
+      "default_form_index": 0,
+      "dex_number": 475,
+      "disabled_reason": "",
+      "display_name": "Gallade",
+      "generation": 4,
+      "moves": {
+        "default_moves": [
+          "helping_hand",
+          "feint",
+          "false_swipe",
+          "protect"
+        ],
+        "import_moves": [
+          "close_combat",
+          "confusion",
+          "double_team",
+          "leaf_blade",
+          "leer",
+          "night_slash",
+          "stored_power",
+          "teleport",
+          "quick_guard",
+          "fury_cutter",
+          "slash",
+          "heal_pulse",
+          "wide_guard",
+          "swords_dance",
+          "psycho_cut",
+          "helping_hand",
+          "feint",
+          "false_swipe",
+          "protect"
+        ],
+        "usable_move_count": 19
+      },
+      "pmdo_slug": "gallade",
+      "released": true,
+      "slug": "0475_gallade",
+      "source": {
+        "monster_json": "DumpAsset/Data/Monster/gallade.json",
+        "portrait_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/portrait/0475",
+        "portrait_dir": "/Users/franco/Documents/GitHub/RawAsset/Portrait/0475",
+        "sprite_collab_dir": "/Users/franco/Documents/GitHub/SpriteCollab/sprite/0475",
+        "sprite_dir": "/Users/franco/Documents/GitHub/RawAsset/Sprite/0475"
+      },
+      "status": "battle_ready",
+      "warnings": []
     }
   ],
   "target": {
-    "dex_max": 9,
+    "dex_max": 721,
     "dex_min": 1,
     "generations": [
       1,
@@ -612,7 +1091,24 @@
       6
     ],
     "limit": 0,
-    "only": [],
+    "only": [
+      "blastoise",
+      "bulbasaur",
+      "charizard",
+      "charmander",
+      "charmeleon",
+      "dusclops",
+      "gallade",
+      "gardevoir",
+      "gengar",
+      "ivysaur",
+      "lucario",
+      "magmortar",
+      "squirtle",
+      "toxicroak",
+      "venusaur",
+      "wartortle"
+    ],
     "released_only": true
   }
 }

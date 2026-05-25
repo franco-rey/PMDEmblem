@@ -56,6 +56,14 @@ const ACCURACY_NEVER_MISS: int = -1
 ## Subset of `effect_tags` that the engine doesn't understand yet. M2's damage
 ## resolver should ignore these (or warn).
 @export var unsupported_effect_tags: Array[String] = []
+## Structured M6 effect records derived from PMDODump events. Raw tags remain
+## as source breadcrumbs; these dictionaries drive supported runtime handlers.
+@export var effect_records: Array[Dictionary] = []
+## PMD `Object.Strikes`. Values greater than 1 repeat hit/effect resolution.
+@export var strike_count: int = 1
+## Normalized move-use animation key requested by combat. Runtime falls back
+## through `PokemonSpriteSetResource` when the exact key is unavailable.
+@export var animation_key: String = ""
 
 
 func is_damaging() -> bool:

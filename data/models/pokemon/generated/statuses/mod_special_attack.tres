@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="PokemonStatusResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_status_resource.gd" id="1_r46vi"]
+
+[resource]
+script = ExtResource("1_r46vi")
+status_id = "mod_special_attack"
+display_name = "Mod Special Attack"
+visual_key = "mod_special_attack"
+source_event_tags = Array[String](["PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
+supported_hook_families = Array[String](["stat_stage"])

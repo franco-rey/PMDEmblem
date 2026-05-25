@@ -13,3 +13,4 @@ pp = 20
 tactical_range_value = 4
 effect_tags = Array[String](["PMDC.Dungeon.StrongestMoveEvent, PMDC"])
 unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence", "PMDC.Dungeon.StrongestMoveEvent, PMDC"])
+animation_key = "status_attack"

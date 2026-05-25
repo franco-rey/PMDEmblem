@@ -16,4 +16,18 @@ pp = 17
 tactical_range_value = 4
 target_alignment = 6
 effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.HPRecoilEvent, PMDC"])
-unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence", "PMDC.Dungeon.HPRecoilEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"])
+effect_records = Array[Dictionary]([{
+"family": "damage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
+"target": "hit_target"
+}, {
+"family": "recoil",
+"fraction": 6,
+"max_hp": true,
+"source_bucket": "AfterActions",
+"source_event": "PMDC.Dungeon.HPRecoilEvent, PMDC",
+"target": "self"
+}])
+animation_key = "physical_attack"

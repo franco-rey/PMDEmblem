@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="PokemonStatusResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_status_resource.gd" id="1_0ybgq"]
+
+[resource]
+script = ExtResource("1_0ybgq")
+status_id = "wrap"
+display_name = "Wrap"
+visual_key = "wrap"
+source_event_tags = Array[String](["PMDC.Dungeon.RemoveStatusBattleEvent, PMDC"])
+supported_hook_families = Array[String](["status_remove"])

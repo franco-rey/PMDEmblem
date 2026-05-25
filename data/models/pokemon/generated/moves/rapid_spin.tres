@@ -15,4 +15,71 @@ accuracy = 100
 pp = 20
 tactical_range_kind = 1
 effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.AddContextStateEvent, PMDC", "PMDC.Dungeon.RemoveStatusBattleEvent, PMDC"])
-unsupported_effect_tags = Array[String](["PMDC.Dungeon.AddContextStateEvent, PMDC", "PMDC.Dungeon.RemoveStatusBattleEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.AddContextStateEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "damage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
+"target": "hit_target"
+}, {
+"family": "status_remove",
+"source_bucket": "AfterActions",
+"source_event": "PMDC.Dungeon.RemoveStatusBattleEvent, PMDC",
+"status_id": "wrap",
+"target": "self"
+}, {
+"family": "status_remove",
+"source_bucket": "AfterActions",
+"source_event": "PMDC.Dungeon.RemoveStatusBattleEvent, PMDC",
+"status_id": "bind",
+"target": "self"
+}, {
+"family": "status_remove",
+"source_bucket": "AfterActions",
+"source_event": "PMDC.Dungeon.RemoveStatusBattleEvent, PMDC",
+"status_id": "fire_spin",
+"target": "self"
+}, {
+"family": "status_remove",
+"source_bucket": "AfterActions",
+"source_event": "PMDC.Dungeon.RemoveStatusBattleEvent, PMDC",
+"status_id": "whirlpool",
+"target": "self"
+}, {
+"family": "status_remove",
+"source_bucket": "AfterActions",
+"source_event": "PMDC.Dungeon.RemoveStatusBattleEvent, PMDC",
+"status_id": "sand_tomb",
+"target": "self"
+}, {
+"family": "status_remove",
+"source_bucket": "AfterActions",
+"source_event": "PMDC.Dungeon.RemoveStatusBattleEvent, PMDC",
+"status_id": "immobilized",
+"target": "self"
+}, {
+"family": "status_remove",
+"source_bucket": "AfterActions",
+"source_event": "PMDC.Dungeon.RemoveStatusBattleEvent, PMDC",
+"status_id": "leech_seed",
+"target": "self"
+}, {
+"family": "status_remove",
+"source_bucket": "AfterActions",
+"source_event": "PMDC.Dungeon.RemoveStatusBattleEvent, PMDC",
+"status_id": "clamp",
+"target": "self"
+}, {
+"family": "status_remove",
+"source_bucket": "AfterActions",
+"source_event": "PMDC.Dungeon.RemoveStatusBattleEvent, PMDC",
+"status_id": "infestation",
+"target": "self"
+}, {
+"family": "status_remove",
+"source_bucket": "AfterActions",
+"source_event": "PMDC.Dungeon.RemoveStatusBattleEvent, PMDC",
+"status_id": "magma_storm",
+"target": "self"
+}])
+animation_key = "physical_attack"

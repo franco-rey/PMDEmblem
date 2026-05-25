@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_bv0qb"]
+
+[resource]
+script = ExtResource("1_bv0qb")
+move_id = "night_shade"
+index_number = 101
+name = "Night Shade"
+description = "The user makes the target see a frightening mirage. It inflicts damage equal to the user's level."
+type = "ghost"
+category = 2
+accuracy = 100
+pp = 15
+tactical_range_kind = 5
+effect_tags = Array[String](["PMDC.Dungeon.LevelDamageEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.LevelDamageEvent, PMDC"])
+animation_key = "special_attack"

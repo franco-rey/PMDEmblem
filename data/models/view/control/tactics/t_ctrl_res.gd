@@ -12,6 +12,8 @@ signal called_camera_rotation
 signal called_select_pawn
 ## Signal emitted when a pawn needs to be selected for attack.
 signal called_select_pawn_to_attack
+## Signal emitted when a Pokemon move slot picker needs to be shown.
+signal called_select_move
 ## Signal emitted when a new location needs to be selected.
 signal called_select_new_location
 ## Signal emitted when the cursor shape needs to be set to "move".
@@ -57,6 +59,11 @@ func select_pawn(player: TacticsPlayer) -> void:
 ## Selects a pawn to attack.
 func select_pawn_to_attack() -> void:
 	called_select_pawn_to_attack.emit()
+
+
+## Shows the Pokemon move picker.
+func select_move() -> void:
+	called_select_move.emit()
 
 
 ## Selects a new location.

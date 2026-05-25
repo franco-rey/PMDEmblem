@@ -43,6 +43,7 @@ var turn_stage: int = 0
 var battle_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 ## Battle event stream. M2 prints it; later milestones can attach UI consumers.
 var battle_log: BattleLog = BattleLog.new()
+var intrinsic_service: BattleIntrinsicService = BattleIntrinsicService.new()
 var battle_finished: bool = false
 ## M3 scheduler. Null until `_start_scheduler()` runs (once both participants
 ## report configured).
@@ -175,6 +176,7 @@ func _start_scheduler() -> void:
 	battle_units = _build_battle_units()
 	scheduler.start_battle(battle_units, int(battle_rng.seed))
 	_scheduler_started = true
+	intrinsic_service.log_battle_start(battle_units, battle_log)
 
 
 func _build_battle_units() -> Array[BattleUnit]:

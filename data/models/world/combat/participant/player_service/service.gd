@@ -82,7 +82,7 @@ func display_attackable_targets() -> void:
 	if not p:
 		return
 	if p.stats.move_slots.size() > 0:
-		var move_index: int = p.stats.first_usable_move_index(false)
+		var move_index: int = p.res.selected_move_index
 		if move_index < 0:
 			p.res.can_attack = false
 			res.stage = res.STAGE_SHOW_ACTIONS
@@ -94,9 +94,35 @@ func display_attackable_targets() -> void:
 	res.display_opponent_stats = true
 	
 	camera.target = p
-	arena.process_surrounding_tiles(p.get_tile(), float(p.stats.attack_range))
-	arena.mark_attackable_tiles(p.get_tile(), float(p.stats.attack_range))
+	if not _mark_move_targets(p):
+		p.res.can_attack = false
+		res.stage = res.STAGE_SHOW_ACTIONS
+		return
 	res.stage = res.STAGE_SELECT_ATTACK_TARGET
+
+
+func _mark_move_targets(p: TacticsPawn) -> bool:
+	if p == null or p.stats.move_slots.is_empty():
+		arena.process_surrounding_tiles(p.get_tile(), float(p.stats.attack_range))
+		arena.mark_attackable_tiles(p.get_tile(), float(p.stats.attack_range))
+		return true
+	var move_index: int = p.res.selected_move_index
+	var move: PokemonMoveResource = p.stats.move_slots[move_index] if move_index >= 0 and move_index < p.stats.move_slots.size() else null
+	if move == null:
+		return false
+	var units: Array[TacticsPawn] = []
+	for child in p.get_parent().get_children():
+		if child is TacticsPawn:
+			units.append(child)
+	if res.targets != null:
+		for child in res.targets.get_children():
+			if child is TacticsPawn and not units.has(child):
+				units.append(child)
+	var targets: Array[TacticsPawn] = Targeting.legal_targets_for_move(p, move, units)
+	for target in targets:
+		if target != null and target.get_tile() != null:
+			target.get_tile().attackable = true
+	return not targets.is_empty()
 
 
 ## Initiates the movement of the current pawn

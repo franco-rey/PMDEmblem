@@ -166,6 +166,8 @@ func _spawn_anchor_order(anchor_name: String) -> int:
 func _spawn_team(team: Array[PokemonInstanceResource], parent: Node3D, anchors: Array[Node3D], spawn_order: Array[int], level: TacticsLevel) -> void:
 	for i in range(team.size()):
 		var instance: PokemonInstanceResource = team[i]
+		if instance != null and instance.move_slots.size() < PokemonInstanceResource.MAX_MOVE_SLOTS:
+			instance = SkirmishMoveLoadout.clone_with_loadout(instance, instance.team, instance.control_type, level.battle_seed, parent.name, i)
 		var pawn: TacticsPawn = _pawn_scene.instantiate() as TacticsPawn
 		pawn.name = "Pawn" if i == 0 else "Pawn%d" % (i + 1)
 

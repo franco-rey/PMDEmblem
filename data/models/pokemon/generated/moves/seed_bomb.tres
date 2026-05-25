@@ -16,3 +16,10 @@ pp = 10
 tactical_range_value = 3
 effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC"])
 unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence"])
+effect_records = Array[Dictionary]([{
+"family": "damage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
+"target": "hit_target"
+}])
+animation_key = "physical_attack"

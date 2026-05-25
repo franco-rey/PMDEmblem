@@ -13,4 +13,12 @@ accuracy = 85
 pp = 12
 tactical_range_value = 3
 effect_tags = Array[String](["PMDC.Dungeon.StatusBattleEvent, PMDC"])
-unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence", "PMDC.Dungeon.StatusBattleEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence"])
+effect_records = Array[Dictionary]([{
+"family": "status",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.StatusBattleEvent, PMDC",
+"status_id": "leech_seed",
+"target": "hit_target"
+}])
+animation_key = "status_attack"

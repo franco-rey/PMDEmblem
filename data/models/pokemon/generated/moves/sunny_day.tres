@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_eiwvb"]
+
+[resource]
+script = ExtResource("1_eiwvb")
+move_id = "sunny_day"
+index_number = 241
+name = "Sunny Day"
+description = "The user intensifies the sunlight for the entire floor, powering up Fire-type moves."
+type = "fire"
+pp = 10
+tactical_range_kind = 6
+tactical_range_value = 0
+target_alignment = 1
+effect_tags = Array[String](["PMDC.Dungeon.GiveMapStatusEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.GiveMapStatusEvent, PMDC"])
+animation_key = "status_attack"

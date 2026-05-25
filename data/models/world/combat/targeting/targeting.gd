@@ -67,9 +67,17 @@ static func filter_by_alignment(
 			continue
 		if not legal_tiles.has(_tile_key(other.get_tile())):
 			continue
-		if _alignment_allows(unit, other, move):
+		if alignment_allows(unit, other, move):
 			targets.append(other)
 	return targets
+
+
+static func legal_targets_for_move(unit: TacticsPawn, move: PokemonMoveResource, units_on_map: Array[TacticsPawn]) -> Array[TacticsPawn]:
+	return filter_by_alignment(compute_range(unit, move), unit, move, units_on_map)
+
+
+static func has_legal_target(unit: TacticsPawn, move: PokemonMoveResource, units_on_map: Array[TacticsPawn]) -> bool:
+	return not legal_targets_for_move(unit, move, units_on_map).is_empty()
 
 
 static func is_target_legal(unit: TacticsPawn, target: TacticsPawn, move: PokemonMoveResource) -> bool:
@@ -84,10 +92,10 @@ static func is_target_legal(unit: TacticsPawn, target: TacticsPawn, move: Pokemo
 	var tile: TacticsTile = target.get_tile()
 	if tile == null or not tile.attackable:
 		return false
-	return _alignment_allows(unit, target, move)
+	return alignment_allows(unit, target, move)
 
 
-static func _alignment_allows(unit: TacticsPawn, target: TacticsPawn, move: PokemonMoveResource) -> bool:
+static func alignment_allows(unit: TacticsPawn, target: TacticsPawn, move: PokemonMoveResource) -> bool:
 	if unit == target:
 		return move.can_target_self()
 	var same_team: bool = _team_key(unit) == _team_key(target)
@@ -106,10 +114,16 @@ static func _team_key(unit: TacticsPawn) -> String:
 		return ""
 	var parent := unit.get_parent()
 	if parent != null and (parent is TacticsPlayer or parent is TacticsOpponent):
-		return parent.get_path()
+		if parent.is_inside_tree():
+			return str(parent.get_path())
+		return str(parent.get_instance_id())
 	if unit.stats != null and unit.stats.pokemon_instance != null:
 		return str(unit.stats.pokemon_instance.team)
-	return parent.get_path() if parent != null else ""
+	if parent != null:
+		if parent.is_inside_tree():
+			return str(parent.get_path())
+		return str(parent.get_instance_id())
+	return ""
 
 
 static func _tile_key(tile: TacticsTile) -> Vector3i:
@@ -118,11 +132,13 @@ static func _tile_key(tile: TacticsTile) -> Vector3i:
 	# so keying by y would reject same-column tiles at different elevations.
 	if tile == null:
 		return Vector3i.ZERO
-	return Vector3i(roundi(tile.global_position.x), 0, roundi(tile.global_position.z))
+	var pos: Vector3 = tile.global_position if tile.is_inside_tree() else tile.position
+	return Vector3i(roundi(pos.x), 0, roundi(pos.z))
 
 
 static func _facing_direction(unit: TacticsPawn) -> Vector3i:
-	var forward: Vector3 = -unit.global_basis.z
+	var basis: Basis = unit.global_basis if unit.is_inside_tree() else unit.basis
+	var forward: Vector3 = -basis.z
 	if absf(forward.x) > absf(forward.z):
 		return Vector3i(1 if forward.x > 0.0 else -1, 0, 0)
 	return Vector3i(0, 0, 1 if forward.z > 0.0 else -1)

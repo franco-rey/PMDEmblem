@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_vr6aw"]
+
+[resource]
+script = ExtResource("1_vr6aw")
+move_id = "psychic"
+index_number = 94
+name = "Psychic"
+description = "The target is hit by a strong telekinetic force. This may also lower the target's Sp. Def stat."
+type = "psychic"
+category = 2
+base_power = 70
+accuracy = 100
+pp = 9
+tactical_range_kind = 1
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.AdditionalEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "damage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
+"target": "hit_target"
+}, {
+"chance": 25,
+"delta": -1,
+"family": "stat_stage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.StatusStackBattleEvent, PMDC",
+"stat": "special_defense",
+"status_id": "mod_special_defense",
+"target": "hit_target"
+}])
+animation_key = "special_attack"

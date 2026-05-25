@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_hm6ip"]
+
+[resource]
+script = ExtResource("1_hm6ip")
+move_id = "sucker_punch"
+index_number = 389
+name = "Sucker Punch"
+description = "This attacks foes from a distance. It fails on targets directly in front."
+type = "dark"
+category = 1
+base_power = 70
+accuracy = 100
+pp = 16
+tactical_range_value = 3
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC"])
+unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"])
+effect_records = Array[Dictionary]([{
+"family": "damage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
+"target": "hit_target"
+}])
+animation_key = "physical_attack"

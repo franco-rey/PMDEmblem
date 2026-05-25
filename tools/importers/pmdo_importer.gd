@@ -67,6 +67,8 @@ func run() -> void:
 	var sprite_sets: Dictionary = _import_sprite_sets(import_entries, report)
 	var moves: Dictionary = _import_moves(import_entries, source_roots, report)
 	var species_map: Dictionary = _import_species(import_entries, sprite_sets, moves, source_roots, report)
+	_import_status_resources(moves, report)
+	_import_intrinsic_resources(species_map, report)
 	_author_generated_instances(import_entries, species_map, moves, report)
 
 	var report_path: String = _Paths.REPORT_PATH
@@ -96,6 +98,8 @@ func _ensure_directories() -> void:
 		_Paths.GENERATED_SPECIES_DIR,
 		_Paths.GENERATED_FORMS_DIR,
 		_Paths.GENERATED_MOVES_DIR,
+		_Paths.GENERATED_STATUSES_DIR,
+		_Paths.GENERATED_INTRINSICS_DIR,
 		_Paths.GENERATED_SPRITES_DIR,
 		_Paths.GENERATED_INSTANCES_DIR,
 		_Paths.GENERATED_MANIFESTS_DIR,
@@ -238,6 +242,7 @@ func _build_sprite_set(entry: Dictionary, report: PokemonValidation) -> PokemonS
 	sprite_set.sleep_path = String(assets.get("sleep", ""))
 	sprite_set.hop_path = String(assets.get("hop", ""))
 	sprite_set.anim_data_path = String(assets.get("anim_data", ""))
+	sprite_set.animation_states = _default_animation_states(sprite_set)
 	if assets.has("portrait_normal"):
 		sprite_set.portrait_paths = [String(assets["portrait_normal"])]
 
@@ -256,6 +261,36 @@ func _build_sprite_set(entry: Dictionary, report: PokemonValidation) -> PokemonS
 		report.add_warning(anim_msg)
 
 	return sprite_set
+
+
+func _default_animation_states(sprite_set: PokemonSpriteSetResource) -> Dictionary:
+	var states: Dictionary = {}
+	var path_by_key: Dictionary = {
+		"idle": sprite_set.idle_path,
+		"walk": sprite_set.walk_path,
+		"hurt": sprite_set.hurt_path,
+		"sleep": sprite_set.sleep_path,
+		"faint": sprite_set.sleep_path,
+		"hop": sprite_set.hop_path,
+		"attack": sprite_set.hop_path,
+		"physical_attack": sprite_set.hop_path,
+		"special_attack": sprite_set.hop_path,
+		"status_attack": sprite_set.idle_path,
+		"miss": sprite_set.idle_path,
+	}
+	for key in path_by_key.keys():
+		var path: String = String(path_by_key[key])
+		if path.is_empty():
+			continue
+		states[key] = {
+			"path": path,
+			"source_name": key.capitalize(),
+			"cell_size": Vector2i.ZERO,
+			"directions": 8,
+			"frame_count": 0,
+			"timing": [],
+		}
+	return states
 
 
 # ---------------------------------------------------------------------------
@@ -304,6 +339,8 @@ func _import_move(slug: String, source_roots: Dictionary, report: PokemonValidat
 	move.category = int(data.get("Category", PokemonMoveResource.CATEGORY_STATUS))
 	move.accuracy = int(data.get("HitRate", PokemonMoveResource.ACCURACY_NEVER_MISS))
 	move.base_power = _SkillMapper.extract_base_power(data)
+	move.strike_count = maxi(1, int(obj.get("Strikes", 1)))
+	move.animation_key = _SkillMapper.animation_key_for(move.category)
 
 	var hitbox: Dictionary = _dict_field(obj, "HitboxAction")
 	if hitbox.is_empty():
@@ -320,6 +357,7 @@ func _import_move(slug: String, source_roots: Dictionary, report: PokemonValidat
 	var tags: Dictionary = _SkillMapper.extract_effect_tags(data)
 	move.effect_tags = tags["all"]
 	move.unsupported_effect_tags.append_array(tags["unsupported"])
+	move.effect_records = _SkillMapper.extract_effect_records(data, slug, move.strike_count)
 
 	var save_path: String = _Paths.generated_move_path(slug)
 	var err: int = ResourceSaver.save(move, save_path)
@@ -343,6 +381,105 @@ func _import_move(slug: String, source_roots: Dictionary, report: PokemonValidat
 	entry.imported = true
 	report.add_move(entry)
 	return save_path
+
+
+# ---------------------------------------------------------------------------
+# Statuses + intrinsics
+# ---------------------------------------------------------------------------
+
+func _import_status_resources(moves: Dictionary, report: PokemonValidation) -> void:
+	var statuses: Dictionary = {}
+	for move_slug in moves.keys():
+		var move_path: String = String(moves[move_slug])
+		if move_path.is_empty() or not ResourceLoader.exists(move_path):
+			continue
+		var move: PokemonMoveResource = load(move_path) as PokemonMoveResource
+		if move == null:
+			continue
+		for record in move.effect_records:
+			var status_id: String = String(record.get("status_id", ""))
+			if status_id.is_empty():
+				continue
+			if not statuses.has(status_id):
+				statuses[status_id] = {
+					"events": [],
+					"families": [],
+				}
+			var meta: Dictionary = statuses[status_id]
+			var events: Array = meta["events"]
+			var families: Array = meta["families"]
+			var source_event: String = String(record.get("source_event", ""))
+			if not source_event.is_empty() and not events.has(source_event):
+				events.append(source_event)
+			var family: String = String(record.get("family", ""))
+			if not family.is_empty() and not families.has(family):
+				families.append(family)
+
+	for status_id in statuses.keys():
+		var status := PokemonStatusResource.new()
+		status.status_id = String(status_id)
+		status.display_name = String(status_id).capitalize()
+		status.visual_key = String(status_id)
+		var status_meta: Dictionary = statuses[status_id]
+		status.source_event_tags = _typed_string_array(status_meta["events"] as Array)
+		status.supported_hook_families = _typed_string_array(status_meta["families"] as Array)
+		var err: int = ResourceSaver.save(status, _Paths.generated_status_path(status.status_id))
+		if err != OK:
+			report.add_error("Failed to save status %s (err %d)" % [status.status_id, err])
+
+
+func _import_intrinsic_resources(species_map: Dictionary, report: PokemonValidation) -> void:
+	var slugs: Dictionary = {}
+	for project_slug in species_map.keys():
+		var species_path: String = String(species_map[project_slug])
+		if species_path.is_empty() or not ResourceLoader.exists(species_path):
+			continue
+		var species: PokemonSpeciesResource = load(species_path) as PokemonSpeciesResource
+		if species == null:
+			continue
+		for form in species.forms:
+			if form == null:
+				continue
+			for slug in [form.intrinsic1, form.intrinsic2, form.intrinsic3]:
+				var key: String = String(slug)
+				if key.is_empty() or key == "none":
+					continue
+				slugs[key] = true
+	var dir: DirAccess = DirAccess.open(_Paths.GENERATED_SPECIES_DIR)
+	if dir != null:
+		dir.list_dir_begin()
+		var name: String = dir.get_next()
+		while name != "":
+			if not dir.current_is_dir() and name.ends_with(".tres"):
+				var species_path: String = "%s/%s" % [_Paths.GENERATED_SPECIES_DIR, name]
+				var species: PokemonSpeciesResource = load(species_path) as PokemonSpeciesResource
+				if species != null:
+					for form in species.forms:
+						if form == null:
+							continue
+						for slug in [form.intrinsic1, form.intrinsic2, form.intrinsic3]:
+							var key: String = String(slug)
+							if key.is_empty() or key == "none":
+								continue
+							slugs[key] = true
+			name = dir.get_next()
+		dir.list_dir_end()
+
+	var supported_damage_boosts: Array[String] = ["blaze", "overgrow", "torrent"]
+	for slug in slugs.keys():
+		var intrinsic := PokemonIntrinsicResource.new()
+		intrinsic.intrinsic_id = String(slug)
+		intrinsic.display_name = intrinsic.intrinsic_id.capitalize()
+		if supported_damage_boosts.has(intrinsic.intrinsic_id):
+			intrinsic.supported_hook_families = _typed_string_array(["battle_start", "before_damage"])
+			intrinsic.report_summary = "Supported low-HP same-type damage boost."
+		else:
+			intrinsic.supported_hook_families = _typed_string_array(["battle_start"])
+			intrinsic.unsupported_hook_families = _typed_string_array(["before_accuracy", "before_damage", "after_damage", "status_application", "target_legality"])
+			intrinsic.report_summary = "Recorded for M6; combat-specific hooks are explicit unsupported entries."
+		var err: int = ResourceSaver.save(intrinsic, _Paths.generated_intrinsic_path(intrinsic.intrinsic_id))
+		if err != OK:
+			report.add_error("Failed to save intrinsic %s (err %d)" % [intrinsic.intrinsic_id, err])
 
 
 # ---------------------------------------------------------------------------
@@ -513,6 +650,13 @@ func _string_skill_list(form_dict: Dictionary, key: String) -> Array[String]:
 				out.append(String(entry_dict["Skill"]))
 		elif entry is String:
 			out.append(String(entry))
+	return out
+
+
+func _typed_string_array(values: Array) -> Array[String]:
+	var out: Array[String] = []
+	for value in values:
+		out.append(String(value))
 	return out
 
 

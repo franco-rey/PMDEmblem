@@ -24,6 +24,8 @@ const STAGE_DISPLAY_TARGETS: int = 5
 const STAGE_SELECT_ATTACK_TARGET: int = 6
 ## Constant for the attack execution stage
 const STAGE_ATTACK: int = 7
+## Constant for the Pokemon move-picker stage
+const STAGE_SELECT_MOVE: int = 8
 ## The current stage of the participant's turn
 var stage: int = 0
 #endregion
