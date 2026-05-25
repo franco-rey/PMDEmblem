@@ -21,10 +21,18 @@ signal called_set_cursor_shape_to_move
 ## Signal emitted when the cursor shape needs to be set to "arrow".
 signal called_set_cursor_shape_to_arrow
 
+const PREVIEW_NONE: String = ""
+const PREVIEW_MOVEMENT: String = "movement"
+const PREVIEW_MOVE_SLOT: String = "move_slot"
+
 ## Indicates whether the current input device is a joystick.
 @export var is_joystick: bool
 ## Indicates whether the input hints are folded.
 @export var input_hints_folded: bool
+## UI hover preview currently requested by action or move buttons.
+var preview_mode: String = PREVIEW_NONE
+## Move slot to preview when preview_mode is PREVIEW_MOVE_SLOT.
+var preview_move_slot_index: int = -1
 
 ## Dictionary of available actions and their corresponding methods.
 var actions: Dictionary = {
@@ -79,3 +87,28 @@ func set_cursor_shape_to_move() -> void:
 ## Sets the cursor shape to "arrow".
 func set_cursor_shape_to_arrow() -> void:
 	called_set_cursor_shape_to_arrow.emit()
+
+
+func preview_movement() -> void:
+	preview_mode = PREVIEW_MOVEMENT
+	preview_move_slot_index = -1
+
+
+func preview_move_slot(slot_index: int) -> void:
+	preview_mode = PREVIEW_MOVE_SLOT
+	preview_move_slot_index = slot_index
+
+
+func clear_preview_movement() -> void:
+	if preview_mode == PREVIEW_MOVEMENT:
+		clear_hover_preview()
+
+
+func clear_preview_move_slot(slot_index: int) -> void:
+	if preview_mode == PREVIEW_MOVE_SLOT and preview_move_slot_index == slot_index:
+		clear_hover_preview()
+
+
+func clear_hover_preview() -> void:
+	preview_mode = PREVIEW_NONE
+	preview_move_slot_index = -1

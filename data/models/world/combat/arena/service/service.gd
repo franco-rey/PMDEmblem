@@ -153,3 +153,43 @@ func mark_attackable_tiles(arena: TacticsArena, root: TacticsTile, distance: flo
 		var _is_root: bool = _t == root
 		
 		_t.attackable = _has_dist and _reachable or _is_root
+
+
+func mark_unit_tiles_attackable(units: Array[TacticsPawn]) -> void:
+	for unit: TacticsPawn in units:
+		if unit == null or not unit.is_alive():
+			continue
+		var tile: TacticsTile = unit.get_tile()
+		if tile != null:
+			tile.attackable = true
+
+
+func mark_move_range_preview(arena: TacticsArena, unit: TacticsPawn, move: PokemonMoveResource) -> void:
+	if arena == null or unit == null or move == null:
+		return
+	var range_keys: Dictionary = {}
+	for key: Vector3i in Targeting.compute_range(unit, move):
+		range_keys[key] = true
+	for tile: TacticsTile in _tiles(arena):
+		if range_keys.has(_tile_grid_key(tile)):
+			tile.attackable = true
+
+
+func mark_movement_preview(arena: TacticsArena, unit: TacticsPawn) -> void:
+	if arena == null or unit == null or unit.stats == null or unit.get_tile() == null:
+		return
+	var allies: Array = unit.get_parent().get_children() if unit.get_parent() != null else []
+	process_surrounding_tiles(unit.get_tile(), unit.stats.movement, allies)
+	mark_reachable_tiles(arena, unit.get_tile(), unit.stats.movement)
+
+
+func _tiles(arena: TacticsArena) -> Array:
+	var tiles_node: Node = arena.get_node_or_null("Tiles")
+	return tiles_node.get_children() if tiles_node != null else []
+
+
+func _tile_grid_key(tile: TacticsTile) -> Vector3i:
+	if tile == null:
+		return Vector3i.ZERO
+	var pos: Vector3 = tile.global_position if tile.is_inside_tree() else tile.position
+	return Vector3i(roundi(pos.x), 0, roundi(pos.z))

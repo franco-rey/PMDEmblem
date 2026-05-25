@@ -74,3 +74,15 @@ func mark_reachable_tiles(root: TacticsTile, distance: float) -> void:
 ## [param distance] The maximum attack distance
 func mark_attackable_tiles(root: TacticsTile, distance: float) -> void:
 	serv.mark_attackable_tiles(self, root, distance)
+
+
+func mark_unit_tiles_attackable(units: Array[TacticsPawn]) -> void:
+	serv.mark_unit_tiles_attackable(units)
+
+
+func mark_move_range_preview(unit: TacticsPawn, move: PokemonMoveResource) -> void:
+	serv.mark_move_range_preview(self, unit, move)
+
+
+func mark_movement_preview(unit: TacticsPawn) -> void:
+	serv.mark_movement_preview(self, unit)

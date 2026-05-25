@@ -6,8 +6,9 @@ extends Resource
 ## (_walk/_hurt/_sleep/_hop) PNGs via filename convention. This resource just
 ## records the same paths in a structured form so future systems (turn order
 ## UI, encyclopedia, etc.) can address them by data instead of by string
-## munging. Cell size, frame counts, grounding metadata, and portrait paths
-## are reserved for later milestones - M1 only sets the texture paths.
+## munging. M7 also records expanded source animation states, source metadata,
+## checksums, and move-to-animation mappings used by battle animation tests and
+## readiness reports.
 
 @export_file("*.png") var idle_path: String = ""
 @export_file("*.png") var walk_path: String = ""
@@ -33,11 +34,11 @@ extends Resource
 
 @export var portrait_paths: Array[String] = []
 @export var validation_warnings: Array[String] = []
-## M6 animation manifest. Keys are normalized runtime states (idle, hurt,
+## M6/M7 animation manifest. Keys are normalized runtime states (idle, hurt,
 ## physical_attack, etc.); values preserve the chosen project-owned path and
 ## source metadata where available.
 @export var animation_states: Dictionary = {}
-## Optional exact move-id -> animation-state key mapping.
+## Exact or deterministic category move-id -> animation-state key mapping.
 @export var move_animation_map: Dictionary = {}
 
 

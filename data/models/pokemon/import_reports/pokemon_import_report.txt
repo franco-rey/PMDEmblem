@@ -1,6 +1,6 @@
 Pokemon Import Report
 =====================
-Started: 2026-05-24T16:59:54
+Started: 2026-05-24T17:34:03
 Species imported: 16
 Moves imported: 128
 Instance templates written: 16

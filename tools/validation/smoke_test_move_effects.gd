@@ -16,6 +16,7 @@ var resolver := BattleActionResolver.new()
 
 func _init() -> void:
 	_check_damage_status_stat_heal_recoil_fixed_percent()
+	_check_false_swipe_protect_counter()
 	_check_multi_hit()
 	_check_recoil_faint()
 	_check_area_targets()
@@ -63,6 +64,73 @@ func _check_damage_status_stat_heal_recoil_fixed_percent() -> void:
 	resolver.execute(attacker, attacker, 0, level)
 	_assert_true(attacker.stats.curr_health > hurt_hp, "heal restored HP")
 	_assert_true(_log_has(level.battle_log, "healed"), "healed logged")
+
+	var unsupported := _move("weather_stub", PokemonMoveResource.CATEGORY_STATUS, 0, PokemonMoveResource.TacticalRangeKind.SELF, PokemonMoveResource.TARGET_SELF, [])
+	unsupported.unsupported_effect_tags = ["PMDC.Dungeon.GiveMapStatusEvent, PMDC"]
+	attacker.stats.move_slots = [unsupported]
+	attacker.stats.current_pp = [unsupported.pp]
+	resolver.execute(attacker, attacker, 0, level)
+	_assert_true(_log_has(level.battle_log, "effect_unsupported"), "unsupported effect is logged")
+	level.battle_log.events.clear()
+	level.free()
+
+
+func _check_false_swipe_protect_counter() -> void:
+	var level: TacticsLevel = _fake_level()
+	var attacker: FakePawn = _fake_pawn(ATTACKER_PATH, "GuardAttacker", Vector3.ZERO)
+	var defender: FakePawn = _fake_pawn(DEFENDER_PATH, "GuardDefender", Vector3(1, 0, 0))
+	level.player.add_child(attacker)
+	level.opponent.add_child(defender)
+
+	var false_swipe := _move("false_swipe", PokemonMoveResource.CATEGORY_PHYSICAL, 500, PokemonMoveResource.TacticalRangeKind.MELEE, PokemonMoveResource.TARGET_FOE, [
+		{"family": "damage", "target": "hit_target"},
+	])
+	defender.stats.curr_health = 30
+	attacker.stats.move_slots = [false_swipe]
+	attacker.stats.current_pp = [false_swipe.pp]
+	resolver.execute(attacker, defender, 0, level)
+	_assert_true(defender.stats.curr_health == 1, "False Swipe leaves target at 1 HP")
+	_assert_true(defender.stats.is_active(), "False Swipe does not faint target")
+	_assert_true(_damage_amount(level.battle_log, "false_swipe") == 29, "False Swipe logs capped applied damage")
+	level.battle_log.events.clear()
+
+	defender.stats.curr_health = defender.stats.max_health
+	defender.stats.apply_battle_status("protect", {"move_id": "protect"})
+	var tackle := _move("tackle", PokemonMoveResource.CATEGORY_PHYSICAL, 80, PokemonMoveResource.TacticalRangeKind.MELEE, PokemonMoveResource.TARGET_FOE, [
+		{"family": "damage", "target": "hit_target"},
+	])
+	attacker.stats.move_slots = [tackle]
+	attacker.stats.current_pp = [tackle.pp]
+	var protected_hp: int = defender.stats.curr_health
+	resolver.execute(attacker, defender, 0, level)
+	_assert_true(defender.stats.curr_health == protected_hp, "Protect blocks incoming move damage")
+	_assert_true(not defender.stats.battle_statuses.has("protect"), "Protect clears after blocking")
+	_assert_true(_log_has(level.battle_log, "move_blocked"), "Protect logs blocked move")
+	level.battle_log.events.clear()
+
+	defender.stats.apply_battle_status("protect", {"move_id": "protect"})
+	var feint := _move("feint", PokemonMoveResource.CATEGORY_PHYSICAL, 40, PokemonMoveResource.TacticalRangeKind.MELEE, PokemonMoveResource.TARGET_FOE, [
+		{"family": "damage", "target": "hit_target"},
+	])
+	attacker.stats.move_slots = [feint]
+	attacker.stats.current_pp = [feint.pp]
+	protected_hp = defender.stats.curr_health
+	resolver.execute(attacker, defender, 0, level)
+	_assert_true(defender.stats.curr_health < protected_hp, "Feint bypasses Protect")
+	_assert_true(not defender.stats.battle_statuses.has("protect"), "Feint removes Protect")
+	_assert_true(_log_has(level.battle_log, "protection_broken"), "Feint logs protection break")
+	level.battle_log.events.clear()
+
+	defender.stats.curr_health = defender.stats.max_health
+	defender.stats.apply_battle_status("counter", {"move_id": "counter"})
+	attacker.stats.move_slots = [tackle]
+	attacker.stats.current_pp = [tackle.pp]
+	var attacker_hp: int = attacker.stats.curr_health
+	resolver.execute(attacker, defender, 0, level)
+	_assert_true(attacker.stats.curr_health < attacker_hp, "Counter reflects physical damage")
+	_assert_true(not defender.stats.battle_statuses.has("counter"), "Counter clears after reflecting")
+	_assert_true(_log_has(level.battle_log, "counter_triggered"), "Counter logs reflection")
+	level.battle_log.events.clear()
 	level.free()
 
 
@@ -81,6 +149,7 @@ func _check_multi_hit() -> void:
 	attacker.stats.current_pp = [move.pp]
 	resolver.execute(attacker, defender, 0, level)
 	_assert_true(_count_events(level.battle_log, "damage_dealt") >= 3, "multi-hit deals repeated damage")
+	level.battle_log.events.clear()
 	level.free()
 
 
@@ -99,6 +168,7 @@ func _check_recoil_faint() -> void:
 	resolver.execute(attacker, defender, 0, level)
 	_assert_true(not attacker.stats.is_active(), "recoil can faint attacker")
 	_assert_true(_log_has_source(level.battle_log, "unit_fainted", "recoil"), "recoil faint logged")
+	level.battle_log.events.clear()
 	level.free()
 
 
@@ -118,6 +188,7 @@ func _check_area_targets() -> void:
 	attacker.stats.current_pp = [move.pp]
 	resolver.execute(attacker, defender_a, 0, level)
 	_assert_true(_count_events(level.battle_log, "damage_dealt") == 2, "area move hits both legal targets")
+	level.battle_log.events.clear()
 	level.free()
 
 
@@ -141,6 +212,7 @@ func _fake_pawn(path: String, pawn_name: String, pos: Vector3) -> FakePawn:
 	pawn.add_child(pawn.fake_tile)
 	pawn.stats = Stats.new()
 	pawn.stats.init_from_pokemon(instance)
+	pawn.add_child(pawn.stats)
 	return pawn
 
 
@@ -169,6 +241,13 @@ func _log_has_source(log: BattleLog, kind: String, source: String) -> bool:
 		if event.get("kind", "") == kind and event.get("source", "") == source:
 			return true
 	return false
+
+
+func _damage_amount(log: BattleLog, move_id: String) -> int:
+	for event in log.events:
+		if event.get("kind", "") == "damage_dealt" and event.get("move_id", "") == move_id:
+			return int(event.get("amount", 0))
+	return 0
 
 
 func _count_events(log: BattleLog, kind: String) -> int:

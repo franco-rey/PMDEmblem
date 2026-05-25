@@ -149,5 +149,12 @@ func _player_wants_to_attack() -> void:
 
 
 func _player_wants_to_select_move(slot_index: int) -> void:
+	var picker: Control = get_node_or_null("HBox/MovePicker") as Control
+	if participant == null or participant.stage != participant.STAGE_SELECT_MOVE:
+		return
+	if picker != null and not picker.visible:
+		return
 	serv.player_wants_to_select_move(slot_index)
+	if picker != null and participant.stage != participant.STAGE_SELECT_MOVE:
+		picker.visible = false
 #endregion

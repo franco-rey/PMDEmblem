@@ -1,6 +1,6 @@
 Pokemon Batch Import Preflight
 ==============================
-Generated: 2026-05-24T23:27:26Z
+Generated: 2026-05-25T00:23:09Z
 Target species: 16
 battle_ready: 16
 

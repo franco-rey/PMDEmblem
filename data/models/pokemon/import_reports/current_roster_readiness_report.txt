@@ -1,0 +1,208 @@
+Current Roster Readiness Report
+================================
+Release: 0.11.0
+Roster count: 16
+Battle-ready: 16
+Animation states cataloged: 449
+Move animation mappings: 238
+Missing entries: 0
+Unsupported/report-only entries: 150
+
+- 0475_gallade (Gallade)
+    moves: slots=1 pool=19 mapped_missing=0
+    animation states: 21
+    report-only: intrinsic:justified:after_damage
+    report-only: intrinsic:justified:before_accuracy
+    report-only: intrinsic:justified:before_damage
+    report-only: intrinsic:justified:status_application
+    report-only: intrinsic:justified:target_legality
+    report-only: intrinsic:sharpness:after_damage
+    report-only: intrinsic:sharpness:before_accuracy
+    report-only: intrinsic:sharpness:before_damage
+    report-only: intrinsic:sharpness:status_application
+    report-only: intrinsic:sharpness:target_legality
+    report-only: intrinsic:steadfast:after_damage
+    report-only: intrinsic:steadfast:before_accuracy
+    report-only: intrinsic:steadfast:before_damage
+    report-only: intrinsic:steadfast:status_application
+    report-only: intrinsic:steadfast:target_legality
+- 0448_lucario (Lucario)
+    moves: slots=1 pool=17 mapped_missing=0
+    animation states: 40
+    report-only: intrinsic:inner_focus:after_damage
+    report-only: intrinsic:inner_focus:before_accuracy
+    report-only: intrinsic:inner_focus:before_damage
+    report-only: intrinsic:inner_focus:status_application
+    report-only: intrinsic:inner_focus:target_legality
+    report-only: intrinsic:justified:after_damage
+    report-only: intrinsic:justified:before_accuracy
+    report-only: intrinsic:justified:before_damage
+    report-only: intrinsic:justified:status_application
+    report-only: intrinsic:justified:target_legality
+    report-only: intrinsic:steadfast:after_damage
+    report-only: intrinsic:steadfast:before_accuracy
+    report-only: intrinsic:steadfast:before_damage
+    report-only: intrinsic:steadfast:status_application
+    report-only: intrinsic:steadfast:target_legality
+- 0282_gardevoir (Gardevoir)
+    moves: slots=1 pool=19 mapped_missing=0
+    animation states: 25
+    report-only: intrinsic:synchronize:after_damage
+    report-only: intrinsic:synchronize:before_accuracy
+    report-only: intrinsic:synchronize:before_damage
+    report-only: intrinsic:synchronize:status_application
+    report-only: intrinsic:synchronize:target_legality
+    report-only: intrinsic:telepathy:after_damage
+    report-only: intrinsic:telepathy:before_accuracy
+    report-only: intrinsic:telepathy:before_damage
+    report-only: intrinsic:telepathy:status_application
+    report-only: intrinsic:telepathy:target_legality
+    report-only: intrinsic:trace:after_damage
+    report-only: intrinsic:trace:before_accuracy
+    report-only: intrinsic:trace:before_damage
+    report-only: intrinsic:trace:status_application
+    report-only: intrinsic:trace:target_legality
+- 0454_toxicroak (Toxicroak)
+    moves: slots=1 pool=13 mapped_missing=0
+    animation states: 21
+    report-only: intrinsic:anticipation:after_damage
+    report-only: intrinsic:anticipation:before_accuracy
+    report-only: intrinsic:anticipation:before_damage
+    report-only: intrinsic:anticipation:status_application
+    report-only: intrinsic:anticipation:target_legality
+    report-only: intrinsic:dry_skin:after_damage
+    report-only: intrinsic:dry_skin:before_accuracy
+    report-only: intrinsic:dry_skin:before_damage
+    report-only: intrinsic:dry_skin:status_application
+    report-only: intrinsic:dry_skin:target_legality
+    report-only: intrinsic:poison_touch:after_damage
+    report-only: intrinsic:poison_touch:before_accuracy
+    report-only: intrinsic:poison_touch:before_damage
+    report-only: intrinsic:poison_touch:status_application
+    report-only: intrinsic:poison_touch:target_legality
+    report-only: move:poison_jab:HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
+- 0467_magmortar (Magmortar)
+    moves: slots=1 pool=14 mapped_missing=0
+    animation states: 21
+    report-only: intrinsic:flame_body:after_damage
+    report-only: intrinsic:flame_body:before_accuracy
+    report-only: intrinsic:flame_body:before_damage
+    report-only: intrinsic:flame_body:status_application
+    report-only: intrinsic:flame_body:target_legality
+    report-only: intrinsic:vital_spirit:after_damage
+    report-only: intrinsic:vital_spirit:before_accuracy
+    report-only: intrinsic:vital_spirit:before_damage
+    report-only: intrinsic:vital_spirit:status_application
+    report-only: intrinsic:vital_spirit:target_legality
+- 0094_gengar (Gengar)
+    moves: slots=1 pool=14 mapped_missing=0
+    animation states: 42
+    report-only: intrinsic:cursed_body:after_damage
+    report-only: intrinsic:cursed_body:before_accuracy
+    report-only: intrinsic:cursed_body:before_damage
+    report-only: intrinsic:cursed_body:status_application
+    report-only: intrinsic:cursed_body:target_legality
+- 0356_dusclops (Dusclops)
+    moves: slots=1 pool=19 mapped_missing=0
+    animation states: 21
+    report-only: intrinsic:frisk:after_damage
+    report-only: intrinsic:frisk:before_accuracy
+    report-only: intrinsic:frisk:before_damage
+    report-only: intrinsic:frisk:status_application
+    report-only: intrinsic:frisk:target_legality
+    report-only: intrinsic:pressure:after_damage
+    report-only: intrinsic:pressure:before_accuracy
+    report-only: intrinsic:pressure:before_damage
+    report-only: intrinsic:pressure:status_application
+    report-only: intrinsic:pressure:target_legality
+- 0001_bulbasaur (Bulbasaur)
+    moves: slots=4 pool=14 mapped_missing=0
+    animation states: 39
+    report-only: intrinsic:chlorophyll:after_damage
+    report-only: intrinsic:chlorophyll:before_accuracy
+    report-only: intrinsic:chlorophyll:before_damage
+    report-only: intrinsic:chlorophyll:status_application
+    report-only: intrinsic:chlorophyll:target_legality
+    report-only: move:double_edge:HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
+    report-only: move:seed_bomb:HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence
+    report-only: move:worry_seed:HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence
+    report-only: move:worry_seed:PMDC.Dungeon.ChangeToAbilityEvent, PMDC
+- 0002_ivysaur (Ivysaur)
+    moves: slots=4 pool=14 mapped_missing=0
+    animation states: 20
+    report-only: intrinsic:chlorophyll:after_damage
+    report-only: intrinsic:chlorophyll:before_accuracy
+    report-only: intrinsic:chlorophyll:before_damage
+    report-only: intrinsic:chlorophyll:status_application
+    report-only: intrinsic:chlorophyll:target_legality
+    report-only: move:double_edge:HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
+    report-only: move:solar_beam:HitboxAction:RogueEssence.Dungeon.WaveMotionAction, RogueEssence
+    report-only: move:worry_seed:HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence
+    report-only: move:worry_seed:PMDC.Dungeon.ChangeToAbilityEvent, PMDC
+- 0003_venusaur (Venusaur)
+    moves: slots=4 pool=15 mapped_missing=0
+    animation states: 20
+    report-only: intrinsic:chlorophyll:after_damage
+    report-only: intrinsic:chlorophyll:before_accuracy
+    report-only: intrinsic:chlorophyll:before_damage
+    report-only: intrinsic:chlorophyll:status_application
+    report-only: intrinsic:chlorophyll:target_legality
+    report-only: move:petal_dance:HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
+    report-only: move:worry_seed:HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence
+    report-only: move:worry_seed:PMDC.Dungeon.ChangeToAbilityEvent, PMDC
+- 0004_charmander (Charmander)
+    moves: slots=4 pool=12 mapped_missing=0
+    animation states: 39
+    report-only: intrinsic:solar_power:after_damage
+    report-only: intrinsic:solar_power:before_accuracy
+    report-only: intrinsic:solar_power:before_damage
+    report-only: intrinsic:solar_power:status_application
+    report-only: intrinsic:solar_power:target_legality
+    report-only: move:fire_spin:PMDC.Dungeon.OnHitEvent, PMDC
+- 0005_charmeleon (Charmeleon)
+    moves: slots=4 pool=11 mapped_missing=0
+    animation states: 39
+    report-only: intrinsic:solar_power:after_damage
+    report-only: intrinsic:solar_power:before_accuracy
+    report-only: intrinsic:solar_power:before_damage
+    report-only: intrinsic:solar_power:status_application
+    report-only: intrinsic:solar_power:target_legality
+    report-only: move:fire_spin:PMDC.Dungeon.OnHitEvent, PMDC
+- 0006_charizard (Charizard)
+    moves: slots=4 pool=16 mapped_missing=0
+    animation states: 20
+    report-only: intrinsic:solar_power:after_damage
+    report-only: intrinsic:solar_power:before_accuracy
+    report-only: intrinsic:solar_power:before_damage
+    report-only: intrinsic:solar_power:status_application
+    report-only: intrinsic:solar_power:target_legality
+    report-only: move:wing_attack:HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
+- 0007_squirtle (Squirtle)
+    moves: slots=4 pool=14 mapped_missing=0
+    animation states: 39
+    report-only: intrinsic:rain_dish:after_damage
+    report-only: intrinsic:rain_dish:before_accuracy
+    report-only: intrinsic:rain_dish:before_damage
+    report-only: intrinsic:rain_dish:status_application
+    report-only: intrinsic:rain_dish:target_legality
+    report-only: move:rain_dance:PMDC.Dungeon.GiveMapStatusEvent, PMDC
+    report-only: move:skull_bash:HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
+- 0008_wartortle (Wartortle)
+    moves: slots=4 pool=14 mapped_missing=0
+    animation states: 21
+    report-only: intrinsic:rain_dish:after_damage
+    report-only: intrinsic:rain_dish:before_accuracy
+    report-only: intrinsic:rain_dish:before_damage
+    report-only: intrinsic:rain_dish:status_application
+    report-only: intrinsic:rain_dish:target_legality
+    report-only: move:rain_dance:PMDC.Dungeon.GiveMapStatusEvent, PMDC
+    report-only: move:skull_bash:HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence
+- 0009_blastoise (Blastoise)
+    moves: slots=4 pool=13 mapped_missing=0
+    animation states: 21
+    report-only: intrinsic:rain_dish:after_damage
+    report-only: intrinsic:rain_dish:before_accuracy
+    report-only: intrinsic:rain_dish:before_damage
+    report-only: intrinsic:rain_dish:status_application
+    report-only: intrinsic:rain_dish:target_legality
+    report-only: move:skull_bash:HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence

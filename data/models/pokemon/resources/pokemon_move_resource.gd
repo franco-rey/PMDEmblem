@@ -2,9 +2,10 @@ class_name PokemonMoveResource
 extends Resource
 ## A single Pokemon move imported from PMDODump's `Skill/<slug>.json`.
 ##
-## M1 captures the data shape only - power, accuracy, PP, range, target
-## alignment, and effect tag bookkeeping. Damage application, accuracy rolls,
-## and PP decrement are M2 work and use this resource as their input.
+## The resource carries PMD power, accuracy, PP, range, target alignment,
+## effect breadcrumbs, structured runtime effect records, strike count, and
+## requested animation key. Runtime handlers consume the structured records and
+## keep unsupported source events visible for readiness reports.
 
 ## PMD damage categories. Numeric values match PMD's `Data.Category` so the
 ## importer can copy the field verbatim.
@@ -53,8 +54,8 @@ const ACCURACY_NEVER_MISS: int = -1
 ## Every PMD `$type` event seen on this move (BeforeActions / OnHits / AfterActions).
 ## Useful as a debugging breadcrumb.
 @export var effect_tags: Array[String] = []
-## Subset of `effect_tags` that the engine doesn't understand yet. M2's damage
-## resolver should ignore these (or warn).
+## Subset of `effect_tags` that the engine doesn't understand yet. These stay
+## visible in readiness/import reports until a real handler is added.
 @export var unsupported_effect_tags: Array[String] = []
 ## Structured M6 effect records derived from PMDODump events. Raw tags remain
 ## as source breadcrumbs; these dictionaries drive supported runtime handlers.

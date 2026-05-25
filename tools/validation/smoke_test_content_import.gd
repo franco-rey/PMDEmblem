@@ -65,8 +65,7 @@ func _check_manifest_entries() -> void:
 		var slug: String = String(entry.get("slug", ""))
 		var status: String = String(entry.get("status", ""))
 		var assets: Dictionary = entry.get("assets", {})
-		for path in assets.values():
-			var path_string: String = String(path)
+		for path_string in _manifest_asset_paths(assets):
 			if not path_string.begins_with("res://"):
 				continue
 			_assert_true(_has_no_external_marker(path_string), "%s asset path is project-owned: %s" % [slug, path_string])
@@ -117,6 +116,23 @@ func _matching_rest_anim_name(tex: Texture2D, anim_data: Dictionary) -> String:
 		if columns == entry.frames_per_direction:
 			return anim_name
 	return ""
+
+
+func _manifest_asset_paths(value: Variant) -> Array[String]:
+	var paths: Array[String] = []
+	_collect_manifest_asset_paths(value, paths)
+	return paths
+
+
+func _collect_manifest_asset_paths(value: Variant, out: Array[String]) -> void:
+	if value is String:
+		out.append(String(value))
+	elif value is Array:
+		for item in value:
+			_collect_manifest_asset_paths(item, out)
+	elif value is Dictionary:
+		for item in (value as Dictionary).values():
+			_collect_manifest_asset_paths(item, out)
 
 
 func _check_current_seven_roster() -> void:
