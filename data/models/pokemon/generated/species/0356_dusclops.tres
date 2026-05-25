@@ -87,5 +87,12 @@ teach_skills = Array[String](["ice_beam", "blizzard", "hyper_beam", "strength", 
 shared_skills = Array[String](["feint_attack", "destiny_bond", "pain_split", "memento", "imprison", "grudge", "ominous_wind", "skill_swap", "dark_pulse", "haze"])
 secret_skills = Array[String](["mega_punch", "fire_punch", "ice_punch", "thunder_punch", "mega_kick", "body_slam", "double_edge", "counter", "seismic_toss", "mimic", "metronome", "dream_eater", "rock_slide", "substitute", "snore", "mud_slap", "icy_wind", "endure", "swagger", "sleep_talk", "dynamic_punch", "psych_up", "spite", "trick", "sucker_punch", "ominous_wind", "headbutt", "pain_split", "gravity", "nightmare", "bind", "skill_swap", "snatch", "dark_pulse", "wonder_room", "focus_punch"])
 evolution_from = "duskull"
+evolutions = Array[Dictionary]([{
+"requirements": Array[Dictionary]([{
+"kind": "unsupported",
+"source_event": "PMDC.Data.EvoItem, PMDC"
+}]),
+"result": "dusknoir"
+}])
 skill_group1 = "amorphous"
 skill_group2 = "undiscovered"

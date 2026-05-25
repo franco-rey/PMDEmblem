@@ -1,4 +1,31 @@
 {
+	"items": {
+		"categories": {
+			"berry": 45,
+			"category_0": 1,
+			"category_12": 4,
+			"category_13": 1,
+			"category_15": 20,
+			"category_16": 6,
+			"category_18": 5,
+			"category_2": 9,
+			"category_3": 17,
+			"category_8": 15,
+			"evolution": 30,
+			"food": 12,
+			"gummi": 19,
+			"held": 74,
+			"material": 1988,
+			"medicine": 22,
+			"orb": 41,
+			"seed": 19,
+			"tm": 124
+		},
+		"held_passive_items": 5,
+		"items": 2452,
+		"items_with_supported_effects": 158,
+		"items_with_unsupported_effects": 316
+	},
 	"pokemon": [
 		{
 			"battle_ready": true,
@@ -12,14 +39,11 @@
 					"speed": 80
 				},
 				"evolution_from": "kirlia",
+				"evolutions": [],
 				"exp_table": "slow",
+				"exp_yield": 259,
 				"generation": 6,
 				"join_rate": -40,
-				"progression_placeholders": {
-					"evolution_runtime": "deferred_to_0.12.0",
-					"stat_growth": "deferred_to_0.12.0",
-					"xp_runtime": "deferred_to_0.12.0"
-				},
 				"skill_groups": [
 					"humanlike",
 					"amorphous"
@@ -35,49 +59,34 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/steadfast.tres",
 					"slug": "steadfast",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"status_application"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				},
 				{
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/sharpness.tres",
 					"slug": "sharpness",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"before_damage"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				},
 				{
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/justified.tres",
 					"slug": "justified",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"after_damage"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				}
 			],
 			"learnsets": {
@@ -109,25 +118,30 @@
 			],
 			"name": "Gallade",
 			"path": "res://data/models/pokemon/overrides/instances/0475_gallade.tres",
+			"progression": {
+				"calculated_stats": {
+					"attack": 130,
+					"defense": 70,
+					"hp": 128,
+					"special_attack": 70,
+					"special_defense": 120,
+					"speed": 85
+				},
+				"eligible_evolutions": [],
+				"experience": 0,
+				"held_item": "",
+				"known_move_count": 0,
+				"missing": [],
+				"nature_id": "",
+				"permanent_modifiers": {
+
+				},
+				"xp_for_level": 156250,
+				"xp_to_next": 9563
+			},
 			"readiness": {
 				"missing": [],
-				"unsupported": [
-					"intrinsic:justified:after_damage",
-					"intrinsic:justified:before_accuracy",
-					"intrinsic:justified:before_damage",
-					"intrinsic:justified:status_application",
-					"intrinsic:justified:target_legality",
-					"intrinsic:sharpness:after_damage",
-					"intrinsic:sharpness:before_accuracy",
-					"intrinsic:sharpness:before_damage",
-					"intrinsic:sharpness:status_application",
-					"intrinsic:sharpness:target_legality",
-					"intrinsic:steadfast:after_damage",
-					"intrinsic:steadfast:before_accuracy",
-					"intrinsic:steadfast:before_damage",
-					"intrinsic:steadfast:status_application",
-					"intrinsic:steadfast:target_legality"
-				]
+				"unsupported": []
 			},
 			"slug": "0475_gallade",
 			"sprites": {
@@ -214,19 +228,19 @@
 						"timing_count": 16
 					},
 					{
-						"alias_of": "",
+						"alias_of": "sleep",
 						"cell_size": [
-							0,
-							0
+							24,
+							40
 						],
-						"checksum": "",
+						"checksum": "sha256:cb12e25d35c1fdd9d61c9db2223b1816402bc138339898785543fcfc4f8db416",
 						"directions": 1,
-						"frame_count": 0,
+						"frame_count": 2,
 						"key": "faint",
-						"path": "res://assets/textures/actor/pokemon/0475_gallade/sleep.png",
-						"source_filename": "",
-						"source_name": "Faint",
-						"timing_count": 0
+						"path": "res://assets/textures/actor/pokemon/0475_gallade/animations/sleep.png",
+						"source_filename": "Sleep-Anim.png",
+						"source_name": "Sleep",
+						"timing_count": 2
 					},
 					{
 						"alias_of": "charge",
@@ -504,8 +518,24 @@
 					"teleport": "status_attack",
 					"wide_guard": "status_attack"
 				},
+				"playable_animation_state_count": 13,
 				"portrait_paths": [
-					"res://assets/textures/pokemon/portraits/0475_gallade/Normal.png"
+					"res://assets/textures/pokemon/portraits/0475_gallade/Normal.png",
+					"res://assets/textures/pokemon/portraits/0475_gallade/Angry.png",
+					"res://assets/textures/pokemon/portraits/0475_gallade/Crying.png",
+					"res://assets/textures/pokemon/portraits/0475_gallade/Determined.png",
+					"res://assets/textures/pokemon/portraits/0475_gallade/Dizzy.png",
+					"res://assets/textures/pokemon/portraits/0475_gallade/Happy.png",
+					"res://assets/textures/pokemon/portraits/0475_gallade/Inspired.png",
+					"res://assets/textures/pokemon/portraits/0475_gallade/Joyous.png",
+					"res://assets/textures/pokemon/portraits/0475_gallade/Pain.png",
+					"res://assets/textures/pokemon/portraits/0475_gallade/Sad.png",
+					"res://assets/textures/pokemon/portraits/0475_gallade/Shouting.png",
+					"res://assets/textures/pokemon/portraits/0475_gallade/Sigh.png",
+					"res://assets/textures/pokemon/portraits/0475_gallade/Stunned.png",
+					"res://assets/textures/pokemon/portraits/0475_gallade/Surprised.png",
+					"res://assets/textures/pokemon/portraits/0475_gallade/Teary-Eyed.png",
+					"res://assets/textures/pokemon/portraits/0475_gallade/Worried.png"
 				],
 				"validation_warnings": []
 			}
@@ -522,14 +552,11 @@
 					"speed": 90
 				},
 				"evolution_from": "riolu",
+				"evolutions": [],
 				"exp_table": "medium_slow",
+				"exp_yield": 184,
 				"generation": 6,
 				"join_rate": -30,
-				"progression_placeholders": {
-					"evolution_runtime": "deferred_to_0.12.0",
-					"stat_growth": "deferred_to_0.12.0",
-					"xp_runtime": "deferred_to_0.12.0"
-				},
 				"skill_groups": [
 					"field",
 					"humanlike"
@@ -545,49 +572,34 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/steadfast.tres",
 					"slug": "steadfast",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"status_application"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				},
 				{
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/inner_focus.tres",
 					"slug": "inner_focus",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"status_application"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				},
 				{
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/justified.tres",
 					"slug": "justified",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"after_damage"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				}
 			],
 			"learnsets": {
@@ -619,25 +631,30 @@
 			],
 			"name": "Lucario",
 			"path": "res://data/models/pokemon/overrides/instances/0448_lucario.tres",
+			"progression": {
+				"calculated_stats": {
+					"attack": 115,
+					"defense": 75,
+					"hp": 130,
+					"special_attack": 120,
+					"special_defense": 75,
+					"speed": 95
+				},
+				"eligible_evolutions": [],
+				"experience": 0,
+				"held_item": "",
+				"known_move_count": 0,
+				"missing": [],
+				"nature_id": "",
+				"permanent_modifiers": {
+
+				},
+				"xp_for_level": 117360,
+				"xp_to_next": 7766
+			},
 			"readiness": {
 				"missing": [],
-				"unsupported": [
-					"intrinsic:inner_focus:after_damage",
-					"intrinsic:inner_focus:before_accuracy",
-					"intrinsic:inner_focus:before_damage",
-					"intrinsic:inner_focus:status_application",
-					"intrinsic:inner_focus:target_legality",
-					"intrinsic:justified:after_damage",
-					"intrinsic:justified:before_accuracy",
-					"intrinsic:justified:before_damage",
-					"intrinsic:justified:status_application",
-					"intrinsic:justified:target_legality",
-					"intrinsic:steadfast:after_damage",
-					"intrinsic:steadfast:before_accuracy",
-					"intrinsic:steadfast:before_damage",
-					"intrinsic:steadfast:status_application",
-					"intrinsic:steadfast:target_legality"
-				]
+				"unsupported": []
 			},
 			"slug": "0448_lucario",
 			"sprites": {
@@ -1297,8 +1314,25 @@
 					"quick_guard": "status_attack",
 					"swords_dance": "status_attack"
 				},
+				"playable_animation_state_count": 33,
 				"portrait_paths": [
-					"res://assets/textures/pokemon/portraits/0448_lucario/Normal.png"
+					"res://assets/textures/pokemon/portraits/0448_lucario/Normal.png",
+					"res://assets/textures/pokemon/portraits/0448_lucario/Angry.png",
+					"res://assets/textures/pokemon/portraits/0448_lucario/Crying.png",
+					"res://assets/textures/pokemon/portraits/0448_lucario/Determined.png",
+					"res://assets/textures/pokemon/portraits/0448_lucario/Dizzy.png",
+					"res://assets/textures/pokemon/portraits/0448_lucario/Happy.png",
+					"res://assets/textures/pokemon/portraits/0448_lucario/Inspired.png",
+					"res://assets/textures/pokemon/portraits/0448_lucario/Joyous.png",
+					"res://assets/textures/pokemon/portraits/0448_lucario/Pain.png",
+					"res://assets/textures/pokemon/portraits/0448_lucario/Sad.png",
+					"res://assets/textures/pokemon/portraits/0448_lucario/Shouting.png",
+					"res://assets/textures/pokemon/portraits/0448_lucario/Sigh.png",
+					"res://assets/textures/pokemon/portraits/0448_lucario/Special0.png",
+					"res://assets/textures/pokemon/portraits/0448_lucario/Stunned.png",
+					"res://assets/textures/pokemon/portraits/0448_lucario/Surprised.png",
+					"res://assets/textures/pokemon/portraits/0448_lucario/Teary-Eyed.png",
+					"res://assets/textures/pokemon/portraits/0448_lucario/Worried.png"
 				],
 				"validation_warnings": []
 			}
@@ -1315,14 +1349,11 @@
 					"speed": 80
 				},
 				"evolution_from": "kirlia",
+				"evolutions": [],
 				"exp_table": "slow",
+				"exp_yield": 259,
 				"generation": 6,
 				"join_rate": -40,
-				"progression_placeholders": {
-					"evolution_runtime": "deferred_to_0.12.0",
-					"stat_growth": "deferred_to_0.12.0",
-					"xp_runtime": "deferred_to_0.12.0"
-				},
 				"skill_groups": [
 					"humanlike",
 					"amorphous"
@@ -1338,49 +1369,32 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/synchronize.tres",
 					"slug": "synchronize",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"status_application"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				},
 				{
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/trace.tres",
 					"slug": "trace",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
 						"battle_start"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				},
 				{
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/telepathy.tres",
 					"slug": "telepathy",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
 						"battle_start"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				}
 			],
 			"learnsets": {
@@ -1413,25 +1427,30 @@
 			],
 			"name": "Gardevoir",
 			"path": "res://data/models/pokemon/overrides/instances/0282_gardevoir.tres",
+			"progression": {
+				"calculated_stats": {
+					"attack": 70,
+					"defense": 70,
+					"hp": 128,
+					"special_attack": 130,
+					"special_defense": 120,
+					"speed": 85
+				},
+				"eligible_evolutions": [],
+				"experience": 0,
+				"held_item": "",
+				"known_move_count": 0,
+				"missing": [],
+				"nature_id": "",
+				"permanent_modifiers": {
+
+				},
+				"xp_for_level": 156250,
+				"xp_to_next": 9563
+			},
 			"readiness": {
 				"missing": [],
-				"unsupported": [
-					"intrinsic:synchronize:after_damage",
-					"intrinsic:synchronize:before_accuracy",
-					"intrinsic:synchronize:before_damage",
-					"intrinsic:synchronize:status_application",
-					"intrinsic:synchronize:target_legality",
-					"intrinsic:telepathy:after_damage",
-					"intrinsic:telepathy:before_accuracy",
-					"intrinsic:telepathy:before_damage",
-					"intrinsic:telepathy:status_application",
-					"intrinsic:telepathy:target_legality",
-					"intrinsic:trace:after_damage",
-					"intrinsic:trace:before_accuracy",
-					"intrinsic:trace:before_damage",
-					"intrinsic:trace:status_application",
-					"intrinsic:trace:target_legality"
-				]
+				"unsupported": []
 			},
 			"slug": "0282_gardevoir",
 			"sprites": {
@@ -1533,19 +1552,19 @@
 						"timing_count": 16
 					},
 					{
-						"alias_of": "",
+						"alias_of": "sleep",
 						"cell_size": [
-							0,
-							0
+							24,
+							32
 						],
-						"checksum": "",
+						"checksum": "sha256:890121b721a3a8bc06d713b0d56deaa19df02e75b39197d30d0273504949cfef",
 						"directions": 1,
-						"frame_count": 0,
+						"frame_count": 2,
 						"key": "faint",
-						"path": "res://assets/textures/actor/pokemon/0282_gardevoir/sleep.png",
-						"source_filename": "",
-						"source_name": "Faint",
-						"timing_count": 0
+						"path": "res://assets/textures/actor/pokemon/0282_gardevoir/animations/sleep.png",
+						"source_filename": "Sleep-Anim.png",
+						"source_name": "Sleep",
+						"timing_count": 2
 					},
 					{
 						"alias_of": "charge",
@@ -1868,8 +1887,26 @@
 					"teleport": "status_attack",
 					"wish": "status_attack"
 				},
+				"playable_animation_state_count": 17,
 				"portrait_paths": [
-					"res://assets/textures/pokemon/portraits/0282_gardevoir/Normal.png"
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Normal.png",
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Angry.png",
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Crying.png",
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Determined.png",
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Dizzy.png",
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Happy.png",
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Inspired.png",
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Joyous.png",
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Pain.png",
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Sad.png",
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Shouting.png",
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Sigh.png",
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Special1.png",
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Special2.png",
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Stunned.png",
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Surprised.png",
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Teary-Eyed.png",
+					"res://assets/textures/pokemon/portraits/0282_gardevoir/Worried.png"
 				],
 				"validation_warnings": []
 			}
@@ -1886,14 +1923,11 @@
 					"speed": 85
 				},
 				"evolution_from": "croagunk",
+				"evolutions": [],
 				"exp_table": "medium_fast",
+				"exp_yield": 172,
 				"generation": 6,
 				"join_rate": -20,
-				"progression_placeholders": {
-					"evolution_runtime": "deferred_to_0.12.0",
-					"stat_growth": "deferred_to_0.12.0",
-					"xp_runtime": "deferred_to_0.12.0"
-				},
 				"skill_groups": [
 					"humanlike",
 					"undiscovered"
@@ -1909,49 +1943,34 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/anticipation.tres",
 					"slug": "anticipation",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
 						"battle_start"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				},
 				{
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/dry_skin.tres",
 					"slug": "dry_skin",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"field_condition",
+						"turn_start"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				},
 				{
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/poison_touch.tres",
 					"slug": "poison_touch",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"after_damage"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				}
 			],
 			"learnsets": {
@@ -1979,33 +1998,35 @@
 					"pp": 16,
 					"slot": 0,
 					"type": "poison",
-					"unsupported_effect_tags": [
-						"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
-					]
+					"unsupported_effect_tags": []
 				}
 			],
 			"name": "Toxicroak",
 			"path": "res://data/models/pokemon/overrides/instances/0454_toxicroak.tres",
+			"progression": {
+				"calculated_stats": {
+					"attack": 111,
+					"defense": 70,
+					"hp": 143,
+					"special_attack": 91,
+					"special_defense": 70,
+					"speed": 90
+				},
+				"eligible_evolutions": [],
+				"experience": 0,
+				"held_item": "",
+				"known_move_count": 0,
+				"missing": [],
+				"nature_id": "",
+				"permanent_modifiers": {
+
+				},
+				"xp_for_level": 125000,
+				"xp_to_next": 7651
+			},
 			"readiness": {
 				"missing": [],
-				"unsupported": [
-					"intrinsic:anticipation:after_damage",
-					"intrinsic:anticipation:before_accuracy",
-					"intrinsic:anticipation:before_damage",
-					"intrinsic:anticipation:status_application",
-					"intrinsic:anticipation:target_legality",
-					"intrinsic:dry_skin:after_damage",
-					"intrinsic:dry_skin:before_accuracy",
-					"intrinsic:dry_skin:before_damage",
-					"intrinsic:dry_skin:status_application",
-					"intrinsic:dry_skin:target_legality",
-					"intrinsic:poison_touch:after_damage",
-					"intrinsic:poison_touch:before_accuracy",
-					"intrinsic:poison_touch:before_damage",
-					"intrinsic:poison_touch:status_application",
-					"intrinsic:poison_touch:target_legality",
-					"move:poison_jab:HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
-				]
+				"unsupported": []
 			},
 			"slug": "0454_toxicroak",
 			"sprites": {
@@ -2092,19 +2113,19 @@
 						"timing_count": 16
 					},
 					{
-						"alias_of": "",
+						"alias_of": "sleep",
 						"cell_size": [
-							0,
-							0
+							32,
+							32
 						],
-						"checksum": "",
+						"checksum": "sha256:7f9156e70bddc87232b34feb591c8523dc996eae118a3a621b62a1fc3905539b",
 						"directions": 1,
-						"frame_count": 0,
+						"frame_count": 2,
 						"key": "faint",
-						"path": "res://assets/textures/actor/pokemon/0454_toxicroak/sleep.png",
-						"source_filename": "",
-						"source_name": "Faint",
-						"timing_count": 0
+						"path": "res://assets/textures/actor/pokemon/0454_toxicroak/animations/sleep.png",
+						"source_filename": "Sleep-Anim.png",
+						"source_name": "Sleep",
+						"timing_count": 2
 					},
 					{
 						"alias_of": "charge",
@@ -2376,8 +2397,24 @@
 					"taunt": "status_attack",
 					"venoshock": "special_attack"
 				},
+				"playable_animation_state_count": 13,
 				"portrait_paths": [
-					"res://assets/textures/pokemon/portraits/0454_toxicroak/Normal.png"
+					"res://assets/textures/pokemon/portraits/0454_toxicroak/Normal.png",
+					"res://assets/textures/pokemon/portraits/0454_toxicroak/Angry.png",
+					"res://assets/textures/pokemon/portraits/0454_toxicroak/Crying.png",
+					"res://assets/textures/pokemon/portraits/0454_toxicroak/Determined.png",
+					"res://assets/textures/pokemon/portraits/0454_toxicroak/Dizzy.png",
+					"res://assets/textures/pokemon/portraits/0454_toxicroak/Happy.png",
+					"res://assets/textures/pokemon/portraits/0454_toxicroak/Inspired.png",
+					"res://assets/textures/pokemon/portraits/0454_toxicroak/Joyous.png",
+					"res://assets/textures/pokemon/portraits/0454_toxicroak/Pain.png",
+					"res://assets/textures/pokemon/portraits/0454_toxicroak/Sad.png",
+					"res://assets/textures/pokemon/portraits/0454_toxicroak/Shouting.png",
+					"res://assets/textures/pokemon/portraits/0454_toxicroak/Sigh.png",
+					"res://assets/textures/pokemon/portraits/0454_toxicroak/Stunned.png",
+					"res://assets/textures/pokemon/portraits/0454_toxicroak/Surprised.png",
+					"res://assets/textures/pokemon/portraits/0454_toxicroak/Teary-Eyed.png",
+					"res://assets/textures/pokemon/portraits/0454_toxicroak/Worried.png"
 				],
 				"validation_warnings": []
 			}
@@ -2394,14 +2431,11 @@
 					"speed": 83
 				},
 				"evolution_from": "magmar",
+				"evolutions": [],
 				"exp_table": "medium_fast",
+				"exp_yield": 270,
 				"generation": 6,
 				"join_rate": -50,
-				"progression_placeholders": {
-					"evolution_runtime": "deferred_to_0.12.0",
-					"stat_growth": "deferred_to_0.12.0",
-					"xp_runtime": "deferred_to_0.12.0"
-				},
 				"skill_groups": [
 					"humanlike",
 					"undiscovered"
@@ -2416,33 +2450,23 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/flame_body.tres",
 					"slug": "flame_body",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"after_damage"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				},
 				{
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/vital_spirit.tres",
 					"slug": "vital_spirit",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"status_application"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				}
 			],
 			"learnsets": {
@@ -2475,20 +2499,30 @@
 			],
 			"name": "Magmortar",
 			"path": "res://data/models/pokemon/overrides/instances/0467_magmortar.tres",
+			"progression": {
+				"calculated_stats": {
+					"attack": 100,
+					"defense": 72,
+					"hp": 135,
+					"special_attack": 130,
+					"special_defense": 100,
+					"speed": 88
+				},
+				"eligible_evolutions": [],
+				"experience": 0,
+				"held_item": "",
+				"known_move_count": 0,
+				"missing": [],
+				"nature_id": "",
+				"permanent_modifiers": {
+
+				},
+				"xp_for_level": 125000,
+				"xp_to_next": 7651
+			},
 			"readiness": {
 				"missing": [],
-				"unsupported": [
-					"intrinsic:flame_body:after_damage",
-					"intrinsic:flame_body:before_accuracy",
-					"intrinsic:flame_body:before_damage",
-					"intrinsic:flame_body:status_application",
-					"intrinsic:flame_body:target_legality",
-					"intrinsic:vital_spirit:after_damage",
-					"intrinsic:vital_spirit:before_accuracy",
-					"intrinsic:vital_spirit:before_damage",
-					"intrinsic:vital_spirit:status_application",
-					"intrinsic:vital_spirit:target_legality"
-				]
+				"unsupported": []
 			},
 			"slug": "0467_magmortar",
 			"sprites": {
@@ -2575,19 +2609,19 @@
 						"timing_count": 16
 					},
 					{
-						"alias_of": "",
+						"alias_of": "sleep",
 						"cell_size": [
-							0,
-							0
+							32,
+							40
 						],
-						"checksum": "",
+						"checksum": "sha256:2716b9a7da8ac256fbdec12d20716a5ae57f3eaacf72869824d3ec91cbe8eb1f",
 						"directions": 1,
-						"frame_count": 0,
+						"frame_count": 2,
 						"key": "faint",
-						"path": "res://assets/textures/actor/pokemon/0467_magmortar/sleep.png",
-						"source_filename": "",
-						"source_name": "Faint",
-						"timing_count": 0
+						"path": "res://assets/textures/actor/pokemon/0467_magmortar/animations/sleep.png",
+						"source_filename": "Sleep-Anim.png",
+						"source_name": "Sleep",
+						"timing_count": 2
 					},
 					{
 						"alias_of": "charge",
@@ -2860,8 +2894,27 @@
 					"sunny_day": "status_attack",
 					"thunder_punch": "physical_attack"
 				},
+				"playable_animation_state_count": 13,
 				"portrait_paths": [
-					"res://assets/textures/pokemon/portraits/0467_magmortar/Normal.png"
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Normal.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Angry.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Crying.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Determined.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Dizzy.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Happy.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Inspired.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Joyous.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Pain.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Sad.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Shouting.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Sigh.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Special0.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Special1.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Special2.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Stunned.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Surprised.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Teary-Eyed.png",
+					"res://assets/textures/pokemon/portraits/0467_magmortar/Worried.png"
 				],
 				"validation_warnings": []
 			}
@@ -2878,14 +2931,11 @@
 					"speed": 110
 				},
 				"evolution_from": "haunter",
+				"evolutions": [],
 				"exp_table": "medium_slow",
+				"exp_yield": 250,
 				"generation": 6,
 				"join_rate": -40,
-				"progression_placeholders": {
-					"evolution_runtime": "deferred_to_0.12.0",
-					"stat_growth": "deferred_to_0.12.0",
-					"xp_runtime": "deferred_to_0.12.0"
-				},
 				"skill_groups": [
 					"amorphous",
 					"undiscovered"
@@ -2901,17 +2951,12 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/cursed_body.tres",
 					"slug": "cursed_body",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"after_damage"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				}
 			],
 			"learnsets": {
@@ -2944,15 +2989,30 @@
 			],
 			"name": "Gengar",
 			"path": "res://data/models/pokemon/overrides/instances/0094_gengar.tres",
+			"progression": {
+				"calculated_stats": {
+					"attack": 70,
+					"defense": 65,
+					"hp": 120,
+					"special_attack": 135,
+					"special_defense": 80,
+					"speed": 115
+				},
+				"eligible_evolutions": [],
+				"experience": 0,
+				"held_item": "",
+				"known_move_count": 0,
+				"missing": [],
+				"nature_id": "",
+				"permanent_modifiers": {
+
+				},
+				"xp_for_level": 117360,
+				"xp_to_next": 7766
+			},
 			"readiness": {
 				"missing": [],
-				"unsupported": [
-					"intrinsic:cursed_body:after_damage",
-					"intrinsic:cursed_body:before_accuracy",
-					"intrinsic:cursed_body:before_damage",
-					"intrinsic:cursed_body:status_application",
-					"intrinsic:cursed_body:target_legality"
-				]
+				"unsupported": []
 			},
 			"slug": "0094_gengar",
 			"sprites": {
@@ -3639,8 +3699,28 @@
 					"spite": "status_attack",
 					"sucker_punch": "physical_attack"
 				},
+				"playable_animation_state_count": 35,
 				"portrait_paths": [
-					"res://assets/textures/pokemon/portraits/0094_gengar/Normal.png"
+					"res://assets/textures/pokemon/portraits/0094_gengar/Normal.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Angry.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Crying.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Determined.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Dizzy.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Happy.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Inspired.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Joyous.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Pain.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Sad.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Shouting.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Sigh.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Special0.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Special1.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Special2.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Special3.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Stunned.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Surprised.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Teary-Eyed.png",
+					"res://assets/textures/pokemon/portraits/0094_gengar/Worried.png"
 				],
 				"validation_warnings": []
 			}
@@ -3657,14 +3737,21 @@
 					"speed": 25
 				},
 				"evolution_from": "duskull",
+				"evolutions": [
+					{
+						"requirements": [
+							{
+								"kind": "unsupported",
+								"source_event": "PMDC.Data.EvoItem, PMDC"
+							}
+						],
+						"result": "dusknoir"
+					}
+				],
 				"exp_table": "fast",
+				"exp_yield": 159,
 				"generation": 6,
 				"join_rate": -20,
-				"progression_placeholders": {
-					"evolution_runtime": "deferred_to_0.12.0",
-					"stat_growth": "deferred_to_0.12.0",
-					"xp_runtime": "deferred_to_0.12.0"
-				},
 				"skill_groups": [
 					"amorphous",
 					"undiscovered"
@@ -3679,33 +3766,22 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/pressure.tres",
 					"slug": "pressure",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"after_damage"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				},
 				{
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/frisk.tres",
 					"slug": "frisk",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
 						"battle_start"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				}
 			],
 			"learnsets": {
@@ -3737,20 +3813,30 @@
 			],
 			"name": "Dusclops",
 			"path": "res://data/models/pokemon/overrides/instances/0356_dusclops.tres",
+			"progression": {
+				"calculated_stats": {
+					"attack": 75,
+					"defense": 135,
+					"hp": 100,
+					"special_attack": 65,
+					"special_defense": 135,
+					"speed": 30
+				},
+				"eligible_evolutions": [],
+				"experience": 0,
+				"held_item": "",
+				"known_move_count": 0,
+				"missing": [],
+				"nature_id": "",
+				"permanent_modifiers": {
+
+				},
+				"xp_for_level": 100000,
+				"xp_to_next": 6120
+			},
 			"readiness": {
 				"missing": [],
-				"unsupported": [
-					"intrinsic:frisk:after_damage",
-					"intrinsic:frisk:before_accuracy",
-					"intrinsic:frisk:before_damage",
-					"intrinsic:frisk:status_application",
-					"intrinsic:frisk:target_legality",
-					"intrinsic:pressure:after_damage",
-					"intrinsic:pressure:before_accuracy",
-					"intrinsic:pressure:before_damage",
-					"intrinsic:pressure:status_application",
-					"intrinsic:pressure:target_legality"
-				]
+				"unsupported": []
 			},
 			"slug": "0356_dusclops",
 			"sprites": {
@@ -3837,19 +3923,19 @@
 						"timing_count": 16
 					},
 					{
-						"alias_of": "",
+						"alias_of": "sleep",
 						"cell_size": [
-							0,
-							0
+							24,
+							40
 						],
-						"checksum": "",
+						"checksum": "sha256:1d7f42cacdd0fd404e2977a16efd5934514907705d6428db091d7baf04b331d5",
 						"directions": 1,
-						"frame_count": 0,
+						"frame_count": 2,
 						"key": "faint",
-						"path": "res://assets/textures/actor/pokemon/0356_dusclops/sleep.png",
-						"source_filename": "",
-						"source_name": "Faint",
-						"timing_count": 0
+						"path": "res://assets/textures/actor/pokemon/0356_dusclops/animations/sleep.png",
+						"source_filename": "Sleep-Anim.png",
+						"source_name": "Sleep",
+						"timing_count": 2
 					},
 					{
 						"alias_of": "charge",
@@ -4127,8 +4213,25 @@
 					"thunder_punch": "physical_attack",
 					"will_o_wisp": "status_attack"
 				},
+				"playable_animation_state_count": 13,
 				"portrait_paths": [
-					"res://assets/textures/pokemon/portraits/0356_dusclops/Normal.png"
+					"res://assets/textures/pokemon/portraits/0356_dusclops/Normal.png",
+					"res://assets/textures/pokemon/portraits/0356_dusclops/Angry.png",
+					"res://assets/textures/pokemon/portraits/0356_dusclops/Crying.png",
+					"res://assets/textures/pokemon/portraits/0356_dusclops/Determined.png",
+					"res://assets/textures/pokemon/portraits/0356_dusclops/Dizzy.png",
+					"res://assets/textures/pokemon/portraits/0356_dusclops/Happy.png",
+					"res://assets/textures/pokemon/portraits/0356_dusclops/Inspired.png",
+					"res://assets/textures/pokemon/portraits/0356_dusclops/Joyous.png",
+					"res://assets/textures/pokemon/portraits/0356_dusclops/Pain.png",
+					"res://assets/textures/pokemon/portraits/0356_dusclops/Sad.png",
+					"res://assets/textures/pokemon/portraits/0356_dusclops/Shouting.png",
+					"res://assets/textures/pokemon/portraits/0356_dusclops/Sigh.png",
+					"res://assets/textures/pokemon/portraits/0356_dusclops/Special0.png",
+					"res://assets/textures/pokemon/portraits/0356_dusclops/Stunned.png",
+					"res://assets/textures/pokemon/portraits/0356_dusclops/Surprised.png",
+					"res://assets/textures/pokemon/portraits/0356_dusclops/Teary-Eyed.png",
+					"res://assets/textures/pokemon/portraits/0356_dusclops/Worried.png"
 				],
 				"validation_warnings": []
 			}
@@ -4145,14 +4248,22 @@
 					"speed": 45
 				},
 				"evolution_from": "",
+				"evolutions": [
+					{
+						"requirements": [
+							{
+								"kind": "level",
+								"level": 16,
+								"source_event": "PMDC.Data.EvoLevel, PMDC"
+							}
+						],
+						"result": "ivysaur"
+					}
+				],
 				"exp_table": "medium_slow",
+				"exp_yield": 64,
 				"generation": 6,
 				"join_rate": 20,
-				"progression_placeholders": {
-					"evolution_runtime": "deferred_to_0.12.0",
-					"stat_growth": "deferred_to_0.12.0",
-					"xp_runtime": "deferred_to_0.12.0"
-				},
 				"skill_groups": [
 					"monster",
 					"grass"
@@ -4168,7 +4279,7 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/overgrow.tres",
 					"slug": "overgrow",
-					"summary": "Supported low-HP same-type damage boost.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
 						"battle_start",
 						"before_damage"
@@ -4179,17 +4290,13 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/chlorophyll.tres",
 					"slug": "chlorophyll",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"field_condition",
+						"turn_start"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				}
 			],
 			"learnsets": {
@@ -4217,14 +4324,14 @@
 					"pp": 8,
 					"slot": 0,
 					"type": "normal",
-					"unsupported_effect_tags": [
-						"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
-					]
+					"unsupported_effect_tags": []
 				},
 				{
 					"animation_key": "status_attack",
 					"category": 3,
-					"effect_families": [],
+					"effect_families": [
+						"ability_change"
+					],
 					"mapped_animation_key": "status_attack",
 					"mapping_kind": "deterministic_category",
 					"move_id": "worry_seed",
@@ -4232,10 +4339,7 @@
 					"pp": 16,
 					"slot": 1,
 					"type": "grass",
-					"unsupported_effect_tags": [
-						"HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence",
-						"PMDC.Dungeon.ChangeToAbilityEvent, PMDC"
-					]
+					"unsupported_effect_tags": []
 				},
 				{
 					"animation_key": "status_attack",
@@ -4265,26 +4369,37 @@
 					"pp": 10,
 					"slot": 3,
 					"type": "grass",
-					"unsupported_effect_tags": [
-						"HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence"
-					]
+					"unsupported_effect_tags": []
 				}
 			],
 			"name": "Bulbasaur",
 			"path": "res://data/models/pokemon/generated/instances/0001_bulbasaur.tres",
+			"progression": {
+				"calculated_stats": {
+					"attack": 54,
+					"defense": 54,
+					"hp": 105,
+					"special_attack": 70,
+					"special_defense": 70,
+					"speed": 50
+				},
+				"eligible_evolutions": [
+					"ivysaur"
+				],
+				"experience": 0,
+				"held_item": "",
+				"known_move_count": 0,
+				"missing": [],
+				"nature_id": "",
+				"permanent_modifiers": {
+
+				},
+				"xp_for_level": 117360,
+				"xp_to_next": 7766
+			},
 			"readiness": {
 				"missing": [],
-				"unsupported": [
-					"intrinsic:chlorophyll:after_damage",
-					"intrinsic:chlorophyll:before_accuracy",
-					"intrinsic:chlorophyll:before_damage",
-					"intrinsic:chlorophyll:status_application",
-					"intrinsic:chlorophyll:target_legality",
-					"move:double_edge:HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence",
-					"move:seed_bomb:HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence",
-					"move:worry_seed:HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence",
-					"move:worry_seed:PMDC.Dungeon.ChangeToAbilityEvent, PMDC"
-				]
+				"unsupported": []
 			},
 			"slug": "0001_bulbasaur",
 			"sprites": {
@@ -4926,8 +5041,25 @@
 					"vine_whip": "physical_attack",
 					"worry_seed": "status_attack"
 				},
+				"playable_animation_state_count": 32,
 				"portrait_paths": [
-					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Normal.png"
+					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Normal.png",
+					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Angry.png",
+					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Crying.png",
+					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Determined.png",
+					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Dizzy.png",
+					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Happy.png",
+					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Inspired.png",
+					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Joyous.png",
+					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Pain.png",
+					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Sad.png",
+					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Shouting.png",
+					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Sigh.png",
+					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Special1.png",
+					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Stunned.png",
+					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Surprised.png",
+					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Teary-Eyed.png",
+					"res://assets/textures/pokemon/portraits/0001_bulbasaur/Worried.png"
 				],
 				"validation_warnings": []
 			}
@@ -4944,14 +5076,22 @@
 					"speed": 60
 				},
 				"evolution_from": "bulbasaur",
+				"evolutions": [
+					{
+						"requirements": [
+							{
+								"kind": "level",
+								"level": 32,
+								"source_event": "PMDC.Data.EvoLevel, PMDC"
+							}
+						],
+						"result": "venusaur"
+					}
+				],
 				"exp_table": "medium_slow",
+				"exp_yield": 142,
 				"generation": 6,
 				"join_rate": -10,
-				"progression_placeholders": {
-					"evolution_runtime": "deferred_to_0.12.0",
-					"stat_growth": "deferred_to_0.12.0",
-					"xp_runtime": "deferred_to_0.12.0"
-				},
 				"skill_groups": [
 					"monster",
 					"grass"
@@ -4967,7 +5107,7 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/overgrow.tres",
 					"slug": "overgrow",
-					"summary": "Supported low-HP same-type damage boost.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
 						"battle_start",
 						"before_damage"
@@ -4978,17 +5118,13 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/chlorophyll.tres",
 					"slug": "chlorophyll",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"field_condition",
+						"turn_start"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				}
 			],
 			"learnsets": {
@@ -5016,14 +5152,14 @@
 					"pp": 8,
 					"slot": 0,
 					"type": "normal",
-					"unsupported_effect_tags": [
-						"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
-					]
+					"unsupported_effect_tags": []
 				},
 				{
 					"animation_key": "status_attack",
 					"category": 3,
-					"effect_families": [],
+					"effect_families": [
+						"ability_change"
+					],
 					"mapped_animation_key": "status_attack",
 					"mapping_kind": "deterministic_category",
 					"move_id": "worry_seed",
@@ -5031,10 +5167,7 @@
 					"pp": 16,
 					"slot": 1,
 					"type": "grass",
-					"unsupported_effect_tags": [
-						"HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence",
-						"PMDC.Dungeon.ChangeToAbilityEvent, PMDC"
-					]
+					"unsupported_effect_tags": []
 				},
 				{
 					"animation_key": "status_attack",
@@ -5064,26 +5197,37 @@
 					"pp": 8,
 					"slot": 3,
 					"type": "grass",
-					"unsupported_effect_tags": [
-						"HitboxAction:RogueEssence.Dungeon.WaveMotionAction, RogueEssence"
-					]
+					"unsupported_effect_tags": []
 				}
 			],
 			"name": "Ivysaur",
 			"path": "res://data/models/pokemon/generated/instances/0002_ivysaur.tres",
+			"progression": {
+				"calculated_stats": {
+					"attack": 67,
+					"defense": 68,
+					"hp": 120,
+					"special_attack": 85,
+					"special_defense": 85,
+					"speed": 65
+				},
+				"eligible_evolutions": [
+					"venusaur"
+				],
+				"experience": 0,
+				"held_item": "",
+				"known_move_count": 0,
+				"missing": [],
+				"nature_id": "",
+				"permanent_modifiers": {
+
+				},
+				"xp_for_level": 117360,
+				"xp_to_next": 7766
+			},
 			"readiness": {
 				"missing": [],
-				"unsupported": [
-					"intrinsic:chlorophyll:after_damage",
-					"intrinsic:chlorophyll:before_accuracy",
-					"intrinsic:chlorophyll:before_damage",
-					"intrinsic:chlorophyll:status_application",
-					"intrinsic:chlorophyll:target_legality",
-					"move:double_edge:HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence",
-					"move:solar_beam:HitboxAction:RogueEssence.Dungeon.WaveMotionAction, RogueEssence",
-					"move:worry_seed:HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence",
-					"move:worry_seed:PMDC.Dungeon.ChangeToAbilityEvent, PMDC"
-				]
+				"unsupported": []
 			},
 			"slug": "0002_ivysaur",
 			"sprites": {
@@ -5170,19 +5314,19 @@
 						"timing_count": 16
 					},
 					{
-						"alias_of": "",
+						"alias_of": "sleep",
 						"cell_size": [
-							0,
-							0
+							24,
+							32
 						],
-						"checksum": "",
+						"checksum": "sha256:2069fa358d466847712c95f49170eaa1a051c57df4ade8c402ac36c7378e06ed",
 						"directions": 1,
-						"frame_count": 0,
+						"frame_count": 2,
 						"key": "faint",
-						"path": "res://assets/textures/actor/pokemon/0002_ivysaur/sleep.png",
-						"source_filename": "",
-						"source_name": "Faint",
-						"timing_count": 0
+						"path": "res://assets/textures/actor/pokemon/0002_ivysaur/animations/sleep.png",
+						"source_filename": "Sleep-Anim.png",
+						"source_name": "Sleep",
+						"timing_count": 2
 					},
 					{
 						"alias_of": "charge",
@@ -5440,8 +5584,24 @@
 					"vine_whip": "physical_attack",
 					"worry_seed": "status_attack"
 				},
+				"playable_animation_state_count": 12,
 				"portrait_paths": [
-					"res://assets/textures/pokemon/portraits/0002_ivysaur/Normal.png"
+					"res://assets/textures/pokemon/portraits/0002_ivysaur/Normal.png",
+					"res://assets/textures/pokemon/portraits/0002_ivysaur/Angry.png",
+					"res://assets/textures/pokemon/portraits/0002_ivysaur/Crying.png",
+					"res://assets/textures/pokemon/portraits/0002_ivysaur/Determined.png",
+					"res://assets/textures/pokemon/portraits/0002_ivysaur/Dizzy.png",
+					"res://assets/textures/pokemon/portraits/0002_ivysaur/Happy.png",
+					"res://assets/textures/pokemon/portraits/0002_ivysaur/Inspired.png",
+					"res://assets/textures/pokemon/portraits/0002_ivysaur/Joyous.png",
+					"res://assets/textures/pokemon/portraits/0002_ivysaur/Pain.png",
+					"res://assets/textures/pokemon/portraits/0002_ivysaur/Sad.png",
+					"res://assets/textures/pokemon/portraits/0002_ivysaur/Shouting.png",
+					"res://assets/textures/pokemon/portraits/0002_ivysaur/Sigh.png",
+					"res://assets/textures/pokemon/portraits/0002_ivysaur/Stunned.png",
+					"res://assets/textures/pokemon/portraits/0002_ivysaur/Surprised.png",
+					"res://assets/textures/pokemon/portraits/0002_ivysaur/Teary-Eyed.png",
+					"res://assets/textures/pokemon/portraits/0002_ivysaur/Worried.png"
 				],
 				"validation_warnings": []
 			}
@@ -5458,14 +5618,11 @@
 					"speed": 80
 				},
 				"evolution_from": "ivysaur",
+				"evolutions": [],
 				"exp_table": "medium_slow",
+				"exp_yield": 263,
 				"generation": 6,
 				"join_rate": -40,
-				"progression_placeholders": {
-					"evolution_runtime": "deferred_to_0.12.0",
-					"stat_growth": "deferred_to_0.12.0",
-					"xp_runtime": "deferred_to_0.12.0"
-				},
 				"skill_groups": [
 					"monster",
 					"grass"
@@ -5481,7 +5638,7 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/overgrow.tres",
 					"slug": "overgrow",
-					"summary": "Supported low-HP same-type damage boost.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
 						"battle_start",
 						"before_damage"
@@ -5492,17 +5649,13 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/chlorophyll.tres",
 					"slug": "chlorophyll",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"field_condition",
+						"turn_start"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				}
 			],
 			"learnsets": {
@@ -5530,14 +5683,14 @@
 					"pp": 10,
 					"slot": 0,
 					"type": "grass",
-					"unsupported_effect_tags": [
-						"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
-					]
+					"unsupported_effect_tags": []
 				},
 				{
 					"animation_key": "status_attack",
 					"category": 3,
-					"effect_families": [],
+					"effect_families": [
+						"ability_change"
+					],
 					"mapped_animation_key": "status_attack",
 					"mapping_kind": "deterministic_category",
 					"move_id": "worry_seed",
@@ -5545,10 +5698,7 @@
 					"pp": 16,
 					"slot": 1,
 					"type": "grass",
-					"unsupported_effect_tags": [
-						"HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence",
-						"PMDC.Dungeon.ChangeToAbilityEvent, PMDC"
-					]
+					"unsupported_effect_tags": []
 				},
 				{
 					"animation_key": "status_attack",
@@ -5583,18 +5733,30 @@
 			],
 			"name": "Venusaur",
 			"path": "res://data/models/pokemon/generated/instances/0003_venusaur.tres",
+			"progression": {
+				"calculated_stats": {
+					"attack": 87,
+					"defense": 88,
+					"hp": 140,
+					"special_attack": 105,
+					"special_defense": 105,
+					"speed": 85
+				},
+				"eligible_evolutions": [],
+				"experience": 0,
+				"held_item": "",
+				"known_move_count": 0,
+				"missing": [],
+				"nature_id": "",
+				"permanent_modifiers": {
+
+				},
+				"xp_for_level": 117360,
+				"xp_to_next": 7766
+			},
 			"readiness": {
 				"missing": [],
-				"unsupported": [
-					"intrinsic:chlorophyll:after_damage",
-					"intrinsic:chlorophyll:before_accuracy",
-					"intrinsic:chlorophyll:before_damage",
-					"intrinsic:chlorophyll:status_application",
-					"intrinsic:chlorophyll:target_legality",
-					"move:petal_dance:HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence",
-					"move:worry_seed:HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence",
-					"move:worry_seed:PMDC.Dungeon.ChangeToAbilityEvent, PMDC"
-				]
+				"unsupported": []
 			},
 			"slug": "0003_venusaur",
 			"sprites": {
@@ -5681,19 +5843,19 @@
 						"timing_count": 16
 					},
 					{
-						"alias_of": "",
+						"alias_of": "sleep",
 						"cell_size": [
-							0,
-							0
+							32,
+							32
 						],
-						"checksum": "",
+						"checksum": "sha256:d9c3e96e18fe7dd96d67bf3892d90355a7dd7ef8e0cae1f1b210e625eb8e4064",
 						"directions": 1,
-						"frame_count": 0,
+						"frame_count": 2,
 						"key": "faint",
-						"path": "res://assets/textures/actor/pokemon/0003_venusaur/sleep.png",
-						"source_filename": "",
-						"source_name": "Faint",
-						"timing_count": 0
+						"path": "res://assets/textures/actor/pokemon/0003_venusaur/animations/sleep.png",
+						"source_filename": "Sleep-Anim.png",
+						"source_name": "Sleep",
+						"timing_count": 2
 					},
 					{
 						"alias_of": "charge",
@@ -5952,8 +6114,24 @@
 					"vine_whip": "physical_attack",
 					"worry_seed": "status_attack"
 				},
+				"playable_animation_state_count": 12,
 				"portrait_paths": [
-					"res://assets/textures/pokemon/portraits/0003_venusaur/Normal.png"
+					"res://assets/textures/pokemon/portraits/0003_venusaur/Normal.png",
+					"res://assets/textures/pokemon/portraits/0003_venusaur/Angry.png",
+					"res://assets/textures/pokemon/portraits/0003_venusaur/Crying.png",
+					"res://assets/textures/pokemon/portraits/0003_venusaur/Determined.png",
+					"res://assets/textures/pokemon/portraits/0003_venusaur/Dizzy.png",
+					"res://assets/textures/pokemon/portraits/0003_venusaur/Happy.png",
+					"res://assets/textures/pokemon/portraits/0003_venusaur/Inspired.png",
+					"res://assets/textures/pokemon/portraits/0003_venusaur/Joyous.png",
+					"res://assets/textures/pokemon/portraits/0003_venusaur/Pain.png",
+					"res://assets/textures/pokemon/portraits/0003_venusaur/Sad.png",
+					"res://assets/textures/pokemon/portraits/0003_venusaur/Shouting.png",
+					"res://assets/textures/pokemon/portraits/0003_venusaur/Sigh.png",
+					"res://assets/textures/pokemon/portraits/0003_venusaur/Stunned.png",
+					"res://assets/textures/pokemon/portraits/0003_venusaur/Surprised.png",
+					"res://assets/textures/pokemon/portraits/0003_venusaur/Teary-Eyed.png",
+					"res://assets/textures/pokemon/portraits/0003_venusaur/Worried.png"
 				],
 				"validation_warnings": []
 			}
@@ -5970,14 +6148,22 @@
 					"speed": 65
 				},
 				"evolution_from": "",
+				"evolutions": [
+					{
+						"requirements": [
+							{
+								"kind": "level",
+								"level": 16,
+								"source_event": "PMDC.Data.EvoLevel, PMDC"
+							}
+						],
+						"result": "charmeleon"
+					}
+				],
 				"exp_table": "medium_slow",
+				"exp_yield": 62,
 				"generation": 6,
 				"join_rate": 20,
-				"progression_placeholders": {
-					"evolution_runtime": "deferred_to_0.12.0",
-					"stat_growth": "deferred_to_0.12.0",
-					"xp_runtime": "deferred_to_0.12.0"
-				},
 				"skill_groups": [
 					"monster",
 					"dragon"
@@ -5992,7 +6178,7 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/blaze.tres",
 					"slug": "blaze",
-					"summary": "Supported low-HP same-type damage boost.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
 						"battle_start",
 						"before_damage"
@@ -6003,17 +6189,13 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/solar_power.tres",
 					"slug": "solar_power",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"field_condition",
+						"turn_start"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				}
 			],
 			"learnsets": {
@@ -6062,7 +6244,8 @@
 					"animation_key": "special_attack",
 					"category": 2,
 					"effect_families": [
-						"damage"
+						"damage",
+						"status"
 					],
 					"mapped_animation_key": "special_attack",
 					"mapping_kind": "deterministic_category",
@@ -6071,9 +6254,7 @@
 					"pp": 16,
 					"slot": 2,
 					"type": "fire",
-					"unsupported_effect_tags": [
-						"PMDC.Dungeon.OnHitEvent, PMDC"
-					]
+					"unsupported_effect_tags": []
 				},
 				{
 					"animation_key": "special_attack",
@@ -6094,16 +6275,32 @@
 			],
 			"name": "Charmander",
 			"path": "res://data/models/pokemon/generated/instances/0004_charmander.tres",
+			"progression": {
+				"calculated_stats": {
+					"attack": 57,
+					"defense": 48,
+					"hp": 99,
+					"special_attack": 65,
+					"special_defense": 55,
+					"speed": 70
+				},
+				"eligible_evolutions": [
+					"charmeleon"
+				],
+				"experience": 0,
+				"held_item": "",
+				"known_move_count": 0,
+				"missing": [],
+				"nature_id": "",
+				"permanent_modifiers": {
+
+				},
+				"xp_for_level": 117360,
+				"xp_to_next": 7766
+			},
 			"readiness": {
 				"missing": [],
-				"unsupported": [
-					"intrinsic:solar_power:after_damage",
-					"intrinsic:solar_power:before_accuracy",
-					"intrinsic:solar_power:before_damage",
-					"intrinsic:solar_power:status_application",
-					"intrinsic:solar_power:target_legality",
-					"move:fire_spin:PMDC.Dungeon.OnHitEvent, PMDC"
-				]
+				"unsupported": []
 			},
 			"slug": "0004_charmander",
 			"sprites": {
@@ -6743,8 +6940,28 @@
 					"slash": "physical_attack",
 					"smokescreen": "status_attack"
 				},
+				"playable_animation_state_count": 32,
 				"portrait_paths": [
-					"res://assets/textures/pokemon/portraits/0004_charmander/Normal.png"
+					"res://assets/textures/pokemon/portraits/0004_charmander/Normal.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Angry.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Crying.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Determined.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Dizzy.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Happy.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Inspired.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Joyous.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Pain.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Sad.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Shouting.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Sigh.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Special0.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Special1.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Special2.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Special3.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Stunned.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Surprised.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Teary-Eyed.png",
+					"res://assets/textures/pokemon/portraits/0004_charmander/Worried.png"
 				],
 				"validation_warnings": []
 			}
@@ -6761,14 +6978,22 @@
 					"speed": 80
 				},
 				"evolution_from": "charmander",
+				"evolutions": [
+					{
+						"requirements": [
+							{
+								"kind": "level",
+								"level": 36,
+								"source_event": "PMDC.Data.EvoLevel, PMDC"
+							}
+						],
+						"result": "charizard"
+					}
+				],
 				"exp_table": "medium_slow",
+				"exp_yield": 142,
 				"generation": 6,
 				"join_rate": -10,
-				"progression_placeholders": {
-					"evolution_runtime": "deferred_to_0.12.0",
-					"stat_growth": "deferred_to_0.12.0",
-					"xp_runtime": "deferred_to_0.12.0"
-				},
 				"skill_groups": [
 					"monster",
 					"dragon"
@@ -6783,7 +7008,7 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/blaze.tres",
 					"slug": "blaze",
-					"summary": "Supported low-HP same-type damage boost.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
 						"battle_start",
 						"before_damage"
@@ -6794,17 +7019,13 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/solar_power.tres",
 					"slug": "solar_power",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"field_condition",
+						"turn_start"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				}
 			],
 			"learnsets": {
@@ -6868,7 +7089,8 @@
 					"animation_key": "special_attack",
 					"category": 2,
 					"effect_families": [
-						"damage"
+						"damage",
+						"status"
 					],
 					"mapped_animation_key": "special_attack",
 					"mapping_kind": "deterministic_category",
@@ -6877,23 +7099,37 @@
 					"pp": 16,
 					"slot": 3,
 					"type": "fire",
-					"unsupported_effect_tags": [
-						"PMDC.Dungeon.OnHitEvent, PMDC"
-					]
+					"unsupported_effect_tags": []
 				}
 			],
 			"name": "Charmeleon",
 			"path": "res://data/models/pokemon/generated/instances/0005_charmeleon.tres",
+			"progression": {
+				"calculated_stats": {
+					"attack": 69,
+					"defense": 63,
+					"hp": 118,
+					"special_attack": 85,
+					"special_defense": 70,
+					"speed": 85
+				},
+				"eligible_evolutions": [
+					"charizard"
+				],
+				"experience": 0,
+				"held_item": "",
+				"known_move_count": 0,
+				"missing": [],
+				"nature_id": "",
+				"permanent_modifiers": {
+
+				},
+				"xp_for_level": 117360,
+				"xp_to_next": 7766
+			},
 			"readiness": {
 				"missing": [],
-				"unsupported": [
-					"intrinsic:solar_power:after_damage",
-					"intrinsic:solar_power:before_accuracy",
-					"intrinsic:solar_power:before_damage",
-					"intrinsic:solar_power:status_application",
-					"intrinsic:solar_power:target_legality",
-					"move:fire_spin:PMDC.Dungeon.OnHitEvent, PMDC"
-				]
+				"unsupported": []
 			},
 			"slug": "0005_charmeleon",
 			"sprites": {
@@ -7532,8 +7768,24 @@
 					"slash": "physical_attack",
 					"smokescreen": "status_attack"
 				},
+				"playable_animation_state_count": 32,
 				"portrait_paths": [
-					"res://assets/textures/pokemon/portraits/0005_charmeleon/Normal.png"
+					"res://assets/textures/pokemon/portraits/0005_charmeleon/Normal.png",
+					"res://assets/textures/pokemon/portraits/0005_charmeleon/Angry.png",
+					"res://assets/textures/pokemon/portraits/0005_charmeleon/Crying.png",
+					"res://assets/textures/pokemon/portraits/0005_charmeleon/Determined.png",
+					"res://assets/textures/pokemon/portraits/0005_charmeleon/Dizzy.png",
+					"res://assets/textures/pokemon/portraits/0005_charmeleon/Happy.png",
+					"res://assets/textures/pokemon/portraits/0005_charmeleon/Inspired.png",
+					"res://assets/textures/pokemon/portraits/0005_charmeleon/Joyous.png",
+					"res://assets/textures/pokemon/portraits/0005_charmeleon/Pain.png",
+					"res://assets/textures/pokemon/portraits/0005_charmeleon/Sad.png",
+					"res://assets/textures/pokemon/portraits/0005_charmeleon/Shouting.png",
+					"res://assets/textures/pokemon/portraits/0005_charmeleon/Sigh.png",
+					"res://assets/textures/pokemon/portraits/0005_charmeleon/Stunned.png",
+					"res://assets/textures/pokemon/portraits/0005_charmeleon/Surprised.png",
+					"res://assets/textures/pokemon/portraits/0005_charmeleon/Teary-Eyed.png",
+					"res://assets/textures/pokemon/portraits/0005_charmeleon/Worried.png"
 				],
 				"validation_warnings": []
 			}
@@ -7550,14 +7802,11 @@
 					"speed": 100
 				},
 				"evolution_from": "charmeleon",
+				"evolutions": [],
 				"exp_table": "medium_slow",
+				"exp_yield": 267,
 				"generation": 6,
 				"join_rate": -40,
-				"progression_placeholders": {
-					"evolution_runtime": "deferred_to_0.12.0",
-					"stat_growth": "deferred_to_0.12.0",
-					"xp_runtime": "deferred_to_0.12.0"
-				},
 				"skill_groups": [
 					"monster",
 					"dragon"
@@ -7573,7 +7822,7 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/blaze.tres",
 					"slug": "blaze",
-					"summary": "Supported low-HP same-type damage boost.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
 						"battle_start",
 						"before_damage"
@@ -7584,17 +7833,13 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/solar_power.tres",
 					"slug": "solar_power",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"field_condition",
+						"turn_start"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				}
 			],
 			"learnsets": {
@@ -7636,9 +7881,7 @@
 					"pp": 16,
 					"slot": 1,
 					"type": "flying",
-					"unsupported_effect_tags": [
-						"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
-					]
+					"unsupported_effect_tags": []
 				},
 				{
 					"animation_key": "physical_attack",
@@ -7674,16 +7917,30 @@
 			],
 			"name": "Charizard",
 			"path": "res://data/models/pokemon/generated/instances/0006_charizard.tres",
+			"progression": {
+				"calculated_stats": {
+					"attack": 89,
+					"defense": 83,
+					"hp": 138,
+					"special_attack": 114,
+					"special_defense": 90,
+					"speed": 105
+				},
+				"eligible_evolutions": [],
+				"experience": 0,
+				"held_item": "",
+				"known_move_count": 0,
+				"missing": [],
+				"nature_id": "",
+				"permanent_modifiers": {
+
+				},
+				"xp_for_level": 117360,
+				"xp_to_next": 7766
+			},
 			"readiness": {
 				"missing": [],
-				"unsupported": [
-					"intrinsic:solar_power:after_damage",
-					"intrinsic:solar_power:before_accuracy",
-					"intrinsic:solar_power:before_damage",
-					"intrinsic:solar_power:status_application",
-					"intrinsic:solar_power:target_legality",
-					"move:wing_attack:HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
-				]
+				"unsupported": []
 			},
 			"slug": "0006_charizard",
 			"sprites": {
@@ -8042,8 +8299,25 @@
 					"smokescreen": "status_attack",
 					"wing_attack": "physical_attack"
 				},
+				"playable_animation_state_count": 13,
 				"portrait_paths": [
-					"res://assets/textures/pokemon/portraits/0006_charizard/Normal.png"
+					"res://assets/textures/pokemon/portraits/0006_charizard/Normal.png",
+					"res://assets/textures/pokemon/portraits/0006_charizard/Angry.png",
+					"res://assets/textures/pokemon/portraits/0006_charizard/Crying.png",
+					"res://assets/textures/pokemon/portraits/0006_charizard/Determined.png",
+					"res://assets/textures/pokemon/portraits/0006_charizard/Dizzy.png",
+					"res://assets/textures/pokemon/portraits/0006_charizard/Happy.png",
+					"res://assets/textures/pokemon/portraits/0006_charizard/Inspired.png",
+					"res://assets/textures/pokemon/portraits/0006_charizard/Joyous.png",
+					"res://assets/textures/pokemon/portraits/0006_charizard/Pain.png",
+					"res://assets/textures/pokemon/portraits/0006_charizard/Sad.png",
+					"res://assets/textures/pokemon/portraits/0006_charizard/Shouting.png",
+					"res://assets/textures/pokemon/portraits/0006_charizard/Sigh.png",
+					"res://assets/textures/pokemon/portraits/0006_charizard/Special0.png",
+					"res://assets/textures/pokemon/portraits/0006_charizard/Stunned.png",
+					"res://assets/textures/pokemon/portraits/0006_charizard/Surprised.png",
+					"res://assets/textures/pokemon/portraits/0006_charizard/Teary-Eyed.png",
+					"res://assets/textures/pokemon/portraits/0006_charizard/Worried.png"
 				],
 				"validation_warnings": []
 			}
@@ -8060,14 +8334,22 @@
 					"speed": 43
 				},
 				"evolution_from": "",
+				"evolutions": [
+					{
+						"requirements": [
+							{
+								"kind": "level",
+								"level": 16,
+								"source_event": "PMDC.Data.EvoLevel, PMDC"
+							}
+						],
+						"result": "wartortle"
+					}
+				],
 				"exp_table": "medium_slow",
+				"exp_yield": 63,
 				"generation": 6,
 				"join_rate": 20,
-				"progression_placeholders": {
-					"evolution_runtime": "deferred_to_0.12.0",
-					"stat_growth": "deferred_to_0.12.0",
-					"xp_runtime": "deferred_to_0.12.0"
-				},
 				"skill_groups": [
 					"monster",
 					"water_1"
@@ -8082,7 +8364,7 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/torrent.tres",
 					"slug": "torrent",
-					"summary": "Supported low-HP same-type damage boost.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
 						"battle_start",
 						"before_damage"
@@ -8093,17 +8375,13 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/rain_dish.tres",
 					"slug": "rain_dish",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"field_condition",
+						"turn_start"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				}
 			],
 			"learnsets": {
@@ -8130,9 +8408,7 @@
 					"pp": 14,
 					"slot": 0,
 					"type": "normal",
-					"unsupported_effect_tags": [
-						"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
-					]
+					"unsupported_effect_tags": []
 				},
 				{
 					"animation_key": "status_attack",
@@ -8152,7 +8428,9 @@
 				{
 					"animation_key": "status_attack",
 					"category": 3,
-					"effect_families": [],
+					"effect_families": [
+						"field_condition"
+					],
 					"mapped_animation_key": "status_attack",
 					"mapping_kind": "deterministic_category",
 					"move_id": "rain_dance",
@@ -8160,9 +8438,7 @@
 					"pp": 10,
 					"slot": 2,
 					"type": "water",
-					"unsupported_effect_tags": [
-						"PMDC.Dungeon.GiveMapStatusEvent, PMDC"
-					]
+					"unsupported_effect_tags": []
 				},
 				{
 					"animation_key": "special_attack",
@@ -8182,17 +8458,32 @@
 			],
 			"name": "Squirtle",
 			"path": "res://data/models/pokemon/generated/instances/0007_squirtle.tres",
+			"progression": {
+				"calculated_stats": {
+					"attack": 53,
+					"defense": 70,
+					"hp": 104,
+					"special_attack": 55,
+					"special_defense": 69,
+					"speed": 48
+				},
+				"eligible_evolutions": [
+					"wartortle"
+				],
+				"experience": 0,
+				"held_item": "",
+				"known_move_count": 0,
+				"missing": [],
+				"nature_id": "",
+				"permanent_modifiers": {
+
+				},
+				"xp_for_level": 117360,
+				"xp_to_next": 7766
+			},
 			"readiness": {
 				"missing": [],
-				"unsupported": [
-					"intrinsic:rain_dish:after_damage",
-					"intrinsic:rain_dish:before_accuracy",
-					"intrinsic:rain_dish:before_damage",
-					"intrinsic:rain_dish:status_application",
-					"intrinsic:rain_dish:target_legality",
-					"move:rain_dance:PMDC.Dungeon.GiveMapStatusEvent, PMDC",
-					"move:skull_bash:HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
-				]
+				"unsupported": []
 			},
 			"slug": "0007_squirtle",
 			"sprites": {
@@ -8834,8 +9125,25 @@
 					"water_pulse": "special_attack",
 					"withdraw": "status_attack"
 				},
+				"playable_animation_state_count": 32,
 				"portrait_paths": [
-					"res://assets/textures/pokemon/portraits/0007_squirtle/Normal.png"
+					"res://assets/textures/pokemon/portraits/0007_squirtle/Normal.png",
+					"res://assets/textures/pokemon/portraits/0007_squirtle/Angry.png",
+					"res://assets/textures/pokemon/portraits/0007_squirtle/Crying.png",
+					"res://assets/textures/pokemon/portraits/0007_squirtle/Determined.png",
+					"res://assets/textures/pokemon/portraits/0007_squirtle/Dizzy.png",
+					"res://assets/textures/pokemon/portraits/0007_squirtle/Happy.png",
+					"res://assets/textures/pokemon/portraits/0007_squirtle/Inspired.png",
+					"res://assets/textures/pokemon/portraits/0007_squirtle/Joyous.png",
+					"res://assets/textures/pokemon/portraits/0007_squirtle/Pain.png",
+					"res://assets/textures/pokemon/portraits/0007_squirtle/Sad.png",
+					"res://assets/textures/pokemon/portraits/0007_squirtle/Shouting.png",
+					"res://assets/textures/pokemon/portraits/0007_squirtle/Sigh.png",
+					"res://assets/textures/pokemon/portraits/0007_squirtle/Special1.png",
+					"res://assets/textures/pokemon/portraits/0007_squirtle/Stunned.png",
+					"res://assets/textures/pokemon/portraits/0007_squirtle/Surprised.png",
+					"res://assets/textures/pokemon/portraits/0007_squirtle/Teary-Eyed.png",
+					"res://assets/textures/pokemon/portraits/0007_squirtle/Worried.png"
 				],
 				"validation_warnings": []
 			}
@@ -8852,14 +9160,22 @@
 					"speed": 58
 				},
 				"evolution_from": "squirtle",
+				"evolutions": [
+					{
+						"requirements": [
+							{
+								"kind": "level",
+								"level": 36,
+								"source_event": "PMDC.Data.EvoLevel, PMDC"
+							}
+						],
+						"result": "blastoise"
+					}
+				],
 				"exp_table": "medium_slow",
+				"exp_yield": 142,
 				"generation": 6,
 				"join_rate": -10,
-				"progression_placeholders": {
-					"evolution_runtime": "deferred_to_0.12.0",
-					"stat_growth": "deferred_to_0.12.0",
-					"xp_runtime": "deferred_to_0.12.0"
-				},
 				"skill_groups": [
 					"monster",
 					"water_1"
@@ -8874,7 +9190,7 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/torrent.tres",
 					"slug": "torrent",
-					"summary": "Supported low-HP same-type damage boost.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
 						"battle_start",
 						"before_damage"
@@ -8885,17 +9201,13 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/rain_dish.tres",
 					"slug": "rain_dish",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"field_condition",
+						"turn_start"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				}
 			],
 			"learnsets": {
@@ -8922,9 +9234,7 @@
 					"pp": 14,
 					"slot": 0,
 					"type": "normal",
-					"unsupported_effect_tags": [
-						"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
-					]
+					"unsupported_effect_tags": []
 				},
 				{
 					"animation_key": "status_attack",
@@ -8944,7 +9254,9 @@
 				{
 					"animation_key": "status_attack",
 					"category": 3,
-					"effect_families": [],
+					"effect_families": [
+						"field_condition"
+					],
 					"mapped_animation_key": "status_attack",
 					"mapping_kind": "deterministic_category",
 					"move_id": "rain_dance",
@@ -8952,9 +9264,7 @@
 					"pp": 10,
 					"slot": 2,
 					"type": "water",
-					"unsupported_effect_tags": [
-						"PMDC.Dungeon.GiveMapStatusEvent, PMDC"
-					]
+					"unsupported_effect_tags": []
 				},
 				{
 					"animation_key": "special_attack",
@@ -8974,17 +9284,32 @@
 			],
 			"name": "Wartortle",
 			"path": "res://data/models/pokemon/generated/instances/0008_wartortle.tres",
+			"progression": {
+				"calculated_stats": {
+					"attack": 68,
+					"defense": 85,
+					"hp": 119,
+					"special_attack": 70,
+					"special_defense": 85,
+					"speed": 63
+				},
+				"eligible_evolutions": [
+					"blastoise"
+				],
+				"experience": 0,
+				"held_item": "",
+				"known_move_count": 0,
+				"missing": [],
+				"nature_id": "",
+				"permanent_modifiers": {
+
+				},
+				"xp_for_level": 117360,
+				"xp_to_next": 7766
+			},
 			"readiness": {
 				"missing": [],
-				"unsupported": [
-					"intrinsic:rain_dish:after_damage",
-					"intrinsic:rain_dish:before_accuracy",
-					"intrinsic:rain_dish:before_damage",
-					"intrinsic:rain_dish:status_application",
-					"intrinsic:rain_dish:target_legality",
-					"move:rain_dance:PMDC.Dungeon.GiveMapStatusEvent, PMDC",
-					"move:skull_bash:HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
-				]
+				"unsupported": []
 			},
 			"slug": "0008_wartortle",
 			"sprites": {
@@ -9071,19 +9396,19 @@
 						"timing_count": 16
 					},
 					{
-						"alias_of": "",
+						"alias_of": "sleep",
 						"cell_size": [
-							0,
-							0
+							32,
+							32
 						],
-						"checksum": "",
+						"checksum": "sha256:ca08843addbd7d3ffa4aeed914802481069a436faa9f50bd7ae0783d2606dc41",
 						"directions": 1,
-						"frame_count": 0,
+						"frame_count": 2,
 						"key": "faint",
-						"path": "res://assets/textures/actor/pokemon/0008_wartortle/sleep.png",
-						"source_filename": "",
-						"source_name": "Faint",
-						"timing_count": 0
+						"path": "res://assets/textures/actor/pokemon/0008_wartortle/animations/sleep.png",
+						"source_filename": "Sleep-Anim.png",
+						"source_name": "Sleep",
+						"timing_count": 2
 					},
 					{
 						"alias_of": "charge",
@@ -9356,8 +9681,24 @@
 					"water_pulse": "special_attack",
 					"withdraw": "status_attack"
 				},
+				"playable_animation_state_count": 13,
 				"portrait_paths": [
-					"res://assets/textures/pokemon/portraits/0008_wartortle/Normal.png"
+					"res://assets/textures/pokemon/portraits/0008_wartortle/Normal.png",
+					"res://assets/textures/pokemon/portraits/0008_wartortle/Angry.png",
+					"res://assets/textures/pokemon/portraits/0008_wartortle/Crying.png",
+					"res://assets/textures/pokemon/portraits/0008_wartortle/Determined.png",
+					"res://assets/textures/pokemon/portraits/0008_wartortle/Dizzy.png",
+					"res://assets/textures/pokemon/portraits/0008_wartortle/Happy.png",
+					"res://assets/textures/pokemon/portraits/0008_wartortle/Inspired.png",
+					"res://assets/textures/pokemon/portraits/0008_wartortle/Joyous.png",
+					"res://assets/textures/pokemon/portraits/0008_wartortle/Pain.png",
+					"res://assets/textures/pokemon/portraits/0008_wartortle/Sad.png",
+					"res://assets/textures/pokemon/portraits/0008_wartortle/Shouting.png",
+					"res://assets/textures/pokemon/portraits/0008_wartortle/Sigh.png",
+					"res://assets/textures/pokemon/portraits/0008_wartortle/Stunned.png",
+					"res://assets/textures/pokemon/portraits/0008_wartortle/Surprised.png",
+					"res://assets/textures/pokemon/portraits/0008_wartortle/Teary-Eyed.png",
+					"res://assets/textures/pokemon/portraits/0008_wartortle/Worried.png"
 				],
 				"validation_warnings": []
 			}
@@ -9374,14 +9715,11 @@
 					"speed": 78
 				},
 				"evolution_from": "wartortle",
+				"evolutions": [],
 				"exp_table": "medium_slow",
+				"exp_yield": 265,
 				"generation": 6,
 				"join_rate": -40,
-				"progression_placeholders": {
-					"evolution_runtime": "deferred_to_0.12.0",
-					"stat_growth": "deferred_to_0.12.0",
-					"xp_runtime": "deferred_to_0.12.0"
-				},
 				"skill_groups": [
 					"monster",
 					"water_1"
@@ -9396,7 +9734,7 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/torrent.tres",
 					"slug": "torrent",
-					"summary": "Supported low-HP same-type damage boost.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
 						"battle_start",
 						"before_damage"
@@ -9407,17 +9745,13 @@
 					"exists": true,
 					"resource_path": "res://data/models/pokemon/generated/intrinsics/rain_dish.tres",
 					"slug": "rain_dish",
-					"summary": "Recorded for M6; combat-specific hooks are explicit unsupported entries.",
+					"summary": "Supported skirmish hooks imported from intrinsic metadata.",
 					"supported_hooks": [
-						"battle_start"
+						"battle_start",
+						"field_condition",
+						"turn_start"
 					],
-					"unsupported_hooks": [
-						"before_accuracy",
-						"before_damage",
-						"after_damage",
-						"status_application",
-						"target_legality"
-					]
+					"unsupported_hooks": []
 				}
 			],
 			"learnsets": {
@@ -9475,9 +9809,7 @@
 					"pp": 14,
 					"slot": 2,
 					"type": "normal",
-					"unsupported_effect_tags": [
-						"HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
-					]
+					"unsupported_effect_tags": []
 				},
 				{
 					"animation_key": "status_attack",
@@ -9497,16 +9829,30 @@
 			],
 			"name": "Blastoise",
 			"path": "res://data/models/pokemon/generated/instances/0009_blastoise.tres",
+			"progression": {
+				"calculated_stats": {
+					"attack": 88,
+					"defense": 105,
+					"hp": 139,
+					"special_attack": 90,
+					"special_defense": 110,
+					"speed": 83
+				},
+				"eligible_evolutions": [],
+				"experience": 0,
+				"held_item": "",
+				"known_move_count": 0,
+				"missing": [],
+				"nature_id": "",
+				"permanent_modifiers": {
+
+				},
+				"xp_for_level": 117360,
+				"xp_to_next": 7766
+			},
 			"readiness": {
 				"missing": [],
-				"unsupported": [
-					"intrinsic:rain_dish:after_damage",
-					"intrinsic:rain_dish:before_accuracy",
-					"intrinsic:rain_dish:before_damage",
-					"intrinsic:rain_dish:status_application",
-					"intrinsic:rain_dish:target_legality",
-					"move:skull_bash:HitboxAction:RogueEssence.Dungeon.DashAction, RogueEssence"
-				]
+				"unsupported": []
 			},
 			"slug": "0009_blastoise",
 			"sprites": {
@@ -9593,19 +9939,19 @@
 						"timing_count": 16
 					},
 					{
-						"alias_of": "",
+						"alias_of": "sleep",
 						"cell_size": [
-							0,
-							0
+							32,
+							40
 						],
-						"checksum": "",
+						"checksum": "sha256:173f081792c97727a8d45fa441729af7d085182dcc5895d39e772910c4b41fc4",
 						"directions": 1,
-						"frame_count": 0,
+						"frame_count": 2,
 						"key": "faint",
-						"path": "res://assets/textures/actor/pokemon/0009_blastoise/sleep.png",
-						"source_filename": "",
-						"source_name": "Faint",
-						"timing_count": 0
+						"path": "res://assets/textures/actor/pokemon/0009_blastoise/animations/sleep.png",
+						"source_filename": "Sleep-Anim.png",
+						"source_name": "Sleep",
+						"timing_count": 2
 					},
 					{
 						"alias_of": "charge",
@@ -9877,14 +10223,31 @@
 					"water_pulse": "special_attack",
 					"withdraw": "status_attack"
 				},
+				"playable_animation_state_count": 13,
 				"portrait_paths": [
-					"res://assets/textures/pokemon/portraits/0009_blastoise/Normal.png"
+					"res://assets/textures/pokemon/portraits/0009_blastoise/Normal.png",
+					"res://assets/textures/pokemon/portraits/0009_blastoise/Angry.png",
+					"res://assets/textures/pokemon/portraits/0009_blastoise/Crying.png",
+					"res://assets/textures/pokemon/portraits/0009_blastoise/Determined.png",
+					"res://assets/textures/pokemon/portraits/0009_blastoise/Dizzy.png",
+					"res://assets/textures/pokemon/portraits/0009_blastoise/Happy.png",
+					"res://assets/textures/pokemon/portraits/0009_blastoise/Inspired.png",
+					"res://assets/textures/pokemon/portraits/0009_blastoise/Joyous.png",
+					"res://assets/textures/pokemon/portraits/0009_blastoise/Pain.png",
+					"res://assets/textures/pokemon/portraits/0009_blastoise/Sad.png",
+					"res://assets/textures/pokemon/portraits/0009_blastoise/Shouting.png",
+					"res://assets/textures/pokemon/portraits/0009_blastoise/Sigh.png",
+					"res://assets/textures/pokemon/portraits/0009_blastoise/Special0.png",
+					"res://assets/textures/pokemon/portraits/0009_blastoise/Stunned.png",
+					"res://assets/textures/pokemon/portraits/0009_blastoise/Surprised.png",
+					"res://assets/textures/pokemon/portraits/0009_blastoise/Teary-Eyed.png",
+					"res://assets/textures/pokemon/portraits/0009_blastoise/Worried.png"
 				],
 				"validation_warnings": []
 			}
 		}
 	],
-	"release": "0.11.0",
+	"release": "0.12.0",
 	"roster_count": 16,
 	"schema_version": 1,
 	"source": "CurrentRosterReadiness",
@@ -9893,6 +10256,8 @@
 		"battle_ready": 16,
 		"missing_entries": 0,
 		"move_animation_mappings": 238,
-		"unsupported_entries": 150
+		"playable_animation_states": 328,
+		"progression_ready": 16,
+		"unsupported_entries": 0
 	}
 }

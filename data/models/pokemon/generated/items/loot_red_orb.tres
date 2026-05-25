@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_xf4fb"]
+
+[resource]
+script = ExtResource("1_xf4fb")
+item_id = "loot_red_orb"
+name = "Red Orb"
+released = false
+category = "category_15"
+price = 700000
+sort_category = 15
+icon_index = -1
+source_json_path = "DumpAsset/Data/Item/loot_red_orb.json"

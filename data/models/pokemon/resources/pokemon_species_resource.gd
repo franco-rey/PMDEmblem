@@ -27,6 +27,9 @@ extends Resource
 
 ## Slug of the species this one evolves from, empty if base.
 @export var evolution_from: String = ""
+## Evolution candidates sourced from PMDODump `Promotions`. Entries use:
+## `{result: String, requirements: Array[Dictionary]}`.
+@export var evolutions: Array[Dictionary] = []
 ## Egg / skill groups from PMD.
 @export var skill_group1: String = ""
 @export var skill_group2: String = ""

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_jvdf4"]
+
+[resource]
+script = ExtResource("1_jvdf4")
+item_id = "apricorn_red"
+name = "Red Apricorn"
+description = "An apricorn that can be tossed at Fire- or Dragon-type Pokémon as a gift for a high chance to recruit them into the team."
+category = "category_8"
+use_kind = 1
+price = 250
+usage_type = 3
+sort_category = 8
+sprite_key = "Apricorn_Red"
+icon_path = "res://assets/visuals/raw_asset/Item/Apricorn_Red.None.png"
+icon_index = 11
+item_states = Array[String](["PMDC.Dungeon.RecruitState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.RecruitState, PMDC", "PMDC.Dungeon.RecruitmentEvent, PMDC", "PMDC.Dungeon.TypeRecruitmentEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.RecruitmentEvent, PMDC", "PMDC.Dungeon.TypeRecruitmentEvent, PMDC"])
+source_json_path = "DumpAsset/Data/Item/apricorn_red.json"

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_ijhb0"]
+
+[resource]
+script = ExtResource("1_ijhb0")
+item_id = "orb_all_dodge"
+name = "All-Dodge Orb"
+description = "An orb that drastically boosts Evasion. It affects team members up to 5 tiles away."
+category = "orb"
+use_kind = 1
+price = 150
+usage_type = 1
+sort_category = 11
+sprite_key = "Orb_Yellow"
+icon_path = "res://assets/visuals/raw_asset/Item/Orb_Yellow.None.png"
+icon_index = 9
+item_states = Array[String](["PMDC.Dungeon.OrbState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.OrbState, PMDC", "PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
+source_json_path = "DumpAsset/Data/Item/orb_all_dodge.json"

@@ -27,6 +27,8 @@ extends Resource
 ## (genderless, male, female) raw weights from PMD.
 @export var gender_weights: Vector3i = Vector3i.ZERO
 @export var exp_table: String = ""
+@export var exp_table_values: PackedInt32Array = PackedInt32Array()
+@export var exp_yield: int = 0
 @export var join_rate: int = 0
 @export var temporary: bool = false
 

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_fc581"]
+
+[resource]
+script = ExtResource("1_fc581")
+item_id = "held_binding_band"
+name = "Binding Band"
+description = "An item to be held by a Pokémon. When the holder successfully inflicts damage, the target may also be immobilized."
+category = "held"
+use_kind = 2
+price = 200
+sort_category = 1
+sprite_key = "Band_Tan"
+icon_path = "res://assets/visuals/raw_asset/Item/Band_Tan.None.png"
+icon_index = -1
+item_states = Array[String](["PMDC.Dungeon.EquipState, PMDC", "PMDC.Dungeon.HeldState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.EquipState, PMDC", "PMDC.Dungeon.HeldState, PMDC"])
+source_json_path = "DumpAsset/Data/Item/held_binding_band.json"

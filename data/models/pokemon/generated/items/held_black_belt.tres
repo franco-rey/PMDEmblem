@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_1w5kg"]
+
+[resource]
+script = ExtResource("1_1w5kg")
+item_id = "held_black_belt"
+name = "Black Belt"
+description = "An item to be held by a Pokémon. This belt helps the wearer to focus and boosts the power of Fighting-type moves."
+category = "held"
+use_kind = 2
+price = 500
+sort_category = 1
+sprite_key = "Belt_Black"
+icon_path = "res://assets/visuals/raw_asset/Item/Belt_Black.None.png"
+icon_index = -1
+item_states = Array[String](["PMDC.Dungeon.EquipState, PMDC", "PMDC.Dungeon.HeldState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.EquipState, PMDC", "PMDC.Dungeon.HeldState, PMDC"])
+source_json_path = "DumpAsset/Data/Item/held_black_belt.json"

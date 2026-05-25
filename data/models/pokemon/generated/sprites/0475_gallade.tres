@@ -10,7 +10,7 @@ hurt_path = "res://assets/textures/actor/pokemon/0475_gallade/hurt.png"
 sleep_path = "res://assets/textures/actor/pokemon/0475_gallade/sleep.png"
 hop_path = "res://assets/textures/actor/pokemon/0475_gallade/hop.png"
 anim_data_path = "res://assets/textures/actor/pokemon/0475_gallade/AnimData.xml"
-portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0475_gallade/Normal.png"])
+portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0475_gallade/Normal.png", "res://assets/textures/pokemon/portraits/0475_gallade/Angry.png", "res://assets/textures/pokemon/portraits/0475_gallade/Crying.png", "res://assets/textures/pokemon/portraits/0475_gallade/Determined.png", "res://assets/textures/pokemon/portraits/0475_gallade/Dizzy.png", "res://assets/textures/pokemon/portraits/0475_gallade/Happy.png", "res://assets/textures/pokemon/portraits/0475_gallade/Inspired.png", "res://assets/textures/pokemon/portraits/0475_gallade/Joyous.png", "res://assets/textures/pokemon/portraits/0475_gallade/Pain.png", "res://assets/textures/pokemon/portraits/0475_gallade/Sad.png", "res://assets/textures/pokemon/portraits/0475_gallade/Shouting.png", "res://assets/textures/pokemon/portraits/0475_gallade/Sigh.png", "res://assets/textures/pokemon/portraits/0475_gallade/Stunned.png", "res://assets/textures/pokemon/portraits/0475_gallade/Surprised.png", "res://assets/textures/pokemon/portraits/0475_gallade/Teary-Eyed.png", "res://assets/textures/pokemon/portraits/0475_gallade/Worried.png"])
 animation_states = {
 "attack": {
 "cell_size": Vector2i(64, 80),
@@ -90,12 +90,20 @@ animation_states = {
 "timing": Array[int]([2, 2, 2, 2, 2, 2, 3, 3, 3, 2, 3, 2, 2, 2, 2, 2])
 },
 "faint": {
-"cell_size": Vector2i(0, 0),
+"alias_of": "sleep",
+"cell_size": Vector2i(24, 40),
+"checksum": "sha256:cb12e25d35c1fdd9d61c9db2223b1816402bc138339898785543fcfc4f8db416",
+"copy_of": "",
 "directions": 1,
-"frame_count": 0,
-"path": "res://assets/textures/actor/pokemon/0475_gallade/sleep.png",
-"source_name": "Faint",
-"timing": []
+"frame_count": 2,
+"hit_frame": 0,
+"path": "res://assets/textures/actor/pokemon/0475_gallade/animations/sleep.png",
+"return_frame": 0,
+"rush_frame": 0,
+"source_filename": "Sleep-Anim.png",
+"source_index": 5,
+"source_name": "Sleep",
+"timing": Array[int]([30, 35])
 },
 "heal": {
 "alias_of": "charge",

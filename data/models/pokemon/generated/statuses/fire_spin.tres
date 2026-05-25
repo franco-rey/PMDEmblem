@@ -7,5 +7,5 @@ script = ExtResource("1_gxh82")
 status_id = "fire_spin"
 display_name = "Fire Spin"
 visual_key = "fire_spin"
-source_event_tags = Array[String](["PMDC.Dungeon.RemoveStatusBattleEvent, PMDC"])
-supported_hook_families = Array[String](["status_remove"])
+source_event_tags = Array[String](["PMDC.Dungeon.StatusBattleEvent, PMDC", "PMDC.Dungeon.RemoveStatusBattleEvent, PMDC"])
+supported_hook_families = Array[String](["status", "status_remove"])

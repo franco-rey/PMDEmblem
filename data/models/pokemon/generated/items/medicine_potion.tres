@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_peari"]
+
+[resource]
+script = ExtResource("1_peari")
+item_id = "medicine_potion"
+name = "Potion"
+description = "A spray-type medicine that somewhat restores HP. It affects all team members up to 5 tiles away."
+category = "medicine"
+use_kind = 1
+price = 300
+usage_type = 1
+sort_category = 10
+sprite_key = "Medicine_Green"
+icon_path = "res://assets/visuals/raw_asset/Item/Medicine_Green.None.png"
+icon_index = 7
+source_effect_tags = Array[String](["PMDC.Dungeon.RestoreHPEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"denominator": 2,
+"family": "heal",
+"numerator": 1,
+"source_event": "PMDC.Dungeon.RestoreHPEvent, PMDC"
+}])
+source_json_path = "DumpAsset/Data/Item/medicine_potion.json"

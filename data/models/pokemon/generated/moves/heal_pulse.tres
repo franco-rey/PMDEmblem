@@ -14,5 +14,11 @@ tactical_range_kind = 3
 tactical_range_value = 4
 target_alignment = 6
 effect_tags = Array[String](["PMDC.Dungeon.RestoreHPEvent, PMDC"])
-unsupported_effect_tags = Array[String](["PMDC.Dungeon.RestoreHPEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "heal",
+"percent": 0.5,
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.RestoreHPEvent, PMDC",
+"target": "hit_target"
+}])
 animation_key = "status_attack"

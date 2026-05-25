@@ -10,7 +10,7 @@ hurt_path = "res://assets/textures/actor/pokemon/0282_gardevoir/hurt.png"
 sleep_path = "res://assets/textures/actor/pokemon/0282_gardevoir/sleep.png"
 hop_path = "res://assets/textures/actor/pokemon/0282_gardevoir/hop.png"
 anim_data_path = "res://assets/textures/actor/pokemon/0282_gardevoir/AnimData.xml"
-portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0282_gardevoir/Normal.png"])
+portrait_paths = Array[String](["res://assets/textures/pokemon/portraits/0282_gardevoir/Normal.png", "res://assets/textures/pokemon/portraits/0282_gardevoir/Angry.png", "res://assets/textures/pokemon/portraits/0282_gardevoir/Crying.png", "res://assets/textures/pokemon/portraits/0282_gardevoir/Determined.png", "res://assets/textures/pokemon/portraits/0282_gardevoir/Dizzy.png", "res://assets/textures/pokemon/portraits/0282_gardevoir/Happy.png", "res://assets/textures/pokemon/portraits/0282_gardevoir/Inspired.png", "res://assets/textures/pokemon/portraits/0282_gardevoir/Joyous.png", "res://assets/textures/pokemon/portraits/0282_gardevoir/Pain.png", "res://assets/textures/pokemon/portraits/0282_gardevoir/Sad.png", "res://assets/textures/pokemon/portraits/0282_gardevoir/Shouting.png", "res://assets/textures/pokemon/portraits/0282_gardevoir/Sigh.png", "res://assets/textures/pokemon/portraits/0282_gardevoir/Special1.png", "res://assets/textures/pokemon/portraits/0282_gardevoir/Special2.png", "res://assets/textures/pokemon/portraits/0282_gardevoir/Stunned.png", "res://assets/textures/pokemon/portraits/0282_gardevoir/Surprised.png", "res://assets/textures/pokemon/portraits/0282_gardevoir/Teary-Eyed.png", "res://assets/textures/pokemon/portraits/0282_gardevoir/Worried.png"])
 animation_states = {
 "appeal": {
 "cell_size": Vector2i(32, 40),
@@ -105,12 +105,20 @@ animation_states = {
 "timing": Array[int]([2, 2, 2, 2, 2, 2, 3, 3, 3, 2, 3, 2, 2, 2, 2, 2])
 },
 "faint": {
-"cell_size": Vector2i(0, 0),
+"alias_of": "sleep",
+"cell_size": Vector2i(24, 32),
+"checksum": "sha256:890121b721a3a8bc06d713b0d56deaa19df02e75b39197d30d0273504949cfef",
+"copy_of": "",
 "directions": 1,
-"frame_count": 0,
-"path": "res://assets/textures/actor/pokemon/0282_gardevoir/sleep.png",
-"source_name": "Faint",
-"timing": []
+"frame_count": 2,
+"hit_frame": 0,
+"path": "res://assets/textures/actor/pokemon/0282_gardevoir/animations/sleep.png",
+"return_frame": 0,
+"rush_frame": 0,
+"source_filename": "Sleep-Anim.png",
+"source_index": 5,
+"source_name": "Sleep",
+"timing": Array[int]([30, 35])
 },
 "heal": {
 "alias_of": "charge",

@@ -57,9 +57,15 @@ func process(pawn: TacticsPawn, delta: float) -> void:
 func _update_sprite_anim_state(pawn: TacticsPawn, delta: float) -> void:
 	if pawn.res.hurt_remaining > 0.0:
 		pawn.res.hurt_remaining = max(0.0, pawn.res.hurt_remaining - delta)
+	if pawn.res.forced_anim_remaining > 0.0:
+		pawn.res.forced_anim_remaining = max(0.0, pawn.res.forced_anim_remaining - delta)
+		if pawn.res.forced_anim_remaining <= 0.0:
+			pawn.res.forced_anim_state = ""
 
 	var state: String
-	if pawn.res.hurt_remaining > 0.0:
+	if pawn.res.forced_anim_remaining > 0.0 and not pawn.res.forced_anim_state.is_empty():
+		state = pawn.res.forced_anim_state
+	elif pawn.res.hurt_remaining > 0.0:
 		state = TacticsPawnSprite.ANIM_HURT
 	elif not pawn.is_alive():
 		state = TacticsPawnSprite.ANIM_SLEEP

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_0wkxg"]
+
+[resource]
+script = ExtResource("1_0wkxg")
+item_id = "held_toxic_orb"
+name = "Toxic Orb"
+description = "A bizarre orb that will badly poison the holder. This item sticks when held."
+category = "held"
+use_kind = 2
+price = 300
+sort_category = 1
+sprite_key = "Toxic_Orb"
+icon_path = "res://assets/visuals/raw_asset/Item/Toxic_Orb.None.png"
+icon_index = -1
+item_states = Array[String](["PMDC.Dungeon.EquipState, PMDC", "PMDC.Dungeon.HeldState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.EquipState, PMDC", "PMDC.Dungeon.HeldState, PMDC"])
+source_json_path = "DumpAsset/Data/Item/held_toxic_orb.json"

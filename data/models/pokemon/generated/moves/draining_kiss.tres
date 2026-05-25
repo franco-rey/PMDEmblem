@@ -15,11 +15,16 @@ accuracy = 100
 pp = 18
 tactical_range_kind = 1
 effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.HPDrainEvent, PMDC"])
-unsupported_effect_tags = Array[String](["PMDC.Dungeon.HPDrainEvent, PMDC"])
 effect_records = Array[Dictionary]([{
 "family": "damage",
 "source_bucket": "OnHits",
 "source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
 "target": "hit_target"
+}, {
+"family": "drain",
+"fraction": 0.5,
+"source_bucket": "AfterActions",
+"source_event": "PMDC.Dungeon.HPDrainEvent, PMDC",
+"target": "self"
 }])
 animation_key = "special_attack"

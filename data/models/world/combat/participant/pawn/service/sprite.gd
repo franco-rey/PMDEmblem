@@ -33,6 +33,17 @@ const ANIMDATA_NAME_CANDIDATES: Dictionary = {
 	# Sleep depending on source coverage. Pick by actual sheet dimensions below.
 	ANIM_SLEEP: ["Laying", "EventSleep", "Sleep"],
 	ANIM_HOP: ["Hop"],
+	"attack": ["Attack"],
+	"physical_attack": ["Attack"],
+	"special_attack": ["Shoot", "Charge", "Special0", "Attack"],
+	"status_attack": ["Charge", "Special0", "Appeal", "Attack"],
+	"shoot": ["Shoot"],
+	"charge": ["Charge"],
+	"buff": ["Charge", "Appeal"],
+	"debuff": ["Cringe", "Hurt"],
+	"heal": ["Charge", "Appeal"],
+	"miss": ["Idle"],
+	"faint": ["Laying", "EventSleep", "Sleep"],
 }
 
 ## Seconds per displayed frame for each animation state. Tuned for legibility,
@@ -84,6 +95,8 @@ var state_cell_widths: Dictionary = {}
 var state_cell_heights: Dictionary = {}
 ## Lowest transparent padding per state, in source pixels.
 var state_bottom_paddings: Dictionary = {}
+## Per-state frame duration derived from imported timing when available.
+var state_frame_durations: Dictionary = {}
 
 ## Currently active anim state.
 var current_state: String = ANIM_IDLE
@@ -147,10 +160,11 @@ func _apply_world_pixel_size(sprite_set: PokemonSpriteSetResource) -> void:
 ## the idle PNG filename. Cell dims come from AnimData where available so
 ## non-square cells (typical of SpriteCollab) are sliced correctly.
 func _load_state_textures(base_sprite_path: String, sprite_set: PokemonSpriteSetResource, anim_data: Dictionary) -> void:
-	var paths: Dictionary = _resolve_state_paths(base_sprite_path, sprite_set)
+	var entries: Dictionary = _resolve_state_entries(base_sprite_path, sprite_set)
 
-	for state: String in paths.keys():
-		var path: String = paths[state]
+	for state: String in entries.keys():
+		var metadata: Dictionary = entries[state]
+		var path: String = String(metadata.get("path", ""))
 		if path.is_empty() or not ResourceLoader.exists(path):
 			continue
 		var tex: Texture2D = load(path) as Texture2D
@@ -160,10 +174,15 @@ func _load_state_textures(base_sprite_path: String, sprite_set: PokemonSpriteSet
 
 		var cell_w: int = 0
 		var cell_h: int = 0
-		var entry: SpriteAnimData.AnimEntry = _select_anim_data_entry(state, tex, anim_data)
-		if entry != null:
-			cell_w = entry.frame_width
-			cell_h = entry.frame_height
+		var cell_size: Vector2i = metadata.get("cell_size", Vector2i.ZERO)
+		if cell_size.x > 0 and cell_size.y > 0:
+			cell_w = cell_size.x
+			cell_h = cell_size.y
+		else:
+			var entry: SpriteAnimData.AnimEntry = _select_anim_data_entry(state, tex, anim_data)
+			if entry != null:
+				cell_w = entry.frame_width
+				cell_h = entry.frame_height
 		if cell_w <= 0 or cell_h <= 0:
 			# Fallback: assume the legacy 2-row, square-cell layout.
 			cell_h = int(tex.get_height() / SPRITE_ROW_COUNT_FALLBACK)
@@ -171,11 +190,18 @@ func _load_state_textures(base_sprite_path: String, sprite_set: PokemonSpriteSet
 
 		var hframes_local: int = maxi(1, int(tex.get_width() / max(1, cell_w)))
 		var vframes_local: int = maxi(1, int(tex.get_height() / max(1, cell_h)))
+		var imported_frame_count: int = int(metadata.get("frame_count", 0))
+		if imported_frame_count > 0:
+			hframes_local = mini(hframes_local, imported_frame_count)
+		var imported_directions: int = int(metadata.get("directions", 0))
+		if imported_directions > 0:
+			vframes_local = mini(vframes_local, imported_directions)
 		state_frame_counts[state] = hframes_local
 		state_row_counts[state] = vframes_local
 		state_cell_widths[state] = cell_w
 		state_cell_heights[state] = cell_h
 		state_bottom_paddings[state] = _find_lowest_bottom_padding(tex, cell_w, cell_h, hframes_local, vframes_local)
+		state_frame_durations[state] = _duration_from_timing(metadata.get("timing", []), state)
 
 
 func _select_anim_data_entry(state: String, tex: Texture2D, anim_data: Dictionary) -> SpriteAnimData.AnimEntry:
@@ -210,25 +236,79 @@ func _select_anim_data_entry(state: String, tex: Texture2D, anim_data: Dictionar
 	return best
 
 
-func _resolve_state_paths(base_sprite_path: String, sprite_set: PokemonSpriteSetResource) -> Dictionary:
+func _resolve_state_entries(base_sprite_path: String, sprite_set: PokemonSpriteSetResource) -> Dictionary:
 	if sprite_set != null and not sprite_set.idle_path.is_empty():
-		return {
+		var entries: Dictionary = {}
+		for key in sprite_set.animation_states.keys():
+			var raw_entry: Variant = sprite_set.animation_states[key]
+			if raw_entry is Dictionary:
+				entries[String(key)] = (raw_entry as Dictionary).duplicate(true)
+		var minimal: Dictionary = {
 			ANIM_IDLE:  sprite_set.idle_path,
 			ANIM_WALK:  sprite_set.walk_path,
 			ANIM_HURT:  sprite_set.hurt_path,
 			ANIM_SLEEP: sprite_set.sleep_path,
 			ANIM_HOP:   sprite_set.hop_path,
 		}
+		for key in minimal.keys():
+			if not entries.has(key):
+				entries[key] = {"path": String(minimal[key])}
+		_normalize_rest_faint_entry(entries)
+		return entries
 	# Legacy non-Pokemon fallback - derive sidecars from base path filename.
 	var base_no_ext: String = base_sprite_path.get_basename()
 	var ext: String = "." + base_sprite_path.get_extension()
 	return {
-		ANIM_IDLE:  base_sprite_path,
-		ANIM_WALK:  base_no_ext + "_walk"  + ext,
-		ANIM_HURT:  base_no_ext + "_hurt"  + ext,
-		ANIM_SLEEP: base_no_ext + "_sleep" + ext,
-		ANIM_HOP:   base_no_ext + "_hop"   + ext,
+		ANIM_IDLE:  {"path": base_sprite_path},
+		ANIM_WALK:  {"path": base_no_ext + "_walk"  + ext},
+		ANIM_HURT:  {"path": base_no_ext + "_hurt"  + ext},
+		ANIM_SLEEP: {"path": base_no_ext + "_sleep" + ext},
+		ANIM_HOP:   {"path": base_no_ext + "_hop"   + ext},
 	}
+
+
+func _normalize_rest_faint_entry(entries: Dictionary) -> void:
+	if not entries.has("sleep"):
+		return
+	var sleep_entry_v: Variant = entries["sleep"]
+	if not (sleep_entry_v is Dictionary):
+		return
+	var sleep_entry: Dictionary = sleep_entry_v
+	if not entries.has("faint"):
+		var alias_entry: Dictionary = sleep_entry.duplicate(true)
+		alias_entry["alias_of"] = "sleep"
+		entries["faint"] = alias_entry
+		return
+
+	var faint_entry_v: Variant = entries["faint"]
+	if not (faint_entry_v is Dictionary):
+		return
+	var faint_entry: Dictionary = faint_entry_v
+	var faint_path: String = String(faint_entry.get("path", ""))
+	var sleep_path: String = String(sleep_entry.get("path", ""))
+	if not faint_path.is_empty() and not sleep_path.is_empty() and faint_path != sleep_path:
+		return
+	if _has_explicit_frame_metadata(faint_entry):
+		return
+
+	var repaired_entry: Dictionary = sleep_entry.duplicate(true)
+	repaired_entry["alias_of"] = "sleep"
+	repaired_entry["source_name"] = String(faint_entry.get("source_name", repaired_entry.get("source_name", "Sleep")))
+	entries["faint"] = repaired_entry
+
+
+func _has_explicit_frame_metadata(entry: Dictionary) -> bool:
+	var cell_size: Vector2i = entry.get("cell_size", Vector2i.ZERO)
+	return cell_size.x > 0 and cell_size.y > 0 and int(entry.get("frame_count", 0)) > 0
+
+
+func _duration_from_timing(timing: Variant, state: String) -> float:
+	if timing is Array and not (timing as Array).is_empty():
+		var total: int = 0
+		for tick in (timing as Array):
+			total += int(tick)
+		return clampf(float(total) / float((timing as Array).size()) / 60.0, 0.04, 0.6)
+	return float(FRAME_DURATION.get(state, 0.15))
 
 
 ## Switches the displayed texture and updates hframes/vframes to match. Reset
@@ -239,13 +319,16 @@ func _apply_state_texture(state: String) -> void:
 	if not state_textures.has(state):
 		return # No textures at all loaded — leave Sprite3D blank.
 	var tex: Texture2D = state_textures[state]
+	var rows_local: int = maxi(1, int(state_row_counts.get(state, 1)))
+	var frames_local: int = maxi(1, int(state_frame_counts.get(state, 1)))
 	texture = tex
-	vframes = int(state_row_counts.get(state, 1))
-	hframes = int(state_frame_counts.get(state, 1))
+	vframes = rows_local
+	hframes = frames_local
 	_apply_grounding_offset(state)
 	current_state = state
 	curr_frame = 0
 	frame_timer = 0.0
+	frame = 0
 	# 8-direction sheets encode left/right as distinct rows, so the legacy
 	# flip_h trick is no longer needed (and would mirror the wrong row when on).
 	flip_h = false
@@ -305,6 +388,10 @@ func set_anim_state(new_state: String) -> void:
 	_apply_state_texture(new_state)
 
 
+func can_play_state(state: String) -> bool:
+	return state_textures.has(state)
+
+
 ## Advances curr_frame on a per-state timer. Called from [code]_process[/code]
 ## so animation continues independently of physics ticks.
 func _process(delta: float) -> void:
@@ -312,7 +399,7 @@ func _process(delta: float) -> void:
 	if current_state == ANIM_SLEEP or n <= 1:
 		curr_frame = 0
 		return
-	var dur: float = FRAME_DURATION.get(current_state, 0.15)
+	var dur: float = state_frame_durations.get(current_state, FRAME_DURATION.get(current_state, 0.15))
 	frame_timer += delta
 	while frame_timer >= dur:
 		frame_timer -= dur

@@ -44,6 +44,9 @@ var walk_speed: int = TacticsConfig.pawn.base_walk_speed
 ## Remaining seconds the pawn should display the HURT animation. Decremented
 ## each frame by the pawn service; set to HURT_DURATION when damage lands.
 var hurt_remaining: float = 0.0
+## M8 battle animation override selected by the animation resolver.
+var forced_anim_state: String = ""
+var forced_anim_remaining: float = 0.0
 ## Move slot selected for the next attack. M2 defaults to the first usable move;
 ## later UI polish can swap this before target selection.
 var selected_move_index: int = 0
@@ -67,6 +70,13 @@ func end_pawn_turn() -> void:
 	can_move = false
 	can_attack = false
 	turn_ended.emit()
+
+
+func force_animation(state: String, duration: float = 0.35) -> void:
+	if state.is_empty():
+		return
+	forced_anim_state = state
+	forced_anim_remaining = maxf(duration, 0.05)
 
 
 ## Sets the pawn's moving state and emits the pawn_moved signal if true

@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_tretx"]
+
+[resource]
+script = ExtResource("1_tretx")
+item_id = "medicine_max_potion"
+name = "Max Potion"
+description = "A spray-type medicine that fully restores HP. It affects all team members up to 3 tiles away."
+category = "medicine"
+use_kind = 1
+price = 700
+usage_type = 1
+sort_category = 10
+sprite_key = "Medicine_Purple"
+icon_path = "res://assets/visuals/raw_asset/Item/Medicine_Purple.None.png"
+icon_index = 7
+source_effect_tags = Array[String](["PMDC.Dungeon.RestoreHPEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"denominator": 1,
+"family": "heal",
+"numerator": 1,
+"source_event": "PMDC.Dungeon.RestoreHPEvent, PMDC"
+}])
+source_json_path = "DumpAsset/Data/Item/medicine_max_potion.json"

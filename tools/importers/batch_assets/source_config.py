@@ -11,10 +11,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[3]
 LOCAL_CONFIG_PATH = PROJECT_ROOT / "tools" / "importers" / "local_sources.json"
 
 
+DEFAULT_SIBLING_ROOT = PROJECT_ROOT.parent
 DEFAULTS = {
-    "pmdo_root": "/Users/franco/Documents/GitHub/PMDODump",
-    "raw_asset_root": "/Users/franco/Documents/GitHub/RawAsset",
-    "sprite_collab_root": "/Users/franco/Documents/GitHub/SpriteCollab",
+    "pmdo_root": DEFAULT_SIBLING_ROOT / "PMDODump",
+    "raw_asset_root": DEFAULT_SIBLING_ROOT / "RawAsset",
+    "sprite_collab_root": DEFAULT_SIBLING_ROOT / "SpriteCollab",
 }
 
 

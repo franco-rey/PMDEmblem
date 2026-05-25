@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_xoa5m"]
+
+[resource]
+script = ExtResource("1_xoa5m")
+item_id = "orb_spurn"
+name = "Spurn Orb"
+description = "An orb that warps all enemies to random locations on the floor. It affects all enemies up to 5 tiles away."
+category = "orb"
+use_kind = 1
+price = 150
+usage_type = 1
+sort_category = 11
+sprite_key = "Orb_Blue"
+icon_path = "res://assets/visuals/raw_asset/Item/Orb_Blue.None.png"
+icon_index = 9
+item_states = Array[String](["PMDC.Dungeon.OrbState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.OrbState, PMDC", "PMDC.Dungeon.RandomWarpEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.RandomWarpEvent, PMDC"])
+source_json_path = "DumpAsset/Data/Item/orb_spurn.json"

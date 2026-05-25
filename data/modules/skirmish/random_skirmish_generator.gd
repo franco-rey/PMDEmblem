@@ -189,11 +189,15 @@ static func _make_enemy_instance(template: PokemonInstanceResource, tier: Dictio
 	instance.species = template.species
 	instance.form_index = template.form_index
 	instance.level = int(rng.randi_range(int(tier["min_level"]), int(tier["max_level"])))
+	instance.experience = PokemonExperienceService.xp_for_level(instance.resolved_form(), instance.level)
 	instance.current_hp = PokemonInstanceResource.CURRENT_HP_AUTO
 	instance.team = PokemonInstanceResource.Team.ENEMY
 	instance.control_type = PokemonInstanceResource.ControlType.AI
 	instance.movement_override = template.movement_override
 	instance.recruited = false
+	instance.nature_id = template.nature_id
+	instance.permanent_modifiers = template.permanent_modifiers.duplicate(true)
+	instance.held_item = template.held_item
 	instance.runtime_modifiers = {}
 	instance.temporary_statuses = []
 	instance.move_slots = _moves_for_level(template, instance.level)

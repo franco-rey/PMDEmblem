@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_07ddm"]
+
+[resource]
+script = ExtResource("1_07ddm")
+item_id = "orb_nullify"
+name = "Nullify Orb"
+description = "An orb that nullifies the Abilities of all enemies on the floor."
+category = "orb"
+use_kind = 1
+price = 150
+usage_type = 1
+sort_category = 11
+sprite_key = "Orb_Green"
+icon_path = "res://assets/visuals/raw_asset/Item/Orb_Green.None.png"
+icon_index = 9
+item_states = Array[String](["PMDC.Dungeon.OrbState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.ChangeToAbilityEvent, PMDC", "PMDC.Dungeon.OrbState, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.ChangeToAbilityEvent, PMDC"])
+source_json_path = "DumpAsset/Data/Item/orb_nullify.json"

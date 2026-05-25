@@ -56,15 +56,16 @@ func _select(pawn: TacticsPawn, move: PokemonMoveResource, requested: String, pu
 	if chosen.is_empty():
 		chosen = "idle"
 
+	var visible: bool = _play_visible_state(pawn, chosen, purpose)
 	if battle_log != null:
 		battle_log.append({
-			"kind": "animation_selected" if chosen == requested else "animation_fallback",
+			"kind": "animation_selected" if chosen == requested and visible else "animation_fallback",
 			"unit": pawn,
 			"move_id": move.move_id if move != null else "",
 			"purpose": purpose,
 			"requested_key": requested,
 			"chosen_key": chosen,
-			"reason": "" if chosen == requested else "missing_exact_animation",
+			"reason": _fallback_reason(chosen, requested, visible),
 		})
 	return chosen
 
@@ -74,3 +75,36 @@ func _sprite_set_for(pawn: TacticsPawn) -> PokemonSpriteSetResource:
 		return null
 	var form: PokemonFormResource = pawn.stats.pokemon_instance.resolved_form()
 	return form.sprite_set if form != null else null
+
+
+func _play_visible_state(pawn: TacticsPawn, state: String, purpose: String) -> bool:
+	if pawn == null:
+		return false
+	var sprite: TacticsPawnSprite = pawn.get_node_or_null("Character") as TacticsPawnSprite
+	if sprite == null:
+		return true
+	if not sprite.can_play_state(state):
+		return false
+	if pawn.res != null:
+		pawn.res.force_animation(state, _duration_for_purpose(purpose))
+	return true
+
+
+func _duration_for_purpose(purpose: String) -> float:
+	match purpose:
+		"move_use":
+			return 0.45
+		"faint":
+			return 0.8
+		"receive_damage":
+			return 0.35
+		_:
+			return 0.35
+
+
+func _fallback_reason(chosen: String, requested: String, visible: bool) -> String:
+	if not visible:
+		return "sprite_runtime_unplayable"
+	if chosen != requested:
+		return "missing_exact_animation"
+	return ""

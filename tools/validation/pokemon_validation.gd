@@ -44,6 +44,20 @@ class MoveEntry:
 	var imported: bool = false
 
 
+class ItemEntry:
+	extends RefCounted
+	var slug: String = ""
+	var name: String = ""
+	var category: String = "unknown"
+	var sprite_key: String = ""
+	var icon_path: String = ""
+	var use_kind: int = 0
+	var effect_count: int = 0
+	var passive_effect_count: int = 0
+	var unsupported_effect_count: int = 0
+	var imported: bool = false
+
+
 var run_started_at: String = ""
 var type_chart_loaded: bool = false
 var type_count: int = 0
@@ -52,6 +66,7 @@ var effectiveness_buckets: Array[int] = []
 
 var species_entries: Array[SpeciesEntry] = []
 var move_entries: Array[MoveEntry] = []
+var item_entries: Array[ItemEntry] = []
 var instance_paths_written: Array[String] = []
 var aggregate_warnings: Array[String] = []
 var errors: Array[String] = []
@@ -67,6 +82,10 @@ func add_species(entry: SpeciesEntry) -> void:
 
 func add_move(entry: MoveEntry) -> void:
 	move_entries.append(entry)
+
+
+func add_item(entry: ItemEntry) -> void:
+	item_entries.append(entry)
 
 
 func record_instance(path: String) -> void:
@@ -133,6 +152,7 @@ func _render() -> String:
 	out.append("Started: %s" % run_started_at)
 	out.append("Species imported: %d" % _imported_species_count())
 	out.append("Moves imported: %d" % _imported_moves_count())
+	out.append("Items imported: %d" % _imported_items_count())
 	out.append("Instance templates written: %d" % instance_paths_written.size())
 	out.append("Errors: %d" % errors.size())
 	out.append("Aggregate warnings: %d" % aggregate_warnings.size())
@@ -204,6 +224,19 @@ func _render() -> String:
 			out.append("    UNSUPPORTED effect tags: %s" % ", ".join(move.unsupported_effect_tags))
 	out.append("")
 
+	out.append("Items")
+	out.append("-----")
+	out.append("Imported: %d" % _imported_items_count())
+	out.append("Categories: %s" % JSON.stringify(_item_category_counts()))
+	out.append("Mapped RawAsset icons: %d" % _item_icon_mapped_count())
+	out.append("Unmapped RawAsset icons: %d" % _item_icon_unmapped_count())
+	out.append("Supported runtime effect records: %d" % _item_effect_record_count())
+	out.append("Passive held effect records: %d" % _item_passive_record_count())
+	out.append("Unsupported/report-only item effect tags: %d" % _item_unsupported_count())
+	for item in _unmapped_icon_items():
+		out.append("    unmapped icon: %s sprite_key=%s" % [String(item.get("slug", "")), String(item.get("sprite_key", ""))])
+	out.append("")
+
 	if not instance_paths_written.is_empty():
 		out.append("Instance templates")
 		out.append("------------------")
@@ -244,6 +277,14 @@ func _imported_moves_count() -> int:
 	return n
 
 
+func _imported_items_count() -> int:
+	var n: int = 0
+	for item in item_entries:
+		if item.imported:
+			n += 1
+	return n
+
+
 func _json_payload() -> Dictionary:
 	return {
 		"schema_version": 1,
@@ -251,6 +292,7 @@ func _json_payload() -> Dictionary:
 		"summary": {
 			"species_imported": _imported_species_count(),
 			"moves_imported": _imported_moves_count(),
+			"items_imported": _imported_items_count(),
 			"instances_written": instance_paths_written.size(),
 			"errors": errors.size(),
 			"warnings": aggregate_warnings.size(),
@@ -264,6 +306,16 @@ func _json_payload() -> Dictionary:
 		},
 		"species": _species_json(),
 		"moves": _moves_json(),
+		"items": _items_json(),
+		"item_summary": {
+			"categories": _item_category_counts(),
+			"mapped_icons": _item_icon_mapped_count(),
+			"unmapped_icons": _item_icon_unmapped_count(),
+			"unmapped_icon_items": _unmapped_icon_items(),
+			"supported_effect_records": _item_effect_record_count(),
+			"passive_effect_records": _item_passive_record_count(),
+			"unsupported_effect_tags": _item_unsupported_count(),
+		},
 		"instance_paths_written": instance_paths_written,
 		"warnings": aggregate_warnings,
 		"errors": errors,
@@ -316,9 +368,86 @@ func _moves_json() -> Array:
 	return out
 
 
+func _items_json() -> Array:
+	var out: Array = []
+	for item in item_entries:
+		out.append({
+			"slug": item.slug,
+			"name": item.name,
+			"category": item.category,
+			"sprite_key": item.sprite_key,
+			"icon_path": item.icon_path,
+			"icon_mapped": not item.icon_path.is_empty(),
+			"use_kind": item.use_kind,
+			"effect_count": item.effect_count,
+			"passive_effect_count": item.passive_effect_count,
+			"unsupported_effect_count": item.unsupported_effect_count,
+			"imported": item.imported,
+		})
+	return out
+
+
 func _status_counts() -> Dictionary:
 	var out: Dictionary = {}
 	for entry in species_entries:
 		var status: String = entry.status if not entry.status.is_empty() else ("imported" if entry.imported else "failed")
 		out[status] = int(out.get(status, 0)) + 1
+	return out
+
+
+func _item_category_counts() -> Dictionary:
+	var out: Dictionary = {}
+	for item in item_entries:
+		if item.imported:
+			out[item.category] = int(out.get(item.category, 0)) + 1
+	return out
+
+
+func _item_effect_record_count() -> int:
+	var count: int = 0
+	for item in item_entries:
+		count += item.effect_count
+	return count
+
+
+func _item_passive_record_count() -> int:
+	var count: int = 0
+	for item in item_entries:
+		count += item.passive_effect_count
+	return count
+
+
+func _item_unsupported_count() -> int:
+	var count: int = 0
+	for item in item_entries:
+		count += item.unsupported_effect_count
+	return count
+
+
+func _item_icon_mapped_count() -> int:
+	var count: int = 0
+	for item in item_entries:
+		if item.imported and not item.icon_path.is_empty():
+			count += 1
+	return count
+
+
+func _item_icon_unmapped_count() -> int:
+	var count: int = 0
+	for item in item_entries:
+		if item.imported and item.icon_path.is_empty():
+			count += 1
+	return count
+
+
+func _unmapped_icon_items() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for item in item_entries:
+		if not item.imported or not item.icon_path.is_empty():
+			continue
+		out.append({
+			"slug": item.slug,
+			"name": item.name,
+			"sprite_key": item.sprite_key,
+		})
 	return out

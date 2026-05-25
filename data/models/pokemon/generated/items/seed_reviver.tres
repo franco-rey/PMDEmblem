@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_efuf3"]
+
+[resource]
+script = ExtResource("1_efuf3")
+item_id = "seed_reviver"
+name = "Reviver Seed"
+description = "A seed that revives a fainted Pokémon, then becomes a Plain Seed after use."
+category = "seed"
+use_kind = 3
+price = 50
+bag_effect = true
+usage_type = 4
+sort_category = 7
+sprite_key = "Seed_Yellow"
+icon_path = "res://assets/visuals/raw_asset/Item/Seed_Yellow.None.png"
+icon_index = 4
+item_states = Array[String](["PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.SeedState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.RestoreBellyEvent, PMDC", "PMDC.Dungeon.SeedState, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.RestoreBellyEvent, PMDC"])
+source_json_path = "DumpAsset/Data/Item/seed_reviver.json"

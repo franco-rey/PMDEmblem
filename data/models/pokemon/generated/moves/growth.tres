@@ -14,5 +14,25 @@ tactical_range_kind = 6
 tactical_range_value = 0
 target_alignment = 1
 effect_tags = Array[String](["PMDC.Dungeon.WeatherStackEvent, PMDC"])
-unsupported_effect_tags = Array[String](["PMDC.Dungeon.WeatherStackEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"delta": 1,
+"family": "weather_stat_stage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.WeatherStackEvent, PMDC",
+"stat": "attack",
+"status_id": "mod_attack",
+"target": "hit_target",
+"weather_delta": 2,
+"weather_id": "sunny"
+}, {
+"delta": 1,
+"family": "weather_stat_stage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.WeatherStackEvent, PMDC",
+"stat": "special_attack",
+"status_id": "mod_special_attack",
+"target": "hit_target",
+"weather_delta": 2,
+"weather_id": "sunny"
+}])
 animation_key = "status_attack"

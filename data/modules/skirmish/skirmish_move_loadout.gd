@@ -26,14 +26,19 @@ static func clone_for_side(template: PokemonInstanceResource, team: int, control
 	instance.species = template.species
 	instance.form_index = template.form_index
 	instance.level = template.level
+	instance.experience = template.experience
 	instance.current_hp = PokemonInstanceResource.CURRENT_HP_AUTO if template.current_hp == PokemonInstanceResource.CURRENT_HP_AUTO else template.current_hp
 	instance.move_slots = template.move_slots.duplicate()
 	instance.pp_state = template.pp_state.duplicate()
+	instance.known_move_ids = template.known_move_ids.duplicate()
 	instance.team = team
 	instance.control_type = control_type
 	instance.nickname = template.nickname
 	instance.movement_override = template.movement_override
 	instance.recruited = template.recruited
+	instance.nature_id = template.nature_id
+	instance.permanent_modifiers = template.permanent_modifiers.duplicate(true)
+	instance.held_item = template.held_item
 	instance.runtime_modifiers = template.runtime_modifiers.duplicate(true)
 	instance.temporary_statuses = template.temporary_statuses.duplicate()
 	return instance

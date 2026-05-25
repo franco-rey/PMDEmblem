@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_311wo"]
+
+[resource]
+script = ExtResource("1_311wo")
+item_id = "held_x_ray_specs"
+name = "X-Ray Specs"
+description = "A held item that enables the Pokémon to see enemies through heavy darkness."
+category = "held"
+use_kind = 2
+price = 200
+sort_category = 1
+sprite_key = "Specs_Red"
+icon_path = "res://assets/visuals/raw_asset/Item/Specs_Red.None.png"
+icon_index = -1
+item_states = Array[String](["PMDC.Dungeon.EquipState, PMDC", "PMDC.Dungeon.HeldState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.EquipState, PMDC", "PMDC.Dungeon.HeldState, PMDC"])
+source_json_path = "DumpAsset/Data/Item/held_x_ray_specs.json"

@@ -14,5 +14,11 @@ pp = 11
 tactical_range_kind = 5
 tactical_range_value = 3
 effect_tags = Array[String](["PMDC.Dungeon.DisableBattleEvent, PMDC"])
-unsupported_effect_tags = Array[String](["PMDC.Dungeon.DisableBattleEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "status",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.DisableBattleEvent, PMDC",
+"status_id": "disable",
+"target": "hit_target"
+}])
 animation_key = "status_attack"

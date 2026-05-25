@@ -15,7 +15,6 @@ accuracy = 70
 pp = 16
 tactical_range_kind = 1
 effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.OnHitEvent, PMDC"])
-unsupported_effect_tags = Array[String](["PMDC.Dungeon.OnHitEvent, PMDC"])
 effect_records = Array[Dictionary]([{
 "family": "damage",
 "source_bucket": "OnHits",

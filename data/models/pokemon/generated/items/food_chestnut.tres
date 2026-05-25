@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_12xfo"]
+
+[resource]
+script = ExtResource("1_12xfo")
+item_id = "food_chestnut"
+name = "Chestnut"
+released = false
+category = "food"
+use_kind = 1
+usage_type = 4
+sort_category = 4
+icon_index = 2
+item_states = Array[String](["PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.FoodState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.FoodState, PMDC"])
+source_json_path = "DumpAsset/Data/Item/food_chestnut.json"

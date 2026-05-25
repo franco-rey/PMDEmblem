@@ -70,6 +70,19 @@ func execute(attacker: TacticsPawn, declared_target: TacticsPawn, move_index: in
 		"slot_index": move_index,
 		"remaining": attacker.stats.current_pp[move_index] if move_index < attacker.stats.current_pp.size() else 0,
 	})
+	var pressure_cost: int = intrinsic_service.pressure_extra_pp_cost(targets)
+	if pressure_cost > 0:
+		for i in range(pressure_cost):
+			attacker.stats.consume_pp(move_index)
+		_append(battle_log, {
+			"kind": "pp_decremented",
+			"attacker": attacker,
+			"move_id": move.move_id,
+			"slot_index": move_index,
+			"remaining": attacker.stats.current_pp[move_index] if move_index < attacker.stats.current_pp.size() else 0,
+			"source": "pressure",
+			"amount": pressure_cost,
+		})
 
 	var hit_count: int = maxi(1, move.strike_count)
 	if hit_count > 1:
@@ -84,7 +97,7 @@ func execute(attacker: TacticsPawn, declared_target: TacticsPawn, move_index: in
 		for target in targets:
 			if target == null or not target.is_alive():
 				continue
-			_resolve_one_target(attacker, target, move, hit_index, type_chart, rng, battle_log)
+			_resolve_one_target(attacker, target, move, hit_index, type_chart, rng, battle_log, battle_level)
 	if move.effect_records.is_empty() and not move.unsupported_effect_tags.is_empty():
 		for unsupported_tag in move.unsupported_effect_tags:
 			_append(battle_log, {
@@ -103,7 +116,8 @@ func _resolve_one_target(
 		hit_index: int,
 		type_chart: TypeChartResource,
 		rng: RandomNumberGenerator,
-		battle_log: BattleLog
+		battle_log: BattleLog,
+		battle_level: TacticsLevel = null
 ) -> void:
 	var was_active: bool = target.stats.is_active()
 	var hit: bool = AccuracyResolver.roll(move, rng)
@@ -136,9 +150,11 @@ func _resolve_one_target(
 			"multiplier": effectiveness,
 			"stab": stab,
 		})
+		if damage_done > 0:
+			intrinsic_service.after_damage(attacker, target, move, damage_done, rng, battle_log)
 
 	for record in _records_for_runtime(move):
-		_apply_effect_record(record, attacker, target, move, damage_done, rng, battle_log)
+		_apply_effect_record(record, attacker, target, move, damage_done, rng, battle_log, battle_level)
 
 	_apply_counter(attacker, target, move, damage_done, battle_log)
 
@@ -159,10 +175,13 @@ func _apply_effect_record(
 		move: PokemonMoveResource,
 		damage_done: int,
 		rng: RandomNumberGenerator,
-		battle_log: BattleLog
+		battle_log: BattleLog,
+		battle_level: TacticsLevel = null
 ) -> void:
 	var family: String = String(record.get("family", ""))
 	if family == "damage" or family == "multi_hit":
+		return
+	if bool(record.get("require_damage", false)) and damage_done <= 0:
 		return
 	var chance: int = int(record.get("chance", 100))
 	if chance < 100:
@@ -178,6 +197,9 @@ func _apply_effect_record(
 				"roll": roll,
 			})
 			return
+	if family == "field_condition":
+		_apply_field_condition(record, attacker, move, battle_level, battle_log)
+		return
 	var recipient: TacticsPawn = _recipient_for(record, attacker, target)
 	if recipient == null or recipient.stats == null:
 		return
@@ -185,6 +207,8 @@ func _apply_effect_record(
 		"status":
 			var status_id: String = String(record.get("status_id", ""))
 			if status_id.is_empty():
+				return
+			if intrinsic_service.blocks_status(recipient.stats, status_id, battle_log, recipient, move):
 				return
 			var payload: Dictionary = {"move_id": move.move_id, "source_event": record.get("source_event", "")}
 			recipient.stats.apply_battle_status(status_id, payload)
@@ -194,6 +218,7 @@ func _apply_effect_record(
 				"move_id": move.move_id,
 				"status_id": status_id,
 			})
+			intrinsic_service.maybe_reflect_status(attacker, recipient, status_id, move, battle_log)
 		"status_remove":
 			var remove_id: String = String(record.get("status_id", ""))
 			if remove_id.is_empty():
@@ -218,6 +243,32 @@ func _apply_effect_record(
 					"after": change["after"],
 					"delta": change["delta"],
 				})
+		"weather_stat_stage":
+			var weather_id: String = String(record.get("weather_id", ""))
+			var delta: int = int(record.get("weather_delta", record.get("delta", 0))) if battle_level != null and battle_level.has_battle_condition(weather_id) else int(record.get("delta", 0))
+			var weather_change: Dictionary = recipient.stats.change_stat_stage(String(record.get("stat", "")), delta)
+			if not weather_change.is_empty():
+				_append(battle_log, {
+					"kind": "stat_stage_changed",
+					"unit": recipient,
+					"move_id": move.move_id,
+					"stat": weather_change["stat"],
+					"before": weather_change["before"],
+					"after": weather_change["after"],
+					"delta": weather_change["delta"],
+					"condition_id": weather_id if battle_level != null and battle_level.has_battle_condition(weather_id) else "",
+				})
+		"ability_change":
+			var target_ability: String = String(record.get("target_ability", ""))
+			if target_ability.is_empty():
+				return
+			recipient.stats.set_temporary_intrinsic(target_ability, {"move_id": move.move_id, "source_event": record.get("source_event", "")})
+			_append(battle_log, {
+				"kind": "intrinsic_changed",
+				"unit": recipient,
+				"move_id": move.move_id,
+				"intrinsic_id": target_ability,
+			})
 		"heal":
 			var amount: int = _heal_amount(record, recipient)
 			if amount <= 0:
@@ -274,6 +325,13 @@ func _apply_effect_record(
 					"kind": "damage_dealt",
 					"source": "fixed_damage",
 				})
+		"level_damage":
+			var divisor: int = maxi(1, int(record.get("denominator", 1)))
+			var level_damage: int = maxi(1, int(floor(float(attacker.stats.level * int(record.get("numerator", 1))) / float(divisor))))
+			_apply_damage(attacker, recipient, move, level_damage, battle_log, {
+				"kind": "damage_dealt",
+				"source": "level_damage",
+			})
 		"percent_damage":
 			var pct_damage: int = int(floor(float(recipient.stats.max_health) * float(record.get("percent", 0.0))))
 			if pct_damage > 0:
@@ -281,6 +339,26 @@ func _apply_effect_record(
 					"kind": "damage_dealt",
 					"source": "percent_damage",
 				})
+		"cure_statuses":
+			_cure_statuses(recipient, move, battle_log)
+		"hp_to_1":
+			var hp_delta: int = maxi(0, recipient.stats.curr_health - 1)
+			if hp_delta > 0:
+				_apply_damage(attacker, recipient, move, hp_delta, battle_log, {
+					"kind": "damage_dealt",
+					"source": "hp_to_1",
+				})
+		"pp_damage":
+			_apply_pp_damage(recipient, move, int(record.get("amount", 0)), battle_log)
+		"tactical_noop":
+			_append(battle_log, {
+				"kind": "effect_deferred",
+				"attacker": attacker,
+				"defender": target,
+				"move_id": move.move_id,
+				"effect_family": family,
+				"source_event": record.get("source_event", ""),
+			})
 		_:
 			_append(battle_log, {
 				"kind": "effect_unsupported",
@@ -290,6 +368,64 @@ func _apply_effect_record(
 				"effect_family": family,
 				"source_event": record.get("source_event", ""),
 			})
+
+
+func _apply_field_condition(record: Dictionary, attacker: TacticsPawn, move: PokemonMoveResource, battle_level: TacticsLevel, battle_log: BattleLog) -> void:
+	var condition_id: String = String(record.get("condition_id", "")).strip_edges().to_lower()
+	if condition_id.is_empty() or battle_level == null:
+		return
+	battle_level.set_battle_condition(condition_id, {
+		"move_id": move.move_id,
+		"attacker": attacker.name if attacker != null else "",
+		"counter": int(record.get("counter", 0)),
+		"source_event": record.get("source_event", ""),
+	})
+	_append(battle_log, {
+		"kind": "field_condition_applied",
+		"condition_id": condition_id,
+		"move_id": move.move_id,
+		"attacker": attacker,
+		"source_event": record.get("source_event", ""),
+	})
+
+
+func _cure_statuses(unit: TacticsPawn, move: PokemonMoveResource, battle_log: BattleLog) -> void:
+	if unit == null or unit.stats == null:
+		return
+	var statuses: Array[String] = []
+	for status_id in unit.stats.battle_statuses.keys():
+		statuses.append(String(status_id))
+	for status_id in statuses:
+		var removed: Dictionary = unit.stats.remove_battle_status(status_id)
+		if removed.is_empty():
+			continue
+		_append(battle_log, {
+			"kind": "status_removed",
+			"unit": unit,
+			"move_id": move.move_id,
+			"status_id": status_id,
+			"source": "cure_statuses",
+		})
+
+
+func _apply_pp_damage(unit: TacticsPawn, move: PokemonMoveResource, amount: int, battle_log: BattleLog) -> void:
+	if unit == null or unit.stats == null or amount <= 0:
+		return
+	for i in range(unit.stats.current_pp.size()):
+		if unit.stats.current_pp[i] <= 0:
+			continue
+		var before: int = unit.stats.current_pp[i]
+		unit.stats.current_pp[i] = maxi(0, before - amount)
+		_append(battle_log, {
+			"kind": "pp_reduced",
+			"unit": unit,
+			"move_id": move.move_id,
+			"slot_index": i,
+			"before": before,
+			"after": unit.stats.current_pp[i],
+			"amount": before - unit.stats.current_pp[i],
+		})
+		return
 
 
 func _records_for_runtime(move: PokemonMoveResource) -> Array[Dictionary]:

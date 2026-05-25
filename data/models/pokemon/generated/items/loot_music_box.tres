@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_mkkpf"]
+
+[resource]
+script = ExtResource("1_mkkpf")
+item_id = "loot_music_box"
+name = "Music Box"
+description = "An enchanting music box that plays a beautiful melody. It is said to draw something special to it when it is kept close by."
+category = "category_15"
+price = 80000
+sort_category = 15
+sprite_key = "Box_Blue"
+icon_path = "res://assets/visuals/raw_asset/Item/Box_Blue.None.png"
+icon_index = -1
+source_json_path = "DumpAsset/Data/Item/loot_music_box.json"

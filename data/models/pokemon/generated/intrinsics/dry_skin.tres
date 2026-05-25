@@ -6,6 +6,6 @@
 script = ExtResource("1_sf2nv")
 intrinsic_id = "dry_skin"
 display_name = "Dry Skin"
-supported_hook_families = Array[String](["battle_start"])
-unsupported_hook_families = Array[String](["before_accuracy", "before_damage", "after_damage", "status_application", "target_legality"])
-report_summary = "Recorded for M6; combat-specific hooks are explicit unsupported entries."
+source_event_tags = Array[String](["PMDC.Dungeon.AbsorbElementEvent, PMDC", "PMDC.Dungeon.IsolateElementEvent, PMDC", "PMDC.Dungeon.MultiplyElementEvent, PMDC", "PMDC.Dungeon.RestoreHPEvent, PMDC", "PMDC.Dungeon.WeatherAlignedEvent, PMDC", "RogueEssence.Content.SingleEmitter, RogueEssence", "RogueEssence.Content.StaticAnim, RogueEssence", "RogueEssence.Data.IntrinsicData, RogueEssence"])
+supported_hook_families = Array[String](["battle_start", "field_condition", "turn_start"])
+report_summary = "Supported skirmish hooks imported from intrinsic metadata."

@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_8w7cj"]
+
+[resource]
+script = ExtResource("1_8w7cj")
+item_id = "seed_doom"
+name = "Doom Seed"
+description = "A seed that reduces the Pokémon's level by 5."
+category = "seed"
+use_kind = 1
+price = 50
+usage_type = 4
+sort_category = 7
+sprite_key = "Seed_DarkBlue"
+icon_path = "res://assets/visuals/raw_asset/Item/Seed_DarkBlue.None.png"
+icon_index = 4
+item_states = Array[String](["PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.SeedState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.EdibleState, PMDC", "PMDC.Dungeon.LevelChangeEvent, PMDC", "PMDC.Dungeon.RestoreBellyEvent, PMDC", "PMDC.Dungeon.SeedState, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.RestoreBellyEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "level_change",
+"levels": -5,
+"source_event": "PMDC.Dungeon.LevelChangeEvent, PMDC"
+}])
+source_json_path = "DumpAsset/Data/Item/seed_doom.json"

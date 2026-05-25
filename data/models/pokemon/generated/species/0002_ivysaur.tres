@@ -63,5 +63,13 @@ teach_skills = Array[String](["cut", "strength", "solar_beam", "toxic", "double_
 shared_skills = Array[String](["petal_dance", "light_screen", "skull_bash", "curse", "charm", "safeguard", "grass_whistle", "magical_leaf", "amnesia", "nature_power", "ingrain", "leaf_storm", "sludge", "power_whip", "giga_drain", "endure", "grassy_terrain"])
 secret_skills = Array[String](["swords_dance", "body_slam", "double_edge", "mimic", "defense_curl", "substitute", "snore", "mud_slap", "endure", "swagger", "fury_cutter", "sleep_talk", "synthesis", "knock_off", "seed_bomb", "headbutt", "string_shot", "worry_seed", "grass_pledge", "bind", "giga_drain"])
 evolution_from = "bulbasaur"
+evolutions = Array[Dictionary]([{
+"requirements": Array[Dictionary]([{
+"kind": "level",
+"level": 32,
+"source_event": "PMDC.Data.EvoLevel, PMDC"
+}]),
+"result": "venusaur"
+}])
 skill_group1 = "monster"
 skill_group2 = "grass"

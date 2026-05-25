@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_6olfq"]
+
+[resource]
+script = ExtResource("1_6olfq")
+item_id = "machine_recall_box"
+name = "Recall Box"
+description = "A marvelous box that lets the user recall any move they've learned in the past."
+category = "category_12"
+use_kind = 1
+price = 800
+usage_type = 2
+sort_category = 12
+sprite_key = "Machine_Blue"
+icon_path = "res://assets/visuals/raw_asset/Item/Machine_Blue.None.png"
+icon_index = 12
+item_states = Array[String](["PMDC.Dungeon.MachineState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.LinkBoxEvent, PMDC", "PMDC.Dungeon.MachineState, PMDC", "PMDC.Dungeon.MoveDeleteEvent, PMDC", "PMDC.Dungeon.MoveLearnEvent, PMDC", "PMDC.Dungeon.RecallBoxEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.LinkBoxEvent, PMDC", "PMDC.Dungeon.MoveDeleteEvent, PMDC", "PMDC.Dungeon.MoveLearnEvent, PMDC", "PMDC.Dungeon.RecallBoxEvent, PMDC"])
+source_json_path = "DumpAsset/Data/Item/machine_recall_box.json"

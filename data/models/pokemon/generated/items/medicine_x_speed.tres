@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_h7b3f"]
+
+[resource]
+script = ExtResource("1_h7b3f")
+item_id = "medicine_x_speed"
+name = "X Speed"
+description = "An item that boosts Movement Speed by 1 stage. It affects all team members up to 5 tiles away."
+category = "medicine"
+use_kind = 1
+price = 300
+usage_type = 1
+sort_category = 10
+sprite_key = "Medicine_Orange"
+icon_path = "res://assets/visuals/raw_asset/Item/Medicine_Orange.None.png"
+icon_index = 7
+source_effect_tags = Array[String](["PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
+source_json_path = "DumpAsset/Data/Item/medicine_x_speed.json"

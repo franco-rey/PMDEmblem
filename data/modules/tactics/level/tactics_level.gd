@@ -44,6 +44,8 @@ var battle_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 ## Battle event stream. M2 prints it; later milestones can attach UI consumers.
 var battle_log: BattleLog = BattleLog.new()
 var intrinsic_service: BattleIntrinsicService = BattleIntrinsicService.new()
+## Battle-scoped weather/map statuses set by PMDO map-status events.
+var battle_conditions: Dictionary = {}
 var battle_finished: bool = false
 ## M3 scheduler. Null until `_start_scheduler()` runs (once both participants
 ## report configured).
@@ -173,10 +175,11 @@ func _run_scheduler_loop(delta: float) -> void:
 
 
 func _start_scheduler() -> void:
+	battle_conditions = {}
 	battle_units = _build_battle_units()
 	scheduler.start_battle(battle_units, int(battle_rng.seed))
 	_scheduler_started = true
-	intrinsic_service.log_battle_start(battle_units, battle_log)
+	intrinsic_service.log_battle_start(battle_units, battle_log, self)
 
 
 func _build_battle_units() -> Array[BattleUnit]:
@@ -210,6 +213,7 @@ func _on_turn_started(unit: BattleUnit) -> void:
 	if not pawn.is_alive():
 		return
 	_expire_turn_start_statuses(pawn)
+	intrinsic_service.on_turn_started(pawn, self, battle_log)
 	pawn.reset_turn()
 	pawn.res.has_acted_this_round = false
 	pawn.res.use_legacy_attack_fallback = false
@@ -268,6 +272,33 @@ func get_type_chart() -> TypeChartResource:
 	if _type_chart == null:
 		_type_chart = load(TYPE_CHART_PATH) as TypeChartResource
 	return _type_chart
+
+
+func set_battle_condition(condition_id: String, payload: Dictionary = {}) -> void:
+	var key: String = condition_id.strip_edges().to_lower()
+	if key.is_empty():
+		return
+	var stored: Dictionary = payload.duplicate(true)
+	stored["condition_id"] = key
+	battle_conditions[key] = stored
+
+
+func has_battle_condition(condition_id: String) -> bool:
+	var key: String = condition_id.strip_edges().to_lower()
+	return not key.is_empty() and battle_conditions.has(key)
+
+
+func battle_condition(condition_id: String) -> Dictionary:
+	var key: String = condition_id.strip_edges().to_lower()
+	var raw: Variant = battle_conditions.get(key, {})
+	return raw.duplicate(true) if raw is Dictionary else {}
+
+
+func current_weather() -> String:
+	for key in ["rain", "sunny", "sandstorm", "hail", "snow"]:
+		if battle_conditions.has(key):
+			return key
+	return ""
 
 
 func check_battle_end(player_units: Array, enemy_units: Array) -> int:

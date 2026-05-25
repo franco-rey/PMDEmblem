@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_nh3u6"]
+
+[resource]
+script = ExtResource("1_nh3u6")
+item_id = "ammo_geo_pebble"
+name = "Geo Pebble"
+description = "A weapon to be thrown. It flies high in an arc to clear obstacles and strike the target. It causes the target to flinch."
+category = "category_2"
+use_kind = 1
+price = 1
+max_stack = 9
+usage_type = 3
+sort_category = 2
+sprite_key = "Rock_Gray"
+icon_path = "res://assets/visuals/raw_asset/Item/Rock_Gray.None.png"
+item_states = Array[String](["PMDC.Dungeon.AmmoState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.AdditionalEffectState, PMDC", "PMDC.Dungeon.AdditionalEvent, PMDC", "PMDC.Dungeon.AmmoState, PMDC", "PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.StatusBattleEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.AdditionalEvent, PMDC", "PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDC.Dungeon.StatusBattleEvent, PMDC"])
+source_json_path = "DumpAsset/Data/Item/ammo_geo_pebble.json"

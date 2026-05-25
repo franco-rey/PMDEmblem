@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_yp751"]
+
+[resource]
+script = ExtResource("1_yp751")
+item_id = "loot_comet_shard"
+name = "Comet Shard"
+description = "A shard that fell to the ground when a comet passed nearby. It sells for an extremely high price."
+category = "category_15"
+price = 30000
+sort_category = 15
+sprite_key = "Crystal_Blue"
+icon_path = "res://assets/visuals/raw_asset/Item/Crystal_Blue.None.png"
+icon_index = -1
+source_json_path = "DumpAsset/Data/Item/loot_comet_shard.json"

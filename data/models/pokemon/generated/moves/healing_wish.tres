@@ -14,5 +14,26 @@ tactical_range_kind = 5
 tactical_range_value = 4
 target_alignment = 2
 effect_tags = Array[String](["PMDC.Dungeon.RestoreHPEvent, PMDC", "PMDC.Dungeon.RemoveStateStatusBattleEvent, PMDC", "PMDC.Dungeon.AddContextStateEvent, PMDC", "PMDC.Dungeon.HPTo1Event, PMDC"])
-unsupported_effect_tags = Array[String](["PMDC.Dungeon.RestoreHPEvent, PMDC", "PMDC.Dungeon.RemoveStateStatusBattleEvent, PMDC", "PMDC.Dungeon.AddContextStateEvent, PMDC", "PMDC.Dungeon.HPTo1Event, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "tactical_noop",
+"source_bucket": "BeforeActions",
+"source_event": "PMDC.Dungeon.AddContextStateEvent, PMDC",
+"target": "self"
+}, {
+"family": "heal",
+"percent": 1.0,
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.RestoreHPEvent, PMDC",
+"target": "hit_target"
+}, {
+"family": "cure_statuses",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.RemoveStateStatusBattleEvent, PMDC",
+"target": "hit_target"
+}, {
+"family": "hp_to_1",
+"source_bucket": "AfterActions",
+"source_event": "PMDC.Dungeon.HPTo1Event, PMDC",
+"target": "self"
+}])
 animation_key = "status_attack"

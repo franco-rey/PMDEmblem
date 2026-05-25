@@ -46,9 +46,10 @@ func build_payload() -> Dictionary:
 	return {
 		"schema_version": 1,
 		"source": "CurrentRosterReadiness",
-		"release": "0.11.0",
+		"release": "0.12.0",
 		"roster_count": entries.size(),
 		"summary": _summary(entries),
+		"items": PokemonItemService.validation_report(),
 		"pokemon": entries,
 	}
 
@@ -78,6 +79,9 @@ func validate_payload(payload: Dictionary) -> Array[String]:
 			failures.append("%s has fewer than four level-appropriate moves" % slug)
 		if int(entry.get("missing_move_animation_mappings", 0)) > 0:
 			failures.append("%s has unmapped move animations" % slug)
+		var progression: Dictionary = entry.get("progression", {})
+		for missing_progression in progression.get("missing", []):
+			failures.append("%s progression missing %s" % [slug, String(missing_progression)])
 		var readiness: Dictionary = entry.get("readiness", {})
 		for missing in readiness.get("missing", []):
 			failures.append("%s missing %s" % [slug, String(missing)])
@@ -108,6 +112,9 @@ func _entry_for_path(path: String) -> Dictionary:
 	var move_entries: Array[Dictionary] = _move_entries(instance, sprite_set, readiness_unsupported)
 	var sprite_entry: Dictionary = _sprite_entry(sprite_set, readiness_missing)
 	var intrinsic_entries: Array[Dictionary] = _intrinsic_entries(form, readiness_unsupported)
+	var progression_entry: Dictionary = _progression_entry(instance, species, form)
+	for missing_progression in progression_entry.get("missing", []):
+		readiness_missing.append("progression:%s" % String(missing_progression))
 	var move_pool: Array[PokemonMoveResource] = SkirmishMoveLoadout.move_pool_for_instance(instance)
 	if instance.move_slots.is_empty():
 		readiness_missing.append("move_slots")
@@ -130,6 +137,7 @@ func _entry_for_path(path: String) -> Dictionary:
 		"learnsets": _learnset_entry(species),
 		"intrinsics": intrinsic_entries,
 		"form": _form_entry(species, form),
+		"progression": progression_entry,
 		"sprites": sprite_entry,
 		"readiness": {
 			"missing": _unique_sorted(readiness_missing),
@@ -236,6 +244,7 @@ func _sprite_entry(sprite_set: PokemonSpriteSetResource, missing: Array[String])
 		"animation_state_count": state_entries.size(),
 		"animation_states": state_entries,
 		"move_animation_map": sprite_set.move_animation_map.duplicate(true),
+		"playable_animation_state_count": _playable_animation_state_count(sprite_set),
 		"external_path_leaks": _unique_sorted(leaks),
 		"portrait_paths": portraits,
 		"validation_warnings": sprite_set.validation_warnings.duplicate(),
@@ -304,14 +313,41 @@ func _form_entry(species: PokemonSpeciesResource, form: PokemonFormResource) -> 
 		},
 		"exp_table": form.exp_table,
 		"join_rate": form.join_rate,
+		"exp_yield": form.exp_yield,
 		"evolution_from": species.evolution_from,
+		"evolutions": species.evolutions.duplicate(true),
 		"skill_groups": [species.skill_group1, species.skill_group2],
 		"temporary": form.temporary,
-		"progression_placeholders": {
-			"stat_growth": "deferred_to_0.12.0",
-			"xp_runtime": "deferred_to_0.12.0",
-			"evolution_runtime": "deferred_to_0.12.0",
-		},
+	}
+
+
+func _progression_entry(instance: PokemonInstanceResource, species: PokemonSpeciesResource, form: PokemonFormResource) -> Dictionary:
+	var missing: Array[String] = []
+	if form == null:
+		missing.append("form")
+	else:
+		if form.exp_table.is_empty():
+			missing.append("exp_table")
+		if form.exp_table_values.is_empty():
+			missing.append("exp_table_values")
+		if form.exp_yield <= 0:
+			missing.append("exp_yield")
+	if species == null:
+		missing.append("species")
+	elif species.level_skills.is_empty():
+		missing.append("level_skills")
+	var calculated: Dictionary = PokemonStatCalculator.calculate_for_instance(instance)
+	return {
+		"missing": _unique_sorted(missing),
+		"experience": instance.experience,
+		"xp_for_level": PokemonExperienceService.xp_for_level(form, instance.level),
+		"xp_to_next": PokemonExperienceService.xp_to_next_level(form, instance.level, maxi(instance.experience, PokemonExperienceService.xp_for_level(form, instance.level))),
+		"known_move_count": instance.known_move_ids.size(),
+		"nature_id": instance.nature_id,
+		"permanent_modifiers": instance.permanent_modifiers.duplicate(true),
+		"held_item": instance.held_item.item_id if instance.held_item != null else "",
+		"calculated_stats": calculated,
+		"eligible_evolutions": PokemonEvolutionService.eligible_evolution_ids(instance),
 	}
 
 
@@ -322,6 +358,8 @@ func _summary(entries: Array[Dictionary]) -> Dictionary:
 		"unsupported_entries": 0,
 		"animation_states": 0,
 		"move_animation_mappings": 0,
+		"progression_ready": 0,
+		"playable_animation_states": 0,
 	}
 	for entry in entries:
 		if bool(entry.get("battle_ready", false)):
@@ -331,8 +369,12 @@ func _summary(entries: Array[Dictionary]) -> Dictionary:
 		summary["unsupported_entries"] += (readiness.get("unsupported", []) as Array).size()
 		var sprites: Dictionary = entry.get("sprites", {})
 		summary["animation_states"] += int(sprites.get("animation_state_count", 0))
+		summary["playable_animation_states"] += int(sprites.get("playable_animation_state_count", 0))
 		var move_map: Dictionary = sprites.get("move_animation_map", {})
 		summary["move_animation_mappings"] += move_map.size()
+		var progression: Dictionary = entry.get("progression", {})
+		if (progression.get("missing", []) as Array).is_empty():
+			summary["progression_ready"] += 1
 	return summary
 
 
@@ -361,6 +403,22 @@ func _has_any_state(sprite_set: PokemonSpriteSetResource, candidates: Array) -> 
 		if sprite_set.has_animation_state(String(candidate)):
 			return true
 	return false
+
+
+func _playable_animation_state_count(sprite_set: PokemonSpriteSetResource) -> int:
+	var count: int = 0
+	var seen_paths: Dictionary = {}
+	for key in sprite_set.animation_states.keys():
+		var raw_state: Variant = sprite_set.animation_states[key]
+		if not (raw_state is Dictionary):
+			continue
+		var path: String = String((raw_state as Dictionary).get("path", ""))
+		if path.is_empty() or seen_paths.has(path):
+			continue
+		if FileAccess.file_exists(path):
+			count += 1
+			seen_paths[path] = true
+	return count
 
 
 func _has_external_marker(path: String) -> bool:
@@ -409,6 +467,10 @@ func _render_text(payload: Dictionary) -> String:
 	out.append("Battle-ready: %d" % int(summary.get("battle_ready", 0)))
 	out.append("Animation states cataloged: %d" % int(summary.get("animation_states", 0)))
 	out.append("Move animation mappings: %d" % int(summary.get("move_animation_mappings", 0)))
+	out.append("Progression-ready: %d" % int(summary.get("progression_ready", 0)))
+	out.append("Playable animation states: %d" % int(summary.get("playable_animation_states", 0)))
+	var item_summary: Dictionary = payload.get("items", {})
+	out.append("Items imported: %d" % int(item_summary.get("items", 0)))
 	out.append("Missing entries: %d" % int(summary.get("missing_entries", 0)))
 	out.append("Unsupported/report-only entries: %d" % int(summary.get("unsupported_entries", 0)))
 	out.append("")
@@ -425,6 +487,12 @@ func _render_text(payload: Dictionary) -> String:
 			int(entry.get("missing_move_animation_mappings", 0)),
 		])
 		out.append("    animation states: %d" % int(sprites.get("animation_state_count", 0)))
+		var progression: Dictionary = entry.get("progression", {})
+		out.append("    progression: xp=%d level=%d next=%d" % [
+			int(progression.get("experience", 0)),
+			int(entry.get("level", 0)),
+			int(progression.get("xp_to_next", 0)),
+		])
 		for missing in readiness.get("missing", []):
 			out.append("    missing: %s" % String(missing))
 		for unsupported in readiness.get("unsupported", []):

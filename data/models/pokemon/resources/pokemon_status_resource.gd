@@ -7,6 +7,7 @@ extends Resource
 @export var source_category: String = "battle"
 @export var duration_policy: String = "battle"
 @export var visual_key: String = ""
+@export_file("*.png") var icon_path: String = ""
 @export var source_event_tags: Array[String] = []
 @export var supported_hook_families: Array[String] = []
 @export var unsupported_hook_families: Array[String] = []

@@ -11,9 +11,9 @@ description = "A seed is planted on the target. It steals some HP from the targe
 type = "grass"
 accuracy = 85
 pp = 12
+tactical_range_kind = 3
 tactical_range_value = 3
 effect_tags = Array[String](["PMDC.Dungeon.StatusBattleEvent, PMDC"])
-unsupported_effect_tags = Array[String](["HitboxAction:RogueEssence.Dungeon.ThrowAction, RogueEssence"])
 effect_records = Array[Dictionary]([{
 "family": "status",
 "source_bucket": "OnHits",

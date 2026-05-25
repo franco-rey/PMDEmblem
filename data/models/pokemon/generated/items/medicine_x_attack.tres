@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_3nvxn"]
+
+[resource]
+script = ExtResource("1_3nvxn")
+item_id = "medicine_x_attack"
+name = "X Attack"
+description = "An item that sharply raises Attack. It affects all team members up to 5 tiles away."
+category = "medicine"
+use_kind = 1
+price = 300
+usage_type = 1
+sort_category = 10
+sprite_key = "Medicine_Red"
+icon_path = "res://assets/visuals/raw_asset/Item/Medicine_Red.None.png"
+icon_index = 7
+source_effect_tags = Array[String](["PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
+unsupported_effect_tags = Array[String](["PMDC.Dungeon.StatusStackBattleEvent, PMDC"])
+source_json_path = "DumpAsset/Data/Item/medicine_x_attack.json"
