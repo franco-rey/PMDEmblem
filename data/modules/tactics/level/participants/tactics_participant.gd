@@ -16,8 +16,8 @@ func _ready() -> void:
 	res.connect("called_skip_turn", skip_turn)
 
 
-func act(delta: float, is_player: bool, parent: Node3D) -> void:
-	serv.act(delta, is_player, parent, self)
+func act(delta: float, is_human: bool, actor_parent: Node3D, target_parent: Node3D = null) -> void:
+	serv.act(delta, is_human, actor_parent, target_parent, self)
 
 
 func configure(my_camera: Resource, my_control: Resource) -> void:

@@ -16,14 +16,14 @@ func _init(_res: TacticsParticipantResource, _camera: TacticsCameraResource, _co
 	arena = _arena
 
 
-func is_pawn_configured(opponent: TacticsOpponent) -> bool:
+func is_pawn_configured(opponent: Node3D) -> bool:
 	for pawn: TacticsPawn in opponent.get_children():
 		if not pawn.center():
 			return false
 	return true
 
 
-func choose_pawn(opponent: TacticsOpponent) -> void:
+func choose_pawn(opponent: Node3D) -> void:
 	arena.reset_all_tile_markers()
 	for p: TacticsPawn in opponent.get_children():
 		if p.can_act() and p.is_alive():
@@ -34,7 +34,7 @@ func choose_pawn(opponent: TacticsOpponent) -> void:
 			return
 
 
-func chase_nearest_enemy(opponent: TacticsOpponent, player_node: Node) -> void:
+func chase_nearest_enemy(opponent: Node3D, player_node: Node) -> void:
 	if res.curr_pawn.res.can_move:
 		arena.reset_all_tile_markers()
 		arena.process_surrounding_tiles(res.curr_pawn.get_tile(), res.curr_pawn.stats.movement, opponent.get_children())

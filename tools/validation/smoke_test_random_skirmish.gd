@@ -16,6 +16,7 @@ func _init() -> void:
 	_check_different_seeds_vary()
 	_check_explicit_player_vs_random_enemy()
 	_check_build_random_compatibility()
+	_check_control_modes()
 	_check_invalid_inputs_rejected()
 
 	if failures > 0:
@@ -134,6 +135,25 @@ func _check_build_random_compatibility() -> void:
 		_assert_true(definition.enemy_team.size() == team_size, "enemy team has %d members" % team_size)
 		_assert_true(String(definition.generation_metadata.get("source", "")) == "random_generator", "metadata marked as random_generator for %dv%d" % [team_size, team_size])
 		_assert_true(String(definition.generation_metadata.get("facade_source", "")) == "build_random", "compatibility metadata marks build_random facade")
+
+
+func _check_control_modes() -> void:
+	var expectations: Dictionary = {
+		SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU: [PokemonInstanceResource.ControlType.PLAYER, PokemonInstanceResource.ControlType.AI],
+		SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_PLAYER: [PokemonInstanceResource.ControlType.PLAYER, PokemonInstanceResource.ControlType.PLAYER],
+		SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU: [PokemonInstanceResource.ControlType.AI, PokemonInstanceResource.ControlType.AI],
+	}
+	for mode in expectations.keys():
+		var result: Dictionary = CustomSkirmishBuilder.build_random(3, TEST_ARENA_MAP_PATH, FIXED_SEED_TEXT, String(mode))
+		_assert_true(result.get("ok", false), "build_random supports control mode %s" % mode)
+		if not result.get("ok", false):
+			continue
+		var definition: SkirmishDefinitionResource = result["definition"]
+		var expected: Array = expectations[mode]
+		_assert_true(definition.control_mode == String(mode), "definition records control mode %s" % mode)
+		_assert_true(String(definition.generation_metadata.get("control_mode", "")) == String(mode), "metadata records control mode %s" % mode)
+		_assert_true(_all_controlled_by(definition.player_team, int(expected[0])), "player team control for %s" % mode)
+		_assert_true(_all_controlled_by(definition.enemy_team, int(expected[1])), "enemy team control for %s" % mode)
 
 
 func _check_invalid_inputs_rejected() -> void:
@@ -262,6 +282,13 @@ func _is_unique(values: Array) -> bool:
 		if seen.has(value):
 			return false
 		seen[value] = true
+	return true
+
+
+func _all_controlled_by(team: Array[PokemonInstanceResource], control_type: int) -> bool:
+	for instance in team:
+		if instance == null or instance.control_type != control_type:
+			return false
 	return true
 
 

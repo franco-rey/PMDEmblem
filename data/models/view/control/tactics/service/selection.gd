@@ -16,7 +16,7 @@ func _init(_participant: TacticsParticipantResource, _arena: TacticsArenaResourc
 	input_service = _input_service
 
 
-func select_pawn(player: TacticsPlayer, ctrl: TacticsControls) -> void:
+func select_pawn(player: Node3D, ctrl: TacticsControls) -> void:
 	arena.reset_all_tile_markers()
 	if ctrl.curr_pawn:
 		controls.set_actions_menu_visibility(false, participant.curr_pawn)

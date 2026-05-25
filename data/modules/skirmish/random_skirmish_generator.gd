@@ -73,6 +73,7 @@ static func generate(inputs: GeneratorInputs) -> SkirmishDefinitionResource:
 	definition.seed = inputs.seed
 	definition.player_team = inputs.player_party.duplicate()
 	definition.enemy_team = enemy_team
+	definition.control_mode = SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU
 	definition.objective = SkirmishDefinitionResource.OBJECTIVE_DEFEAT_ALL_ENEMIES
 	definition.reward_profile = inputs.reward_profile if not inputs.reward_profile.is_empty() else DEFAULT_REWARD_PROFILE
 	definition.generation_metadata = _metadata(inputs, tier, map, enemy_team)
@@ -254,6 +255,7 @@ static func _metadata(inputs: GeneratorInputs, tier: Dictionary, map: MapDefinit
 		enemy_moves.append(moves)
 	return {
 		"source": "random_generator",
+		"control_mode": SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU,
 		"seed": inputs.seed,
 		"biome": inputs.biome,
 		"difficulty_tier": int(tier["tier"]),

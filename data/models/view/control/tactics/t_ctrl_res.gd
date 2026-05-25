@@ -41,7 +41,7 @@ func camera_rotation_inputs(delta: float) -> void:
 	called_camera_rotation.emit(delta)
 
 
-func select_pawn(player: TacticsPlayer) -> void:
+func select_pawn(player: Node3D) -> void:
 	called_select_pawn.emit(player)
 
 

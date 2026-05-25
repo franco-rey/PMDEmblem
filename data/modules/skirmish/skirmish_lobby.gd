@@ -2,11 +2,14 @@ class_name SkirmishLobby
 extends Control
 
 signal launch_requested(definition: SkirmishDefinitionResource, seed: int)
+signal launch_series_requested(definitions: Array[SkirmishDefinitionResource], code: String)
 signal close_requested
 
 const SIDE_PLAYER: String = "player"
 const SIDE_ENEMY: String = "enemy"
 const RosterProvider = preload("res://data/modules/skirmish/skirmish_roster_provider.gd")
+const SkirmishCode = preload("res://data/modules/skirmish/skirmish_code.gd")
+const SkirmishControlMode = preload("res://data/modules/skirmish/skirmish_control_mode.gd")
 const FONT_SIZE: int = 20
 const SMALL_FONT_SIZE: int = 18
 const TITLE_FONT_SIZE: int = 24
@@ -59,6 +62,7 @@ var search_input: LineEdit
 var type_filter: OptionButton
 var sort_picker: OptionButton
 var map_picker: OptionButton
+var control_mode_picker: OptionButton
 var seed_input: LineEdit
 var difficulty_spin: SpinBox
 var random_enemy_check: CheckBox
@@ -130,12 +134,13 @@ func build_current_definition() -> Dictionary:
 func show_battle_summary(result: int, definition: SkirmishDefinitionResource, level: TacticsLevel) -> void:
 	visible = true
 	summary_panel.visible = true
-	var result_text: String = "Player Win" if result == TacticsLevel.RESULT_PLAYER_WIN else "Player Loss"
+	var result_text: String = _result_label(result, definition)
 	var turn_count: int = _turn_count(level)
 	var player_summary: Dictionary = _side_summary(level.player if level != null else null)
 	var enemy_summary: Dictionary = _side_summary(level.opponent if level != null else null)
-	summary_label.text = "%s\nSeed: %d\nTurns: %d\nPlayer: %d/%d standing\nEnemy: %d/%d standing\n%s\n%s" % [
+	summary_label.text = "%s\nMode: %s\nSeed: %d\nTurns: %d\nPlayer: %d/%d standing\nEnemy: %d/%d standing\n%s\n%s" % [
 		result_text,
+		SkirmishControlMode.label(definition.control_mode if definition != null else ""),
 		definition.seed if definition != null else last_resolved_seed,
 		turn_count,
 		int(player_summary.get("alive", 0)),
@@ -309,9 +314,17 @@ func _create_setup_panel() -> PanelContainer:
 	map_picker.name = "MapPicker"
 	column.add_child(_labeled_control("Map", map_picker))
 
+	control_mode_picker = OptionButton.new()
+	control_mode_picker.name = "ControlModePicker"
+	_add_control_mode_item("Player vs CPU", SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU)
+	_add_control_mode_item("Player vs Player", SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_PLAYER)
+	_add_control_mode_item("CPU vs CPU", SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU)
+	control_mode_picker.item_selected.connect(_on_control_mode_selected)
+	column.add_child(_labeled_control("Control", control_mode_picker))
+
 	seed_input = LineEdit.new()
 	seed_input.name = "SeedInput"
-	seed_input.placeholder_text = "integer or blank"
+	seed_input.placeholder_text = "seed or skirmish code"
 	seed_input.text_changed.connect(_on_seed_changed)
 	column.add_child(_labeled_control("Seed", seed_input))
 
@@ -491,6 +504,11 @@ func _labeled_control(label_text: String, control: Control) -> VBoxContainer:
 	control.custom_minimum_size.y = maxf(control.custom_minimum_size.y, CONTROL_HEIGHT)
 	box.add_child(control)
 	return box
+
+
+func _add_control_mode_item(label: String, mode: String) -> void:
+	control_mode_picker.add_item(label)
+	control_mode_picker.set_item_metadata(control_mode_picker.item_count - 1, mode)
 
 
 func _load_data() -> void:
@@ -675,7 +693,8 @@ func _refresh_details() -> void:
 	target_label.text = "Add Target: %s" % target
 	var player_names: String = _format_team(player_team_paths)
 	var enemy_names: String = _format_team(enemy_team_paths)
-	details_label.text = "Player %d/%d\n%s\n\nEnemy %d/%d\n%s" % [
+	details_label.text = "Mode: %s\n\nPlayer %d/%d\n%s\n\nEnemy %d/%d\n%s" % [
+		SkirmishControlMode.label(_selected_control_mode()),
 		player_team_paths.size(),
 		CustomSkirmishBuilder.MAX_TEAM_SIZE,
 		player_names,
@@ -687,9 +706,13 @@ func _refresh_details() -> void:
 
 func _refresh_launch_state() -> void:
 	var map_ok: bool = not map_paths.is_empty()
-	var seed_ok: bool = seed_input.text.strip_edges().is_empty() or seed_input.text.strip_edges().is_valid_int()
-	var teams_ok: bool = not player_team_paths.is_empty() and (random_enemy_check.button_pressed or not enemy_team_paths.is_empty())
+	var validation: Dictionary = _validate_seed_text()
+	var seed_ok: bool = bool(validation.get("ok", false))
+	var code_driven: bool = bool(validation.get("code_driven", false))
+	var teams_ok: bool = code_driven or (not player_team_paths.is_empty() and (random_enemy_check.button_pressed or not enemy_team_paths.is_empty()))
 	launch_button.disabled = not (map_ok and seed_ok and teams_ok)
+	if not seed_ok:
+		_set_status(String(validation.get("error", "Invalid skirmish code")))
 
 
 func _selected_type() -> String:
@@ -833,6 +856,11 @@ func _on_seed_changed(_text: String) -> void:
 	_refresh_launch_state()
 
 
+func _on_control_mode_selected(_index: int) -> void:
+	_refresh_details()
+	_refresh_launch_state()
+
+
 func _on_random_enemy_toggled(_enabled: bool) -> void:
 	_refresh_details()
 	_refresh_launch_state()
@@ -841,6 +869,10 @@ func _on_random_enemy_toggled(_enabled: bool) -> void:
 func _on_launch_pressed() -> void:
 	var result: Dictionary = _build_launch_result(true)
 	if not result.get("ok", false):
+		return
+	var definitions: Array[SkirmishDefinitionResource] = _definitions_from_result(result)
+	if definitions.size() > 1:
+		launch_series_requested.emit(definitions, String(result.get("code", "")))
 		return
 	var definition: SkirmishDefinitionResource = result["definition"]
 	launch_requested.emit(definition, int(result["seed"]))
@@ -853,8 +885,12 @@ func _on_play_again_pressed() -> void:
 	if not result.get("ok", false):
 		_set_status(String(result.get("error", "Could not replay skirmish")))
 		return
-	var definition: SkirmishDefinitionResource = result["definition"]
 	last_resolved_seed = int(result["seed"])
+	var definitions: Array[SkirmishDefinitionResource] = _definitions_from_result(result)
+	if definitions.size() > 1:
+		launch_series_requested.emit(definitions, String(result.get("code", "")))
+		return
+	var definition: SkirmishDefinitionResource = result["definition"]
 	launch_requested.emit(definition, last_resolved_seed)
 
 
@@ -881,35 +917,57 @@ func _build_launch_result(store_state: bool) -> Dictionary:
 		"seed_text": seed_input.text,
 		"enemy_team_size": int(enemy_size_spin.value),
 		"difficulty_tier": int(difficulty_spin.value),
+		"control_mode": _selected_control_mode(),
 	}
 	var result: Dictionary = _build_from_state(state)
 	if not result.get("ok", false):
 		_set_status(String(result.get("error", "Could not build skirmish")))
 		return result
 	last_resolved_seed = int(result["seed"])
-	seed_input.text = str(last_resolved_seed)
+	if not bool(result.get("code_driven", false)):
+		seed_input.text = str(last_resolved_seed)
 	if store_state:
-		state["seed_text"] = str(last_resolved_seed)
+		if not bool(result.get("code_driven", false)):
+			state["seed_text"] = str(last_resolved_seed)
 		_last_launch_state = state
 	summary_panel.visible = false
-	_set_status("Seed: %d" % last_resolved_seed)
+	var definitions: Array[SkirmishDefinitionResource] = _definitions_from_result(result)
+	if definitions.size() > 1:
+		_set_status(SkirmishCode.encode_summary(definitions))
+	else:
+		_set_status("Seed: %d" % last_resolved_seed)
 	return result
 
 
 func _build_from_state(state: Dictionary) -> Dictionary:
+	var seed_text: String = String(state.get("seed_text", ""))
+	if SkirmishCode.is_rich_code(seed_text):
+		var built: Dictionary = SkirmishCode.build_definitions(seed_text, state)
+		if not bool(built.get("ok", false)):
+			return built
+		return _result_with_primary(built, true)
+	var legacy: Dictionary = SkirmishCode.legacy_seed_and_mode(seed_text, String(state.get("control_mode", "")))
+	if legacy.has("error"):
+		return {"ok": false, "error": String(legacy["error"])}
+	var resolved_seed_text: String = String(legacy.get("seed_text", ""))
+	var control_mode: String = String(legacy.get("control_mode", SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU))
 	if bool(state.get("random_enemy", false)):
 		return CustomSkirmishBuilder.build_with_random_enemy(
 			_string_array(state.get("player_paths", [])),
 			String(state.get("map_path", "")),
-			String(state.get("seed_text", "")),
+			resolved_seed_text,
 			int(state.get("enemy_team_size", 1)),
-			int(state.get("difficulty_tier", CustomSkirmishBuilder.DEFAULT_RANDOM_DIFFICULTY_TIER))
+			int(state.get("difficulty_tier", CustomSkirmishBuilder.DEFAULT_RANDOM_DIFFICULTY_TIER)),
+			"",
+			"",
+			control_mode
 		)
 	return CustomSkirmishBuilder.build(
 		_string_array(state.get("player_paths", [])),
 		_string_array(state.get("enemy_paths", [])),
 		String(state.get("map_path", "")),
-		String(state.get("seed_text", ""))
+		resolved_seed_text,
+		control_mode
 	)
 
 
@@ -987,6 +1045,59 @@ func _string_array(value: Variant) -> Array[String]:
 		for item in value:
 			out.append(String(item))
 	return out
+
+
+func _selected_control_mode() -> String:
+	if control_mode_picker == null:
+		return SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU
+	var idx: int = maxi(control_mode_picker.selected, 0)
+	var metadata: Variant = control_mode_picker.get_item_metadata(idx)
+	return SkirmishControlMode.normalize(String(metadata))
+
+
+func _validate_seed_text() -> Dictionary:
+	if seed_input == null:
+		return {"ok": true, "code_driven": false}
+	var text: String = seed_input.text.strip_edges()
+	if text.is_empty() or SkirmishCode.is_legacy_seed_or_flag(text):
+		return {"ok": true, "code_driven": false}
+	if SkirmishCode.is_rich_code(text):
+		var parsed: Dictionary = SkirmishCode.parse(text)
+		return {
+			"ok": bool(parsed.get("ok", false)),
+			"code_driven": bool(parsed.get("ok", false)),
+			"error": String(parsed.get("error", "")),
+		}
+	return {"ok": false, "code_driven": false, "error": "Seed must be an integer, empty, or a skirmish code"}
+
+
+func _result_with_primary(result: Dictionary, code_driven: bool) -> Dictionary:
+	var definitions: Array[SkirmishDefinitionResource] = _definitions_from_result(result)
+	if definitions.is_empty():
+		return {"ok": false, "error": "Skirmish code did not build any definitions"}
+	var out: Dictionary = result.duplicate(true)
+	out["definition"] = definitions[0]
+	out["seed"] = definitions[0].seed
+	out["code_driven"] = code_driven
+	return out
+
+
+func _definitions_from_result(result: Dictionary) -> Array[SkirmishDefinitionResource]:
+	var out: Array[SkirmishDefinitionResource] = []
+	if result.has("definitions") and result["definitions"] is Array:
+		for entry in result["definitions"]:
+			if entry is SkirmishDefinitionResource:
+				out.append(entry as SkirmishDefinitionResource)
+	elif result.get("definition", null) is SkirmishDefinitionResource:
+		out.append(result["definition"] as SkirmishDefinitionResource)
+	return out
+
+
+func _result_label(result: int, definition: SkirmishDefinitionResource) -> String:
+	var mode: String = SkirmishControlMode.normalize(definition.control_mode if definition != null else "")
+	if mode == SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU:
+		return "Player-side Win" if result == TacticsLevel.RESULT_PLAYER_WIN else "Enemy-side Win"
+	return "Player Win" if result == TacticsLevel.RESULT_PLAYER_WIN else "Player Loss"
 
 
 func _side_label(side: String) -> String:

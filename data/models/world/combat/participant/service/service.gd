@@ -25,16 +25,14 @@ func setup(_participant: TacticsParticipant) -> void:
 		push_error("TacticsParticipant needs a ParticipantResource from /data/models/world/combat/participant/")
 
 
-func act(delta: float, is_player: bool, parent: Node3D, participant: TacticsParticipant) -> void:
-	DebugLog.debug_nospam("participant_turn", is_player)
+func act(delta: float, is_human: bool, actor_parent: Node3D, target_parent: Node3D, participant: TacticsParticipant) -> void:
+	DebugLog.debug_nospam("participant_turn", is_human)
 	DebugLog.debug_nospam("turn_stage", res.stage)
 
-	if is_player:
-		var player: TacticsPlayer = parent as TacticsPlayer
-		turn_service.handle_player_turn(delta, player, participant)
+	if is_human:
+		turn_service.handle_human_turn(delta, actor_parent, target_parent, participant)
 	else:
-		var opponent: TacticsOpponent = parent as TacticsOpponent
-		turn_service.handle_opponent_turn(delta, opponent, participant)
+		turn_service.handle_ai_turn(delta, actor_parent, target_parent, participant)
 
 
 func configure(my_camera: Resource, my_control: Resource) -> void:
@@ -54,5 +52,5 @@ func reset_turn(parent: Node3D) -> void:
 	turn_service.reset_turn(parent)
 
 
-func skip_turn(player: TacticsPlayer) -> void:
-	turn_service.skip_turn(player)
+func skip_turn(fallback_parent: Node3D) -> void:
+	turn_service.skip_turn(fallback_parent)

@@ -23,6 +23,7 @@ func _init() -> void:
 	_check_builder_static_listings()
 	_check_test_arena_anchor_count()
 	await _check_build_1v1()
+	_check_control_modes()
 	await _check_build_8v8_with_duplicates()
 	await _check_determinism_same_seed()
 	_check_empty_seed_resolves()
@@ -140,7 +141,28 @@ func _check_build_1v1() -> void:
 		_assert_true(enemy_anchors.size() == 1, "1v1 enemy pawn lands on exactly one anchor")
 		_assert_true(player_anchors.is_empty() or player_anchors[0] < ANCHOR_POOL_SIZE, "1v1 player anchor is inside the first %d" % ANCHOR_POOL_SIZE)
 		_assert_true(enemy_anchors.is_empty() or enemy_anchors[0] < ANCHOR_POOL_SIZE, "1v1 enemy anchor is inside the first %d" % ANCHOR_POOL_SIZE)
-	_cleanup(loader)
+		_cleanup(loader)
+
+
+func _check_control_modes() -> void:
+	var player_team: Array[String] = [_roster_path("0448_lucario")]
+	var enemy_team: Array[String] = [_roster_path("0467_magmortar")]
+	var expectations: Dictionary = {
+		SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU: [PokemonInstanceResource.ControlType.PLAYER, PokemonInstanceResource.ControlType.AI],
+		SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_PLAYER: [PokemonInstanceResource.ControlType.PLAYER, PokemonInstanceResource.ControlType.PLAYER],
+		SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU: [PokemonInstanceResource.ControlType.AI, PokemonInstanceResource.ControlType.AI],
+	}
+	for mode in expectations.keys():
+		var result: Dictionary = CustomSkirmishBuilder.build(player_team, enemy_team, TEST_ARENA_MAP_PATH, str(FIXED_SEED), String(mode))
+		_assert_true(result.get("ok", false), "custom build supports control mode %s" % mode)
+		if not result.get("ok", false):
+			continue
+		var definition: SkirmishDefinitionResource = result["definition"]
+		var expected: Array = expectations[mode]
+		_assert_true(definition.control_mode == String(mode), "custom definition records control mode %s" % mode)
+		_assert_true(String(definition.generation_metadata.get("control_mode", "")) == String(mode), "custom metadata records control mode %s" % mode)
+		_assert_true(_all_controlled_by(definition.player_team, int(expected[0])), "custom player team control for %s" % mode)
+		_assert_true(_all_controlled_by(definition.enemy_team, int(expected[1])), "custom enemy team control for %s" % mode)
 
 
 func _check_build_8v8_with_duplicates() -> void:
@@ -411,6 +433,13 @@ func _is_unique(arr: Array) -> bool:
 		if seen.has(v):
 			return false
 		seen[v] = true
+	return true
+
+
+func _all_controlled_by(team: Array[PokemonInstanceResource], control_type: int) -> bool:
+	for instance in team:
+		if instance == null or instance.control_type != control_type:
+			return false
 	return true
 
 

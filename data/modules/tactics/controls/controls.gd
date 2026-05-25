@@ -61,7 +61,7 @@ func get_3d_canvas_mouse_position(collision_mask: int) -> Object:
 	return serv.get_3d_canvas_mouse_position(collision_mask, self)
 
 
-func select_pawn(player: TacticsPlayer) -> void:
+func select_pawn(player: Node3D) -> void:
 	serv.select_pawn(player, self)
 
 

@@ -1,5 +1,8 @@
 extends Node
 
+const SkirmishCode = preload("res://data/modules/skirmish/skirmish_code.gd")
+const SkirmishControlMode = preload("res://data/modules/skirmish/skirmish_control_mode.gd")
+
 const MANUAL_SKIRMISHES: Array[Dictionary] = [
 	{
 		"kind": "static",
@@ -55,12 +58,33 @@ const MANUAL_SKIRMISHES: Array[Dictionary] = [
 		"label": "Random 5v5",
 		"team_size": 5,
 	},
+	{
+		"kind": "series_code",
+		"id": "random_6v6_bots_1",
+		"label": "1 Random 6v6 CPU vs CPU",
+		"code": "series seed=6100 team=6 matches=1 -bots",
+	},
+	{
+		"kind": "series_code",
+		"id": "random_6v6_bots_5",
+		"label": "5 Random 6v6 CPU vs CPU",
+		"code": "series seed=6200 team=6 matches=5 -bots",
+	},
+	{
+		"kind": "series_code",
+		"id": "random_6v6_bots_10",
+		"label": "10 Random 6v6 CPU vs CPU",
+		"code": "series seed=6300 team=6 matches=10 -bots",
+	},
 ]
 const MENU_CONTROL_SIZE: Vector2 = Vector2(400, 48)
 const MENU_FONT_SIZE: int = 20
 
 var level_instance: TacticsLevel
 var skirmish_loader: SkirmishLoader
+var skirmish_queue: Array[SkirmishDefinitionResource] = []
+var skirmish_queue_index: int = 0
+var skirmish_queue_code: String = ""
 
 @onready var world: Node3D = $World
 @onready var skirmish_picker: OptionButton = $UI/MapSelector/SkirmishMenu/SkirmishPicker
@@ -79,6 +103,7 @@ func _ready() -> void:
 	if skirmish_lobby != null:
 		skirmish_lobby.visible = false
 		skirmish_lobby.launch_requested.connect(_on_lobby_launch_requested)
+		skirmish_lobby.launch_series_requested.connect(_on_lobby_launch_series_requested)
 		skirmish_lobby.close_requested.connect(_on_lobby_close_requested)
 	launch_button.grab_focus()
 
@@ -114,6 +139,16 @@ func load_selected_skirmish() -> void:
 		push_error("Main: no manual skirmish selected")
 		return
 	var entry: Dictionary = MANUAL_SKIRMISHES[idx]
+	if String(entry.get("kind", "static")) == "series_code":
+		var built: Dictionary = SkirmishCode.build_definitions(String(entry.get("code", "")))
+		if not bool(built.get("ok", false)):
+			push_error("Main: series code build failed: %s" % String(built.get("error", "?")))
+			return
+		_launch_series(_definitions_from_result(built), String(entry.get("code", "")))
+		return
+	skirmish_queue.clear()
+	skirmish_queue_index = 0
+	skirmish_queue_code = ""
 	var definition: SkirmishDefinitionResource = _resolve_skirmish_definition(entry)
 	if definition == null:
 		return
@@ -177,12 +212,67 @@ func _launch_definition(definition: SkirmishDefinitionResource, return_to_lobby_
 	$UI/MapSelector.visible = false
 	if skirmish_lobby != null:
 		skirmish_lobby.visible = false
-	_set_tactics_controls_enabled(true)
+	_set_tactics_controls_enabled(_definition_has_human_control(definition))
+
+
+func _launch_series(definitions: Array[SkirmishDefinitionResource], code: String) -> void:
+	if definitions.is_empty():
+		push_error("Main: cannot launch empty skirmish series")
+		return
+	skirmish_queue = definitions.duplicate()
+	skirmish_queue_index = 0
+	skirmish_queue_code = code
+	_launch_next_queued_skirmish()
+
+
+func _launch_next_queued_skirmish() -> void:
+	if skirmish_queue_index < 0 or skirmish_queue_index >= skirmish_queue.size():
+		return
+	var definition: SkirmishDefinitionResource = skirmish_queue[skirmish_queue_index]
+	skirmish_queue_index += 1
+	print("Main: launching queued skirmish %d/%d seed=%d mode=%s" % [
+		skirmish_queue_index,
+		skirmish_queue.size(),
+		definition.seed if definition != null else 0,
+		definition.control_mode if definition != null else "",
+	])
+	_launch_definition(definition, false)
+
+
+func _definitions_from_result(result: Dictionary) -> Array[SkirmishDefinitionResource]:
+	var out: Array[SkirmishDefinitionResource] = []
+	if result.has("definitions") and result["definitions"] is Array:
+		for entry in result["definitions"]:
+			if entry is SkirmishDefinitionResource:
+				out.append(entry as SkirmishDefinitionResource)
+	elif result.get("definition", null) is SkirmishDefinitionResource:
+		out.append(result["definition"] as SkirmishDefinitionResource)
+	return out
+
+
+func _definition_has_human_control(definition: SkirmishDefinitionResource) -> bool:
+	if definition == null:
+		return true
+	for instance in definition.player_team:
+		if instance != null and instance.control_type == PokemonInstanceResource.ControlType.PLAYER:
+			return true
+	for instance in definition.enemy_team:
+		if instance != null and instance.control_type == PokemonInstanceResource.ControlType.PLAYER:
+			return true
+	return false
 
 
 func _on_lobby_launch_requested(definition: SkirmishDefinitionResource, seed: int) -> void:
 	print("Main: launching lobby skirmish %s seed=%d" % [definition.skirmish_id, seed])
+	skirmish_queue.clear()
+	skirmish_queue_index = 0
+	skirmish_queue_code = ""
 	_launch_definition(definition, true)
+
+
+func _on_lobby_launch_series_requested(definitions: Array[SkirmishDefinitionResource], code: String) -> void:
+	print("Main: launching lobby skirmish series count=%d code=%s" % [definitions.size(), code])
+	_launch_series(definitions, code)
 
 
 func _on_lobby_close_requested() -> void:
@@ -193,12 +283,20 @@ func _on_lobby_close_requested() -> void:
 
 func _on_skirmish_ended(result: int, definition: SkirmishDefinitionResource) -> void:
 	_set_tactics_controls_enabled(false)
-	if skirmish_lobby != null:
-		skirmish_lobby.show_battle_summary(result, definition, level_instance)
-	$UI/MapSelector.visible = false
+	var ended_level: TacticsLevel = level_instance
 	if skirmish_loader != null:
 		skirmish_loader.unload_current()
 	level_instance = null
+	if not skirmish_queue.is_empty() and skirmish_queue_index < skirmish_queue.size():
+		await get_tree().create_timer(0.75).timeout
+		_launch_next_queued_skirmish()
+		return
+	if skirmish_lobby != null:
+		skirmish_lobby.show_battle_summary(result, definition, ended_level)
+	$UI/MapSelector.visible = false
+	skirmish_queue.clear()
+	skirmish_queue_index = 0
+	skirmish_queue_code = ""
 
 
 func _style_main_menu() -> void:

@@ -54,6 +54,7 @@ func reset_markers() -> void:
 	pf_distance = 0
 	reachable = false
 	attackable = false
+	hover = false
 
 
 func configure_tile() -> void:

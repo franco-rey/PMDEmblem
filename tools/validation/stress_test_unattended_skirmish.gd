@@ -1,6 +1,8 @@
 extends SceneTree
 
 const CustomSkirmishBuilder = preload("res://data/modules/skirmish/custom_skirmish_builder.gd")
+const SkirmishCode = preload("res://data/modules/skirmish/skirmish_code.gd")
+const SkirmishControlMode = preload("res://data/modules/skirmish/skirmish_control_mode.gd")
 
 const MANUAL_IDS: Array[String] = [
 	"demo_3v3",
@@ -17,6 +19,8 @@ var mode: String = "idle"
 var skirmish: String = "demo_3v3"
 var seed: int = 101
 var team_size: int = 3
+var control_mode: String = SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU
+var code: String = ""
 var max_frames: int = 900
 var stall_frames: int = 240
 var trace_path: String = ""
@@ -26,6 +30,7 @@ var trace_file: FileAccess = null
 var loader: SkirmishLoader = null
 var level: TacticsLevel = null
 var frame_index: int = 0
+var series_index: int = 0
 var last_progress_frame: int = 0
 var last_signature: String = ""
 var last_event_count: int = 0
@@ -42,6 +47,10 @@ func _init() -> void:
 		_fail("team-size must be 1-8; got %d" % team_size)
 		_finish()
 		return
+	if not SkirmishControlMode.is_valid(control_mode):
+		_fail("control-mode must be pvc, pvp, or bots; got %s" % control_mode)
+		_finish()
+		return
 	if max_frames <= 0:
 		_fail("max-frames must be > 0; got %d" % max_frames)
 		_finish()
@@ -52,8 +61,8 @@ func _init() -> void:
 		return
 
 	_open_trace()
-	var definition: SkirmishDefinitionResource = _build_definition()
-	if definition == null:
+	var definitions: Array[SkirmishDefinitionResource] = _build_definitions()
+	if definitions.is_empty():
 		_finish()
 		return
 
@@ -62,22 +71,28 @@ func _init() -> void:
 	loader.skirmish_ended.connect(func(result: int, _definition: SkirmishDefinitionResource) -> void:
 		result_events.append(result)
 	)
-	level = loader.load_skirmish(definition, root)
-	if level == null:
-		_fail("loader returned null level for %s" % skirmish)
-		_finish()
-		return
-
-	print("stress: start mode=%s skirmish=%s seed=%d team_size=%d max_frames=%d stall_frames=%d" % [
+	print("stress: start mode=%s skirmish=%s seed=%d team_size=%d control_mode=%s series=%d max_frames=%d stall_frames=%d" % [
 		mode,
-		definition.skirmish_id,
+		skirmish,
 		seed,
 		team_size,
+		control_mode,
+		definitions.size(),
 		max_frames,
 		stall_frames,
 	])
-	_trace("start")
-	await _run()
+	for i in range(definitions.size()):
+		if not failures.is_empty() or frame_index >= max_frames:
+			break
+		series_index = i
+		_load_definition(definitions[i])
+		if level == null:
+			break
+		_trace("start")
+		await _run()
+		if loader != null:
+			loader.unload_current()
+		level = null
 	_finish()
 
 
@@ -91,12 +106,40 @@ func _parse_args() -> void:
 			seed = int(arg.get_slice("=", 1))
 		elif arg.begins_with("--team-size="):
 			team_size = int(arg.get_slice("=", 1))
+		elif arg.begins_with("--control-mode="):
+			control_mode = SkirmishControlMode.normalize(arg.get_slice("=", 1))
+		elif arg.begins_with("--code="):
+			code = arg.substr("--code=".length())
 		elif arg.begins_with("--max-frames="):
 			max_frames = int(arg.get_slice("=", 1))
 		elif arg.begins_with("--stall-frames="):
 			stall_frames = int(arg.get_slice("=", 1))
 		elif arg.begins_with("--trace="):
 			trace_path = arg.get_slice("=", 1)
+
+
+func _build_definitions() -> Array[SkirmishDefinitionResource]:
+	if not code.strip_edges().is_empty():
+		var built: Dictionary = SkirmishCode.build_definitions(code, {
+			"map_path": DEFAULT_MAP_PATH,
+			"team_size": team_size,
+			"enemy_team_size": team_size,
+			"control_mode": control_mode,
+		})
+		if not bool(built.get("ok", false)):
+			_fail("code build failed: %s" % String(built.get("error", "")))
+			var empty: Array[SkirmishDefinitionResource] = []
+			return empty
+		var out: Array[SkirmishDefinitionResource] = []
+		for entry in built.get("definitions", []):
+			if entry is SkirmishDefinitionResource:
+				out.append(entry as SkirmishDefinitionResource)
+		return out
+	var definition: SkirmishDefinitionResource = _build_definition()
+	var single: Array[SkirmishDefinitionResource] = []
+	if definition != null:
+		single.append(definition)
+	return single
 
 
 func _build_definition() -> SkirmishDefinitionResource:
@@ -110,6 +153,7 @@ func _build_definition() -> SkirmishDefinitionResource:
 			_fail("could not load skirmish definition path %s" % skirmish)
 		else:
 			definition.seed = seed
+			SkirmishControlMode.apply_to_definition(definition, control_mode)
 		return definition
 	if MANUAL_IDS.has(skirmish):
 		var path: String = MANUAL_PATH % skirmish
@@ -118,6 +162,7 @@ func _build_definition() -> SkirmishDefinitionResource:
 			_fail("could not load manual skirmish %s" % path)
 		else:
 			definition.seed = seed
+			SkirmishControlMode.apply_to_definition(definition, control_mode)
 		return definition
 	_fail("unknown skirmish '%s'; use a manual id, random, custom, or res:// path" % skirmish)
 	return null
@@ -125,7 +170,7 @@ func _build_definition() -> SkirmishDefinitionResource:
 
 func _build_random_definition() -> SkirmishDefinitionResource:
 	var map_path: String = _first_map_path()
-	var result: Dictionary = CustomSkirmishBuilder.build_random(team_size, map_path, str(seed))
+	var result: Dictionary = CustomSkirmishBuilder.build_random(team_size, map_path, str(seed), control_mode)
 	if not bool(result.get("ok", false)):
 		_fail("random build failed: %s" % String(result.get("error", "")))
 		return null
@@ -142,7 +187,7 @@ func _build_custom_definition() -> SkirmishDefinitionResource:
 	for i in range(team_size):
 		players.append(roster[i])
 		enemies.append(roster[i + team_size])
-	var result: Dictionary = CustomSkirmishBuilder.build(players, enemies, _first_map_path(), str(seed))
+	var result: Dictionary = CustomSkirmishBuilder.build(players, enemies, _first_map_path(), str(seed), control_mode)
 	if not bool(result.get("ok", false)):
 		_fail("custom build failed: %s" % String(result.get("error", "")))
 		return null
@@ -157,6 +202,17 @@ func _first_map_path() -> String:
 		_fail("no map definitions available")
 		return ""
 	return maps[0]
+
+
+func _load_definition(definition: SkirmishDefinitionResource) -> void:
+	last_progress_frame = frame_index
+	last_signature = ""
+	last_event_count = 0
+	result_events.clear()
+	control_mode = definition.control_mode if definition != null else control_mode
+	level = loader.load_skirmish(definition, root)
+	if level == null:
+		_fail("loader returned null level for %s" % definition.skirmish_id)
 
 
 func _run() -> void:
@@ -275,9 +331,12 @@ func _snapshot() -> Dictionary:
 		"skirmish": skirmish,
 		"seed": seed,
 		"team_size": team_size,
+		"control_mode": control_mode,
+		"series_index": series_index,
 		"active_unit": _unit_label(unit),
 		"active_team": unit.team if unit != null else null,
 		"active_control": unit.control_type if unit != null else null,
+		"active_control_type": unit.control_type if unit != null else null,
 		"participant_stage": level.participant.res.stage if level != null and level.participant != null else null,
 		"current_pawn": _pawn_label(current),
 		"path_stack_size": current.res.pathfinding_tilestack.size() if current != null else null,
@@ -405,4 +464,3 @@ func _finish() -> void:
 		for failure in failures:
 			push_error("stress: failure: %s" % failure)
 		quit(1)
-

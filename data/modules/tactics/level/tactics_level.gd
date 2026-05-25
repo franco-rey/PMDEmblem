@@ -116,13 +116,14 @@ func _run_scheduler_loop(delta: float) -> void:
 		participant.res.stage = participant.res.STAGE_SHOW_ACTIONS
 		participant.res.curr_pawn = pawn
 
-	var is_player: bool = unit.control_type == PokemonInstanceResource.ControlType.PLAYER
-	var team_parent: Node3D = player if is_player else opponent
+	var actor_parent: Node3D = player if unit.team == PokemonInstanceResource.Team.PLAYER else opponent
+	var target_parent: Node3D = opponent if unit.team == PokemonInstanceResource.Team.PLAYER else player
+	var is_human: bool = unit.control_type == PokemonInstanceResource.ControlType.PLAYER
 
-	if not participant.is_configured(team_parent):
+	if not participant.is_configured(actor_parent):
 		participant.configure(camera, ui_control)
 
-	participant.act(delta, is_player, team_parent)
+	participant.act(delta, is_human, actor_parent, target_parent)
 	_sweep_fainted_units()
 
 
@@ -139,10 +140,12 @@ func _build_battle_units() -> Array[BattleUnit]:
 	var insertion: int = 0
 	for team_node in [player, opponent]:
 		var team_kind: int = PokemonInstanceResource.Team.PLAYER if team_node == player else PokemonInstanceResource.Team.ENEMY
-		var control_kind: int = PokemonInstanceResource.ControlType.PLAYER if team_node == player else PokemonInstanceResource.ControlType.AI
 		for child in team_node.get_children():
 			if child is TacticsPawn:
 				var p: TacticsPawn = child
+				var control_kind: int = PokemonInstanceResource.ControlType.PLAYER if team_node == player else PokemonInstanceResource.ControlType.AI
+				if p.stats != null and p.stats.pokemon_instance != null:
+					control_kind = p.stats.pokemon_instance.control_type
 				out.append(BattleUnit.new(p, p.stats, team_kind, control_kind, insertion))
 				insertion += 1
 	return out

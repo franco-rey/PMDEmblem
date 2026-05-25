@@ -5,6 +5,7 @@ const ROSTER_DIR: String = "res://data/models/pokemon/overrides/instances/"
 const GENERATED_ROSTER_DIR: String = "res://data/models/pokemon/generated/instances/"
 const MAP_DIR: String = "res://data/models/maps/definitions/"
 const RandomSkirmishGenerator = preload("res://data/modules/skirmish/random_skirmish_generator.gd")
+const SkirmishControlMode = preload("res://data/modules/skirmish/skirmish_control_mode.gd")
 const MIN_TEAM_SIZE: int = 1
 const MAX_TEAM_SIZE: int = 8
 const ANCHOR_POOL_SIZE: int = 8
@@ -86,7 +87,13 @@ static func build_spawn_order(seed: int, team_size: int, pool_size: int) -> Arra
 	return RandomSkirmishGenerator.build_spawn_order(seed, team_size, pool_size)
 
 
-static func build(player_paths: Array[String], enemy_paths: Array[String], map_path: String, seed_text: String) -> Dictionary:
+static func build(
+	player_paths: Array[String],
+	enemy_paths: Array[String],
+	map_path: String,
+	seed_text: String,
+	control_mode: String = SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU
+) -> Dictionary:
 	if player_paths.size() < MIN_TEAM_SIZE or player_paths.size() > MAX_TEAM_SIZE:
 		return {"ok": false, "error": "Player team must be %d-%d Pokemon" % [MIN_TEAM_SIZE, MAX_TEAM_SIZE]}
 	if enemy_paths.size() < MIN_TEAM_SIZE or enemy_paths.size() > MAX_TEAM_SIZE:
@@ -114,8 +121,9 @@ static func build(player_paths: Array[String], enemy_paths: Array[String], map_p
 		return {"ok": false, "error": "Map needs %d anchors per side for an %dv%d setup" % [ANCHOR_POOL_SIZE, player_paths.size(), enemy_paths.size()]}
 
 	var seed: int = resolve_seed(seed_text)
-	var player_team: Array[PokemonInstanceResource] = _load_team_for_side(player_paths, PokemonInstanceResource.Team.PLAYER, PokemonInstanceResource.ControlType.PLAYER, seed, "player")
-	var enemy_team: Array[PokemonInstanceResource] = _load_team_for_side(enemy_paths, PokemonInstanceResource.Team.ENEMY, PokemonInstanceResource.ControlType.AI, seed, "enemy")
+	var resolved_mode: String = SkirmishControlMode.normalize(control_mode)
+	var player_team: Array[PokemonInstanceResource] = _load_team_for_side(player_paths, PokemonInstanceResource.Team.PLAYER, SkirmishControlMode.player_control_type(resolved_mode), seed, "player")
+	var enemy_team: Array[PokemonInstanceResource] = _load_team_for_side(enemy_paths, PokemonInstanceResource.Team.ENEMY, SkirmishControlMode.enemy_control_type(resolved_mode), seed, "enemy")
 	if player_team.size() != player_paths.size() or enemy_team.size() != enemy_paths.size():
 		return {"ok": false, "error": "One or more instance files could not load"}
 
@@ -129,15 +137,18 @@ static func build(player_paths: Array[String], enemy_paths: Array[String], map_p
 	definition.seed = seed
 	definition.player_team = player_team
 	definition.enemy_team = enemy_team
+	definition.control_mode = resolved_mode
 	definition.objective = SkirmishDefinitionResource.OBJECTIVE_DEFEAT_ALL_ENEMIES
 	definition.generation_metadata = {
 		"source": "custom_builder",
+		"control_mode": resolved_mode,
 		"player_spawn_order": player_order,
 		"enemy_spawn_order": enemy_order,
 		"player_roster": player_paths,
 		"enemy_roster": enemy_paths,
 		"map_path": map_path,
 	}
+	SkirmishControlMode.apply_to_definition(definition, resolved_mode)
 	return {"ok": true, "definition": definition, "seed": seed}
 
 
@@ -165,7 +176,12 @@ static func random_roster_paths(count: int, seed: int = 0) -> Array[String]:
 	return out
 
 
-static func build_random(team_size: int, map_path: String, seed_text: String = "") -> Dictionary:
+static func build_random(
+	team_size: int,
+	map_path: String,
+	seed_text: String = "",
+	control_mode: String = SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU
+) -> Dictionary:
 	if team_size < MIN_TEAM_SIZE or team_size > MAX_TEAM_SIZE:
 		return {"ok": false, "error": "Team size must be %d-%d" % [MIN_TEAM_SIZE, MAX_TEAM_SIZE]}
 	if not seed_text.strip_edges().is_empty() and not seed_text.strip_edges().is_valid_int():
@@ -177,7 +193,10 @@ static func build_random(team_size: int, map_path: String, seed_text: String = "
 		map_path,
 		String.num_int64(seed),
 		team_size,
-		DEFAULT_RANDOM_DIFFICULTY_TIER
+		DEFAULT_RANDOM_DIFFICULTY_TIER,
+		"",
+		"",
+		control_mode
 	)
 	if result.get("ok", false):
 		var definition: SkirmishDefinitionResource = result["definition"]
@@ -188,6 +207,7 @@ static func build_random(team_size: int, map_path: String, seed_text: String = "
 		meta["team_size"] = team_size
 		meta["player_roster"] = player_paths
 		definition.generation_metadata = meta
+		SkirmishControlMode.apply_to_definition(definition, control_mode)
 	return result
 
 
@@ -198,7 +218,8 @@ static func build_with_random_enemy(
 	enemy_team_size: int = 0,
 	difficulty_tier: int = DEFAULT_RANDOM_DIFFICULTY_TIER,
 	biome: String = "",
-	reward_profile: String = ""
+	reward_profile: String = "",
+	control_mode: String = SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU
 ) -> Dictionary:
 	if player_paths.size() < MIN_TEAM_SIZE or player_paths.size() > MAX_TEAM_SIZE:
 		return {"ok": false, "error": "Player team must be %d-%d Pokemon" % [MIN_TEAM_SIZE, MAX_TEAM_SIZE]}
@@ -211,6 +232,7 @@ static func build_with_random_enemy(
 		return {"ok": false, "error": "Seed must be an integer or empty"}
 	if not ResourceLoader.exists(map_path):
 		return {"ok": false, "error": "Could not load map %s" % map_path}
+	var resolved_mode: String = SkirmishControlMode.normalize(control_mode)
 
 	var map: MapDefinitionResource = load(map_path) as MapDefinitionResource
 	if map == null:
@@ -223,7 +245,7 @@ static func build_with_random_enemy(
 		return {"ok": false, "error": "Map has %d enemy anchors; need %d" % [anchor_counts.get("enemy", 0), resolved_enemy_size]}
 
 	var seed: int = resolve_seed(seed_text)
-	var player_team: Array[PokemonInstanceResource] = _load_team_for_side(player_paths, PokemonInstanceResource.Team.PLAYER, PokemonInstanceResource.ControlType.PLAYER, seed, "player")
+	var player_team: Array[PokemonInstanceResource] = _load_team_for_side(player_paths, PokemonInstanceResource.Team.PLAYER, SkirmishControlMode.player_control_type(resolved_mode), seed, "player")
 	if player_team.size() != player_paths.size():
 		return {"ok": false, "error": "One or more player instance files could not load"}
 
@@ -255,6 +277,7 @@ static func build_with_random_enemy(
 	meta["player_roster"] = player_paths
 	meta["map_path"] = map_path
 	definition.generation_metadata = meta
+	SkirmishControlMode.apply_to_definition(definition, resolved_mode)
 	return {"ok": true, "definition": definition, "seed": seed}
 
 

@@ -69,7 +69,7 @@ func set_actions_menu_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls)
 	ui_service.set_actions_menu_visibility(v, p, ctrl)
 
 
-func select_pawn(player: TacticsPlayer, ctrl: TacticsControls) -> void:
+func select_pawn(player: Node3D, ctrl: TacticsControls) -> void:
 	pawn_selection_service.select_pawn(player, ctrl)
 
 
