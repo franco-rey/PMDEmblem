@@ -192,8 +192,9 @@ def _write_consolidated_credits(entries: list[dict[str, Any]], sources: Any, gen
 
 
 def _credit_block(entry: dict[str, Any], label: str, source_dir: Path | None, fallback_dir: Path | None, sources: Any) -> str:
-    source_root = sources.raw_asset_root if source_dir is not None else sources.sprite_collab_root
-    chosen_dir = source_dir if source_dir is not None and (source_dir / "credits.txt").exists() else fallback_dir
+    use_source = source_dir is not None and (source_dir / "credits.txt").exists()
+    chosen_dir = source_dir if use_source else fallback_dir
+    source_root = sources.raw_asset_root if use_source else sources.sprite_collab_root
     source = _source_rel(source_root, chosen_dir)
     credit_text = read_credit_text(source_dir, fallback_dir) or "No source credits found."
     return "\n".join([

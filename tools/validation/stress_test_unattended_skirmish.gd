@@ -343,6 +343,8 @@ func _snapshot() -> Dictionary:
 		"current_position": [pos.x, pos.y, pos.z],
 		"battle_finished": level.battle_finished if level != null else null,
 		"battle_events": level.battle_log.events.size() if level != null and level.battle_log != null else null,
+		"current_sprite": _sprite_snapshot(current),
+		"sprites": _sprite_snapshots(),
 		"recent_events": _recent_events(6),
 		"upcoming": _upcoming_units(),
 	}
@@ -370,6 +372,32 @@ func _recent_events(limit: int) -> Array[Dictionary]:
 	for i in range(start, events.size()):
 		if events[i] is Dictionary:
 			out.append(_sanitize_event(events[i] as Dictionary))
+	return out
+
+
+func _sprite_snapshots() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	if level == null:
+		return out
+	for parent in [level.player, level.opponent]:
+		if parent == null:
+			continue
+		for child in parent.get_children():
+			if child is TacticsPawn:
+				out.append(_sprite_snapshot(child as TacticsPawn))
+	return out
+
+
+func _sprite_snapshot(pawn: TacticsPawn) -> Dictionary:
+	if pawn == null:
+		return {}
+	var sprite: TacticsPawnSprite = pawn.get_node_or_null("Character") as TacticsPawnSprite
+	var out: Dictionary = {
+		"pawn": _pawn_label(pawn),
+		"species": pawn.stats.species_name if pawn.stats != null else "",
+	}
+	if sprite != null:
+		out.merge(sprite.debug_animation_snapshot(), true)
 	return out
 
 

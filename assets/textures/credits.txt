@@ -2077,16 +2077,16 @@ source: Sprite/0502
 2021-07-06 00:16:37.725732	<@!702275233125630042>
 
 [0503_samurott] Samurott (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0503
+source: sprite/0503
 2022-07-07 22:34:09.001300	<@!276369635304275968>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
 
 [0504_patrat] Patrat (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0504
+source: sprite/0504
 2023-01-29 04:48:38.936450	<@!872983950732165181>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Sound,Swing,Double,Rotate,Hop
 2023-02-25 08:53:17.147944	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
 
 [0505_watchog] Watchog (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0505
+source: sprite/0505
 2023-04-25 02:02:25.442484	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,MultiScratch,Appeal,Swing,Double,Rotate,Hop
 
 [0506_lillipup] Lillipup (actor)
@@ -2094,7 +2094,7 @@ source: Sprite/0506
 2021-07-03 10:30:35.211677	<@!544245909639397378>
 
 [0507_herdier] Herdier (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0507
+source: sprite/0507
 2023-07-16 16:05:59.216022	<@!283045864509800468>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,RearUp,Swing,Double,Rotate,Hop
 
 [0508_stoutland] Stoutland (actor)
@@ -2106,34 +2106,34 @@ source: Sprite/0509
 2021-07-09 03:57:34.289650	<@!544245909639397378>
 
 [0510_liepard] Liepard (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0510
+source: sprite/0510
 2022-11-15 05:22:42.260650	<@!283045864509800468>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
 
 [0511_pansage] Pansage (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0511
+source: sprite/0511
 2024-11-03 17:48:51.878325	<@!823932975916777512>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,MultiStrike,Swing,Double,Rotate,Hop
 2024-11-03 17:48:56.729326	<@!823932975916777512>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,MultiStrike,Swing,Double,Rotate,Hop
 
 [0512_simisage] Simisage (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0512
+source: sprite/0512
 2025-07-06 17:04:55.691802	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Sound,Swing,Double,Rotate,Hop
 
 [0513_pansear] Pansear (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0513
+source: sprite/0513
 2023-08-23 23:15:19.831751	<@!289213609773498368>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,MultiStrike,Swing,Double,Rotate,Hop
 2023-08-31 09:18:12.374051	<@!289213609773498368>	CUR	PMDCollab_2	Shoot,Strike,MultiStrike,Rotate
 
 [0515_panpour] Panpour (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0515
+source: sprite/0515
 2024-12-04 21:52:46.965049	<@!823932975916777512>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,MultiStrike,Swing,Double,Rotate,Hop
 
 [0517_munna] Munna (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0517
+source: sprite/0517
 2022-08-30 16:22:28.110310	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,SpAttack,Swing,Double,Rotate,Hop
 2022-12-14 21:25:24.079350	<@!576876006636519434>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
 
 [0518_musharna] Musharna (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0518
+source: sprite/0518
 2022-08-30 16:22:32.488780	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
 
 [0519_pidove] Pidove (actor)
@@ -2142,7 +2142,7 @@ source: Sprite/0519
 2022-05-09 00:37:27.594287	<@!330751862590406656>
 
 [0521_unfezant] Unfezant (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0521
+source: sprite/0521
 2024-12-22 05:58:03.696782	<@!276369635304275968>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop,Hover,QuickStrike
 2024-12-24 06:48:47.994433	<@!276369635304275968>	CUR	CC_BY-NC_4	Idle,Walk,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop,Hover,QuickStrike,Cringe
 
@@ -2151,13 +2151,13 @@ source: Sprite/0524
 2021-10-24 01:40:17.082193	POWERCRISTAL
 
 [0525_boldore] Boldore (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0525
+source: sprite/0525
 2024-12-22 03:28:41.378728	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Withdraw,RearUp,Swing,Double,Rotate,Hop
 2024-12-24 04:33:45.223553	<@!229131140903075840>	CUR	CC_BY-NC_4	Shoot,RearUp,Double,Hop
 2024-12-24 04:33:51.158634	<@!229131140903075840>	CUR	CC_BY-NC_4	Shoot,RearUp,Double,Hop
 
 [0526_gigalith] Gigalith (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0526
+source: sprite/0526
 2025-02-19 19:45:44.785284	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,RearUp,Swing,Double,Rotate,Hop
 
 [0527_woobat] Woobat (actor)
@@ -2169,12 +2169,12 @@ source: Sprite/0528
 2021-11-24 17:47:57.525626	<@!319945906600411179>
 
 [0529_drilbur] Drilbur (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0529
+source: sprite/0529
 2024-03-05 05:24:08.945412	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,MultiScratch,Sound,Emit,SpAttack,Swing,Double,Rotate,Hop
 2024-03-09 05:00:18.251118	<@!544245909639397378>	CUR	CC_BY-NC_4	MultiScratch
 
 [0530_excadrill] Excadrill (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0530
+source: sprite/0530
 2024-11-20 07:45:40.899881	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
 2024-12-02 03:47:24.829197	<@!229131140903075840>	CUR	CC_BY-NC_4	Attack,Charge,Shoot,Strike,Double,Hop
 
@@ -2183,18 +2183,18 @@ source: Sprite/0531
 2021-04-20 02:52:45.339691	<@!702275233125630042>
 
 [0532_timburr] Timburr (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0532
+source: sprite/0532
 2023-11-16 22:58:06.953244	<@!503377084656254986>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Swing,Double,Rotate,Hop,Pose,Pain,Nod
 
 [0533_gurdurr] Gurdurr (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0533
+source: sprite/0533
 2024-12-22 05:32:43.169751	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Punch,SpAttack,Withdraw,RearUp,Swing,Double,Rotate,Hop
 2024-12-22 20:08:31.317237	<@!229131140903075840>	CUR	CC_BY-NC_4	Sleep,Hop
 2024-12-24 05:57:29.733638	<@!656696412087648257>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Punch,SpAttack,Withdraw,RearUp,Swing,Double,Rotate,Hop
 2024-12-27 04:06:26.650058	<@!503377084656254986>	CUR	CC_BY-NC_4	Special0,Special1
 
 [0534_conkeldurr] Conkeldurr (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0534
+source: sprite/0534
 2024-12-22 05:25:26.243763	<@!656696412087648257>	CUR	CC_BY-NC_4	Idle,Rotate
 2024-12-24 05:02:30.248308	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Rumble,Swing,Double,Hop
 
@@ -2203,20 +2203,20 @@ source: Sprite/0535
 2022-04-23 04:25:20.038176	<@!702275233125630042>
 
 [0536_palpitoad] Palpitoad (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0536
+source: sprite/0536
 2023-05-18 07:06:42.885775	<@!702275233125630042>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
 
 [0537_seismitoad] Seismitoad (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0537
+source: sprite/0537
 2024-02-24 08:55:16.111945	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
 2024-02-25 08:29:34.076282	<@!229131140903075840>	CUR	CC_BY-NC_4	Swing
 
 [0540_sewaddle] Sewaddle (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0540
+source: sprite/0540
 2022-06-12 15:27:12.404917	<@!237286997645983744>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop,Cringe
 
 [0541_swadloon] Swadloon (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0541
+source: sprite/0541
 2023-07-27 03:25:41.257706	<@!544245909639397378>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
 2023-08-10 09:13:12.677894	<@!544245909639397378>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
 
@@ -2225,7 +2225,7 @@ source: Sprite/0542
 2021-10-28 10:38:14.847808	<@!544245909639397378>
 
 [0543_venipede] Venipede (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0543
+source: sprite/0543
 2024-05-18 23:31:57.587729	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Attack,Shoot,Strike,Twirl,Rotate,Hop
 2024-05-18 23:36:14.001658	<@!608107243329814529>	CUR	CC_BY-NC_4	"
 2024-06-08 04:31:11.095896	<@!544245909639397378>	CUR	CC_BY-NC_4	Sleep,Charge,Swing,Double
@@ -2235,25 +2235,25 @@ source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0543
 2025-11-09 02:28:24.639399	<@!702275233125630042>	CUR	CC_BY-NC_4	Idle,Walk,Hurt,Attack,Charge,Shoot,Swing,Double,Hop,EventSleep,Wake,Pose,Pull,Pain,Float,Nod,Laying,LeapForth,Cringe
 
 [0544_whirlipede] Whirlipede (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0544
+source: sprite/0544
 2024-11-07 01:48:41.529320	<@!350050109741858829>	CUR	CC_BY-NC_4	Idle,Rotate
 2024-12-22 05:11:18.366345	<@!350050109741858829>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
 2024-12-22 20:13:27.565845	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop,Cringe
 
 [0545_scolipede] Scolipede (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0545
+source: sprite/0545
 2023-10-03 03:51:01.880813	<@!544245909639397378>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
 
 [0546_cottonee] Cottonee (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0546
+source: sprite/0546
 2023-05-28 10:14:18.192158	<@!356635814668664832>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
 
 [0548_petilil] Petilil (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0548
+source: sprite/0548
 2023-02-27 21:57:09.418231	<@!356635814668664832>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
 
 [0549_lilligant] Lilligant (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0549
+source: sprite/0549
 2022-09-08 22:55:25.575290	METALBEAR	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
 2022-09-15 00:58:50.739199	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
 2023-04-21 00:43:00.061445	POWERCRISTAL	CUR	PMDCollab_1	"
@@ -2261,31 +2261,31 @@ source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0549
 2023-05-20 16:42:08.451325	<@!350050109741858829>	CUR	PMDCollab_2	Trip,Faint
 
 [0550_basculin] Basculin (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0550
+source: sprite/0550
 2024-12-08 04:16:28.951302	<@!872983950732165181>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Bite,Swing,Double,Rotate,Hop
 
 [0551_sandile] Sandile (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0551
+source: sprite/0551
 2022-07-16 13:28:42.387815	<@!150809243816165377>	CUR	PMDCollab_1	Idle,Walk,Swing,Double,Rotate
 2023-02-14 00:54:03.887602	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Hop
 
 [0552_krokorok] Krokorok (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0552
+source: sprite/0552
 2024-01-23 03:20:07.329905	<@!229131140903075840>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,RearUp,Swing,Double,Rotate,Hop
 2024-02-05 16:24:32.894849	<@!229131140903075840>	CUR	PMDCollab_2	Double,Hop
 
 [0553_krookodile] Krookodile (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0553
+source: sprite/0553
 2024-02-23 17:36:35.234309	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
 2024-03-30 15:50:14.539907	<@!229131140903075840>	CUR	CC_BY-NC_4	Charge,Swing,Double,Hop
 
 [0554_darumaka] Darumaka (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0554
+source: sprite/0554
 2023-01-18 17:24:19.760051	<@!872983950732165181>	CUR	PMDCollab_1	Idle,Walk,Attack,Charge,Strike,Dance,Withdraw,Swing,Double,Rotate,Hop
 2023-01-20 21:31:56.400251	<@!544245909639397378>	CUR	PMDCollab_1	Sleep,Hurt,Charge,Dance
 
 [0555_darmanitan] Darmanitan (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0555
+source: sprite/0555
 2024-09-22 23:58:16.844135	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Hurt,Attack,Rumble,Emit,Rotate,Hop,QuickStrike
 2024-09-23 00:01:10.343421	<@!653416391201783856>	CUR	CC_BY-NC_4	Idle,Walk,Hurt,Attack,Emit,Rotate,Hop,QuickStrike
 2024-10-23 02:23:50.108053	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Emit,Swing,Double,Rotate,Hop,QuickStrike
@@ -2295,7 +2295,7 @@ source: Sprite/0556
 2021-07-10 18:10:55.235839	<@!702275233125630042>
 
 [0559_scraggy] Scraggy (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0559
+source: sprite/0559
 2023-04-09 09:45:43.451810	<@!702275233125630042>	OLD	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
 2024-04-20 17:57:53.375571	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
 2024-04-20 17:58:00.434741	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
@@ -2305,17 +2305,17 @@ source: Sprite/0560
 2022-05-20 23:36:04.395413	<@!544245909639397378>	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
 
 [0561_sigilyph] Sigilyph (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0561
+source: sprite/0561
 2024-04-20 08:11:22.583630	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,SpAttack,Swing,Double,Rotate,Hop
 2024-04-20 21:50:47.850381	<@!229131140903075840>	CUR	CC_BY-NC_4	Hurt,Shoot,Double
 
 [0562_yamask] Yamask (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0562
+source: sprite/0562
 2023-04-10 22:58:28.132213	<@!653416391201783856>	CUR	PMDCollab_1	Idle,Walk,Sleep,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
 2023-04-30 22:07:48.177417	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
 
 [0563_cofagrigus] Cofagrigus (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0563
+source: sprite/0563
 2023-11-24 02:29:27.325648	<@!872983950732165181>	CUR	PMDCollab_2	Idle,Walk,Sleep,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
 2023-12-17 02:58:31.755596	<@!544245909639397378>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
 
@@ -2326,7 +2326,7 @@ source: Sprite/0566
 2022-04-23 04:25:26.992068	<@!330751862590406656>
 
 [0567_archeops] Archeops (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0567
+source: sprite/0567
 2022-11-02 17:09:38.558099	<@!276369635304275968>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop,Hover
 
 [0568_trubbish] Trubbish (actor)
@@ -2335,7 +2335,7 @@ source: Sprite/0568
 2021-12-31 15:19:52.025150	<@!810524028871114762>
 
 [0569_garbodor] Garbodor (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0569
+source: sprite/0569
 2024-05-12 04:56:05.154575	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Shake,Swing,Double,Rotate,Hop
 
 [0570_zorua] Zorua (actor)
@@ -2353,12 +2353,12 @@ source: Sprite/0572
 2021-12-03 15:05:23.564365	<@!544245909639397378>
 
 [0573_cinccino] Cinccino (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0573
+source: sprite/0573
 2024-09-21 01:33:43.867310	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Dance,TailWhip,Swing,Double,Rotate,Hop,Eat
 2025-08-06 22:38:50.755557	<@!356635814668664832>	CUR	CC_BY-NC_4	EventSleep,Wake,Float,Laying,Cringe
 
 [0574_gothita] Gothita (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0574
+source: sprite/0574
 2023-01-04 22:16:09.185412	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Chop,Swing,Double,Rotate,Hop
 
 [0575_gothorita] Gothorita (actor)
@@ -2367,11 +2367,11 @@ source: Sprite/0575
 2022-04-01 17:45:29.474784	<@!702275233125630042>
 
 [0576_gothitelle] Gothitelle (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0576
+source: sprite/0576
 2023-01-29 04:48:38.796058	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Appeal,SpAttack,Swing,Double,Rotate,Hop
 
 [0577_solosis] Solosis (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0577
+source: sprite/0577
 2022-10-30 15:42:49.850306	<@!215638650434617345>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
 2024-03-21 23:10:38.676951	<@!402958234371227648>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
 
@@ -2381,11 +2381,11 @@ source: Sprite/0578
 2022-04-23 04:26:04.553383	<@!330751862590406656>
 
 [0579_reuniclus] Reuniclus (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0579
+source: sprite/0579
 2023-01-20 11:12:29.324920	<@!356635814668664832>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Punch,MultiStrike,Swing,Double,Rotate,Hop
 
 [0581_swanna] Swanna (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0581
+source: sprite/0581
 2024-07-30 03:37:42.927412	<@!503377084656254986>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,FlapAround,Swing,Double,Rotate,Hop
 
 [0582_vanillite] Vanillite (actor)
@@ -2399,7 +2399,7 @@ source: Sprite/0583
 2021-03-30 21:57:39.242327	<@!702275233125630042>
 
 [0584_vanilluxe] Vanilluxe (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0584
+source: sprite/0584
 2023-09-02 23:49:34.592829	<@!544245909639397378>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
 
 [0585_deerling] Deerling (actor)
@@ -2416,50 +2416,50 @@ source: Sprite/0587
 2021-11-28 11:23:50.358721	<@!544245909639397378>
 
 [0589_escavalier] Escavalier (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0589
+source: sprite/0589
 2022-08-09 20:27:49.396515	<@!702275233125630042>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Jab,Swing,Double,Rotate,Hop,Hover
 
 [0590_foongus] Foongus (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0590
+source: sprite/0590
 2023-04-28 08:00:11.549370	<@!702275233125630042>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Shake,Twirl,Swing,Double,Rotate,Hop
 
 [0597_ferroseed] Ferroseed (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0597
+source: sprite/0597
 2023-03-31 07:43:33.122602	<@!350050109741858829>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,RearUp,Swing,Double,Rotate,Hop,Eat,Pull,Nod,LeapForth,Head,Cringe
 2023-05-16 02:50:55.502848	<@!350050109741858829>	CUR	PMDCollab_2	Walk,Hurt,Attack,Charge,Twirl,Swing,Double,Rotate,Hop,Eat,Pull,Nod,LeapForth,Head,Cringe
 2023-06-27 06:34:43.649552	<@!350050109741858829>	CUR	PMDCollab_2	Idle,Walk,Sleep,Attack,Charge,Twirl,Swing,Double,Rotate,Hop,EventSleep,Eat,Pose,Float,DeepBreath,Nod,LookUp,Laying,LeapForth
 2024-03-13 02:46:37.493356	<@!356635814668664832>	CUR	CC_BY-NC_4	Special0
 
 [0598_ferrothorn] Ferrothorn (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0598
+source: sprite/0598
 2023-08-15 01:40:13.303554	<@!276369635304275968>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop,Special0
 
 [0602_tynamo] Tynamo (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0602
+source: sprite/0602
 2024-12-02 04:16:59.982771	<@!713792248348672040>	CUR	CC_BY-NC_4	Idle,Walk,Rotate
 2025-05-13 03:46:30.522204	<@!713792248348672040>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
 
 [0603_eelektrik] Eelektrik (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0603
+source: sprite/0603
 2024-12-24 01:43:20.504310	POWERCRISTAL	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Twirl,SpAttack,Swing,Double,Rotate,Hop,QuickStrike
 2024-12-24 03:28:08.078632	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Twirl,Swing,Double,Rotate,Hop,QuickStrike
 2025-02-03 05:21:08.953978	<@!356635814668664832>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Twirl,Swing,Double,Rotate,Hop,QuickStrike
 
 [0604_eelektross] Eelektross (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0604
+source: sprite/0604
 2024-12-22 05:42:05.900580	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop,Cringe
 2024-12-26 00:09:36.222061	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Sleep,Shoot,Strike,Rotate,Hop,Cringe
 2024-12-26 00:09:41.983005	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Sleep,Shoot,Strike,Rotate,Hop,Cringe
 2025-02-03 05:25:30.146872	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop,Cringe
 
 [0605_elgyem] Elgyem (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0605
+source: sprite/0605
 2023-08-31 09:17:26.252663	<@!360948625901223950>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
 2024-03-24 02:19:46.117323	<@!229131140903075840>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
 2024-03-30 00:48:56.556438	<@!229131140903075840>	CUR	CC_BY-NC_4	EventSleep,Wake,Float,LookUp,Trip,Laying,Head,Cringe,HitGround
 
 [0606_beheeyem] Beheeyem (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0606
+source: sprite/0606
 2024-04-20 07:41:59.889157	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
 
 [0607_litwick] Litwick (actor)
@@ -2467,7 +2467,7 @@ source: Sprite/0607
 2021-04-07 17:00:57.834009	<@!356635814668664832>
 
 [0608_lampent] Lampent (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0608
+source: sprite/0608
 2023-02-25 09:02:50.957191	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Emit,SpAttack,Swing,Double,Rotate,Hop
 
 [0609_chandelure] Chandelure (actor)
@@ -2479,11 +2479,11 @@ source: Sprite/0610
 2021-05-08 13:34:50.601898	<@!702275233125630042>
 
 [0611_fraxure] Fraxure (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0611
+source: sprite/0611
 2023-06-19 06:13:21.293729	<@!276369635304275968>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
 
 [0612_haxorus] Haxorus (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0612
+source: sprite/0612
 2023-04-10 22:58:35.865193	<@!872983950732165181>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Slice,Swing,Double,Rotate,Hop
 2023-04-30 22:15:42.405398	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Slice,Swing,Double,Rotate,Hop
 2024-02-26 06:11:43.758704	<@!157796074457661440>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Slice,Swing,Double,Rotate,Hop
@@ -2493,11 +2493,11 @@ source: Sprite/0613
 2021-11-04 23:50:51.520153	<@!237286997645983744>
 
 [0614_beartic] Beartic (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0614
+source: sprite/0614
 2024-11-17 03:08:15.985659	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,MultiStrike,Twirl,Swing,Double,Rotate,Hop
 
 [0615_cryogonal] Cryogonal (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0615
+source: sprite/0615
 2024-06-21 18:31:29.838970	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
 
 [0619_mienfoo] Mienfoo (actor)
@@ -2505,16 +2505,16 @@ source: Sprite/0619
 2021-03-08 00:51:58.613976	<@!702275233125630042>
 
 [0620_mienshao] Mienshao (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0620
+source: sprite/0620
 2022-07-30 05:33:49.544278	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
 
 [0621_druddigon] Druddigon (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0621
+source: sprite/0621
 2024-01-11 12:21:11.378467	<@!544245909639397378>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Rumble,SpAttack,RearUp,Swing,Double,Rotate,Hop
 2024-01-23 02:02:14.626935	<@!544245909639397378>	CUR	PMDCollab_2	Hurt,RearUp
 
 [0622_golett] Golett (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0622
+source: sprite/0622
 2024-03-30 01:06:28.852233	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
 
 [0623_golurk] Golurk (actor)
@@ -2531,7 +2531,7 @@ source: Sprite/0625
 2022-05-16 17:22:39.699667	<@!356635814668664832>
 
 [0627_rufflet] Rufflet (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0627
+source: sprite/0627
 2024-06-08 03:48:34.757117	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,FlapAround,Swing,Double,Rotate,Hop
 2024-06-08 03:50:04.206067	<@!215638650434617345>	CUR	CC_BY-NC_4	"
 2024-06-21 18:51:32.877507	<@!544245909639397378>	CUR	CC_BY-NC_4	Sleep,Charge
@@ -2539,12 +2539,12 @@ source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0627
 2025-09-09 06:38:31.850348	<@!544245909639397378>	CUR	CC_BY-NC_4	LookUp
 
 [0628_braviary] Braviary (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0628
+source: sprite/0628
 2022-08-08 02:03:45.498682	<@!330751862590406656>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop,Hover,QuickStrike
 2022-08-10 00:22:56.931419	<@!330751862590406656>	CUR	PMDCollab_1	Hurt
 
 [0629_vullaby] Vullaby (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0629
+source: sprite/0629
 2024-12-04 22:14:27.043982	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Jab,Swing,Double,Rotate,Hop
 2024-12-22 04:04:50.094248	<@!544245909639397378>	CUR	CC_BY-NC_4	Attack
 
@@ -2553,12 +2553,12 @@ source: Sprite/0630
 2021-05-09 08:11:01.578017	POWERCRISTAL
 
 [0631_heatmor] Heatmor (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0631
+source: sprite/0631
 2024-07-02 14:50:29.620050	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
 2024-07-19 08:24:16.555421	<@!544245909639397378>	CUR	CC_BY-NC_4	Attack,Strike,Swing
 
 [0632_durant] Durant (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0632
+source: sprite/0632
 2024-07-02 14:42:06.756279	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Bite,Twirl,Swing,Double,Rotate,Hop
 2024-07-19 08:24:09.447530	<@!544245909639397378>	CUR	CC_BY-NC_4	Charge
 
@@ -2568,16 +2568,16 @@ source: Sprite/0633
 2022-05-17 19:40:46.697911	<@!237286997645983744>
 
 [0634_zweilous] Zweilous (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0634
+source: sprite/0634
 2023-01-29 04:48:39.374421	<@!872983950732165181>	CUR	PMDCollab_1	Idle,Walk,Sleep,Attack,Charge,Shoot,MultiStrike,Jab,Swing,Double,Rotate,Hop
 2023-02-15 23:42:11.955099	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,MultiStrike,Jab,Swing,Double,Rotate,Hop
 
 [0635_hydreigon] Hydreigon (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0635
+source: sprite/0635
 2023-06-10 23:52:53.187664	<@!276369635304275968>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
 
 [0636_larvesta] Larvesta (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0636
+source: sprite/0636
 2023-08-22 05:12:33.179935	<@!544245909639397378>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
 
 [0637_volcarona] Volcarona (actor)
@@ -2591,11 +2591,11 @@ source: Sprite/0638
 2022-02-14 08:22:30.068967	<@!217899432652308480>
 
 [0639_terrakion] Terrakion (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0639
+source: sprite/0639
 2024-06-28 08:03:50.439270	<@!356635814668664832>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,RearUp,Swing,Double,Rotate,Hop,Cringe,Fainted,Special0,Special1
 
 [0640_virizion] Virizion (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0640
+source: sprite/0640
 2023-03-20 04:59:04.924438	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,RearUp,Swing,Double,Rotate,Hop
 
 [0641_tornadus] Tornadus (actor)
@@ -2603,25 +2603,25 @@ source: Sprite/0641
 2022-03-10 05:51:07.395726	<@!702275233125630042>
 
 [0642_thundurus] Thundurus (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0642
+source: sprite/0642
 2024-01-04 02:12:37.613100	<@!276369635304275968>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
 
 [0643_reshiram] Reshiram (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0643
+source: sprite/0643
 2022-09-12 11:47:25.480107	<@!276369635304275968>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
 2022-09-17 05:02:35.966333	<@!276369635304275968>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
 
 [0644_zekrom] Zekrom (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0644
+source: sprite/0644
 2022-08-24 19:07:07.694182	<@!276369635304275968>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
 
 [0645_landorus] Landorus (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0645
+source: sprite/0645
 2024-01-13 02:28:31.885288	<@!276369635304275968>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
 2024-01-13 05:33:47.057300	<@!276369635304275968>	CUR	PMDCollab_2	Attack
 
 [0646_kyurem] Kyurem (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0646
+source: sprite/0646
 2024-09-10 09:37:22.013801	<@!356635814668664832>	CUR	CC_BY-NC_4	Idle,Walk,Rotate
 2024-10-19 03:30:34.985038	<@!356635814668664832>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,RearUp,Swing,Double,Rotate,Hop,Cringe,Special0
 2024-10-22 02:21:41.020323	<@!356635814668664832>	CUR	CC_BY-NC_4	Hurt,Attack,RearUp,Double,Hop
@@ -2644,14 +2644,14 @@ source: Sprite/0650
 2021-05-25 18:52:17.374939	<@!356635814668664832>
 
 [0651_quilladin] Quilladin (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0651
+source: sprite/0651
 2024-08-27 04:07:24.222705	<@!215638650434617345>	CUR	CC_BY-NC_4	Idle,Rotate
 2024-08-27 04:29:26.498999	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Rotate
 2024-12-22 02:33:28.834136	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Rumble,SpAttack,Swing,Double,Rotate,Hop
 2024-12-24 04:33:20.051352	<@!229131140903075840>	CUR	CC_BY-NC_4	Charge,Shoot,Double,Hop
 
 [0652_chesnaught] Chesnaught (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0652
+source: sprite/0652
 2024-12-22 02:20:40.253268	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Rumble,Withdraw,Swing,Double,Rotate,Hop
 2024-12-24 04:39:24.251029	<@!229131140903075840>	CUR	CC_BY-NC_4	Attack,Withdraw
 
@@ -2679,35 +2679,35 @@ source: Sprite/0656
 2021-10-28 10:36:12.298761	<@!356635814668664832>
 
 [0657_frogadier] Frogadier (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0657
+source: sprite/0657
 2024-08-07 09:01:25.063708	<@!330751862590406656>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
 2024-08-21 04:21:30.768457	<@!330751862590406656>	CUR	CC_BY-NC_4	Idle,Walk,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
 
 [0658_greninja] Greninja (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0658
+source: sprite/0658
 2022-07-07 22:33:51.270862	JHONY_REX	CUR	PMDCollab_1	Idle,Walk,Hurt,Attack,Charge,Swing,Double,QuickStrike
 2022-07-29 05:45:12.086421	<@!215638650434617345>	OLD	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Swing,Double,Rotate,Hop,QuickStrike
 2024-12-22 05:17:29.544141	JHONY_REX	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Rumble,RearUp,Swing,Double,Rotate,Hop,QuickStrike
 2024-12-22 18:37:01.973197	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,RearUp,Swing,Double,Rotate,Hop,QuickStrike
 
 [0659_bunnelby] Bunnelby (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0659
+source: sprite/0659
 2023-11-27 23:48:49.932853	<@!608107243329814529>	CUR	PMDCollab_2	Idle,Walk,Sleep,Swing,Double,Rotate
 2024-01-13 18:48:18.460379	<@!544245909639397378>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Dance,Swing,Double,Rotate,Hop,QuickStrike
 
 [0661_fletchling] Fletchling (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0661
+source: sprite/0661
 2022-07-29 05:45:04.073046	<@!662304890143375391>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,FlapAround,Swing,Double,Rotate,Hop,QuickStrike
 2024-03-03 20:27:07.954589	<@!662304890143375391>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,FlapAround,Swing,Double,Rotate,Hop,QuickStrike
 
 [0662_fletchinder] Fletchinder (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0662
+source: sprite/0662
 2024-11-06 02:11:57.054515	<@!356635814668664832>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop,Hover,Cringe
 2024-11-15 22:09:48.486109	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
 2025-01-29 17:34:35.148626	<@!229131140903075840>	CUR	CC_BY-NC_4	Nod
 
 [0663_talonflame] Talonflame (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0663
+source: sprite/0663
 2024-10-19 02:50:10.165435	<@!653416391201783856>	CUR	CC_BY-NC_4	Idle,Walk,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop,Hover
 2024-10-19 02:57:44.113145	<@!229131140903075840>	CUR	CC_BY-NC_4	Sleep,Charge,Shoot,Double
 2024-10-19 03:40:06.529383	<@!356635814668664832>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop,Hover,Cringe
@@ -2717,7 +2717,7 @@ source: Sprite/0666
 2021-11-04 14:41:14.697006	<@!356635814668664832>
 
 [0667_litleo] Litleo (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0667
+source: sprite/0667
 2022-09-12 11:47:15.992097	<@!330751862590406656>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
 
 [0669_flabebe] Flabébé (actor)
@@ -2739,23 +2739,23 @@ source: Sprite/0672
 2021-05-02 17:50:28.509627	<@!356635814668664832>
 
 [0673_gogoat] Gogoat (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0673
+source: sprite/0673
 2024-12-22 02:47:24.318886	<@!702275233125630042>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
 2024-12-24 04:49:18.898962	<@!702275233125630042>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
 2024-12-24 05:12:34.395095	<@!702275233125630042>	CUR	CC_BY-NC_4	Attack,Shoot
 
 [0674_pancham] Pancham (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0674
+source: sprite/0674
 2024-10-16 06:47:40.602336	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Punch,Swing,Double,Rotate,Hop
 2024-10-22 03:37:07.916482	<@!544245909639397378>	CUR	CC_BY-NC_4	Walk,Sleep,Attack,Strike,Punch,Hop
 
 [0675_pangoro] Pangoro (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0675
+source: sprite/0675
 2024-11-15 04:22:36.815136	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
 2024-11-15 20:44:17.173703	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Attack,Charge,Shoot,Strike,Double,Hop
 
 [0676_furfrou] Furfrou (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0676
+source: sprite/0676
 2022-10-17 01:43:10.258300	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Appeal,TailWhip,Swing,Double,Rotate,Hop
 
 [0677_espurr] Espurr (actor)
@@ -2772,17 +2772,17 @@ source: Sprite/0679
 2021-05-31 09:41:42.691057	<@!702275233125630042>
 
 [0680_doublade] Doublade (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0680
+source: sprite/0680
 2023-06-27 06:33:27.583587	<@!356635814668664832>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Slice,SpAttack,Swing,Double,Rotate,Hop,Cringe,Special0
 
 [0681_aegislash] Aegislash (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0681
+source: sprite/0681
 2022-08-08 02:03:56.145569	<@!276369635304275968>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop,Special0
 2024-01-25 18:55:21.038925	<@!276369635304275968>	CUR	PMDCollab_2	Special0
 2025-04-01 21:00:19.619003	<@!276369635304275968>	CUR	CC_BY-NC_4	Special0
 
 [0682_spritzee] Spritzee (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0682
+source: sprite/0682
 2022-08-05 23:47:31.283228	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop,Hover
 
 [0684_swirlix] Swirlix (actor)
@@ -2790,49 +2790,49 @@ source: Sprite/0684
 2022-05-01 07:16:40.938563	<@!544245909639397378>
 
 [0685_slurpuff] Slurpuff (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0685
+source: sprite/0685
 2024-05-08 02:07:30.981984	<@!1113856747564695633>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Twirl,Swing,Double,Rotate,Hop
 
 [0686_inkay] Inkay (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0686
+source: sprite/0686
 2024-10-24 01:03:53.611942	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Attack,Charge,Slam,Twirl,Swing,Double,Rotate
 2025-05-13 06:21:35.350724	<@!544245909639397378>	CUR	CC_BY-NC_4	Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
 2025-09-09 06:37:44.156817	<@!544245909639397378>	CUR	CC_BY-NC_4	Shoot,Hop
 
 [0687_malamar] Malamar (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0687
+source: sprite/0687
 2024-10-28 23:26:02.053849	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
 2024-10-29 01:18:56.051277	<@!608107243329814529>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
 2024-11-15 21:38:03.632710	<@!702275233125630042>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
 2025-01-29 17:37:46.301189	<@!702275233125630042>	CUR	CC_BY-NC_4	Charge
 
 [0688_binacle] Binacle (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0688
+source: sprite/0688
 2024-02-23 22:27:38.754104	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,RearUp,Swing,Double,Rotate,Hop
 
 [0689_barbaracle] Barbaracle (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0689
+source: sprite/0689
 2024-02-24 07:43:12.030022	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Punch,Swing,Double,Rotate,Hop
 2024-09-07 04:16:27.642600	<@!229131140903075840>	CUR	CC_BY-NC_4	Hurt
 2025-04-03 22:05:00.599530	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Hurt,Attack,Charge,Shoot,Strike,Punch,Rumble,Swing,Double,Rotate,Hop
 
 [0690_skrelp] Skrelp (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0690
+source: sprite/0690
 2025-01-29 17:59:26.703394	<@!276369635304275968>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
 2025-02-01 02:54:55.743938	<@!276369635304275968>	CUR	CC_BY-NC_4	Idle,Walk,Hurt,Attack,Shoot,Swing,Rotate,Hop,Cringe
 
 [0691_dragalge] Dragalge (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0691
+source: sprite/0691
 2022-11-17 03:37:25.784630	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
 
 [0692_clauncher] Clauncher (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0692
+source: sprite/0692
 2023-03-20 03:08:34.184866	JHONY_REX	CUR	PMDCollab_1	Idle,Walk,Hurt,Attack,Charge,Swing,Double,Rotate
 2023-04-30 22:18:57.070691	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Appeal,Rumble,Swing,Double,Rotate,Hop
 2024-02-11 22:45:36.192211	<@!544245909639397378>	CUR	PMDCollab_2	Appeal,Hop
 
 [0693_clawitzer] Clawitzer (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0693
+source: sprite/0693
 2023-04-10 22:58:46.149755	<@!872983950732165181>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
 2023-04-30 22:24:22.392392	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
 
@@ -2841,18 +2841,18 @@ source: Sprite/0694
 2021-06-18 19:34:38.563376	<@!356635814668664832>
 
 [0695_heliolisk] Heliolisk (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0695
+source: sprite/0695
 2023-07-04 01:43:38.496105	<@!356635814668664832>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Shock,Swing,Double,Rotate,Hop,Cringe
 2023-07-04 02:54:00.177829	<@!356635814668664832>	CUR	PMDCollab_2	Idle,Walk,Attack,Shoot,Shock,Rotate,Hop
 
 [0696_tyrunt] Tyrunt (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0696
+source: sprite/0696
 2024-06-21 18:09:35.123153	<@!319945906600411179>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Bite,Rumble,RearUp,Swing,Double,Rotate,Hop
 2024-07-02 16:52:56.611754	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Bite,RearUp,Swing,Double,Rotate,Hop
 2024-07-02 20:11:18.140620	<@!283571466891427841>	CUR	CC_BY-NC_4	"
 
 [0697_tyrantrum] Tyrantrum (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0697
+source: sprite/0697
 2024-05-08 01:21:43.088887	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Shoot,Twirl,Swing,Rotate,Hop
 2024-05-08 01:26:33.522296	JHONY_REX	CUR	CC_BY-NC_4	"
 2024-05-15 20:46:27.469489	<@!229131140903075840>	CUR	CC_BY-NC_4	Attack,Charge,Double
@@ -2871,30 +2871,30 @@ source: Sprite/0700
 2021-11-04 05:16:48.877702	<@!544245909639397378>
 
 [0701_hawlucha] Hawlucha (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0701
+source: sprite/0701
 2024-03-08 04:03:56.174771	<@!356635814668664832>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Kick,Swing,Double,Rotate,Hop,Cringe
 2024-03-09 23:49:40.893314	<@!356635814668664832>	CUR	CC_BY-NC_4	Attack,Swing,Hop
 2024-10-20 21:40:41.758766	<@!356635814668664832>	CUR	CC_BY-NC_4	Walk
 
 [0703_carbink] Carbink (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0703
+source: sprite/0703
 2022-10-21 20:46:53.978721	<@!330751862590406656>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Strike,Swing,Double,Rotate,Hop
 
 [0704_goomy] Goomy (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0704
+source: sprite/0704
 2022-06-01 05:14:02.398896	<@!356635814668664832>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
 
 [0705_sliggoo] Sliggoo (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0705
+source: sprite/0705
 2022-10-09 15:06:43.931490	<@!319945906600411179>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
 2023-11-27 06:21:16.642373	<@!356635814668664832>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
 
 [0706_goodra] Goodra (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0706
+source: sprite/0706
 2022-10-21 20:42:51.252642	<@!356635814668664832>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
 
 [0707_klefki] Klefki (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0707
+source: sprite/0707
 2022-07-20 19:31:32.149282	<@!215638650434617345>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Strike,Swing,Double,Rotate,Hop
 2022-07-26 02:28:22.683831	<@!356635814668664832>	CUR	PMDCollab_1	Sleep,Charge
 
@@ -2903,7 +2903,7 @@ source: Sprite/0708
 2021-09-30 03:28:21.847751	<@!356635814668664832>
 
 [0709_trevenant] Trevenant (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0709
+source: sprite/0709
 2023-12-31 17:28:39.211544	<@!544245909639397378>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Punch,Swing,Double,Rotate,Hop
 
 [0710_pumpkaboo] Pumpkaboo (actor)
@@ -2924,7 +2924,7 @@ source: Sprite/0715
 2022-01-13 05:24:47.801810	<@!276369635304275968>
 
 [0716_xerneas] Xerneas (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0716
+source: sprite/0716
 2022-12-30 03:09:13.109323	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,RearUp,Swing,Double,Rotate,Hop
 
 [0717_yveltal] Yveltal (actor)
@@ -2934,7 +2934,7 @@ source: Sprite/0717
 2021-12-31 21:32:17.748722	<@!276369635304275968>
 
 [0718_zygarde] Zygarde (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0718
+source: sprite/0718
 2024-03-30 16:20:45.218165	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Swing,Double,Rotate,Hop
 2024-05-06 06:53:14.428868	JHONY_REX	CUR	CC_BY-NC_4	"
 2024-11-09 05:12:38.208525	<@!356635814668664832>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Swing,Double,Rotate,Hop
@@ -2945,18 +2945,18 @@ source: Sprite/0719
 2021-08-31 11:44:43.519993	<@!356635814668664832>
 
 [0720_hoopa] Hoopa (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0720
+source: sprite/0720
 2022-07-26 02:27:33.646544	<@!224476380790915072>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
 
 [0721_volcanion] Volcanion (actor)
-source: /Users/franco/Documents/GitHub/SpriteCollab/sprite/0721
+source: sprite/0721
 2022-11-22 11:14:58.308899	<@!375676609283358722>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Stomp,Swing,Double,Rotate,Hop
 
 
 Portraits
 ---------
 [0001_bulbasaur] Bulbasaur (portrait)
-source: /Users/franco/Documents/GitHub/SpriteCollab/portrait/0001
+source: portrait/0001
 2020-10-07 17:58:43.324438	CHUNSOFT	CUR	Unspecified	Angry,Crying,Determined,Dizzy,Happy,Inspired,Joyous,Normal,Pain,Sad,Shouting,Sigh,Stunned,Surprised,Teary-Eyed,Worried
 2022-02-03 17:34:25.591964	CHUNSOFT	CUR	Unspecified	Angry,Crying,Determined,Dizzy,Happy,Inspired,Joyous,Normal,Pain,Sad,Shouting,Sigh,Special1,Stunned,Surprised,Teary-Eyed,Worried
 

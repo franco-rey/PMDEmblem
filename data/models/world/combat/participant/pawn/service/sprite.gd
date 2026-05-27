@@ -50,6 +50,7 @@ const DIRECTION_COUNT: int = 8
 var animator: AnimationNodeStateMachinePlayback = null
 
 var state_textures: Dictionary = {}
+var state_texture_paths: Dictionary = {}
 var state_frame_counts: Dictionary = {}
 var state_row_counts: Dictionary = {}
 var state_cell_widths: Dictionary = {}
@@ -112,6 +113,7 @@ func _load_state_textures(base_sprite_path: String, sprite_set: PokemonSpriteSet
 		if tex == null:
 			continue
 		state_textures[state] = tex
+		state_texture_paths[state] = path
 
 		var cell_w: int = 0
 		var cell_h: int = 0
@@ -318,6 +320,22 @@ func set_anim_state(new_state: String) -> void:
 
 func can_play_state(state: String) -> bool:
 	return state_textures.has(state)
+
+
+func debug_animation_snapshot() -> Dictionary:
+	var tex: Texture2D = texture
+	return {
+		"state": current_state,
+		"texture_path": String(state_texture_paths.get(current_state, tex.resource_path if tex != null else "")),
+		"texture_width": tex.get_width() if tex != null else 0,
+		"texture_height": tex.get_height() if tex != null else 0,
+		"cell_width": int(state_cell_widths.get(current_state, 0)),
+		"cell_height": int(state_cell_heights.get(current_state, 0)),
+		"hframes": hframes,
+		"vframes": vframes,
+		"frame": frame,
+		"current_frame": curr_frame,
+	}
 
 
 func _process(delta: float) -> void:
