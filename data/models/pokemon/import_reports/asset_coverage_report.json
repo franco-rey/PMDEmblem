@@ -1,0 +1,9063 @@
+{
+	"categories": {
+		"BG": {
+			"copied_file_count": 25,
+			"manifest_entry_count": 25,
+			"source_file_count": 25
+		},
+		"Beam": {
+			"copied_file_count": 60,
+			"manifest_entry_count": 60,
+			"source_file_count": 60
+		},
+		"Icon": {
+			"copied_file_count": 109,
+			"manifest_entry_count": 109,
+			"source_file_count": 109
+		},
+		"Item": {
+			"copied_file_count": 287,
+			"manifest_entry_count": 287,
+			"source_file_count": 287
+		},
+		"Particle": {
+			"copied_file_count": 749,
+			"manifest_entry_count": 749,
+			"source_file_count": 749
+		}
+	},
+	"icon_mappings": {
+		"item_icons_referenced": 198,
+		"status_icons_referenced": 4,
+		"unmapped_item_icons": [
+			"Apricorn_Pink.None.png",
+			"Band_Brown.None.png",
+			"Belt_Brown.None.png",
+			"Belt_LightBlue.None.png",
+			"Belt_White.None.png",
+			"Berry_Custap.None.png",
+			"Berry_Kee.None.png",
+			"Berry_Maranga.None.png",
+			"Bottle_DarkBlue.None.png",
+			"Bottle_Gray.None.png",
+			"Bow_Blue.None.png",
+			"Bow_Brown.None.png",
+			"Bow_Cobalt.None.png",
+			"Bow_Fuschia.None.png",
+			"Bow_Green.None.png",
+			"Bow_Lime.None.png",
+			"Bow_Orange.None.png",
+			"Bow_Purple.None.png",
+			"Bow_Red.None.png",
+			"Bow_Silver.None.png",
+			"Bow_SkyBlue.None.png",
+			"Bow_Violet.None.png",
+			"Bow_Viridian.None.png",
+			"Bow_Yellow.None.png",
+			"Box_Red.None.png",
+			"Cape_Brown.None.png",
+			"Cape_Orange.None.png",
+			"Cape_Red.None.png",
+			"Chestnut_Brown.None.png",
+			"Crown_Gray.None.png",
+			"Crystal_Yellow.None.png",
+			"Disc_Black.None.png",
+			"Disc_Yellow.None.png",
+			"Egg.None.png",
+			"Flower_Brown.None.png",
+			"Flower_DarkBlue.None.png",
+			"Flower_Gold.None.png",
+			"Flower_Pink.None.png",
+			"Flower_Purple.None.png",
+			"Flower_Red.None.png",
+			"Fruit_Blue.None.png",
+			"Fruit_Brown.None.png",
+			"Fruit_DarkBlue.None.png",
+			"Fruit_Gray.None.png",
+			"Fruit_Green.None.png",
+			"Fruit_LightBlue.None.png",
+			"Fruit_Pink.None.png",
+			"Fruit_Purple.None.png",
+			"Fruit_Red.None.png",
+			"Fruit_Tan.None.png",
+			"Gummi_Gold_2.None.png",
+			"Herb_Green.None.png",
+			"Herb_Yellow.None.png",
+			"Money_Gray.None.png",
+			"Money_Yellow.None.png",
+			"Note_Gold.None.png",
+			"Ore_Purple.None.png",
+			"Ore_Red.None.png",
+			"Ore_Yellow.None.png",
+			"Paper_News.None.png",
+			"Piece_Blue.None.png",
+			"Piece_Gray.None.png",
+			"Piece_Red.None.png",
+			"Rock_Green.None.png",
+			"Rock_Red.None.png",
+			"Sack_Red.None.png",
+			"Scale_Black.None.png",
+			"Scarf_2_Orange.None.png",
+			"Scarf_2_Tan.None.png",
+			"Scarf_Purple.None.png",
+			"Scarf_Tan.None.png",
+			"Silk_Black.None.png",
+			"Silk_Blue.None.png",
+			"Silk_Brown.None.png",
+			"Silk_Gold.None.png",
+			"Silk_Grass.None.png",
+			"Silk_Gray.None.png",
+			"Silk_Green.None.png",
+			"Silk_LightPurple.None.png",
+			"Silk_Orange.None.png",
+			"Silk_Pink.None.png",
+			"Silk_Royal.None.png",
+			"Silk_Silver.None.png",
+			"Silk_Sky.None.png",
+			"Silk_White.None.png",
+			"Silk_Yellow.None.png",
+			"Stone_DarkBrown.None.png",
+			"Tag_White.None.png",
+			"Thorn_Green.None.png"
+		],
+		"unmapped_status_icons": [
+			"Arrow_Down_Blue.None.png",
+			"Arrow_Down_Brown.None.png",
+			"Arrow_Down_DarkBlue.None.png",
+			"Arrow_Down_Green.None.png",
+			"Arrow_Down_Pink.None.png",
+			"Arrow_Down_Purple.None.png",
+			"Arrow_Down_Red.None.png",
+			"Arrow_Down_Tan.None.png",
+			"Arrow_Down_White.None.png",
+			"Arrow_Down_Yellow.None.png",
+			"Arrow_Up_Blue.None.png",
+			"Arrow_Up_Brown.None.png",
+			"Arrow_Up_DarkBlue.None.png",
+			"Arrow_Up_Green.None.png",
+			"Arrow_Up_Pink.None.png",
+			"Arrow_Up_Purple.None.png",
+			"Arrow_Up_Red.None.png",
+			"Arrow_Up_Tan.None.png",
+			"Arrow_Up_White.None.png",
+			"Arrow_Up_Yellow.None.png",
+			"Blind_Blue.None.png",
+			"Blind_Brown.None.png",
+			"Blind_Purple.None.png",
+			"Blind_Yellow.None.png",
+			"Cycle_Blue.None.png",
+			"Cycle_DarkBlue.None.png",
+			"Cycle_Green.None.png",
+			"Cycle_Pink.None.png",
+			"Cycle_Purple.None.png",
+			"Cycle_Red.None.png",
+			"Cycle_White.None.png",
+			"Cycle_Yellow.None.png",
+			"Exclaim_Blue.None.png",
+			"Exclaim_DarkBlue.None.png",
+			"Exclaim_Green.None.png",
+			"Exclaim_Pink.None.png",
+			"Exclaim_Purple.None.png",
+			"Exclaim_Red.None.png",
+			"Exclaim_White.None.png",
+			"Exclaim_Yellow.None.png",
+			"Exposed_Blue.None.png",
+			"Exposed_Red.None.png",
+			"Exposed_Yellow.None.png",
+			"Fist_DarkBlue.None.png",
+			"Fist_Red.None.png",
+			"Fist_Yellow.None.png",
+			"Question_Blue.None.png",
+			"Question_DarkBlue.None.png",
+			"Question_Green.None.png",
+			"Question_Pink.None.png",
+			"Question_Purple.None.png",
+			"Question_Red.None.png",
+			"Question_White.None.png",
+			"Question_Yellow.None.png",
+			"Shield_Blue.None.png",
+			"Shield_Brown.None.png",
+			"Shield_DarkBlue.None.png",
+			"Shield_Green.None.png",
+			"Shield_Pink.None.png",
+			"Shield_Purple.None.png",
+			"Shield_Red.None.png",
+			"Shield_Tan.None.png",
+			"Shield_White.None.png",
+			"Shield_Yellow.None.png",
+			"Sight_Blue.None.png",
+			"Sight_DarkBlue.None.png",
+			"Sight_Red.None.png",
+			"Sight_Yellow.None.png",
+			"Skull_Blue.None.png",
+			"Skull_Brown.None.png",
+			"Skull_DarkBlue.None.png",
+			"Skull_Green.None.png",
+			"Skull_Pink.None.png",
+			"Skull_Purple.None.png",
+			"Skull_Red.None.png",
+			"Skull_Tan.None.png",
+			"Skull_White.None.png",
+			"Skull_Yellow.None.png",
+			"Sword_Blue.None.png",
+			"Sword_Brown.None.png",
+			"Sword_Green.None.png",
+			"Sword_LightBlue.None.png",
+			"Sword_Pink.None.png",
+			"Sword_Purple.None.png",
+			"Sword_Red.None.png",
+			"Sword_Shield_Blue.None.png",
+			"Sword_Shield_Brown.None.png",
+			"Sword_Shield_DarkBlue.None.png",
+			"Sword_Shield_Green.None.png",
+			"Sword_Shield_LightBlue.None.png",
+			"Sword_Shield_Orange.None.png",
+			"Sword_Shield_Pink.None.png",
+			"Sword_Shield_Purple.None.png",
+			"Sword_Shield_Red.None.png",
+			"Sword_Shield_Tan.None.png",
+			"Sword_Shield_White.None.png",
+			"Sword_Shield_Yellow.None.png",
+			"Sword_White.None.png",
+			"Sword_Yellow.None.png",
+			"X_Brown.None.png",
+			"X_Gray.None.png",
+			"X_Green.None.png",
+			"X_Purple.None.png",
+			"X_Red.None.png",
+			"Yawn.None.png"
+		]
+	},
+	"schema_version": 1,
+	"scope": "686 released base forms; VFX categories BG/Beam/Icon/Item/Particle; Object/Tile/TileDtef/font out of scope",
+	"source": "smoke_test_asset_coverage",
+	"species": {
+		"per_species": [
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 32,
+				"slug": "0001_bulbasaur",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0002_ivysaur",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0003_venusaur",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 20,
+				"imported_state_count": 32,
+				"slug": "0004_charmander",
+				"source_portrait_count": 20,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0005_charmeleon",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 13,
+				"slug": "0006_charizard",
+				"source_portrait_count": 17,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 32,
+				"slug": "0007_squirtle",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0008_wartortle",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 13,
+				"slug": "0009_blastoise",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0010_caterpie",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0011_metapod",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0012_butterfree",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0013_weedle",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0014_kakuna",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0015_beedrill",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+					"idle": "idle_static_from_walk"
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0016_pidgey",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0017_pidgeotto",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0018_pidgeot",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0019_rattata",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 3,
+				"imported_state_count": 12,
+				"slug": "0020_raticate",
+				"source_portrait_count": 3,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0021_spearow",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 6,
+				"imported_state_count": 12,
+				"slug": "0022_fearow",
+				"source_portrait_count": 6,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 11,
+				"slug": "0023_ekans",
+				"source_portrait_count": 17,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0024_arbok",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 33,
+				"slug": "0025_pikachu",
+				"source_portrait_count": 18,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0026_raichu",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0027_sandshrew",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0028_sandslash",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 19,
+				"imported_state_count": 12,
+				"slug": "0029_nidoran_f",
+				"source_portrait_count": 19,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0030_nidorina",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 12,
+				"slug": "0031_nidoqueen",
+				"source_portrait_count": 18,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0032_nidoran_m",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0033_nidorino",
+				"source_portrait_count": 4,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 12,
+				"slug": "0034_nidoking",
+				"source_portrait_count": 18,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0035_clefairy",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0036_clefable",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0037_vulpix",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 19,
+				"imported_state_count": 33,
+				"slug": "0038_ninetales",
+				"source_portrait_count": 19,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 33,
+				"slug": "0039_jigglypuff",
+				"source_portrait_count": 17,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 20,
+				"imported_state_count": 18,
+				"slug": "0040_wigglytuff",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 20,
+				"imported_state_count": 14,
+				"slug": "0041_zubat",
+				"source_portrait_count": 20,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0042_golbat",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0043_oddish",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0044_gloom",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0045_vileplume",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0046_paras",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0047_parasect",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0048_venonat",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0049_venomoth",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 14,
+				"slug": "0050_diglett",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 14,
+				"slug": "0051_dugtrio",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 19,
+				"imported_state_count": 33,
+				"slug": "0052_meowth",
+				"source_portrait_count": 19,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0053_persian",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 25,
+				"slug": "0054_psyduck",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0055_golduck",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 4,
+				"imported_state_count": 12,
+				"slug": "0056_mankey",
+				"source_portrait_count": 4,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0057_primeape",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 14,
+				"slug": "0058_growlithe",
+				"source_portrait_count": 16,
+				"source_state_count": 14,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 13,
+				"slug": "0059_arcanine",
+				"source_portrait_count": 18,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 34,
+				"imported_state_count": 12,
+				"slug": "0060_poliwag",
+				"source_portrait_count": 34,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0061_poliwhirl",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0062_poliwrath",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0063_abra",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0064_kadabra",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 16,
+				"slug": "0065_alakazam",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 40,
+				"slug": "0066_machop",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0067_machoke",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0068_machamp",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0069_bellsprout",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0070_weepinbell",
+				"source_portrait_count": 4,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0071_victreebel",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0072_tentacool",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0073_tentacruel",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0074_geodude",
+				"source_portrait_count": 4,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 6,
+				"imported_state_count": 17,
+				"slug": "0075_graveler",
+				"source_portrait_count": 6,
+				"source_state_count": 17,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 18,
+				"slug": "0076_golem",
+				"source_portrait_count": 2,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0077_ponyta",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0078_rapidash",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0079_slowpoke",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 9,
+				"imported_state_count": 12,
+				"slug": "0080_slowbro",
+				"source_portrait_count": 9,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 34,
+				"imported_state_count": 13,
+				"slug": "0081_magnemite",
+				"source_portrait_count": 34,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 7,
+				"imported_state_count": 12,
+				"slug": "0082_magneton",
+				"source_portrait_count": 7,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 11,
+				"slug": "0083_farfetchd",
+				"source_portrait_count": 32,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0084_doduo",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0085_dodrio",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0086_seel",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0087_dewgong",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 3,
+				"imported_state_count": 12,
+				"slug": "0088_grimer",
+				"source_portrait_count": 3,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0089_muk",
+				"source_portrait_count": 1,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0090_shellder",
+				"source_portrait_count": 18,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0091_cloyster",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0092_gastly",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 19,
+				"imported_state_count": 17,
+				"slug": "0093_haunter",
+				"source_portrait_count": 19,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 20,
+				"imported_state_count": 35,
+				"slug": "0094_gengar",
+				"source_portrait_count": 6,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 11,
+				"slug": "0095_onix",
+				"source_portrait_count": 2,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 12,
+				"imported_state_count": 14,
+				"slug": "0096_drowzee",
+				"source_portrait_count": 12,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0097_hypno",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0098_krabby",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0099_kingler",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 31,
+				"slug": "0100_voltorb",
+				"source_portrait_count": 16,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 19,
+				"imported_state_count": 11,
+				"slug": "0101_electrode",
+				"source_portrait_count": 19,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0102_exeggcute",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 24,
+				"imported_state_count": 12,
+				"slug": "0103_exeggutor",
+				"source_portrait_count": 24,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 39,
+				"slug": "0104_cubone",
+				"source_portrait_count": 16,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0105_marowak",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0106_hitmonlee",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0107_hitmonchan",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0108_lickitung",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 15,
+				"slug": "0109_koffing",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0110_weezing",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0111_rhyhorn",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0112_rhydon",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0113_chansey",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0114_tangela",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0115_kangaskhan",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0116_horsea",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0117_seadra",
+				"source_portrait_count": 1,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 5,
+				"imported_state_count": 12,
+				"slug": "0118_goldeen",
+				"source_portrait_count": 5,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0119_seaking",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 11,
+				"slug": "0120_staryu",
+				"source_portrait_count": 8,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0121_starmie",
+				"source_portrait_count": 1,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0122_mr_mime",
+				"source_portrait_count": 1,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0123_scyther",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0124_jynx",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0125_electabuzz",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 3,
+				"imported_state_count": 12,
+				"slug": "0126_magmar",
+				"source_portrait_count": 3,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0127_pinsir",
+				"source_portrait_count": 1,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0128_tauros",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0129_magikarp",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0130_gyarados",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0131_lapras",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 10,
+				"slug": "0132_ditto",
+				"source_portrait_count": 17,
+				"source_state_count": 10,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0133_eevee",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0134_vaporeon",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0135_jolteon",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0136_flareon",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0137_porygon",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0138_omanyte",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0139_omastar",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0140_kabuto",
+				"source_portrait_count": 16,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0141_kabutops",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 4,
+				"imported_state_count": 13,
+				"slug": "0142_aerodactyl",
+				"source_portrait_count": 4,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0143_snorlax",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 16,
+				"slug": "0144_articuno",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 14,
+				"slug": "0145_zapdos",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 17,
+				"slug": "0146_moltres",
+				"source_portrait_count": 1,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 17,
+				"slug": "0147_dratini",
+				"source_portrait_count": 17,
+				"source_state_count": 17,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0148_dragonair",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+					"idle": "idle_static_from_walk"
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0149_dragonite",
+				"source_portrait_count": 17,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 33,
+				"slug": "0150_mewtwo",
+				"source_portrait_count": 17,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0151_mew",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 32,
+				"slug": "0152_chikorita",
+				"source_portrait_count": 18,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0153_bayleef",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0154_meganium",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 31,
+				"slug": "0155_cyndaquil",
+				"source_portrait_count": 18,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0156_quilava",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0157_typhlosion",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 32,
+				"slug": "0158_totodile",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0159_croconaw",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0160_feraligatr",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 19,
+				"imported_state_count": 15,
+				"slug": "0161_sentret",
+				"source_portrait_count": 19,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 13,
+				"slug": "0162_furret",
+				"source_portrait_count": 18,
+				"source_state_count": 14,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0163_hoothoot",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 14,
+				"slug": "0164_noctowl",
+				"source_portrait_count": 16,
+				"source_state_count": 14,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 33,
+				"slug": "0165_ledyba",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0166_ledian",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0167_spinarak",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0168_ariados",
+				"source_portrait_count": 2,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0169_crobat",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0170_chinchou",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 31,
+				"slug": "0171_lanturn",
+				"source_portrait_count": 16,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 33,
+				"slug": "0172_pichu",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 12,
+				"slug": "0173_cleffa",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 40,
+				"imported_state_count": 23,
+				"slug": "0174_igglybuff",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0175_togepi",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0176_togetic",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0177_natu",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 14,
+				"slug": "0178_xatu",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0179_mareep",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 33,
+				"slug": "0180_flaaffy",
+				"source_portrait_count": 17,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0181_ampharos",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 14,
+				"slug": "0182_bellossom",
+				"source_portrait_count": 17,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 32,
+				"slug": "0183_marill",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0184_azumarill",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0185_sudowoodo",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 4,
+				"imported_state_count": 12,
+				"slug": "0186_politoed",
+				"source_portrait_count": 4,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0187_hoppip",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0188_skiploom",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 12,
+				"slug": "0189_jumpluff",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 31,
+				"slug": "0190_aipom",
+				"source_portrait_count": 16,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 24,
+				"slug": "0191_sunkern",
+				"source_portrait_count": 17,
+				"source_state_count": 24,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 21,
+				"slug": "0192_sunflora",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0193_yanma",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 32,
+				"slug": "0194_wooper",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0195_quagsire",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 11,
+				"slug": "0196_espeon",
+				"source_portrait_count": 17,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0197_umbreon",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0198_murkrow",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0199_slowking",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0200_misdreavus",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 10,
+				"slug": "0201_unown",
+				"source_portrait_count": 16,
+				"source_state_count": 10,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0202_wobbuffet",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 12,
+				"slug": "0203_girafarig",
+				"source_portrait_count": 18,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0204_pineco",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0205_forretress",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 32,
+				"slug": "0206_dunsparce",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 34,
+				"slug": "0207_gligar",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0208_steelix",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 14,
+				"slug": "0209_snubbull",
+				"source_portrait_count": 16,
+				"source_state_count": 14,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0210_granbull",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0211_qwilfish",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 14,
+				"slug": "0212_scizor",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0213_shuckle",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 12,
+				"slug": "0214_heracross",
+				"source_portrait_count": 18,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 34,
+				"imported_state_count": 35,
+				"slug": "0215_sneasel",
+				"source_portrait_count": 32,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 36,
+				"imported_state_count": 13,
+				"slug": "0216_teddiursa",
+				"source_portrait_count": 36,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0217_ursaring",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0218_slugma",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0219_magcargo",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 18,
+				"slug": "0220_swinub",
+				"source_portrait_count": 16,
+				"source_state_count": 18,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0221_piloswine",
+				"source_portrait_count": 2,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 12,
+				"slug": "0222_corsola",
+				"source_portrait_count": 18,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0223_remoraid",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 14,
+				"slug": "0224_octillery",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 27,
+				"imported_state_count": 13,
+				"slug": "0225_delibird",
+				"source_portrait_count": 27,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0226_mantine",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 14,
+				"slug": "0227_skarmory",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0228_houndour",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 12,
+				"slug": "0229_houndoom",
+				"source_portrait_count": 18,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0230_kingdra",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0231_phanpy",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 19,
+				"imported_state_count": 16,
+				"slug": "0232_donphan",
+				"source_portrait_count": 19,
+				"source_state_count": 16,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0233_porygon2",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0234_stantler",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 32,
+				"slug": "0235_smeargle",
+				"source_portrait_count": 18,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 14,
+				"slug": "0236_tyrogue",
+				"source_portrait_count": 17,
+				"source_state_count": 14,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 3,
+				"imported_state_count": 13,
+				"slug": "0237_hitmontop",
+				"source_portrait_count": 3,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0238_smoochum",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 13,
+				"slug": "0239_elekid",
+				"source_portrait_count": 32,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0240_magby",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 13,
+				"slug": "0241_miltank",
+				"source_portrait_count": 17,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0242_blissey",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 14,
+				"slug": "0243_raikou",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0244_entei",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0245_suicune",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 31,
+				"slug": "0246_larvitar",
+				"source_portrait_count": 17,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0247_pupitar",
+				"source_portrait_count": 1,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 14,
+				"slug": "0248_tyranitar",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 13,
+				"slug": "0249_lugia",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 13,
+				"slug": "0250_ho_oh",
+				"source_portrait_count": 17,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 20,
+				"imported_state_count": 38,
+				"slug": "0251_celebi",
+				"source_portrait_count": 18,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 32,
+				"slug": "0252_treecko",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 19,
+				"imported_state_count": 30,
+				"slug": "0253_grovyle",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0254_sceptile",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 32,
+				"slug": "0255_torchic",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0256_combusken",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0257_blaziken",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 32,
+				"slug": "0258_mudkip",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0259_marshtomp",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0260_swampert",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 32,
+				"slug": "0261_poochyena",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 32,
+				"slug": "0262_mightyena",
+				"source_portrait_count": 18,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 19,
+				"slug": "0263_zigzagoon",
+				"source_portrait_count": 16,
+				"source_state_count": 19,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0264_linoone",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0265_wurmple",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 10,
+				"slug": "0266_silcoon",
+				"source_portrait_count": 17,
+				"source_state_count": 10,
+				"substitutions": {
+					"idle": "idle_static_from_walk"
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0267_beautifly",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 10,
+				"slug": "0268_cascoon",
+				"source_portrait_count": 1,
+				"source_state_count": 10,
+				"substitutions": {
+					"idle": "idle_static_from_walk"
+				}
+			},
+			{
+				"imported_portrait_count": 4,
+				"imported_state_count": 12,
+				"slug": "0269_dustox",
+				"source_portrait_count": 4,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0270_lotad",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 35,
+				"imported_state_count": 15,
+				"slug": "0271_lombre",
+				"source_portrait_count": 34,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 16,
+				"slug": "0272_ludicolo",
+				"source_portrait_count": 1,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 17,
+				"slug": "0273_seedot",
+				"source_portrait_count": 17,
+				"source_state_count": 17,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0274_nuzleaf",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 15,
+				"slug": "0275_shiftry",
+				"source_portrait_count": 17,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 13,
+				"slug": "0276_taillow",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 15,
+				"slug": "0277_swellow",
+				"source_portrait_count": 16,
+				"source_state_count": 15,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0278_wingull",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 3,
+				"imported_state_count": 14,
+				"slug": "0279_pelipper",
+				"source_portrait_count": 3,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 31,
+				"slug": "0280_ralts",
+				"source_portrait_count": 16,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 19,
+				"imported_state_count": 31,
+				"slug": "0281_kirlia",
+				"source_portrait_count": 19,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 17,
+				"slug": "0282_gardevoir",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0283_surskit",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0284_masquerain",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0285_shroomish",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 19,
+				"imported_state_count": 32,
+				"slug": "0286_breloom",
+				"source_portrait_count": 19,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 5,
+				"imported_state_count": 13,
+				"slug": "0287_slakoth",
+				"source_portrait_count": 5,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 13,
+				"slug": "0288_vigoroth",
+				"source_portrait_count": 1,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 4,
+				"imported_state_count": 13,
+				"slug": "0289_slaking",
+				"source_portrait_count": 4,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0290_nincada",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0291_ninjask",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0292_shedinja",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0293_whismur",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 14,
+				"slug": "0294_loudred",
+				"source_portrait_count": 16,
+				"source_state_count": 14,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0295_exploud",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 5,
+				"imported_state_count": 12,
+				"slug": "0296_makuhita",
+				"source_portrait_count": 5,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0297_hariyama",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 15,
+				"slug": "0298_azurill",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0299_nosepass",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 32,
+				"slug": "0300_skitty",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0301_delcatty",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 19,
+				"imported_state_count": 19,
+				"slug": "0302_sableye",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0303_mawile",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0304_aron",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0305_lairon",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 14,
+				"slug": "0306_aggron",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0307_meditite",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 14,
+				"slug": "0308_medicham",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 33,
+				"slug": "0309_electrike",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 16,
+				"slug": "0310_manectric",
+				"source_portrait_count": 16,
+				"source_state_count": 16,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 33,
+				"slug": "0311_plusle",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 33,
+				"slug": "0312_minun",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 8,
+				"imported_state_count": 13,
+				"slug": "0313_volbeat",
+				"source_portrait_count": 8,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 4,
+				"imported_state_count": 14,
+				"slug": "0314_illumise",
+				"source_portrait_count": 4,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 34,
+				"imported_state_count": 32,
+				"slug": "0315_roselia",
+				"source_portrait_count": 27,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0316_gulpin",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 3,
+				"imported_state_count": 12,
+				"slug": "0317_swalot",
+				"source_portrait_count": 3,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 13,
+				"slug": "0318_carvanha",
+				"source_portrait_count": 1,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0319_sharpedo",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0320_wailmer",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0321_wailord",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0322_numel",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0323_camerupt",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 13,
+				"slug": "0324_torkoal",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0325_spoink",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0326_grumpig",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 34,
+				"imported_state_count": 19,
+				"slug": "0327_spinda",
+				"source_portrait_count": 32,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 14,
+				"slug": "0328_trapinch",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0329_vibrava",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0330_flygon",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0331_cacnea",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 12,
+				"slug": "0332_cacturne",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0333_swablu",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 32,
+				"slug": "0334_altaria",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 33,
+				"slug": "0335_zangoose",
+				"source_portrait_count": 32,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 13,
+				"slug": "0336_seviper",
+				"source_portrait_count": 32,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0337_lunatone",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0338_solrock",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0339_barboach",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 12,
+				"slug": "0340_whiscash",
+				"source_portrait_count": 18,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 34,
+				"slug": "0341_corphish",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 13,
+				"slug": "0342_crawdaunt",
+				"source_portrait_count": 17,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 5,
+				"imported_state_count": 13,
+				"slug": "0343_baltoy",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 13,
+				"slug": "0344_claydol",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0345_lileep",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+					"idle": "idle_static_from_walk"
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0346_cradily",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0347_anorith",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 18,
+				"slug": "0348_armaldo",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0349_feebas",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0350_milotic",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0351_castform",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 14,
+				"slug": "0352_kecleon",
+				"source_portrait_count": 17,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 32,
+				"slug": "0353_shuppet",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 14,
+				"slug": "0354_banette",
+				"source_portrait_count": 32,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0355_duskull",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 13,
+				"slug": "0356_dusclops",
+				"source_portrait_count": 17,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0357_tropius",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 20,
+				"imported_state_count": 15,
+				"slug": "0358_chimecho",
+				"source_portrait_count": 20,
+				"source_state_count": 14,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 36,
+				"slug": "0359_absol",
+				"source_portrait_count": 32,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0360_wynaut",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 13,
+				"slug": "0361_snorunt",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0362_glalie",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 14,
+				"slug": "0363_spheal",
+				"source_portrait_count": 17,
+				"source_state_count": 14,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0364_sealeo",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 13,
+				"slug": "0365_walrein",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0366_clamperl",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0367_huntail",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0368_gorebyss",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0369_relicanth",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0370_luvdisc",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0371_bagon",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0372_shelgon",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0373_salamence",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 10,
+				"slug": "0374_beldum",
+				"source_portrait_count": 32,
+				"source_state_count": 10,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0375_metang",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0376_metagross",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 36,
+				"imported_state_count": 12,
+				"slug": "0377_regirock",
+				"source_portrait_count": 36,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 12,
+				"slug": "0378_regice",
+				"source_portrait_count": 18,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0379_registeel",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 35,
+				"slug": "0380_latias",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 20,
+				"slug": "0381_latios",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 13,
+				"slug": "0382_kyogre",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 18,
+				"slug": "0383_groudon",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 13,
+				"slug": "0384_rayquaza",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 35,
+				"slug": "0385_jirachi",
+				"source_portrait_count": 18,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 12,
+				"slug": "0386_deoxys",
+				"source_portrait_count": 18,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0387_turtwig",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 17,
+				"slug": "0388_grotle",
+				"source_portrait_count": 16,
+				"source_state_count": 17,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0389_torterra",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 33,
+				"slug": "0390_chimchar",
+				"source_portrait_count": 32,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 34,
+				"imported_state_count": 13,
+				"slug": "0391_monferno",
+				"source_portrait_count": 34,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 13,
+				"slug": "0392_infernape",
+				"source_portrait_count": 32,
+				"source_state_count": 17,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0393_piplup",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0394_prinplup",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0395_empoleon",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 13,
+				"slug": "0396_starly",
+				"source_portrait_count": 17,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 13,
+				"slug": "0397_staravia",
+				"source_portrait_count": 17,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 13,
+				"slug": "0398_staraptor",
+				"source_portrait_count": 18,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 37,
+				"slug": "0399_bidoof",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0400_bibarel",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0401_kricketot",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0402_kricketune",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0403_shinx",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0404_luxio",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 12,
+				"slug": "0405_luxray",
+				"source_portrait_count": 18,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 32,
+				"slug": "0406_budew",
+				"source_portrait_count": 34,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 38,
+				"imported_state_count": 18,
+				"slug": "0407_roserade",
+				"source_portrait_count": 38,
+				"source_state_count": 18,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0408_cranidos",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0409_rampardos",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0410_shieldon",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0411_bastiodon",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0412_burmy",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0413_wormadam",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0414_mothim",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+					"idle": "idle_static_from_walk"
+				}
+			},
+			{
+				"imported_portrait_count": 3,
+				"imported_state_count": 12,
+				"slug": "0415_combee",
+				"source_portrait_count": 3,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 20,
+				"imported_state_count": 12,
+				"slug": "0416_vespiquen",
+				"source_portrait_count": 20,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 33,
+				"slug": "0417_pachirisu",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 33,
+				"slug": "0418_buizel",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 13,
+				"slug": "0419_floatzel",
+				"source_portrait_count": 17,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0420_cherubi",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0421_cherrim",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0422_shellos",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0423_gastrodon",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 3,
+				"imported_state_count": 13,
+				"slug": "0424_ambipom",
+				"source_portrait_count": 3,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 38,
+				"imported_state_count": 12,
+				"slug": "0425_drifloon",
+				"source_portrait_count": 38,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 14,
+				"imported_state_count": 12,
+				"slug": "0426_drifblim",
+				"source_portrait_count": 14,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 33,
+				"slug": "0427_buneary",
+				"source_portrait_count": 32,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 17,
+				"slug": "0428_lopunny",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0429_mismagius",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 20,
+				"imported_state_count": 19,
+				"slug": "0430_honchkrow",
+				"source_portrait_count": 20,
+				"source_state_count": 19,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 33,
+				"slug": "0431_glameow",
+				"source_portrait_count": 17,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 13,
+				"slug": "0432_purugly",
+				"source_portrait_count": 17,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0433_chingling",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0434_stunky",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 22,
+				"slug": "0435_skuntank",
+				"source_portrait_count": 17,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 12,
+				"slug": "0436_bronzor",
+				"source_portrait_count": 18,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0437_bronzong",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0438_bonsly",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 33,
+				"slug": "0439_mime_jr",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0440_happiny",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 19,
+				"imported_state_count": 25,
+				"slug": "0441_chatot",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 36,
+				"imported_state_count": 18,
+				"slug": "0442_spiritomb",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0443_gible",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0444_gabite",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0445_garchomp",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 33,
+				"slug": "0446_munchlax",
+				"source_portrait_count": 17,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 33,
+				"slug": "0447_riolu",
+				"source_portrait_count": 17,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 33,
+				"slug": "0448_lucario",
+				"source_portrait_count": 17,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0449_hippopotas",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 12,
+				"slug": "0450_hippowdon",
+				"source_portrait_count": 18,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 14,
+				"slug": "0451_skorupi",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 4,
+				"imported_state_count": 15,
+				"slug": "0452_drapion",
+				"source_portrait_count": 4,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 15,
+				"slug": "0453_croagunk",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0454_toxicroak",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0455_carnivine",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0456_finneon",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0457_lumineon",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 7,
+				"imported_state_count": 12,
+				"slug": "0458_mantyke",
+				"source_portrait_count": 7,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 17,
+				"slug": "0459_snover",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0460_abomasnow",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 20,
+				"imported_state_count": 14,
+				"slug": "0461_weavile",
+				"source_portrait_count": 19,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 16,
+				"slug": "0462_magnezone",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 13,
+				"slug": "0463_lickilicky",
+				"source_portrait_count": 17,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 13,
+				"slug": "0464_rhyperior",
+				"source_portrait_count": 2,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 13,
+				"slug": "0465_tangrowth",
+				"source_portrait_count": 1,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 3,
+				"imported_state_count": 13,
+				"slug": "0466_electivire",
+				"source_portrait_count": 5,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 19,
+				"imported_state_count": 13,
+				"slug": "0467_magmortar",
+				"source_portrait_count": 2,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 34,
+				"imported_state_count": 13,
+				"slug": "0468_togekiss",
+				"source_portrait_count": 34,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0469_yanmega",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 33,
+				"slug": "0470_leafeon",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 33,
+				"slug": "0471_glaceon",
+				"source_portrait_count": 18,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0472_gliscor",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 14,
+				"slug": "0473_mamoswine",
+				"source_portrait_count": 3,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 15,
+				"slug": "0474_porygon_z",
+				"source_portrait_count": 17,
+				"source_state_count": 15,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0475_gallade",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0476_probopass",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 20,
+				"imported_state_count": 44,
+				"slug": "0477_dusknoir",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0478_froslass",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0479_rotom",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0480_uxie",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 35,
+				"slug": "0481_mesprit",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 15,
+				"slug": "0482_azelf",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 17,
+				"slug": "0483_dialga",
+				"source_portrait_count": 18,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 17,
+				"slug": "0484_palkia",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0485_heatran",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 18,
+				"slug": "0486_regigigas",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 20,
+				"imported_state_count": 12,
+				"slug": "0487_giratina",
+				"source_portrait_count": 20,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 37,
+				"slug": "0488_cresselia",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0489_phione",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 39,
+				"slug": "0490_manaphy",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 40,
+				"imported_state_count": 37,
+				"slug": "0491_darkrai",
+				"source_portrait_count": 40,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 33,
+				"slug": "0492_shaymin",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 33,
+				"slug": "0493_arceus",
+				"source_portrait_count": 16,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 11,
+				"slug": "0494_victini",
+				"source_portrait_count": 17,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0495_snivy",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 11,
+				"slug": "0496_servine",
+				"source_portrait_count": 17,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0497_serperior",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 31,
+				"slug": "0498_tepig",
+				"source_portrait_count": 16,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0499_pignite",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0500_emboar",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 31,
+				"slug": "0501_oshawott",
+				"source_portrait_count": 16,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0502_dewott",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0503_samurott",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0504_patrat",
+				"source_portrait_count": 1,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 19,
+				"imported_state_count": 11,
+				"slug": "0505_watchog",
+				"source_portrait_count": 19,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0506_lillipup",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0507_herdier",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 10,
+				"imported_state_count": 11,
+				"slug": "0508_stoutland",
+				"source_portrait_count": 18,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0509_purrloin",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0510_liepard",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0511_pansage",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0512_simisage",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 34,
+				"imported_state_count": 13,
+				"slug": "0513_pansear",
+				"source_portrait_count": 34,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0515_panpour",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 11,
+				"slug": "0517_munna",
+				"source_portrait_count": 17,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 11,
+				"slug": "0518_musharna",
+				"source_portrait_count": 17,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0519_pidove",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 14,
+				"slug": "0521_unfezant",
+				"source_portrait_count": 1,
+				"source_state_count": 14,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0524_roggenrola",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0525_boldore",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0526_gigalith",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0527_woobat",
+				"source_portrait_count": 1,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0528_swoobat",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 4,
+				"imported_state_count": 13,
+				"slug": "0529_drilbur",
+				"source_portrait_count": 4,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0530_excadrill",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 16,
+				"slug": "0531_audino",
+				"source_portrait_count": 16,
+				"source_state_count": 16,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 13,
+				"slug": "0532_timburr",
+				"source_portrait_count": 1,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 3,
+				"imported_state_count": 14,
+				"slug": "0533_gurdurr",
+				"source_portrait_count": 3,
+				"source_state_count": 14,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 13,
+				"slug": "0534_conkeldurr",
+				"source_portrait_count": 1,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0535_tympole",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0536_palpitoad",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0537_seismitoad",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 6,
+				"imported_state_count": 12,
+				"slug": "0540_sewaddle",
+				"source_portrait_count": 6,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0541_swadloon",
+				"source_portrait_count": 1,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0542_leavanny",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 31,
+				"slug": "0543_venipede",
+				"source_portrait_count": 16,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 14,
+				"slug": "0544_whirlipede",
+				"source_portrait_count": 1,
+				"source_state_count": 14,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0545_scolipede",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 13,
+				"slug": "0546_cottonee",
+				"source_portrait_count": 1,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0548_petilil",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 34,
+				"imported_state_count": 30,
+				"slug": "0549_lilligant",
+				"source_portrait_count": 32,
+				"source_state_count": 30,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0550_basculin",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 11,
+				"slug": "0551_sandile",
+				"source_portrait_count": 18,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0552_krokorok",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0553_krookodile",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0554_darumaka",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 13,
+				"slug": "0555_darmanitan",
+				"source_portrait_count": 1,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0556_maractus",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 32,
+				"slug": "0559_scraggy",
+				"source_portrait_count": 16,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 12,
+				"slug": "0560_scrafty",
+				"source_portrait_count": 18,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0561_sigilyph",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0562_yamask",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 20,
+				"imported_state_count": 11,
+				"slug": "0563_cofagrigus",
+				"source_portrait_count": 20,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 16,
+				"slug": "0566_archen",
+				"source_portrait_count": 16,
+				"source_state_count": 15,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0567_archeops",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 19,
+				"imported_state_count": 31,
+				"slug": "0568_trubbish",
+				"source_portrait_count": 19,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0569_garbodor",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 34,
+				"imported_state_count": 31,
+				"slug": "0570_zorua",
+				"source_portrait_count": 34,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0571_zoroark",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 33,
+				"slug": "0572_minccino",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 10,
+				"imported_state_count": 13,
+				"slug": "0573_cinccino",
+				"source_portrait_count": 10,
+				"source_state_count": 16,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 5,
+				"imported_state_count": 12,
+				"slug": "0574_gothita",
+				"source_portrait_count": 5,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 20,
+				"imported_state_count": 12,
+				"slug": "0575_gothorita",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 8,
+				"imported_state_count": 11,
+				"slug": "0576_gothitelle",
+				"source_portrait_count": 8,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 30,
+				"slug": "0577_solosis",
+				"source_portrait_count": 32,
+				"source_state_count": 30,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 13,
+				"slug": "0578_duosion",
+				"source_portrait_count": 18,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0579_reuniclus",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0581_swanna",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 32,
+				"slug": "0582_vanillite",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 34,
+				"imported_state_count": 12,
+				"slug": "0583_vanillish",
+				"source_portrait_count": 34,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 11,
+				"slug": "0584_vanilluxe",
+				"source_portrait_count": 2,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0585_deerling",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 13,
+				"slug": "0586_sawsbuck",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 33,
+				"slug": "0587_emolga",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0589_escavalier",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0590_foongus",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 35,
+				"imported_state_count": 22,
+				"slug": "0597_ferroseed",
+				"source_portrait_count": 34,
+				"source_state_count": 22,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 40,
+				"imported_state_count": 12,
+				"slug": "0598_ferrothorn",
+				"source_portrait_count": 40,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 10,
+				"slug": "0602_tynamo",
+				"source_portrait_count": 1,
+				"source_state_count": 10,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 13,
+				"slug": "0603_eelektrik",
+				"source_portrait_count": 1,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 4,
+				"imported_state_count": 14,
+				"slug": "0604_eelektross",
+				"source_portrait_count": 4,
+				"source_state_count": 14,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 31,
+				"slug": "0605_elgyem",
+				"source_portrait_count": 17,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 12,
+				"slug": "0606_beheeyem",
+				"source_portrait_count": 18,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 38,
+				"imported_state_count": 31,
+				"slug": "0607_litwick",
+				"source_portrait_count": 36,
+				"source_state_count": 30,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0608_lampent",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 20,
+				"imported_state_count": 12,
+				"slug": "0609_chandelure",
+				"source_portrait_count": 20,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 34,
+				"slug": "0610_axew",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0611_fraxure",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 11,
+				"imported_state_count": 13,
+				"slug": "0612_haxorus",
+				"source_portrait_count": 11,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 4,
+				"imported_state_count": 12,
+				"slug": "0613_cubchoo",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0614_beartic",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0615_cryogonal",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 31,
+				"slug": "0619_mienfoo",
+				"source_portrait_count": 16,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0620_mienshao",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0621_druddigon",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 31,
+				"slug": "0622_golett",
+				"source_portrait_count": 32,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 14,
+				"slug": "0623_golurk",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0624_pawniard",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 33,
+				"slug": "0625_bisharp",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0627_rufflet",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0628_braviary",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0629_vullaby",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0630_mandibuzz",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0631_heatmor",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0632_durant",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 32,
+				"slug": "0633_deino",
+				"source_portrait_count": 17,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0634_zweilous",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 11,
+				"slug": "0635_hydreigon",
+				"source_portrait_count": 5,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0636_larvesta",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0637_volcarona",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 11,
+				"slug": "0638_cobalion",
+				"source_portrait_count": 17,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 17,
+				"slug": "0639_terrakion",
+				"source_portrait_count": 16,
+				"source_state_count": 17,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0640_virizion",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 11,
+				"slug": "0641_tornadus",
+				"source_portrait_count": 1,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 11,
+				"slug": "0642_thundurus",
+				"source_portrait_count": 1,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 11,
+				"slug": "0643_reshiram",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 11,
+				"slug": "0644_zekrom",
+				"source_portrait_count": 17,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0645_landorus",
+				"source_portrait_count": 1,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 34,
+				"imported_state_count": 14,
+				"slug": "0646_kyurem",
+				"source_portrait_count": 32,
+				"source_state_count": 14,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0647_keldeo",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 34,
+				"imported_state_count": 33,
+				"slug": "0648_meloetta",
+				"source_portrait_count": 34,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0649_genesect",
+				"source_portrait_count": 1,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 31,
+				"slug": "0650_chespin",
+				"source_portrait_count": 16,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0651_quilladin",
+				"source_portrait_count": 4,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0652_chesnaught",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 18,
+				"imported_state_count": 31,
+				"slug": "0653_fennekin",
+				"source_portrait_count": 18,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 19,
+				"imported_state_count": 31,
+				"slug": "0654_braixen",
+				"source_portrait_count": 19,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 11,
+				"slug": "0655_delphox",
+				"source_portrait_count": 17,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 31,
+				"slug": "0656_froakie",
+				"source_portrait_count": 17,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 3,
+				"imported_state_count": 11,
+				"slug": "0657_frogadier",
+				"source_portrait_count": 5,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 34,
+				"imported_state_count": 13,
+				"slug": "0658_greninja",
+				"source_portrait_count": 34,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0659_bunnelby",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0661_fletchling",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0662_fletchinder",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 13,
+				"slug": "0663_talonflame",
+				"source_portrait_count": 2,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0666_vivillon",
+				"source_portrait_count": 16,
+				"source_state_count": 17,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 5,
+				"imported_state_count": 31,
+				"slug": "0667_litleo",
+				"source_portrait_count": 5,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0669_flabebe",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 14,
+				"slug": "0670_floette",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 11,
+				"slug": "0671_florges",
+				"source_portrait_count": 32,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0672_skiddo",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 4,
+				"imported_state_count": 11,
+				"slug": "0673_gogoat",
+				"source_portrait_count": 4,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0674_pancham",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0675_pangoro",
+				"source_portrait_count": 34,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 12,
+				"slug": "0676_furfrou",
+				"source_portrait_count": 17,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 33,
+				"slug": "0677_espurr",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 33,
+				"slug": "0678_meowstic",
+				"source_portrait_count": 32,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 38,
+				"imported_state_count": 33,
+				"slug": "0679_honedge",
+				"source_portrait_count": 36,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 15,
+				"slug": "0680_doublade",
+				"source_portrait_count": 1,
+				"source_state_count": 15,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0681_aegislash",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0682_spritzee",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 34,
+				"imported_state_count": 33,
+				"slug": "0684_swirlix",
+				"source_portrait_count": 34,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 11,
+				"slug": "0685_slurpuff",
+				"source_portrait_count": 32,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 12,
+				"slug": "0686_inkay",
+				"source_portrait_count": 2,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0687_malamar",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0688_binacle",
+				"source_portrait_count": 1,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 2,
+				"imported_state_count": 13,
+				"slug": "0689_barbaracle",
+				"source_portrait_count": 19,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0690_skrelp",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0691_dragalge",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 12,
+				"slug": "0692_clauncher",
+				"source_portrait_count": 1,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 1,
+				"imported_state_count": 11,
+				"slug": "0693_clawitzer",
+				"source_portrait_count": 1,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 33,
+				"slug": "0694_helioptile",
+				"source_portrait_count": 16,
+				"source_state_count": 33,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 13,
+				"slug": "0695_heliolisk",
+				"source_portrait_count": 17,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 13,
+				"slug": "0696_tyrunt",
+				"source_portrait_count": 16,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 11,
+				"slug": "0697_tyrantrum",
+				"source_portrait_count": 17,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 31,
+				"slug": "0698_amaura",
+				"source_portrait_count": 16,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0699_aurorus",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 38,
+				"imported_state_count": 12,
+				"slug": "0700_sylveon",
+				"source_portrait_count": 38,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 19,
+				"imported_state_count": 12,
+				"slug": "0701_hawlucha",
+				"source_portrait_count": 19,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 8,
+				"imported_state_count": 10,
+				"slug": "0703_carbink",
+				"source_portrait_count": 8,
+				"source_state_count": 10,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0704_goomy",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 11,
+				"imported_state_count": 11,
+				"slug": "0705_sliggoo",
+				"source_portrait_count": 18,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0706_goodra",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 7,
+				"imported_state_count": 10,
+				"slug": "0707_klefki",
+				"source_portrait_count": 7,
+				"source_state_count": 10,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0708_phantump",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0709_trevenant",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0710_pumpkaboo",
+				"source_portrait_count": 32,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 32,
+				"imported_state_count": 12,
+				"slug": "0711_gourgeist",
+				"source_portrait_count": 32,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 33,
+				"slug": "0714_noibat",
+				"source_portrait_count": 16,
+				"source_state_count": 31,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 17,
+				"imported_state_count": 13,
+				"slug": "0715_noivern",
+				"source_portrait_count": 17,
+				"source_state_count": 13,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 11,
+				"slug": "0716_xerneas",
+				"source_portrait_count": 16,
+				"source_state_count": 11,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 20,
+				"imported_state_count": 14,
+				"slug": "0717_yveltal",
+				"source_portrait_count": 20,
+				"source_state_count": 14,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 20,
+				"imported_state_count": 10,
+				"slug": "0718_zygarde",
+				"source_portrait_count": 20,
+				"source_state_count": 10,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 32,
+				"slug": "0719_diancie",
+				"source_portrait_count": 16,
+				"source_state_count": 32,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 10,
+				"slug": "0720_hoopa",
+				"source_portrait_count": 16,
+				"source_state_count": 10,
+				"substitutions": {
+
+				}
+			},
+			{
+				"imported_portrait_count": 16,
+				"imported_state_count": 12,
+				"slug": "0721_volcanion",
+				"source_portrait_count": 16,
+				"source_state_count": 12,
+				"substitutions": {
+
+				}
+			}
+		],
+		"portrait_gaps": [
+			{
+				"missing_portraits": [
+					"Happy.png",
+					"Inspired.png"
+				],
+				"slug": "0033_nidorino"
+			},
+			{
+				"missing_portraits": [
+					"Pain.png",
+					"Pain^.png"
+				],
+				"slug": "0070_weepinbell"
+			},
+			{
+				"missing_portraits": [
+					"Happy.png",
+					"Inspired.png",
+					"Pain.png"
+				],
+				"slug": "0074_geodude"
+			},
+			{
+				"missing_portraits": [
+					"Special0.png"
+				],
+				"slug": "0090_shellder"
+			},
+			{
+				"missing_portraits": [
+					"Happy.png",
+					"Happy^.png",
+					"Inspired.png",
+					"Inspired^.png",
+					"Pain.png",
+					"Pain^.png"
+				],
+				"slug": "0120_staryu"
+			},
+			{
+				"missing_portraits": [
+					"Angry.png"
+				],
+				"slug": "0168_ariados"
+			},
+			{
+				"missing_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"slug": "0169_crobat"
+			},
+			{
+				"missing_portraits": [
+					"Surprised.png"
+				],
+				"slug": "0221_piloswine"
+			},
+			{
+				"missing_portraits": [
+					"Angry.png",
+					"Angry^.png",
+					"Crying.png",
+					"Crying^.png",
+					"Determined.png",
+					"Determined^.png",
+					"Dizzy.png",
+					"Dizzy^.png",
+					"Happy.png",
+					"Happy^.png",
+					"Inspired.png",
+					"Inspired^.png",
+					"Joyous.png",
+					"Joyous^.png",
+					"Pain.png",
+					"Pain^.png",
+					"Sad.png",
+					"Sad^.png",
+					"Shouting.png",
+					"Shouting^.png",
+					"Sigh.png",
+					"Sigh^.png",
+					"Stunned.png",
+					"Stunned^.png",
+					"Surprised.png",
+					"Surprised^.png",
+					"Teary-Eyed.png",
+					"Teary-Eyed^.png",
+					"Worried.png",
+					"Worried^.png"
+				],
+				"slug": "0226_mantine"
+			},
+			{
+				"missing_portraits": [
+					"Crying.png",
+					"Dizzy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"slug": "0343_baltoy"
+			},
+			{
+				"missing_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"slug": "0344_claydol"
+			},
+			{
+				"missing_portraits": [
+					"Special0.png",
+					"Special0^.png"
+				],
+				"slug": "0406_budew"
+			},
+			{
+				"missing_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"slug": "0414_mothim"
+			},
+			{
+				"missing_portraits": [
+					"Inspired.png",
+					"Pain.png"
+				],
+				"slug": "0466_electivire"
+			},
+			{
+				"missing_portraits": [
+					"Angry.png",
+					"Pain.png"
+				],
+				"slug": "0473_mamoswine"
+			},
+			{
+				"missing_portraits": [
+					"Pain.png"
+				],
+				"slug": "0485_heatran"
+			},
+			{
+				"missing_portraits": [
+					"Dizzy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Sigh.png",
+					"Special0.png",
+					"Special1.png",
+					"Stunned.png",
+					"Surprised.png"
+				],
+				"slug": "0508_stoutland"
+			},
+			{
+				"missing_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"slug": "0535_tympole"
+			},
+			{
+				"missing_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"slug": "0536_palpitoad"
+			},
+			{
+				"missing_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"slug": "0537_seismitoad"
+			},
+			{
+				"missing_portraits": [
+					"Determined.png",
+					"Sad.png",
+					"Teary-Eyed.png"
+				],
+				"slug": "0635_hydreigon"
+			},
+			{
+				"missing_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"slug": "0637_volcarona"
+			},
+			{
+				"missing_portraits": [
+					"Happy.png",
+					"Inspired.png",
+					"Pain.png"
+				],
+				"slug": "0651_quilladin"
+			},
+			{
+				"missing_portraits": [
+					"Inspired.png",
+					"Pain.png"
+				],
+				"slug": "0657_frogadier"
+			},
+			{
+				"missing_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"slug": "0659_bunnelby"
+			},
+			{
+				"missing_portraits": [
+					"Angry^.png",
+					"Crying^.png",
+					"Determined^.png",
+					"Dizzy^.png",
+					"Happy^.png",
+					"Inspired^.png",
+					"Joyous^.png",
+					"Normal^.png",
+					"Pain^.png",
+					"Sad^.png",
+					"Shouting^.png",
+					"Sigh^.png",
+					"Special0.png",
+					"Special0^.png",
+					"Stunned^.png",
+					"Surprised^.png",
+					"Teary-Eyed^.png",
+					"Worried^.png"
+				],
+				"slug": "0675_pangoro"
+			},
+			{
+				"missing_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Special0.png",
+					"Special1.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"slug": "0689_barbaracle"
+			},
+			{
+				"missing_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"slug": "0690_skrelp"
+			},
+			{
+				"missing_portraits": [
+					"Joyous^.png",
+					"Sad^.png",
+					"Sigh^.png",
+					"Special3^.png",
+					"Stunned^.png",
+					"Teary-Eyed^.png",
+					"Worried^.png"
+				],
+				"slug": "0705_sliggoo"
+			}
+		],
+		"state_gaps": [
+			{
+				"extra_states": [],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0023_ekans"
+			},
+			{
+				"extra_states": [
+					"faint",
+					"standing_up"
+				],
+				"missing_states": [],
+				"slug": "0024_arbok"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0026_raichu"
+			},
+			{
+				"extra_states": [
+					"special0"
+				],
+				"missing_states": [],
+				"slug": "0038_ninetales"
+			},
+			{
+				"extra_states": [
+					"special0",
+					"special1",
+					"special2",
+					"tumble",
+					"wiggle"
+				],
+				"missing_states": [],
+				"slug": "0040_wigglytuff"
+			},
+			{
+				"extra_states": [
+					"eat",
+					"fainted",
+					"nod"
+				],
+				"missing_states": [],
+				"slug": "0041_zubat"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0048_venonat"
+			},
+			{
+				"extra_states": [
+					"dig_in",
+					"dig_out",
+					"special0",
+					"wiggle"
+				],
+				"missing_states": [
+					"pose"
+				],
+				"slug": "0050_diglett"
+			},
+			{
+				"extra_states": [
+					"dig_in",
+					"dig_out",
+					"special0",
+					"wiggle"
+				],
+				"missing_states": [
+					"pose"
+				],
+				"slug": "0051_dugtrio"
+			},
+			{
+				"extra_states": [
+					"careful_walk",
+					"deep_breath",
+					"nod",
+					"pain",
+					"raise_arms",
+					"sit",
+					"special0",
+					"special1",
+					"special2",
+					"special3",
+					"wake",
+					"yawn"
+				],
+				"missing_states": [],
+				"slug": "0054_psyduck"
+			},
+			{
+				"extra_states": [
+					"fainted",
+					"special1",
+					"special2",
+					"special3"
+				],
+				"missing_states": [],
+				"slug": "0065_alakazam"
+			},
+			{
+				"extra_states": [
+					"careful_walk",
+					"deep_breath",
+					"raise_arms",
+					"special0",
+					"special1",
+					"special2",
+					"special3",
+					"yawn"
+				],
+				"missing_states": [],
+				"slug": "0066_machop"
+			},
+			{
+				"extra_states": [
+					"cringe",
+					"fainted",
+					"standing_up",
+					"tumble",
+					"tumble_back"
+				],
+				"missing_states": [],
+				"slug": "0076_golem"
+			},
+			{
+				"extra_states": [
+					"faint"
+				],
+				"missing_states": [],
+				"slug": "0081_magnemite"
+			},
+			{
+				"extra_states": [
+					"pose"
+				],
+				"missing_states": [],
+				"slug": "0088_grimer"
+			},
+			{
+				"extra_states": [
+					"pain"
+				],
+				"missing_states": [],
+				"slug": "0089_muk"
+			},
+			{
+				"extra_states": [
+					"faint",
+					"fainted",
+					"pain",
+					"special0"
+				],
+				"missing_states": [],
+				"slug": "0093_haunter"
+			},
+			{
+				"extra_states": [
+					"special0",
+					"special1",
+					"special2"
+				],
+				"missing_states": [],
+				"slug": "0094_gengar"
+			},
+			{
+				"extra_states": [
+					"faint",
+					"special0"
+				],
+				"missing_states": [],
+				"slug": "0096_drowzee"
+			},
+			{
+				"extra_states": [
+					"careful_walk",
+					"pain",
+					"raise_arms",
+					"special0",
+					"special1",
+					"special2",
+					"special3",
+					"yawn"
+				],
+				"missing_states": [],
+				"slug": "0104_cubone"
+			},
+			{
+				"extra_states": [
+					"fainted",
+					"nod",
+					"special0"
+				],
+				"missing_states": [],
+				"slug": "0109_koffing"
+			},
+			{
+				"extra_states": [
+					"wiggle"
+				],
+				"missing_states": [],
+				"slug": "0130_gyarados"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0140_kabuto"
+			},
+			{
+				"extra_states": [
+					"injured",
+					"pose",
+					"special0",
+					"standing_up"
+				],
+				"missing_states": [],
+				"slug": "0144_articuno"
+			},
+			{
+				"extra_states": [
+					"injured",
+					"standing_up"
+				],
+				"missing_states": [],
+				"slug": "0145_zapdos"
+			},
+			{
+				"extra_states": [
+					"injured",
+					"pose",
+					"special0",
+					"standing_up"
+				],
+				"missing_states": [],
+				"slug": "0146_moltres"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"special0"
+				],
+				"slug": "0149_dragonite"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"deep_breath",
+					"eat",
+					"faint",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0161_sentret"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"wake"
+				],
+				"slug": "0162_furret"
+			},
+			{
+				"extra_states": [
+					"jump",
+					"nod",
+					"special0",
+					"special1",
+					"special2",
+					"special3",
+					"special4",
+					"special5",
+					"special6",
+					"special7",
+					"wake"
+				],
+				"missing_states": [],
+				"slug": "0174_igglybuff"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"special0"
+				],
+				"slug": "0176_togetic"
+			},
+			{
+				"extra_states": [
+					"special0",
+					"special1",
+					"special2"
+				],
+				"missing_states": [],
+				"slug": "0178_xatu"
+			},
+			{
+				"extra_states": [
+					"pose",
+					"special0",
+					"special1"
+				],
+				"missing_states": [],
+				"slug": "0182_bellossom"
+			},
+			{
+				"extra_states": [
+					"eat",
+					"fainted",
+					"special0",
+					"special1",
+					"special2",
+					"special3",
+					"special4",
+					"standing_up"
+				],
+				"missing_states": [],
+				"slug": "0192_sunflora"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0203_girafarig"
+			},
+			{
+				"extra_states": [
+					"special0"
+				],
+				"missing_states": [],
+				"slug": "0207_gligar"
+			},
+			{
+				"extra_states": [
+					"fainted",
+					"standing_up"
+				],
+				"missing_states": [],
+				"slug": "0212_scizor"
+			},
+			{
+				"extra_states": [
+					"fainted",
+					"special0",
+					"special1"
+				],
+				"missing_states": [],
+				"slug": "0215_sneasel"
+			},
+			{
+				"extra_states": [
+					"faint",
+					"fainted"
+				],
+				"missing_states": [],
+				"slug": "0224_octillery"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0225_delibird"
+			},
+			{
+				"extra_states": [
+					"roar",
+					"special0",
+					"special1"
+				],
+				"missing_states": [],
+				"slug": "0227_skarmory"
+			},
+			{
+				"extra_states": [
+					"roar"
+				],
+				"missing_states": [],
+				"slug": "0243_raikou"
+			},
+			{
+				"extra_states": [
+					"roar"
+				],
+				"missing_states": [],
+				"slug": "0244_entei"
+			},
+			{
+				"extra_states": [
+					"roar"
+				],
+				"missing_states": [],
+				"slug": "0245_suicune"
+			},
+			{
+				"extra_states": [
+					"fainted",
+					"pose"
+				],
+				"missing_states": [],
+				"slug": "0248_tyranitar"
+			},
+			{
+				"extra_states": [
+					"special0"
+				],
+				"missing_states": [],
+				"slug": "0249_lugia"
+			},
+			{
+				"extra_states": [
+					"special0",
+					"special1",
+					"special2",
+					"special3",
+					"special4",
+					"special5"
+				],
+				"missing_states": [],
+				"slug": "0251_celebi"
+			},
+			{
+				"extra_states": [
+					"dig_out",
+					"fainted",
+					"special0",
+					"special1",
+					"special11",
+					"special12",
+					"special13",
+					"special14",
+					"special15",
+					"special16",
+					"special17",
+					"special2",
+					"special3",
+					"special4",
+					"special5",
+					"special8",
+					"special9",
+					"standing_up"
+				],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0253_grovyle"
+			},
+			{
+				"extra_states": [
+					"special0",
+					"special1"
+				],
+				"missing_states": [],
+				"slug": "0271_lombre"
+			},
+			{
+				"extra_states": [
+					"pose",
+					"special0",
+					"special1"
+				],
+				"missing_states": [],
+				"slug": "0272_ludicolo"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0274_nuzleaf"
+			},
+			{
+				"extra_states": [
+					"fainted",
+					"pose"
+				],
+				"missing_states": [],
+				"slug": "0275_shiftry"
+			},
+			{
+				"extra_states": [
+					"special0"
+				],
+				"missing_states": [],
+				"slug": "0279_pelipper"
+			},
+			{
+				"extra_states": [
+					"jump",
+					"pose",
+					"special0",
+					"special2",
+					"special3",
+					"standing_up"
+				],
+				"missing_states": [],
+				"slug": "0282_gardevoir"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0296_makuhita"
+			},
+			{
+				"extra_states": [
+					"bow",
+					"cry",
+					"special0"
+				],
+				"missing_states": [],
+				"slug": "0298_azurill"
+			},
+			{
+				"extra_states": [
+					"special0",
+					"special2",
+					"special3",
+					"special4",
+					"special5",
+					"special6",
+					"standing_up"
+				],
+				"missing_states": [],
+				"slug": "0302_sableye"
+			},
+			{
+				"extra_states": [
+					"dig_in",
+					"dig_out"
+				],
+				"missing_states": [],
+				"slug": "0306_aggron"
+			},
+			{
+				"extra_states": [
+					"fainted",
+					"standing_up"
+				],
+				"missing_states": [],
+				"slug": "0308_medicham"
+			},
+			{
+				"extra_states": [
+					"special0"
+				],
+				"missing_states": [],
+				"slug": "0313_volbeat"
+			},
+			{
+				"extra_states": [
+					"special0"
+				],
+				"missing_states": [],
+				"slug": "0314_illumise"
+			},
+			{
+				"extra_states": [
+					"bow",
+					"special0",
+					"special1",
+					"special2",
+					"special3"
+				],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0327_spinda"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"deep_breath",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0328_trapinch"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0333_swablu"
+			},
+			{
+				"extra_states": [
+					"special0"
+				],
+				"missing_states": [],
+				"slug": "0341_corphish"
+			},
+			{
+				"extra_states": [
+					"roar",
+					"special0",
+					"special1",
+					"special2",
+					"special3",
+					"special4"
+				],
+				"missing_states": [],
+				"slug": "0348_armaldo"
+			},
+			{
+				"extra_states": [
+					"jump"
+				],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0352_kecleon"
+			},
+			{
+				"extra_states": [
+					"pose"
+				],
+				"missing_states": [],
+				"slug": "0354_banette"
+			},
+			{
+				"extra_states": [
+					"special0"
+				],
+				"missing_states": [],
+				"slug": "0358_chimecho"
+			},
+			{
+				"extra_states": [
+					"jump",
+					"special0",
+					"special1"
+				],
+				"missing_states": [],
+				"slug": "0359_absol"
+			},
+			{
+				"extra_states": [
+					"bow"
+				],
+				"missing_states": [],
+				"slug": "0360_wynaut"
+			},
+			{
+				"extra_states": [
+					"special0"
+				],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0361_snorunt"
+			},
+			{
+				"extra_states": [
+					"special0"
+				],
+				"missing_states": [],
+				"slug": "0365_walrein"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0371_bagon"
+			},
+			{
+				"extra_states": [
+					"special0",
+					"special1",
+					"special2"
+				],
+				"missing_states": [],
+				"slug": "0380_latias"
+			},
+			{
+				"extra_states": [
+					"faint",
+					"injured",
+					"special0",
+					"special1",
+					"special2",
+					"special3",
+					"special4",
+					"special5"
+				],
+				"missing_states": [],
+				"slug": "0381_latios"
+			},
+			{
+				"extra_states": [
+					"faint",
+					"fainted",
+					"special0",
+					"special1",
+					"special2",
+					"special3"
+				],
+				"missing_states": [],
+				"slug": "0383_groudon"
+			},
+			{
+				"extra_states": [
+					"special0",
+					"special1",
+					"special2"
+				],
+				"missing_states": [],
+				"slug": "0385_jirachi"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"look_up",
+					"nod"
+				],
+				"slug": "0392_infernape"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0396_starly"
+			},
+			{
+				"extra_states": [
+					"fainted",
+					"special0",
+					"special1",
+					"standing_up",
+					"wave"
+				],
+				"missing_states": [],
+				"slug": "0399_bidoof"
+			},
+			{
+				"extra_states": [
+					"fainted",
+					"jump",
+					"pose",
+					"standing_up"
+				],
+				"missing_states": [],
+				"slug": "0428_lopunny"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0433_chingling"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0434_stunky"
+			},
+			{
+				"extra_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"fainted",
+					"float",
+					"head",
+					"jump",
+					"look_up"
+				],
+				"missing_states": [],
+				"slug": "0435_skuntank"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0440_happiny"
+			},
+			{
+				"extra_states": [
+					"fainted",
+					"injured",
+					"special0",
+					"special1",
+					"special2",
+					"special3",
+					"special4",
+					"special5",
+					"special6",
+					"wiggle"
+				],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0441_chatot"
+			},
+			{
+				"extra_states": [
+					"special0",
+					"special1",
+					"special2",
+					"special3",
+					"special4",
+					"special5"
+				],
+				"missing_states": [],
+				"slug": "0442_spiritomb"
+			},
+			{
+				"extra_states": [
+					"pose"
+				],
+				"missing_states": [],
+				"slug": "0451_skorupi"
+			},
+			{
+				"extra_states": [
+					"faint",
+					"standing_up"
+				],
+				"missing_states": [],
+				"slug": "0452_drapion"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0453_croagunk"
+			},
+			{
+				"extra_states": [
+					"faint",
+					"fainted",
+					"special0",
+					"special1",
+					"standing_up"
+				],
+				"missing_states": [],
+				"slug": "0459_snover"
+			},
+			{
+				"extra_states": [
+					"special0",
+					"special1"
+				],
+				"missing_states": [],
+				"slug": "0461_weavile"
+			},
+			{
+				"extra_states": [
+					"special0",
+					"special1",
+					"special2",
+					"special3"
+				],
+				"missing_states": [],
+				"slug": "0462_magnezone"
+			},
+			{
+				"extra_states": [
+					"special0",
+					"special1"
+				],
+				"missing_states": [],
+				"slug": "0473_mamoswine"
+			},
+			{
+				"extra_states": [
+					"fainted",
+					"special0",
+					"special1",
+					"special10",
+					"special11",
+					"special12",
+					"special13",
+					"special14",
+					"special15",
+					"special16",
+					"special17",
+					"special18",
+					"special19",
+					"special2",
+					"special20",
+					"special21",
+					"special22",
+					"special23",
+					"special24",
+					"special25",
+					"special26",
+					"special3",
+					"special4",
+					"special5",
+					"special6",
+					"special7",
+					"special8",
+					"special9",
+					"standing_up"
+				],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0477_dusknoir"
+			},
+			{
+				"extra_states": [
+					"special0",
+					"special1",
+					"special2"
+				],
+				"missing_states": [],
+				"slug": "0481_mesprit"
+			},
+			{
+				"extra_states": [
+					"fainted",
+					"special0",
+					"special1"
+				],
+				"missing_states": [],
+				"slug": "0482_azelf"
+			},
+			{
+				"extra_states": [
+					"faint",
+					"fainted",
+					"injured",
+					"special0"
+				],
+				"missing_states": [],
+				"slug": "0483_dialga"
+			},
+			{
+				"extra_states": [
+					"injured",
+					"roar",
+					"special0",
+					"special1"
+				],
+				"missing_states": [],
+				"slug": "0484_palkia"
+			},
+			{
+				"extra_states": [
+					"faint",
+					"pain",
+					"roar",
+					"special0",
+					"standing_up"
+				],
+				"missing_states": [],
+				"slug": "0486_regigigas"
+			},
+			{
+				"extra_states": [
+					"special0",
+					"special1",
+					"special2",
+					"special3",
+					"special4"
+				],
+				"missing_states": [],
+				"slug": "0488_cresselia"
+			},
+			{
+				"extra_states": [
+					"cry",
+					"fainted",
+					"special2",
+					"special3",
+					"special4",
+					"special5",
+					"standing_up"
+				],
+				"missing_states": [],
+				"slug": "0490_manaphy"
+			},
+			{
+				"extra_states": [
+					"special0",
+					"special1",
+					"special2",
+					"special20"
+				],
+				"missing_states": [],
+				"slug": "0491_darkrai"
+			},
+			{
+				"extra_states": [
+					"special0"
+				],
+				"missing_states": [],
+				"slug": "0492_shaymin"
+			},
+			{
+				"extra_states": [
+					"bite",
+					"stomp"
+				],
+				"missing_states": [],
+				"slug": "0493_arceus"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"strike"
+				],
+				"slug": "0502_dewott"
+			},
+			{
+				"extra_states": [
+					"rumble"
+				],
+				"missing_states": [],
+				"slug": "0509_purrloin"
+			},
+			{
+				"extra_states": [
+					"shoot"
+				],
+				"missing_states": [],
+				"slug": "0559_scraggy"
+			},
+			{
+				"extra_states": [
+					"flap_around"
+				],
+				"missing_states": [],
+				"slug": "0566_archen"
+			},
+			{
+				"extra_states": [
+					"shoot"
+				],
+				"missing_states": [],
+				"slug": "0572_minccino"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"cringe",
+					"float",
+					"wake"
+				],
+				"slug": "0573_cinccino"
+			},
+			{
+				"extra_states": [
+					"pose"
+				],
+				"missing_states": [],
+				"slug": "0575_gothorita"
+			},
+			{
+				"extra_states": [
+					"rear_up"
+				],
+				"missing_states": [],
+				"slug": "0586_sawsbuck"
+			},
+			{
+				"extra_states": [
+					"shoot"
+				],
+				"missing_states": [],
+				"slug": "0607_litwick"
+			},
+			{
+				"extra_states": [
+					"bite",
+					"emit"
+				],
+				"missing_states": [],
+				"slug": "0610_axew"
+			},
+			{
+				"extra_states": [
+					"punch",
+					"shoot"
+				],
+				"missing_states": [],
+				"slug": "0623_golurk"
+			},
+			{
+				"extra_states": [],
+				"missing_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"nod",
+					"strike"
+				],
+				"slug": "0666_vivillon"
+			},
+			{
+				"extra_states": [
+					"swell"
+				],
+				"missing_states": [],
+				"slug": "0670_floette"
+			},
+			{
+				"extra_states": [
+					"hover"
+				],
+				"missing_states": [],
+				"slug": "0711_gourgeist"
+			},
+			{
+				"extra_states": [
+					"fainted",
+					"hover"
+				],
+				"missing_states": [],
+				"slug": "0714_noibat"
+			}
+		],
+		"summary": {
+			"imported_portrait_total": 10390,
+			"imported_state_total": 11560,
+			"source_portrait_total": 10514,
+			"source_state_total": 11673,
+			"species_total": 686,
+			"species_with_portrait_gaps": 29,
+			"species_with_state_gaps": 121,
+			"species_with_substitutions": 6
+		}
+	}
+}
