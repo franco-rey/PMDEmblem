@@ -1,0 +1,1224 @@
+{
+	"apply_path_missing": [
+		"bind",
+		"clamp",
+		"infestation",
+		"wrap"
+	],
+	"flag_only_worklist": [
+		"aqua_ring",
+		"belch",
+		"bind",
+		"burn",
+		"charge",
+		"chasing",
+		"clamp",
+		"confuse",
+		"conversion",
+		"conversion_2",
+		"crafty_shield",
+		"decoy",
+		"defense_curl",
+		"destiny_bond",
+		"detect",
+		"disable",
+		"electrified",
+		"embargo",
+		"encore",
+		"endure",
+		"enraged",
+		"exposed",
+		"fairy_lock",
+		"fire_spin",
+		"flinch",
+		"focus_energy",
+		"follow_me",
+		"freeze",
+		"future_sight",
+		"grudge",
+		"heal_block",
+		"immobilized",
+		"in_love",
+		"infestation",
+		"ingrain",
+		"kings_shield",
+		"leech_seed",
+		"light_screen",
+		"lucky_chant",
+		"magic_coat",
+		"magma_storm",
+		"magnet_rise",
+		"metal_burst",
+		"minimized",
+		"miracle_eye",
+		"mirror_coat",
+		"mist",
+		"mod_accuracy",
+		"mod_attack",
+		"mod_defense",
+		"mod_evasion",
+		"mod_special_attack",
+		"mod_special_defense",
+		"mod_speed",
+		"nightmare",
+		"outrage",
+		"paralyze",
+		"paused",
+		"perish_song",
+		"petal_dance",
+		"poison",
+		"poison_toxic",
+		"powder",
+		"quick_guard",
+		"rage_powder",
+		"reflect",
+		"roosting",
+		"safeguard",
+		"sand_tomb",
+		"sleep",
+		"sleepless",
+		"snatch",
+		"stockpile",
+		"sure_shot",
+		"taunted",
+		"telekinesis",
+		"thrash",
+		"torment",
+		"whirlpool",
+		"wide_guard",
+		"wish",
+		"wrap",
+		"yawning"
+	],
+	"schema_version": 1,
+	"source": "smoke_test_status_coverage",
+	"statuses": [
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"aqua_ring"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "aqua_ring"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"belch"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "belch"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [
+				"rapid_spin"
+			],
+			"slug": "bind"
+		},
+		{
+			"applied_by_intrinsics": [
+				"flame_body",
+				"synchronize"
+			],
+			"applied_by_moves": [
+				"blaze_kick",
+				"ember",
+				"fire_blast",
+				"fire_fang",
+				"fire_punch",
+				"flame_wheel",
+				"flamethrower",
+				"flare_blitz",
+				"inferno",
+				"lava_plume",
+				"sacred_fire",
+				"scald",
+				"tri_attack",
+				"will_o_wisp"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "burn"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"charge"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "charge"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"block",
+				"pursuit"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "chasing"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [
+				"rapid_spin"
+			],
+			"slug": "clamp"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"chatter",
+				"confuse_ray",
+				"confusion",
+				"dizzy_punch",
+				"dynamic_punch",
+				"flatter",
+				"hurricane",
+				"psybeam",
+				"rock_climb",
+				"signal_beam",
+				"supersonic",
+				"swagger",
+				"sweet_kiss",
+				"teeter_dance",
+				"water_pulse"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "confuse"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"conversion"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "conversion"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"conversion_2"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "conversion_2"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"counter"
+			],
+			"classification": "screen",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "counter"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"crafty_shield"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "crafty_shield"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"substitute"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "decoy"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"defense_curl"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "defense_curl"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"destiny_bond"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "destiny_bond"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"detect"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "detect"
+		},
+		{
+			"applied_by_intrinsics": [
+				"cursed_body"
+			],
+			"applied_by_moves": [
+				"disable",
+				"imprison"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "disable"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"ion_deluge"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "electrified"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"embargo"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "embargo"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"encore"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "encore"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"endure"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "endure"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"rage"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "enraged"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"foresight",
+				"odor_sleuth"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "exposed"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"fairy_lock"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "fairy_lock"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"fire_spin"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [
+				"rapid_spin"
+			],
+			"slug": "fire_spin"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"air_slash",
+				"astonish",
+				"bite",
+				"bone_club",
+				"dark_pulse",
+				"dragon_rush",
+				"extrasensory",
+				"fake_out",
+				"fire_fang",
+				"headbutt",
+				"heart_stamp",
+				"hyper_fang",
+				"ice_fang",
+				"icicle_crash",
+				"iron_head",
+				"needle_arm",
+				"quash",
+				"rock_slide",
+				"rolling_kick",
+				"sky_attack",
+				"snore",
+				"steamroller",
+				"stomp",
+				"thunder_fang",
+				"twister",
+				"waterfall",
+				"zen_headbutt"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "flinch"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"focus_energy"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "focus_energy"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"follow_me"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "follow_me"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"blizzard",
+				"ice_beam",
+				"ice_fang",
+				"ice_punch",
+				"powder_snow",
+				"tri_attack"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "freeze"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"future_sight"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "future_sight"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"grudge"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "grudge"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"heal_block"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "heal_block"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"mean_look",
+				"spider_web",
+				"vice_grip"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [
+				"rapid_spin"
+			],
+			"slug": "immobilized"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"attract"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "in_love"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [
+				"rapid_spin"
+			],
+			"slug": "infestation"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"ingrain"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "ingrain"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"kings_shield"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "kings_shield"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"leech_seed"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [
+				"rapid_spin"
+			],
+			"slug": "leech_seed"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"light_screen"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [
+				"defog"
+			],
+			"slug": "light_screen"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"lucky_chant"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "lucky_chant"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"magic_coat"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "magic_coat"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"magma_storm"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [
+				"rapid_spin"
+			],
+			"slug": "magma_storm"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"magnet_rise"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "magnet_rise"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"metal_burst"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "metal_burst"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"minimize"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "minimized"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"miracle_eye"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "miracle_eye"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"mirror_coat"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "mirror_coat"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"mist"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [
+				"defog"
+			],
+			"slug": "mist"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [
+				"coil",
+				"flash",
+				"hone_claws",
+				"kinesis",
+				"leaf_tornado",
+				"mirror_shot",
+				"mud_bomb",
+				"mud_slap",
+				"muddy_water",
+				"night_daze",
+				"octazooka",
+				"sand_attack",
+				"smokescreen"
+			],
+			"removed_by_moves": [],
+			"slug": "mod_accuracy"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [
+				"aurora_beam",
+				"baby_doll_eyes",
+				"belly_drum",
+				"bulk_up",
+				"charm",
+				"coil",
+				"curse",
+				"dragon_dance",
+				"feather_dance",
+				"growl",
+				"growth",
+				"helping_hand",
+				"hone_claws",
+				"howl",
+				"meditate",
+				"memento",
+				"metal_claw",
+				"meteor_mash",
+				"noble_roar",
+				"parting_shot",
+				"play_rough",
+				"power_up_punch",
+				"sharpen",
+				"shell_smash",
+				"superpower",
+				"swagger",
+				"swords_dance",
+				"tickle",
+				"venom_drench",
+				"work_up"
+			],
+			"removed_by_moves": [],
+			"slug": "mod_attack"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [
+				"acid_armor",
+				"barrier",
+				"bulk_up",
+				"close_combat",
+				"coil",
+				"cosmic_power",
+				"cotton_guard",
+				"crunch",
+				"crush_claw",
+				"curse",
+				"defend_order",
+				"defense_curl",
+				"diamond_storm",
+				"flower_shield",
+				"harden",
+				"iron_defense",
+				"iron_tail",
+				"leer",
+				"magnetic_flux",
+				"psyshield_bash",
+				"razor_shell",
+				"screech",
+				"shell_smash",
+				"steel_wing",
+				"superpower",
+				"tail_whip",
+				"tickle",
+				"withdraw"
+			],
+			"removed_by_moves": [],
+			"slug": "mod_defense"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [
+				"double_team",
+				"minimize",
+				"sweet_scent"
+			],
+			"removed_by_moves": [],
+			"slug": "mod_evasion"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [
+				"calm_mind",
+				"captivate",
+				"charge_beam",
+				"confide",
+				"eerie_impulse",
+				"fiery_dance",
+				"flatter",
+				"growth",
+				"helping_hand",
+				"leaf_storm",
+				"memento",
+				"mist_ball",
+				"moonblast",
+				"mystical_fire",
+				"nasty_plot",
+				"noble_roar",
+				"overheat",
+				"parting_shot",
+				"play_nice",
+				"quiver_dance",
+				"shell_smash",
+				"snarl",
+				"struggle_bug",
+				"tail_glow",
+				"venom_drench",
+				"work_up"
+			],
+			"removed_by_moves": [],
+			"slug": "mod_special_attack"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [
+				"acid",
+				"acid_spray",
+				"amnesia",
+				"bug_buzz",
+				"calm_mind",
+				"close_combat",
+				"cosmic_power",
+				"defend_order",
+				"earth_power",
+				"energy_ball",
+				"fake_tears",
+				"flash_cannon",
+				"luster_purge",
+				"magnetic_flux",
+				"metal_sound",
+				"psychic",
+				"quiver_dance",
+				"shadow_ball",
+				"shell_smash"
+			],
+			"removed_by_moves": [],
+			"slug": "mod_special_defense"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [
+				"after_you",
+				"agility",
+				"autotomize",
+				"bubble",
+				"bubble_beam",
+				"bulldoze",
+				"constrict",
+				"cotton_spore",
+				"curse",
+				"dragon_dance",
+				"flame_charge",
+				"glaciate",
+				"hammer_arm",
+				"icy_wind",
+				"low_sweep",
+				"mud_shot",
+				"quiver_dance",
+				"rock_polish",
+				"rock_tomb",
+				"scary_face",
+				"shell_smash",
+				"string_shot",
+				"tailwind",
+				"venom_drench"
+			],
+			"removed_by_moves": [],
+			"slug": "mod_speed"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"nightmare"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "nightmare"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"outrage"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "outrage"
+		},
+		{
+			"applied_by_intrinsics": [
+				"synchronize"
+			],
+			"applied_by_moves": [
+				"body_slam",
+				"bounce",
+				"discharge",
+				"dragon_breath",
+				"force_palm",
+				"glare",
+				"lick",
+				"nuzzle",
+				"spark",
+				"stun_spore",
+				"thunder",
+				"thunder_fang",
+				"thunder_punch",
+				"thunder_shock",
+				"thunder_wave",
+				"thunderbolt",
+				"tri_attack",
+				"zap_cannon"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [
+				"smelling_salts"
+			],
+			"slug": "paralyze"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"roar_of_time",
+				"rock_wrecker"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "paused"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"perish_song"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "perish_song"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"petal_dance"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "petal_dance"
+		},
+		{
+			"applied_by_intrinsics": [
+				"poison_touch",
+				"synchronize"
+			],
+			"applied_by_moves": [
+				"cross_poison",
+				"poison_gas",
+				"poison_jab",
+				"poison_powder",
+				"poison_sting",
+				"poison_tail",
+				"sludge",
+				"sludge_bomb",
+				"sludge_wave",
+				"smog",
+				"twineedle"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "poison"
+		},
+		{
+			"applied_by_intrinsics": [
+				"synchronize"
+			],
+			"applied_by_moves": [
+				"poison_fang",
+				"toxic"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "poison_toxic"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"powder"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "powder"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"protect"
+			],
+			"classification": "screen",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "protect"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"quick_guard"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "quick_guard"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"rage_powder"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "rage_powder"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"reflect"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [
+				"defog"
+			],
+			"slug": "reflect"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"roost"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "roosting"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"safeguard"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "safeguard"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"sand_tomb"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [
+				"rapid_spin"
+			],
+			"slug": "sand_tomb"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"grass_whistle",
+				"hypnosis",
+				"lovely_kiss",
+				"sing",
+				"sleep_powder",
+				"spore"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "sleep"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"uproar",
+				"wake_up_slap"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "sleepless"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"snatch"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "snatch"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"stockpile"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [
+				"spit_up"
+			],
+			"slug": "stockpile"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"lock_on",
+				"mind_reader"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "sure_shot"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"taunt"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "taunted"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"telekinesis"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "telekinesis"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"thrash"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "thrash"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"torment"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "torment"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"whirlpool"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [
+				"rapid_spin"
+			],
+			"slug": "whirlpool"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"wide_guard"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "wide_guard"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"wish"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "wish"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [
+				"rapid_spin"
+			],
+			"slug": "wrap"
+		},
+		{
+			"applied_by_intrinsics": [],
+			"applied_by_moves": [
+				"yawn"
+			],
+			"classification": "flag_only",
+			"expressed_as_stat_stage_by_moves": [],
+			"removed_by_moves": [],
+			"slug": "yawning"
+		}
+	],
+	"summary": {
+		"apply_path_missing_count": 4,
+		"classification_counts": {
+			"flag_only": 83,
+			"screen": 2
+		},
+		"status_total": 85
+	}
+}
