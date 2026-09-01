@@ -20,11 +20,15 @@ func _init() -> void:
 	resolver.select_for_move(pawn, _move("physical", PokemonMoveResource.CATEGORY_PHYSICAL), log)
 	resolver.select_for_move(pawn, _move("special", PokemonMoveResource.CATEGORY_SPECIAL), log)
 	resolver.select_for_move(pawn, _move("status", PokemonMoveResource.CATEGORY_STATUS), log)
+	var exact_chosen: String = resolver.select_for_move(pawn, _move("seed_bomb", PokemonMoveResource.CATEGORY_PHYSICAL), log)
 	resolver.select_reaction(pawn, _move("hurt", PokemonMoveResource.CATEGORY_PHYSICAL), "receive_damage", log)
 	resolver.select_reaction(pawn, _move("miss", PokemonMoveResource.CATEGORY_STATUS), "miss", log)
 	resolver.select_reaction(pawn, _move("faint", PokemonMoveResource.CATEGORY_STATUS), "faint", log)
 
 	_assert_true(_has_purpose(log, "move_use"), "move-use animation logged")
+	_assert_true(exact_chosen == "shoot", "exact move animation prefers Shoot-style state")
+	_assert_true(_has_move_tier(log, "seed_bomb", "exact"), "exact move animation tier logged")
+	_assert_true(_has_move_tier(log, "physical", "category"), "generic move falls back to category tier")
 	_assert_true(_has_purpose(log, "receive_damage"), "receive-damage animation logged")
 	_assert_true(_has_purpose(log, "miss"), "miss animation logged")
 	_assert_true(_has_purpose(log, "faint"), "faint animation logged")
@@ -50,6 +54,13 @@ func _move(move_id: String, category: int) -> PokemonMoveResource:
 func _has_purpose(log: BattleLog, purpose: String) -> bool:
 	for event in log.events:
 		if String(event.get("purpose", "")) == purpose:
+			return true
+	return false
+
+
+func _has_move_tier(log: BattleLog, move_id: String, tier: String) -> bool:
+	for event in log.events:
+		if String(event.get("move_id", "")) == move_id and String(event.get("selection_tier", "")) == tier:
 			return true
 	return false
 

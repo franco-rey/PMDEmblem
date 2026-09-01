@@ -228,8 +228,8 @@
 			"Yawn.None.png"
 		]
 	},
-	"schema_version": 1,
-	"scope": "686 released base forms; VFX categories BG/Beam/Icon/Item/Particle; Object/Tile/TileDtef/font out of scope",
+	"schema_version": 2,
+	"scope": "686 released base forms; import source of record = RawAsset Sprite/Portrait dump; SpriteCollab tracked separately as upstream reference; VFX categories BG/Beam/Icon/Item/Particle; Object/Tile/TileDtef/font out of scope",
 	"source": "smoke_test_asset_coverage",
 	"species": {
 		"per_species": [
@@ -317,7 +317,7 @@
 				"imported_portrait_count": 17,
 				"imported_state_count": 13,
 				"slug": "0009_blastoise",
-				"source_portrait_count": 16,
+				"source_portrait_count": 17,
 				"source_state_count": 13,
 				"substitutions": {
 
@@ -458,7 +458,7 @@
 				"imported_state_count": 11,
 				"slug": "0023_ekans",
 				"source_portrait_count": 17,
-				"source_state_count": 31,
+				"source_state_count": 11,
 				"substitutions": {
 
 				}
@@ -468,7 +468,7 @@
 				"imported_state_count": 13,
 				"slug": "0024_arbok",
 				"source_portrait_count": 16,
-				"source_state_count": 11,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -488,7 +488,7 @@
 				"imported_state_count": 13,
 				"slug": "0026_raichu",
 				"source_portrait_count": 16,
-				"source_state_count": 33,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -557,7 +557,7 @@
 				"imported_portrait_count": 2,
 				"imported_state_count": 12,
 				"slug": "0033_nidorino",
-				"source_portrait_count": 4,
+				"source_portrait_count": 2,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -608,7 +608,7 @@
 				"imported_state_count": 33,
 				"slug": "0038_ninetales",
 				"source_portrait_count": 19,
-				"source_state_count": 32,
+				"source_state_count": 33,
 				"substitutions": {
 
 				}
@@ -627,8 +627,8 @@
 				"imported_portrait_count": 20,
 				"imported_state_count": 18,
 				"slug": "0040_wigglytuff",
-				"source_portrait_count": 16,
-				"source_state_count": 13,
+				"source_portrait_count": 20,
+				"source_state_count": 18,
 				"substitutions": {
 
 				}
@@ -638,7 +638,7 @@
 				"imported_state_count": 14,
 				"slug": "0041_zubat",
 				"source_portrait_count": 20,
-				"source_state_count": 11,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -708,7 +708,7 @@
 				"imported_state_count": 12,
 				"slug": "0048_venonat",
 				"source_portrait_count": 16,
-				"source_state_count": 32,
+				"source_state_count": 12,
 				"substitutions": {
 
 				}
@@ -728,7 +728,7 @@
 				"imported_state_count": 14,
 				"slug": "0050_diglett",
 				"source_portrait_count": 16,
-				"source_state_count": 11,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -738,7 +738,7 @@
 				"imported_state_count": 14,
 				"slug": "0051_dugtrio",
 				"source_portrait_count": 16,
-				"source_state_count": 11,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -767,8 +767,8 @@
 				"imported_portrait_count": 17,
 				"imported_state_count": 25,
 				"slug": "0054_psyduck",
-				"source_portrait_count": 16,
-				"source_state_count": 13,
+				"source_portrait_count": 17,
+				"source_state_count": 25,
 				"substitutions": {
 
 				}
@@ -878,7 +878,7 @@
 				"imported_state_count": 16,
 				"slug": "0065_alakazam",
 				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_state_count": 16,
 				"substitutions": {
 
 				}
@@ -887,8 +887,8 @@
 				"imported_portrait_count": 17,
 				"imported_state_count": 40,
 				"slug": "0066_machop",
-				"source_portrait_count": 16,
-				"source_state_count": 32,
+				"source_portrait_count": 17,
+				"source_state_count": 40,
 				"substitutions": {
 
 				}
@@ -927,7 +927,7 @@
 				"imported_portrait_count": 2,
 				"imported_state_count": 12,
 				"slug": "0070_weepinbell",
-				"source_portrait_count": 4,
+				"source_portrait_count": 2,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -967,7 +967,7 @@
 				"imported_portrait_count": 1,
 				"imported_state_count": 12,
 				"slug": "0074_geodude",
-				"source_portrait_count": 4,
+				"source_portrait_count": 1,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -988,7 +988,7 @@
 				"imported_state_count": 18,
 				"slug": "0076_golem",
 				"source_portrait_count": 2,
-				"source_state_count": 13,
+				"source_state_count": 18,
 				"substitutions": {
 
 				}
@@ -1038,7 +1038,7 @@
 				"imported_state_count": 13,
 				"slug": "0081_magnemite",
 				"source_portrait_count": 34,
-				"source_state_count": 12,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -1108,7 +1108,7 @@
 				"imported_state_count": 12,
 				"slug": "0088_grimer",
 				"source_portrait_count": 3,
-				"source_state_count": 11,
+				"source_state_count": 12,
 				"substitutions": {
 
 				}
@@ -1118,7 +1118,7 @@
 				"imported_state_count": 12,
 				"slug": "0089_muk",
 				"source_portrait_count": 1,
-				"source_state_count": 11,
+				"source_state_count": 12,
 				"substitutions": {
 
 				}
@@ -1127,7 +1127,7 @@
 				"imported_portrait_count": 17,
 				"imported_state_count": 12,
 				"slug": "0090_shellder",
-				"source_portrait_count": 18,
+				"source_portrait_count": 17,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -1158,7 +1158,7 @@
 				"imported_state_count": 17,
 				"slug": "0093_haunter",
 				"source_portrait_count": 19,
-				"source_state_count": 13,
+				"source_state_count": 17,
 				"substitutions": {
 
 				}
@@ -1167,8 +1167,8 @@
 				"imported_portrait_count": 20,
 				"imported_state_count": 35,
 				"slug": "0094_gengar",
-				"source_portrait_count": 6,
-				"source_state_count": 32,
+				"source_portrait_count": 20,
+				"source_state_count": 35,
 				"substitutions": {
 
 				}
@@ -1188,7 +1188,7 @@
 				"imported_state_count": 14,
 				"slug": "0096_drowzee",
 				"source_portrait_count": 12,
-				"source_state_count": 12,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -1267,8 +1267,8 @@
 				"imported_portrait_count": 17,
 				"imported_state_count": 39,
 				"slug": "0104_cubone",
-				"source_portrait_count": 16,
-				"source_state_count": 31,
+				"source_portrait_count": 17,
+				"source_state_count": 39,
 				"substitutions": {
 
 				}
@@ -1318,7 +1318,7 @@
 				"imported_state_count": 15,
 				"slug": "0109_koffing",
 				"source_portrait_count": 17,
-				"source_state_count": 12,
+				"source_state_count": 15,
 				"substitutions": {
 
 				}
@@ -1427,7 +1427,7 @@
 				"imported_portrait_count": 2,
 				"imported_state_count": 11,
 				"slug": "0120_staryu",
-				"source_portrait_count": 8,
+				"source_portrait_count": 2,
 				"source_state_count": 11,
 				"substitutions": {
 
@@ -1528,7 +1528,7 @@
 				"imported_state_count": 13,
 				"slug": "0130_gyarados",
 				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -1628,7 +1628,7 @@
 				"imported_state_count": 11,
 				"slug": "0140_kabuto",
 				"source_portrait_count": 16,
-				"source_state_count": 31,
+				"source_state_count": 11,
 				"substitutions": {
 
 				}
@@ -1668,7 +1668,7 @@
 				"imported_state_count": 16,
 				"slug": "0144_articuno",
 				"source_portrait_count": 1,
-				"source_state_count": 12,
+				"source_state_count": 16,
 				"substitutions": {
 
 				}
@@ -1678,7 +1678,7 @@
 				"imported_state_count": 14,
 				"slug": "0145_zapdos",
 				"source_portrait_count": 1,
-				"source_state_count": 12,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -1688,7 +1688,7 @@
 				"imported_state_count": 17,
 				"slug": "0146_moltres",
 				"source_portrait_count": 1,
-				"source_state_count": 13,
+				"source_state_count": 17,
 				"substitutions": {
 
 				}
@@ -1718,7 +1718,7 @@
 				"imported_state_count": 12,
 				"slug": "0149_dragonite",
 				"source_portrait_count": 17,
-				"source_state_count": 13,
+				"source_state_count": 12,
 				"substitutions": {
 
 				}
@@ -1838,7 +1838,7 @@
 				"imported_state_count": 15,
 				"slug": "0161_sentret",
 				"source_portrait_count": 19,
-				"source_state_count": 33,
+				"source_state_count": 15,
 				"substitutions": {
 
 				}
@@ -1848,7 +1848,7 @@
 				"imported_state_count": 13,
 				"slug": "0162_furret",
 				"source_portrait_count": 18,
-				"source_state_count": 14,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -1907,7 +1907,7 @@
 				"imported_portrait_count": 1,
 				"imported_state_count": 11,
 				"slug": "0168_ariados",
-				"source_portrait_count": 2,
+				"source_portrait_count": 1,
 				"source_state_count": 11,
 				"substitutions": {
 
@@ -1917,7 +1917,7 @@
 				"imported_portrait_count": 1,
 				"imported_state_count": 11,
 				"slug": "0169_crobat",
-				"source_portrait_count": 16,
+				"source_portrait_count": 1,
 				"source_state_count": 11,
 				"substitutions": {
 
@@ -1957,7 +1957,7 @@
 				"imported_portrait_count": 18,
 				"imported_state_count": 12,
 				"slug": "0173_cleffa",
-				"source_portrait_count": 17,
+				"source_portrait_count": 18,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -1967,8 +1967,8 @@
 				"imported_portrait_count": 40,
 				"imported_state_count": 23,
 				"slug": "0174_igglybuff",
-				"source_portrait_count": 32,
-				"source_state_count": 12,
+				"source_portrait_count": 40,
+				"source_state_count": 23,
 				"substitutions": {
 
 				}
@@ -1988,7 +1988,7 @@
 				"imported_state_count": 32,
 				"slug": "0176_togetic",
 				"source_portrait_count": 16,
-				"source_state_count": 33,
+				"source_state_count": 32,
 				"substitutions": {
 
 				}
@@ -2008,7 +2008,7 @@
 				"imported_state_count": 14,
 				"slug": "0178_xatu",
 				"source_portrait_count": 16,
-				"source_state_count": 11,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -2048,7 +2048,7 @@
 				"imported_state_count": 14,
 				"slug": "0182_bellossom",
 				"source_portrait_count": 17,
-				"source_state_count": 11,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -2057,7 +2057,7 @@
 				"imported_portrait_count": 18,
 				"imported_state_count": 32,
 				"slug": "0183_marill",
-				"source_portrait_count": 16,
+				"source_portrait_count": 18,
 				"source_state_count": 32,
 				"substitutions": {
 
@@ -2117,7 +2117,7 @@
 				"imported_portrait_count": 18,
 				"imported_state_count": 12,
 				"slug": "0189_jumpluff",
-				"source_portrait_count": 16,
+				"source_portrait_count": 18,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -2147,8 +2147,8 @@
 				"imported_portrait_count": 18,
 				"imported_state_count": 21,
 				"slug": "0192_sunflora",
-				"source_portrait_count": 16,
-				"source_state_count": 13,
+				"source_portrait_count": 18,
+				"source_state_count": 21,
 				"substitutions": {
 
 				}
@@ -2258,7 +2258,7 @@
 				"imported_state_count": 12,
 				"slug": "0203_girafarig",
 				"source_portrait_count": 18,
-				"source_state_count": 32,
+				"source_state_count": 12,
 				"substitutions": {
 
 				}
@@ -2287,7 +2287,7 @@
 				"imported_portrait_count": 17,
 				"imported_state_count": 32,
 				"slug": "0206_dunsparce",
-				"source_portrait_count": 16,
+				"source_portrait_count": 17,
 				"source_state_count": 32,
 				"substitutions": {
 
@@ -2298,7 +2298,7 @@
 				"imported_state_count": 34,
 				"slug": "0207_gligar",
 				"source_portrait_count": 16,
-				"source_state_count": 33,
+				"source_state_count": 34,
 				"substitutions": {
 
 				}
@@ -2348,7 +2348,7 @@
 				"imported_state_count": 14,
 				"slug": "0212_scizor",
 				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -2377,8 +2377,8 @@
 				"imported_portrait_count": 34,
 				"imported_state_count": 35,
 				"slug": "0215_sneasel",
-				"source_portrait_count": 32,
-				"source_state_count": 32,
+				"source_portrait_count": 34,
+				"source_state_count": 35,
 				"substitutions": {
 
 				}
@@ -2407,7 +2407,7 @@
 				"imported_portrait_count": 17,
 				"imported_state_count": 12,
 				"slug": "0218_slugma",
-				"source_portrait_count": 16,
+				"source_portrait_count": 17,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -2437,7 +2437,7 @@
 				"imported_portrait_count": 1,
 				"imported_state_count": 11,
 				"slug": "0221_piloswine",
-				"source_portrait_count": 2,
+				"source_portrait_count": 1,
 				"source_state_count": 11,
 				"substitutions": {
 
@@ -2468,7 +2468,7 @@
 				"imported_state_count": 14,
 				"slug": "0224_octillery",
 				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -2478,7 +2478,7 @@
 				"imported_state_count": 13,
 				"slug": "0225_delibird",
 				"source_portrait_count": 27,
-				"source_state_count": 31,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -2487,7 +2487,7 @@
 				"imported_portrait_count": 2,
 				"imported_state_count": 12,
 				"slug": "0226_mantine",
-				"source_portrait_count": 32,
+				"source_portrait_count": 2,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -2498,7 +2498,7 @@
 				"imported_state_count": 14,
 				"slug": "0227_skarmory",
 				"source_portrait_count": 16,
-				"source_state_count": 11,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -2658,7 +2658,7 @@
 				"imported_state_count": 14,
 				"slug": "0243_raikou",
 				"source_portrait_count": 16,
-				"source_state_count": 13,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -2668,7 +2668,7 @@
 				"imported_state_count": 13,
 				"slug": "0244_entei",
 				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -2678,7 +2678,7 @@
 				"imported_state_count": 13,
 				"slug": "0245_suicune",
 				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -2708,7 +2708,7 @@
 				"imported_state_count": 14,
 				"slug": "0248_tyranitar",
 				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -2718,7 +2718,7 @@
 				"imported_state_count": 13,
 				"slug": "0249_lugia",
 				"source_portrait_count": 17,
-				"source_state_count": 12,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -2737,8 +2737,8 @@
 				"imported_portrait_count": 20,
 				"imported_state_count": 38,
 				"slug": "0251_celebi",
-				"source_portrait_count": 18,
-				"source_state_count": 32,
+				"source_portrait_count": 20,
+				"source_state_count": 38,
 				"substitutions": {
 
 				}
@@ -2757,8 +2757,8 @@
 				"imported_portrait_count": 19,
 				"imported_state_count": 30,
 				"slug": "0253_grovyle",
-				"source_portrait_count": 16,
-				"source_state_count": 32,
+				"source_portrait_count": 19,
+				"source_state_count": 30,
 				"substitutions": {
 
 				}
@@ -2937,8 +2937,8 @@
 				"imported_portrait_count": 35,
 				"imported_state_count": 15,
 				"slug": "0271_lombre",
-				"source_portrait_count": 34,
-				"source_state_count": 13,
+				"source_portrait_count": 35,
+				"source_state_count": 15,
 				"substitutions": {
 
 				}
@@ -2948,7 +2948,7 @@
 				"imported_state_count": 16,
 				"slug": "0272_ludicolo",
 				"source_portrait_count": 1,
-				"source_state_count": 13,
+				"source_state_count": 16,
 				"substitutions": {
 
 				}
@@ -2968,7 +2968,7 @@
 				"imported_state_count": 13,
 				"slug": "0274_nuzleaf",
 				"source_portrait_count": 16,
-				"source_state_count": 33,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -2978,7 +2978,7 @@
 				"imported_state_count": 15,
 				"slug": "0275_shiftry",
 				"source_portrait_count": 17,
-				"source_state_count": 13,
+				"source_state_count": 15,
 				"substitutions": {
 
 				}
@@ -2987,7 +2987,7 @@
 				"imported_portrait_count": 17,
 				"imported_state_count": 13,
 				"slug": "0276_taillow",
-				"source_portrait_count": 16,
+				"source_portrait_count": 17,
 				"source_state_count": 13,
 				"substitutions": {
 
@@ -3018,7 +3018,7 @@
 				"imported_state_count": 14,
 				"slug": "0279_pelipper",
 				"source_portrait_count": 3,
-				"source_state_count": 13,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -3047,8 +3047,8 @@
 				"imported_portrait_count": 18,
 				"imported_state_count": 17,
 				"slug": "0282_gardevoir",
-				"source_portrait_count": 16,
-				"source_state_count": 11,
+				"source_portrait_count": 18,
+				"source_state_count": 17,
 				"substitutions": {
 
 				}
@@ -3167,7 +3167,7 @@
 				"imported_portrait_count": 18,
 				"imported_state_count": 14,
 				"slug": "0294_loudred",
-				"source_portrait_count": 16,
+				"source_portrait_count": 18,
 				"source_state_count": 14,
 				"substitutions": {
 
@@ -3188,7 +3188,7 @@
 				"imported_state_count": 12,
 				"slug": "0296_makuhita",
 				"source_portrait_count": 5,
-				"source_state_count": 32,
+				"source_state_count": 12,
 				"substitutions": {
 
 				}
@@ -3207,8 +3207,8 @@
 				"imported_portrait_count": 17,
 				"imported_state_count": 15,
 				"slug": "0298_azurill",
-				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_portrait_count": 17,
+				"source_state_count": 15,
 				"substitutions": {
 
 				}
@@ -3247,8 +3247,8 @@
 				"imported_portrait_count": 19,
 				"imported_state_count": 19,
 				"slug": "0302_sableye",
-				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_portrait_count": 19,
+				"source_state_count": 19,
 				"substitutions": {
 
 				}
@@ -3257,7 +3257,7 @@
 				"imported_portrait_count": 17,
 				"imported_state_count": 12,
 				"slug": "0303_mawile",
-				"source_portrait_count": 16,
+				"source_portrait_count": 17,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -3288,7 +3288,7 @@
 				"imported_state_count": 14,
 				"slug": "0306_aggron",
 				"source_portrait_count": 17,
-				"source_state_count": 12,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -3307,8 +3307,8 @@
 				"imported_portrait_count": 17,
 				"imported_state_count": 14,
 				"slug": "0308_medicham",
-				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_portrait_count": 17,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -3358,7 +3358,7 @@
 				"imported_state_count": 13,
 				"slug": "0313_volbeat",
 				"source_portrait_count": 8,
-				"source_state_count": 12,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -3368,7 +3368,7 @@
 				"imported_state_count": 14,
 				"slug": "0314_illumise",
 				"source_portrait_count": 4,
-				"source_state_count": 13,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -3377,7 +3377,7 @@
 				"imported_portrait_count": 34,
 				"imported_state_count": 32,
 				"slug": "0315_roselia",
-				"source_portrait_count": 27,
+				"source_portrait_count": 34,
 				"source_state_count": 32,
 				"substitutions": {
 
@@ -3467,7 +3467,7 @@
 				"imported_portrait_count": 17,
 				"imported_state_count": 13,
 				"slug": "0324_torkoal",
-				"source_portrait_count": 16,
+				"source_portrait_count": 17,
 				"source_state_count": 13,
 				"substitutions": {
 
@@ -3497,8 +3497,8 @@
 				"imported_portrait_count": 34,
 				"imported_state_count": 19,
 				"slug": "0327_spinda",
-				"source_portrait_count": 32,
-				"source_state_count": 33,
+				"source_portrait_count": 34,
+				"source_state_count": 19,
 				"substitutions": {
 
 				}
@@ -3508,7 +3508,7 @@
 				"imported_state_count": 14,
 				"slug": "0328_trapinch",
 				"source_portrait_count": 16,
-				"source_state_count": 32,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -3547,7 +3547,7 @@
 				"imported_portrait_count": 18,
 				"imported_state_count": 12,
 				"slug": "0332_cacturne",
-				"source_portrait_count": 16,
+				"source_portrait_count": 18,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -3558,7 +3558,7 @@
 				"imported_state_count": 12,
 				"slug": "0333_swablu",
 				"source_portrait_count": 16,
-				"source_state_count": 32,
+				"source_state_count": 12,
 				"substitutions": {
 
 				}
@@ -3638,7 +3638,7 @@
 				"imported_state_count": 34,
 				"slug": "0341_corphish",
 				"source_portrait_count": 16,
-				"source_state_count": 33,
+				"source_state_count": 34,
 				"substitutions": {
 
 				}
@@ -3657,7 +3657,7 @@
 				"imported_portrait_count": 5,
 				"imported_state_count": 13,
 				"slug": "0343_baltoy",
-				"source_portrait_count": 16,
+				"source_portrait_count": 5,
 				"source_state_count": 13,
 				"substitutions": {
 
@@ -3667,7 +3667,7 @@
 				"imported_portrait_count": 1,
 				"imported_state_count": 13,
 				"slug": "0344_claydol",
-				"source_portrait_count": 16,
+				"source_portrait_count": 1,
 				"source_state_count": 13,
 				"substitutions": {
 
@@ -3707,8 +3707,8 @@
 				"imported_portrait_count": 17,
 				"imported_state_count": 18,
 				"slug": "0348_armaldo",
-				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_portrait_count": 17,
+				"source_state_count": 18,
 				"substitutions": {
 
 				}
@@ -3748,7 +3748,7 @@
 				"imported_state_count": 14,
 				"slug": "0352_kecleon",
 				"source_portrait_count": 17,
-				"source_state_count": 33,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -3768,7 +3768,7 @@
 				"imported_state_count": 14,
 				"slug": "0354_banette",
 				"source_portrait_count": 32,
-				"source_state_count": 13,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -3808,7 +3808,7 @@
 				"imported_state_count": 15,
 				"slug": "0358_chimecho",
 				"source_portrait_count": 20,
-				"source_state_count": 14,
+				"source_state_count": 15,
 				"substitutions": {
 
 				}
@@ -3818,7 +3818,7 @@
 				"imported_state_count": 36,
 				"slug": "0359_absol",
 				"source_portrait_count": 32,
-				"source_state_count": 33,
+				"source_state_count": 36,
 				"substitutions": {
 
 				}
@@ -3828,7 +3828,7 @@
 				"imported_state_count": 13,
 				"slug": "0360_wynaut",
 				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -3838,7 +3838,7 @@
 				"imported_state_count": 13,
 				"slug": "0361_snorunt",
 				"source_portrait_count": 17,
-				"source_state_count": 32,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -3878,7 +3878,7 @@
 				"imported_state_count": 13,
 				"slug": "0365_walrein",
 				"source_portrait_count": 1,
-				"source_state_count": 12,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -3938,7 +3938,7 @@
 				"imported_state_count": 13,
 				"slug": "0371_bagon",
 				"source_portrait_count": 16,
-				"source_state_count": 33,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -4028,7 +4028,7 @@
 				"imported_state_count": 35,
 				"slug": "0380_latias",
 				"source_portrait_count": 16,
-				"source_state_count": 32,
+				"source_state_count": 35,
 				"substitutions": {
 
 				}
@@ -4038,7 +4038,7 @@
 				"imported_state_count": 20,
 				"slug": "0381_latios",
 				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_state_count": 20,
 				"substitutions": {
 
 				}
@@ -4047,7 +4047,7 @@
 				"imported_portrait_count": 18,
 				"imported_state_count": 13,
 				"slug": "0382_kyogre",
-				"source_portrait_count": 16,
+				"source_portrait_count": 18,
 				"source_state_count": 13,
 				"substitutions": {
 
@@ -4057,8 +4057,8 @@
 				"imported_portrait_count": 18,
 				"imported_state_count": 18,
 				"slug": "0383_groudon",
-				"source_portrait_count": 17,
-				"source_state_count": 12,
+				"source_portrait_count": 18,
+				"source_state_count": 18,
 				"substitutions": {
 
 				}
@@ -4067,7 +4067,7 @@
 				"imported_portrait_count": 18,
 				"imported_state_count": 13,
 				"slug": "0384_rayquaza",
-				"source_portrait_count": 16,
+				"source_portrait_count": 18,
 				"source_state_count": 13,
 				"substitutions": {
 
@@ -4078,7 +4078,7 @@
 				"imported_state_count": 35,
 				"slug": "0385_jirachi",
 				"source_portrait_count": 18,
-				"source_state_count": 32,
+				"source_state_count": 35,
 				"substitutions": {
 
 				}
@@ -4148,7 +4148,7 @@
 				"imported_state_count": 13,
 				"slug": "0392_infernape",
 				"source_portrait_count": 32,
-				"source_state_count": 17,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -4188,7 +4188,7 @@
 				"imported_state_count": 13,
 				"slug": "0396_starly",
 				"source_portrait_count": 17,
-				"source_state_count": 33,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -4217,8 +4217,8 @@
 				"imported_portrait_count": 18,
 				"imported_state_count": 37,
 				"slug": "0399_bidoof",
-				"source_portrait_count": 16,
-				"source_state_count": 32,
+				"source_portrait_count": 18,
+				"source_state_count": 37,
 				"substitutions": {
 
 				}
@@ -4287,7 +4287,7 @@
 				"imported_portrait_count": 32,
 				"imported_state_count": 32,
 				"slug": "0406_budew",
-				"source_portrait_count": 34,
+				"source_portrait_count": 32,
 				"source_state_count": 32,
 				"substitutions": {
 
@@ -4367,7 +4367,7 @@
 				"imported_portrait_count": 1,
 				"imported_state_count": 11,
 				"slug": "0414_mothim",
-				"source_portrait_count": 16,
+				"source_portrait_count": 1,
 				"source_state_count": 11,
 				"substitutions": {
 					"idle": "idle_static_from_walk"
@@ -4507,8 +4507,8 @@
 				"imported_portrait_count": 18,
 				"imported_state_count": 17,
 				"slug": "0428_lopunny",
-				"source_portrait_count": 16,
-				"source_state_count": 13,
+				"source_portrait_count": 18,
+				"source_state_count": 17,
 				"substitutions": {
 
 				}
@@ -4558,7 +4558,7 @@
 				"imported_state_count": 12,
 				"slug": "0433_chingling",
 				"source_portrait_count": 17,
-				"source_state_count": 32,
+				"source_state_count": 12,
 				"substitutions": {
 
 				}
@@ -4568,7 +4568,7 @@
 				"imported_state_count": 13,
 				"slug": "0434_stunky",
 				"source_portrait_count": 16,
-				"source_state_count": 33,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -4578,7 +4578,7 @@
 				"imported_state_count": 22,
 				"slug": "0435_skuntank",
 				"source_portrait_count": 17,
-				"source_state_count": 13,
+				"source_state_count": 22,
 				"substitutions": {
 
 				}
@@ -4628,7 +4628,7 @@
 				"imported_state_count": 12,
 				"slug": "0440_happiny",
 				"source_portrait_count": 16,
-				"source_state_count": 32,
+				"source_state_count": 12,
 				"substitutions": {
 
 				}
@@ -4637,8 +4637,8 @@
 				"imported_portrait_count": 19,
 				"imported_state_count": 25,
 				"slug": "0441_chatot",
-				"source_portrait_count": 16,
-				"source_state_count": 32,
+				"source_portrait_count": 19,
+				"source_state_count": 25,
 				"substitutions": {
 
 				}
@@ -4647,8 +4647,8 @@
 				"imported_portrait_count": 36,
 				"imported_state_count": 18,
 				"slug": "0442_spiritomb",
-				"source_portrait_count": 32,
-				"source_state_count": 12,
+				"source_portrait_count": 36,
+				"source_state_count": 18,
 				"substitutions": {
 
 				}
@@ -4738,7 +4738,7 @@
 				"imported_state_count": 14,
 				"slug": "0451_skorupi",
 				"source_portrait_count": 16,
-				"source_state_count": 13,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -4748,7 +4748,7 @@
 				"imported_state_count": 15,
 				"slug": "0452_drapion",
 				"source_portrait_count": 4,
-				"source_state_count": 13,
+				"source_state_count": 15,
 				"substitutions": {
 
 				}
@@ -4758,7 +4758,7 @@
 				"imported_state_count": 15,
 				"slug": "0453_croagunk",
 				"source_portrait_count": 16,
-				"source_state_count": 33,
+				"source_state_count": 15,
 				"substitutions": {
 
 				}
@@ -4818,7 +4818,7 @@
 				"imported_state_count": 17,
 				"slug": "0459_snover",
 				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_state_count": 17,
 				"substitutions": {
 
 				}
@@ -4837,8 +4837,8 @@
 				"imported_portrait_count": 20,
 				"imported_state_count": 14,
 				"slug": "0461_weavile",
-				"source_portrait_count": 19,
-				"source_state_count": 12,
+				"source_portrait_count": 20,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -4848,7 +4848,7 @@
 				"imported_state_count": 16,
 				"slug": "0462_magnezone",
 				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_state_count": 16,
 				"substitutions": {
 
 				}
@@ -4887,7 +4887,7 @@
 				"imported_portrait_count": 3,
 				"imported_state_count": 13,
 				"slug": "0466_electivire",
-				"source_portrait_count": 5,
+				"source_portrait_count": 3,
 				"source_state_count": 13,
 				"substitutions": {
 
@@ -4897,7 +4897,7 @@
 				"imported_portrait_count": 19,
 				"imported_state_count": 13,
 				"slug": "0467_magmortar",
-				"source_portrait_count": 2,
+				"source_portrait_count": 19,
 				"source_state_count": 13,
 				"substitutions": {
 
@@ -4957,8 +4957,8 @@
 				"imported_portrait_count": 1,
 				"imported_state_count": 14,
 				"slug": "0473_mamoswine",
-				"source_portrait_count": 3,
-				"source_state_count": 12,
+				"source_portrait_count": 1,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -4997,8 +4997,8 @@
 				"imported_portrait_count": 20,
 				"imported_state_count": 44,
 				"slug": "0477_dusknoir",
-				"source_portrait_count": 16,
-				"source_state_count": 33,
+				"source_portrait_count": 20,
+				"source_state_count": 44,
 				"substitutions": {
 
 				}
@@ -5038,7 +5038,7 @@
 				"imported_state_count": 35,
 				"slug": "0481_mesprit",
 				"source_portrait_count": 16,
-				"source_state_count": 32,
+				"source_state_count": 35,
 				"substitutions": {
 
 				}
@@ -5048,7 +5048,7 @@
 				"imported_state_count": 15,
 				"slug": "0482_azelf",
 				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_state_count": 15,
 				"substitutions": {
 
 				}
@@ -5058,7 +5058,7 @@
 				"imported_state_count": 17,
 				"slug": "0483_dialga",
 				"source_portrait_count": 18,
-				"source_state_count": 13,
+				"source_state_count": 17,
 				"substitutions": {
 
 				}
@@ -5068,7 +5068,7 @@
 				"imported_state_count": 17,
 				"slug": "0484_palkia",
 				"source_portrait_count": 16,
-				"source_state_count": 13,
+				"source_state_count": 17,
 				"substitutions": {
 
 				}
@@ -5077,7 +5077,7 @@
 				"imported_portrait_count": 1,
 				"imported_state_count": 12,
 				"slug": "0485_heatran",
-				"source_portrait_count": 2,
+				"source_portrait_count": 1,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -5087,8 +5087,8 @@
 				"imported_portrait_count": 17,
 				"imported_state_count": 18,
 				"slug": "0486_regigigas",
-				"source_portrait_count": 16,
-				"source_state_count": 13,
+				"source_portrait_count": 17,
+				"source_state_count": 18,
 				"substitutions": {
 
 				}
@@ -5108,7 +5108,7 @@
 				"imported_state_count": 37,
 				"slug": "0488_cresselia",
 				"source_portrait_count": 17,
-				"source_state_count": 32,
+				"source_state_count": 37,
 				"substitutions": {
 
 				}
@@ -5127,8 +5127,8 @@
 				"imported_portrait_count": 18,
 				"imported_state_count": 39,
 				"slug": "0490_manaphy",
-				"source_portrait_count": 16,
-				"source_state_count": 32,
+				"source_portrait_count": 18,
+				"source_state_count": 39,
 				"substitutions": {
 
 				}
@@ -5138,7 +5138,7 @@
 				"imported_state_count": 37,
 				"slug": "0491_darkrai",
 				"source_portrait_count": 40,
-				"source_state_count": 33,
+				"source_state_count": 37,
 				"substitutions": {
 
 				}
@@ -5148,7 +5148,7 @@
 				"imported_state_count": 33,
 				"slug": "0492_shaymin",
 				"source_portrait_count": 17,
-				"source_state_count": 32,
+				"source_state_count": 33,
 				"substitutions": {
 
 				}
@@ -5158,7 +5158,7 @@
 				"imported_state_count": 33,
 				"slug": "0493_arceus",
 				"source_portrait_count": 16,
-				"source_state_count": 31,
+				"source_state_count": 33,
 				"substitutions": {
 
 				}
@@ -5248,7 +5248,7 @@
 				"imported_state_count": 11,
 				"slug": "0502_dewott",
 				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_state_count": 11,
 				"substitutions": {
 
 				}
@@ -5307,7 +5307,7 @@
 				"imported_portrait_count": 10,
 				"imported_state_count": 11,
 				"slug": "0508_stoutland",
-				"source_portrait_count": 18,
+				"source_portrait_count": 10,
 				"source_state_count": 11,
 				"substitutions": {
 
@@ -5318,7 +5318,7 @@
 				"imported_state_count": 13,
 				"slug": "0509_purrloin",
 				"source_portrait_count": 16,
-				"source_state_count": 12,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -5527,7 +5527,7 @@
 				"imported_portrait_count": 1,
 				"imported_state_count": 11,
 				"slug": "0535_tympole",
-				"source_portrait_count": 16,
+				"source_portrait_count": 1,
 				"source_state_count": 11,
 				"substitutions": {
 
@@ -5537,7 +5537,7 @@
 				"imported_portrait_count": 1,
 				"imported_state_count": 11,
 				"slug": "0536_palpitoad",
-				"source_portrait_count": 16,
+				"source_portrait_count": 1,
 				"source_state_count": 11,
 				"substitutions": {
 
@@ -5547,7 +5547,7 @@
 				"imported_portrait_count": 1,
 				"imported_state_count": 12,
 				"slug": "0537_seismitoad",
-				"source_portrait_count": 16,
+				"source_portrait_count": 1,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -5637,7 +5637,7 @@
 				"imported_portrait_count": 34,
 				"imported_state_count": 30,
 				"slug": "0549_lilligant",
-				"source_portrait_count": 32,
+				"source_portrait_count": 34,
 				"source_state_count": 30,
 				"substitutions": {
 
@@ -5717,8 +5717,8 @@
 				"imported_portrait_count": 17,
 				"imported_state_count": 32,
 				"slug": "0559_scraggy",
-				"source_portrait_count": 16,
-				"source_state_count": 31,
+				"source_portrait_count": 17,
+				"source_state_count": 32,
 				"substitutions": {
 
 				}
@@ -5768,7 +5768,7 @@
 				"imported_state_count": 16,
 				"slug": "0566_archen",
 				"source_portrait_count": 16,
-				"source_state_count": 15,
+				"source_state_count": 16,
 				"substitutions": {
 
 				}
@@ -5828,7 +5828,7 @@
 				"imported_state_count": 33,
 				"slug": "0572_minccino",
 				"source_portrait_count": 16,
-				"source_state_count": 32,
+				"source_state_count": 33,
 				"substitutions": {
 
 				}
@@ -5838,7 +5838,7 @@
 				"imported_state_count": 13,
 				"slug": "0573_cinccino",
 				"source_portrait_count": 10,
-				"source_state_count": 16,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -5857,8 +5857,8 @@
 				"imported_portrait_count": 20,
 				"imported_state_count": 12,
 				"slug": "0575_gothorita",
-				"source_portrait_count": 16,
-				"source_state_count": 11,
+				"source_portrait_count": 20,
+				"source_state_count": 12,
 				"substitutions": {
 
 				}
@@ -5958,7 +5958,7 @@
 				"imported_state_count": 13,
 				"slug": "0586_sawsbuck",
 				"source_portrait_count": 32,
-				"source_state_count": 12,
+				"source_state_count": 13,
 				"substitutions": {
 
 				}
@@ -5967,7 +5967,7 @@
 				"imported_portrait_count": 17,
 				"imported_state_count": 33,
 				"slug": "0587_emolga",
-				"source_portrait_count": 16,
+				"source_portrait_count": 17,
 				"source_state_count": 33,
 				"substitutions": {
 
@@ -5997,7 +5997,7 @@
 				"imported_portrait_count": 35,
 				"imported_state_count": 22,
 				"slug": "0597_ferroseed",
-				"source_portrait_count": 34,
+				"source_portrait_count": 35,
 				"source_state_count": 22,
 				"substitutions": {
 
@@ -6067,8 +6067,8 @@
 				"imported_portrait_count": 38,
 				"imported_state_count": 31,
 				"slug": "0607_litwick",
-				"source_portrait_count": 36,
-				"source_state_count": 30,
+				"source_portrait_count": 38,
+				"source_state_count": 31,
 				"substitutions": {
 
 				}
@@ -6098,7 +6098,7 @@
 				"imported_state_count": 34,
 				"slug": "0610_axew",
 				"source_portrait_count": 17,
-				"source_state_count": 32,
+				"source_state_count": 34,
 				"substitutions": {
 
 				}
@@ -6127,7 +6127,7 @@
 				"imported_portrait_count": 4,
 				"imported_state_count": 12,
 				"slug": "0613_cubchoo",
-				"source_portrait_count": 2,
+				"source_portrait_count": 4,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -6198,7 +6198,7 @@
 				"imported_state_count": 14,
 				"slug": "0623_golurk",
 				"source_portrait_count": 32,
-				"source_state_count": 12,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -6307,7 +6307,7 @@
 				"imported_portrait_count": 2,
 				"imported_state_count": 11,
 				"slug": "0635_hydreigon",
-				"source_portrait_count": 5,
+				"source_portrait_count": 2,
 				"source_state_count": 11,
 				"substitutions": {
 
@@ -6327,7 +6327,7 @@
 				"imported_portrait_count": 1,
 				"imported_state_count": 12,
 				"slug": "0637_volcarona",
-				"source_portrait_count": 16,
+				"source_portrait_count": 1,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -6367,7 +6367,7 @@
 				"imported_portrait_count": 2,
 				"imported_state_count": 11,
 				"slug": "0641_tornadus",
-				"source_portrait_count": 1,
+				"source_portrait_count": 2,
 				"source_state_count": 11,
 				"substitutions": {
 
@@ -6377,7 +6377,7 @@
 				"imported_portrait_count": 2,
 				"imported_state_count": 11,
 				"slug": "0642_thundurus",
-				"source_portrait_count": 1,
+				"source_portrait_count": 2,
 				"source_state_count": 11,
 				"substitutions": {
 
@@ -6387,7 +6387,7 @@
 				"imported_portrait_count": 17,
 				"imported_state_count": 11,
 				"slug": "0643_reshiram",
-				"source_portrait_count": 16,
+				"source_portrait_count": 17,
 				"source_state_count": 11,
 				"substitutions": {
 
@@ -6397,7 +6397,7 @@
 				"imported_portrait_count": 18,
 				"imported_state_count": 11,
 				"slug": "0644_zekrom",
-				"source_portrait_count": 17,
+				"source_portrait_count": 18,
 				"source_state_count": 11,
 				"substitutions": {
 
@@ -6417,7 +6417,7 @@
 				"imported_portrait_count": 34,
 				"imported_state_count": 14,
 				"slug": "0646_kyurem",
-				"source_portrait_count": 32,
+				"source_portrait_count": 34,
 				"source_state_count": 14,
 				"substitutions": {
 
@@ -6467,7 +6467,7 @@
 				"imported_portrait_count": 1,
 				"imported_state_count": 12,
 				"slug": "0651_quilladin",
-				"source_portrait_count": 4,
+				"source_portrait_count": 1,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -6527,7 +6527,7 @@
 				"imported_portrait_count": 3,
 				"imported_state_count": 11,
 				"slug": "0657_frogadier",
-				"source_portrait_count": 5,
+				"source_portrait_count": 3,
 				"source_state_count": 11,
 				"substitutions": {
 
@@ -6547,7 +6547,7 @@
 				"imported_portrait_count": 1,
 				"imported_state_count": 12,
 				"slug": "0659_bunnelby",
-				"source_portrait_count": 16,
+				"source_portrait_count": 1,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -6588,7 +6588,7 @@
 				"imported_state_count": 12,
 				"slug": "0666_vivillon",
 				"source_portrait_count": 16,
-				"source_state_count": 17,
+				"source_state_count": 12,
 				"substitutions": {
 
 				}
@@ -6618,7 +6618,7 @@
 				"imported_state_count": 14,
 				"slug": "0670_floette",
 				"source_portrait_count": 16,
-				"source_state_count": 13,
+				"source_state_count": 14,
 				"substitutions": {
 
 				}
@@ -6667,7 +6667,7 @@
 				"imported_portrait_count": 16,
 				"imported_state_count": 12,
 				"slug": "0675_pangoro",
-				"source_portrait_count": 34,
+				"source_portrait_count": 16,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -6707,7 +6707,7 @@
 				"imported_portrait_count": 38,
 				"imported_state_count": 33,
 				"slug": "0679_honedge",
-				"source_portrait_count": 36,
+				"source_portrait_count": 38,
 				"source_state_count": 33,
 				"substitutions": {
 
@@ -6797,7 +6797,7 @@
 				"imported_portrait_count": 2,
 				"imported_state_count": 13,
 				"slug": "0689_barbaracle",
-				"source_portrait_count": 19,
+				"source_portrait_count": 2,
 				"source_state_count": 13,
 				"substitutions": {
 
@@ -6807,7 +6807,7 @@
 				"imported_portrait_count": 1,
 				"imported_state_count": 12,
 				"slug": "0690_skrelp",
-				"source_portrait_count": 16,
+				"source_portrait_count": 1,
 				"source_state_count": 12,
 				"substitutions": {
 
@@ -6947,7 +6947,7 @@
 				"imported_portrait_count": 11,
 				"imported_state_count": 11,
 				"slug": "0705_sliggoo",
-				"source_portrait_count": 18,
+				"source_portrait_count": 11,
 				"source_state_count": 11,
 				"substitutions": {
 
@@ -7008,7 +7008,7 @@
 				"imported_state_count": 12,
 				"slug": "0711_gourgeist",
 				"source_portrait_count": 32,
-				"source_state_count": 11,
+				"source_state_count": 12,
 				"substitutions": {
 
 				}
@@ -7018,7 +7018,7 @@
 				"imported_state_count": 33,
 				"slug": "0714_noibat",
 				"source_portrait_count": 16,
-				"source_state_count": 31,
+				"source_state_count": 33,
 				"substitutions": {
 
 				}
@@ -7094,37 +7094,343 @@
 				}
 			}
 		],
-		"portrait_gaps": [
+		"portrait_gaps": [],
+		"state_gaps": [],
+		"summary": {
+			"imported_portrait_total": 10390,
+			"imported_state_total": 11560,
+			"source_portrait_total": 10390,
+			"source_state_total": 11560,
+			"species_total": 686,
+			"species_with_portrait_gaps": 0,
+			"species_with_state_gaps": 0,
+			"species_with_substitutions": 6
+		}
+	},
+	"upstream_spritecollab": {
+		"note": "SpriteCollab content beyond the imported RawAsset dump; adopt via re-import decision, not a coverage gap",
+		"species": [
 			{
-				"missing_portraits": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0023_ekans"
+			},
+			{
+				"imported_not_upstream_states": [
+					"faint",
+					"standing_up"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0024_arbok"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0026_raichu"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
 					"Happy.png",
 					"Inspired.png"
 				],
+				"newer_states": [],
 				"slug": "0033_nidorino"
 			},
 			{
-				"missing_portraits": [
+				"imported_not_upstream_states": [
+					"special0"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0038_ninetales"
+			},
+			{
+				"imported_not_upstream_states": [
+					"special0",
+					"special1",
+					"special2",
+					"tumble",
+					"wiggle"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0040_wigglytuff"
+			},
+			{
+				"imported_not_upstream_states": [
+					"eat",
+					"fainted",
+					"nod"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0041_zubat"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0048_venonat"
+			},
+			{
+				"imported_not_upstream_states": [
+					"dig_in",
+					"dig_out",
+					"special0",
+					"wiggle"
+				],
+				"newer_portraits": [],
+				"newer_states": [
+					"pose"
+				],
+				"slug": "0050_diglett"
+			},
+			{
+				"imported_not_upstream_states": [
+					"dig_in",
+					"dig_out",
+					"special0",
+					"wiggle"
+				],
+				"newer_portraits": [],
+				"newer_states": [
+					"pose"
+				],
+				"slug": "0051_dugtrio"
+			},
+			{
+				"imported_not_upstream_states": [
+					"careful_walk",
+					"deep_breath",
+					"nod",
+					"pain",
+					"raise_arms",
+					"sit",
+					"special0",
+					"special1",
+					"special2",
+					"special3",
+					"wake",
+					"yawn"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0054_psyduck"
+			},
+			{
+				"imported_not_upstream_states": [
+					"fainted",
+					"special1",
+					"special2",
+					"special3"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0065_alakazam"
+			},
+			{
+				"imported_not_upstream_states": [
+					"careful_walk",
+					"deep_breath",
+					"raise_arms",
+					"special0",
+					"special1",
+					"special2",
+					"special3",
+					"yawn"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0066_machop"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
 					"Pain.png",
 					"Pain^.png"
 				],
+				"newer_states": [],
 				"slug": "0070_weepinbell"
 			},
 			{
-				"missing_portraits": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
 					"Happy.png",
 					"Inspired.png",
 					"Pain.png"
 				],
+				"newer_states": [],
 				"slug": "0074_geodude"
 			},
 			{
-				"missing_portraits": [
+				"imported_not_upstream_states": [
+					"cringe",
+					"fainted",
+					"standing_up",
+					"tumble",
+					"tumble_back"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0076_golem"
+			},
+			{
+				"imported_not_upstream_states": [
+					"faint"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0081_magnemite"
+			},
+			{
+				"imported_not_upstream_states": [
+					"pose"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0088_grimer"
+			},
+			{
+				"imported_not_upstream_states": [
+					"pain"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0089_muk"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
 					"Special0.png"
 				],
+				"newer_states": [],
 				"slug": "0090_shellder"
 			},
 			{
-				"missing_portraits": [
+				"imported_not_upstream_states": [
+					"faint",
+					"fainted",
+					"pain",
+					"special0"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0093_haunter"
+			},
+			{
+				"imported_not_upstream_states": [
+					"special0",
+					"special1",
+					"special2"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0094_gengar"
+			},
+			{
+				"imported_not_upstream_states": [
+					"faint",
+					"special0"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0096_drowzee"
+			},
+			{
+				"imported_not_upstream_states": [
+					"careful_walk",
+					"pain",
+					"raise_arms",
+					"special0",
+					"special1",
+					"special2",
+					"special3",
+					"yawn"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0104_cubone"
+			},
+			{
+				"imported_not_upstream_states": [
+					"fainted",
+					"nod",
+					"special0"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0109_koffing"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
 					"Happy.png",
 					"Happy^.png",
 					"Inspired.png",
@@ -7132,16 +7438,127 @@
 					"Pain.png",
 					"Pain^.png"
 				],
+				"newer_states": [],
 				"slug": "0120_staryu"
 			},
 			{
-				"missing_portraits": [
+				"imported_not_upstream_states": [
+					"wiggle"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0130_gyarados"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0140_kabuto"
+			},
+			{
+				"imported_not_upstream_states": [
+					"injured",
+					"pose",
+					"special0",
+					"standing_up"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0144_articuno"
+			},
+			{
+				"imported_not_upstream_states": [
+					"injured",
+					"standing_up"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0145_zapdos"
+			},
+			{
+				"imported_not_upstream_states": [
+					"injured",
+					"pose",
+					"special0",
+					"standing_up"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0146_moltres"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
+					"special0"
+				],
+				"slug": "0149_dragonite"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
+					"deep_breath",
+					"eat",
+					"faint",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0161_sentret"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
+					"wake"
+				],
+				"slug": "0162_furret"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
 					"Angry.png"
 				],
+				"newer_states": [],
 				"slug": "0168_ariados"
 			},
 			{
-				"missing_portraits": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
 					"Angry.png",
 					"Crying.png",
 					"Determined.png",
@@ -7158,16 +7575,169 @@
 					"Teary-Eyed.png",
 					"Worried.png"
 				],
+				"newer_states": [],
 				"slug": "0169_crobat"
 			},
 			{
-				"missing_portraits": [
+				"imported_not_upstream_states": [
+					"jump",
+					"nod",
+					"special0",
+					"special1",
+					"special2",
+					"special3",
+					"special4",
+					"special5",
+					"special6",
+					"special7",
+					"wake"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0174_igglybuff"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
+					"special0"
+				],
+				"slug": "0176_togetic"
+			},
+			{
+				"imported_not_upstream_states": [
+					"special0",
+					"special1",
+					"special2"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0178_xatu"
+			},
+			{
+				"imported_not_upstream_states": [
+					"pose",
+					"special0",
+					"special1"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0182_bellossom"
+			},
+			{
+				"imported_not_upstream_states": [
+					"eat",
+					"fainted",
+					"special0",
+					"special1",
+					"special2",
+					"special3",
+					"special4",
+					"standing_up"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0192_sunflora"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
+					"cringe",
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"head",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0203_girafarig"
+			},
+			{
+				"imported_not_upstream_states": [
+					"special0"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0207_gligar"
+			},
+			{
+				"imported_not_upstream_states": [
+					"fainted",
+					"standing_up"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0212_scizor"
+			},
+			{
+				"imported_not_upstream_states": [
+					"fainted",
+					"special0",
+					"special1"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0215_sneasel"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
 					"Surprised.png"
 				],
+				"newer_states": [],
 				"slug": "0221_piloswine"
 			},
 			{
-				"missing_portraits": [
+				"imported_not_upstream_states": [
+					"faint",
+					"fainted"
+				],
+				"newer_portraits": [],
+				"newer_states": [],
+				"slug": "0224_octillery"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
+					"deep_breath",
+					"eat",
+					"faint",
+					"float",
+					"hit_ground",
+					"leap_forth",
+					"look_up",
+					"lost_balance",
+					"nod",
+					"pain",
+					"pose",
+					"pull",
+					"sink",
+					"sit",
+					"trip",
+					"tumble",
+					"tumble_back",
+					"wake"
+				],
+				"slug": "0225_delibird"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
 					"Angry.png",
 					"Angry^.png",
 					"Crying.png",
@@ -7199,851 +7769,62 @@
 					"Worried.png",
 					"Worried^.png"
 				],
+				"newer_states": [],
 				"slug": "0226_mantine"
 			},
 			{
-				"missing_portraits": [
-					"Crying.png",
-					"Dizzy.png",
-					"Inspired.png",
-					"Joyous.png",
-					"Pain.png",
-					"Sad.png",
-					"Sigh.png",
-					"Stunned.png",
-					"Surprised.png",
-					"Teary-Eyed.png",
-					"Worried.png"
-				],
-				"slug": "0343_baltoy"
-			},
-			{
-				"missing_portraits": [
-					"Angry.png",
-					"Crying.png",
-					"Determined.png",
-					"Dizzy.png",
-					"Happy.png",
-					"Inspired.png",
-					"Joyous.png",
-					"Pain.png",
-					"Sad.png",
-					"Shouting.png",
-					"Sigh.png",
-					"Stunned.png",
-					"Surprised.png",
-					"Teary-Eyed.png",
-					"Worried.png"
-				],
-				"slug": "0344_claydol"
-			},
-			{
-				"missing_portraits": [
-					"Special0.png",
-					"Special0^.png"
-				],
-				"slug": "0406_budew"
-			},
-			{
-				"missing_portraits": [
-					"Angry.png",
-					"Crying.png",
-					"Determined.png",
-					"Dizzy.png",
-					"Happy.png",
-					"Inspired.png",
-					"Joyous.png",
-					"Pain.png",
-					"Sad.png",
-					"Shouting.png",
-					"Sigh.png",
-					"Stunned.png",
-					"Surprised.png",
-					"Teary-Eyed.png",
-					"Worried.png"
-				],
-				"slug": "0414_mothim"
-			},
-			{
-				"missing_portraits": [
-					"Inspired.png",
-					"Pain.png"
-				],
-				"slug": "0466_electivire"
-			},
-			{
-				"missing_portraits": [
-					"Angry.png",
-					"Pain.png"
-				],
-				"slug": "0473_mamoswine"
-			},
-			{
-				"missing_portraits": [
-					"Pain.png"
-				],
-				"slug": "0485_heatran"
-			},
-			{
-				"missing_portraits": [
-					"Dizzy.png",
-					"Inspired.png",
-					"Joyous.png",
-					"Sigh.png",
-					"Special0.png",
-					"Special1.png",
-					"Stunned.png",
-					"Surprised.png"
-				],
-				"slug": "0508_stoutland"
-			},
-			{
-				"missing_portraits": [
-					"Angry.png",
-					"Crying.png",
-					"Determined.png",
-					"Dizzy.png",
-					"Happy.png",
-					"Inspired.png",
-					"Joyous.png",
-					"Pain.png",
-					"Sad.png",
-					"Shouting.png",
-					"Sigh.png",
-					"Stunned.png",
-					"Surprised.png",
-					"Teary-Eyed.png",
-					"Worried.png"
-				],
-				"slug": "0535_tympole"
-			},
-			{
-				"missing_portraits": [
-					"Angry.png",
-					"Crying.png",
-					"Determined.png",
-					"Dizzy.png",
-					"Happy.png",
-					"Inspired.png",
-					"Joyous.png",
-					"Pain.png",
-					"Sad.png",
-					"Shouting.png",
-					"Sigh.png",
-					"Stunned.png",
-					"Surprised.png",
-					"Teary-Eyed.png",
-					"Worried.png"
-				],
-				"slug": "0536_palpitoad"
-			},
-			{
-				"missing_portraits": [
-					"Angry.png",
-					"Crying.png",
-					"Determined.png",
-					"Dizzy.png",
-					"Happy.png",
-					"Inspired.png",
-					"Joyous.png",
-					"Pain.png",
-					"Sad.png",
-					"Shouting.png",
-					"Sigh.png",
-					"Stunned.png",
-					"Surprised.png",
-					"Teary-Eyed.png",
-					"Worried.png"
-				],
-				"slug": "0537_seismitoad"
-			},
-			{
-				"missing_portraits": [
-					"Determined.png",
-					"Sad.png",
-					"Teary-Eyed.png"
-				],
-				"slug": "0635_hydreigon"
-			},
-			{
-				"missing_portraits": [
-					"Angry.png",
-					"Crying.png",
-					"Determined.png",
-					"Dizzy.png",
-					"Happy.png",
-					"Inspired.png",
-					"Joyous.png",
-					"Pain.png",
-					"Sad.png",
-					"Shouting.png",
-					"Sigh.png",
-					"Stunned.png",
-					"Surprised.png",
-					"Teary-Eyed.png",
-					"Worried.png"
-				],
-				"slug": "0637_volcarona"
-			},
-			{
-				"missing_portraits": [
-					"Happy.png",
-					"Inspired.png",
-					"Pain.png"
-				],
-				"slug": "0651_quilladin"
-			},
-			{
-				"missing_portraits": [
-					"Inspired.png",
-					"Pain.png"
-				],
-				"slug": "0657_frogadier"
-			},
-			{
-				"missing_portraits": [
-					"Angry.png",
-					"Crying.png",
-					"Determined.png",
-					"Dizzy.png",
-					"Happy.png",
-					"Inspired.png",
-					"Joyous.png",
-					"Pain.png",
-					"Sad.png",
-					"Shouting.png",
-					"Sigh.png",
-					"Stunned.png",
-					"Surprised.png",
-					"Teary-Eyed.png",
-					"Worried.png"
-				],
-				"slug": "0659_bunnelby"
-			},
-			{
-				"missing_portraits": [
-					"Angry^.png",
-					"Crying^.png",
-					"Determined^.png",
-					"Dizzy^.png",
-					"Happy^.png",
-					"Inspired^.png",
-					"Joyous^.png",
-					"Normal^.png",
-					"Pain^.png",
-					"Sad^.png",
-					"Shouting^.png",
-					"Sigh^.png",
-					"Special0.png",
-					"Special0^.png",
-					"Stunned^.png",
-					"Surprised^.png",
-					"Teary-Eyed^.png",
-					"Worried^.png"
-				],
-				"slug": "0675_pangoro"
-			},
-			{
-				"missing_portraits": [
-					"Angry.png",
-					"Crying.png",
-					"Determined.png",
-					"Dizzy.png",
-					"Happy.png",
-					"Inspired.png",
-					"Joyous.png",
-					"Pain.png",
-					"Sad.png",
-					"Shouting.png",
-					"Sigh.png",
-					"Special0.png",
-					"Special1.png",
-					"Stunned.png",
-					"Surprised.png",
-					"Teary-Eyed.png",
-					"Worried.png"
-				],
-				"slug": "0689_barbaracle"
-			},
-			{
-				"missing_portraits": [
-					"Angry.png",
-					"Crying.png",
-					"Determined.png",
-					"Dizzy.png",
-					"Happy.png",
-					"Inspired.png",
-					"Joyous.png",
-					"Pain.png",
-					"Sad.png",
-					"Shouting.png",
-					"Sigh.png",
-					"Stunned.png",
-					"Surprised.png",
-					"Teary-Eyed.png",
-					"Worried.png"
-				],
-				"slug": "0690_skrelp"
-			},
-			{
-				"missing_portraits": [
-					"Joyous^.png",
-					"Sad^.png",
-					"Sigh^.png",
-					"Special3^.png",
-					"Stunned^.png",
-					"Teary-Eyed^.png",
-					"Worried^.png"
-				],
-				"slug": "0705_sliggoo"
-			}
-		],
-		"state_gaps": [
-			{
-				"extra_states": [],
-				"missing_states": [
-					"cringe",
-					"deep_breath",
-					"eat",
-					"faint",
-					"float",
-					"head",
-					"hit_ground",
-					"leap_forth",
-					"look_up",
-					"lost_balance",
-					"nod",
-					"pain",
-					"pose",
-					"pull",
-					"sink",
-					"sit",
-					"trip",
-					"tumble",
-					"tumble_back",
-					"wake"
-				],
-				"slug": "0023_ekans"
-			},
-			{
-				"extra_states": [
-					"faint",
-					"standing_up"
-				],
-				"missing_states": [],
-				"slug": "0024_arbok"
-			},
-			{
-				"extra_states": [],
-				"missing_states": [
-					"cringe",
-					"deep_breath",
-					"eat",
-					"faint",
-					"float",
-					"head",
-					"hit_ground",
-					"leap_forth",
-					"look_up",
-					"lost_balance",
-					"nod",
-					"pain",
-					"pose",
-					"pull",
-					"sink",
-					"sit",
-					"trip",
-					"tumble",
-					"tumble_back",
-					"wake"
-				],
-				"slug": "0026_raichu"
-			},
-			{
-				"extra_states": [
-					"special0"
-				],
-				"missing_states": [],
-				"slug": "0038_ninetales"
-			},
-			{
-				"extra_states": [
-					"special0",
-					"special1",
-					"special2",
-					"tumble",
-					"wiggle"
-				],
-				"missing_states": [],
-				"slug": "0040_wigglytuff"
-			},
-			{
-				"extra_states": [
-					"eat",
-					"fainted",
-					"nod"
-				],
-				"missing_states": [],
-				"slug": "0041_zubat"
-			},
-			{
-				"extra_states": [],
-				"missing_states": [
-					"cringe",
-					"deep_breath",
-					"eat",
-					"faint",
-					"float",
-					"head",
-					"hit_ground",
-					"leap_forth",
-					"look_up",
-					"lost_balance",
-					"nod",
-					"pain",
-					"pose",
-					"pull",
-					"sink",
-					"sit",
-					"trip",
-					"tumble",
-					"tumble_back",
-					"wake"
-				],
-				"slug": "0048_venonat"
-			},
-			{
-				"extra_states": [
-					"dig_in",
-					"dig_out",
-					"special0",
-					"wiggle"
-				],
-				"missing_states": [
-					"pose"
-				],
-				"slug": "0050_diglett"
-			},
-			{
-				"extra_states": [
-					"dig_in",
-					"dig_out",
-					"special0",
-					"wiggle"
-				],
-				"missing_states": [
-					"pose"
-				],
-				"slug": "0051_dugtrio"
-			},
-			{
-				"extra_states": [
-					"careful_walk",
-					"deep_breath",
-					"nod",
-					"pain",
-					"raise_arms",
-					"sit",
-					"special0",
-					"special1",
-					"special2",
-					"special3",
-					"wake",
-					"yawn"
-				],
-				"missing_states": [],
-				"slug": "0054_psyduck"
-			},
-			{
-				"extra_states": [
-					"fainted",
-					"special1",
-					"special2",
-					"special3"
-				],
-				"missing_states": [],
-				"slug": "0065_alakazam"
-			},
-			{
-				"extra_states": [
-					"careful_walk",
-					"deep_breath",
-					"raise_arms",
-					"special0",
-					"special1",
-					"special2",
-					"special3",
-					"yawn"
-				],
-				"missing_states": [],
-				"slug": "0066_machop"
-			},
-			{
-				"extra_states": [
-					"cringe",
-					"fainted",
-					"standing_up",
-					"tumble",
-					"tumble_back"
-				],
-				"missing_states": [],
-				"slug": "0076_golem"
-			},
-			{
-				"extra_states": [
-					"faint"
-				],
-				"missing_states": [],
-				"slug": "0081_magnemite"
-			},
-			{
-				"extra_states": [
-					"pose"
-				],
-				"missing_states": [],
-				"slug": "0088_grimer"
-			},
-			{
-				"extra_states": [
-					"pain"
-				],
-				"missing_states": [],
-				"slug": "0089_muk"
-			},
-			{
-				"extra_states": [
-					"faint",
-					"fainted",
-					"pain",
-					"special0"
-				],
-				"missing_states": [],
-				"slug": "0093_haunter"
-			},
-			{
-				"extra_states": [
-					"special0",
-					"special1",
-					"special2"
-				],
-				"missing_states": [],
-				"slug": "0094_gengar"
-			},
-			{
-				"extra_states": [
-					"faint",
-					"special0"
-				],
-				"missing_states": [],
-				"slug": "0096_drowzee"
-			},
-			{
-				"extra_states": [
-					"careful_walk",
-					"pain",
-					"raise_arms",
-					"special0",
-					"special1",
-					"special2",
-					"special3",
-					"yawn"
-				],
-				"missing_states": [],
-				"slug": "0104_cubone"
-			},
-			{
-				"extra_states": [
-					"fainted",
-					"nod",
-					"special0"
-				],
-				"missing_states": [],
-				"slug": "0109_koffing"
-			},
-			{
-				"extra_states": [
-					"wiggle"
-				],
-				"missing_states": [],
-				"slug": "0130_gyarados"
-			},
-			{
-				"extra_states": [],
-				"missing_states": [
-					"cringe",
-					"deep_breath",
-					"eat",
-					"faint",
-					"float",
-					"head",
-					"hit_ground",
-					"leap_forth",
-					"look_up",
-					"lost_balance",
-					"nod",
-					"pain",
-					"pose",
-					"pull",
-					"sink",
-					"sit",
-					"trip",
-					"tumble",
-					"tumble_back",
-					"wake"
-				],
-				"slug": "0140_kabuto"
-			},
-			{
-				"extra_states": [
-					"injured",
-					"pose",
-					"special0",
-					"standing_up"
-				],
-				"missing_states": [],
-				"slug": "0144_articuno"
-			},
-			{
-				"extra_states": [
-					"injured",
-					"standing_up"
-				],
-				"missing_states": [],
-				"slug": "0145_zapdos"
-			},
-			{
-				"extra_states": [
-					"injured",
-					"pose",
-					"special0",
-					"standing_up"
-				],
-				"missing_states": [],
-				"slug": "0146_moltres"
-			},
-			{
-				"extra_states": [],
-				"missing_states": [
-					"special0"
-				],
-				"slug": "0149_dragonite"
-			},
-			{
-				"extra_states": [],
-				"missing_states": [
-					"deep_breath",
-					"eat",
-					"faint",
-					"head",
-					"hit_ground",
-					"leap_forth",
-					"look_up",
-					"lost_balance",
-					"nod",
-					"pain",
-					"pose",
-					"pull",
-					"sink",
-					"sit",
-					"trip",
-					"tumble",
-					"tumble_back",
-					"wake"
-				],
-				"slug": "0161_sentret"
-			},
-			{
-				"extra_states": [],
-				"missing_states": [
-					"wake"
-				],
-				"slug": "0162_furret"
-			},
-			{
-				"extra_states": [
-					"jump",
-					"nod",
-					"special0",
-					"special1",
-					"special2",
-					"special3",
-					"special4",
-					"special5",
-					"special6",
-					"special7",
-					"wake"
-				],
-				"missing_states": [],
-				"slug": "0174_igglybuff"
-			},
-			{
-				"extra_states": [],
-				"missing_states": [
-					"special0"
-				],
-				"slug": "0176_togetic"
-			},
-			{
-				"extra_states": [
-					"special0",
-					"special1",
-					"special2"
-				],
-				"missing_states": [],
-				"slug": "0178_xatu"
-			},
-			{
-				"extra_states": [
-					"pose",
-					"special0",
-					"special1"
-				],
-				"missing_states": [],
-				"slug": "0182_bellossom"
-			},
-			{
-				"extra_states": [
-					"eat",
-					"fainted",
-					"special0",
-					"special1",
-					"special2",
-					"special3",
-					"special4",
-					"standing_up"
-				],
-				"missing_states": [],
-				"slug": "0192_sunflora"
-			},
-			{
-				"extra_states": [],
-				"missing_states": [
-					"cringe",
-					"deep_breath",
-					"eat",
-					"faint",
-					"float",
-					"head",
-					"hit_ground",
-					"leap_forth",
-					"look_up",
-					"lost_balance",
-					"nod",
-					"pain",
-					"pose",
-					"pull",
-					"sink",
-					"sit",
-					"trip",
-					"tumble",
-					"tumble_back",
-					"wake"
-				],
-				"slug": "0203_girafarig"
-			},
-			{
-				"extra_states": [
-					"special0"
-				],
-				"missing_states": [],
-				"slug": "0207_gligar"
-			},
-			{
-				"extra_states": [
-					"fainted",
-					"standing_up"
-				],
-				"missing_states": [],
-				"slug": "0212_scizor"
-			},
-			{
-				"extra_states": [
-					"fainted",
-					"special0",
-					"special1"
-				],
-				"missing_states": [],
-				"slug": "0215_sneasel"
-			},
-			{
-				"extra_states": [
-					"faint",
-					"fainted"
-				],
-				"missing_states": [],
-				"slug": "0224_octillery"
-			},
-			{
-				"extra_states": [],
-				"missing_states": [
-					"deep_breath",
-					"eat",
-					"faint",
-					"float",
-					"hit_ground",
-					"leap_forth",
-					"look_up",
-					"lost_balance",
-					"nod",
-					"pain",
-					"pose",
-					"pull",
-					"sink",
-					"sit",
-					"trip",
-					"tumble",
-					"tumble_back",
-					"wake"
-				],
-				"slug": "0225_delibird"
-			},
-			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"roar",
 					"special0",
 					"special1"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0227_skarmory"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"roar"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0243_raikou"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"roar"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0244_entei"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"roar"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0245_suicune"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"fainted",
 					"pose"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0248_tyranitar"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0249_lugia"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0",
 					"special1",
 					"special2",
@@ -8051,11 +7832,12 @@
 					"special4",
 					"special5"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0251_celebi"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"dig_out",
 					"fainted",
 					"special0",
@@ -8075,7 +7857,8 @@
 					"special9",
 					"standing_up"
 				],
-				"missing_states": [
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"deep_breath",
 					"eat",
@@ -8100,25 +7883,28 @@
 				"slug": "0253_grovyle"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0",
 					"special1"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0271_lombre"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"pose",
 					"special0",
 					"special1"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0272_ludicolo"
 			},
 			{
-				"extra_states": [],
-				"missing_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"deep_breath",
 					"eat",
@@ -8143,22 +7929,24 @@
 				"slug": "0274_nuzleaf"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"fainted",
 					"pose"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0275_shiftry"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0279_pelipper"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"jump",
 					"pose",
 					"special0",
@@ -8166,12 +7954,14 @@
 					"special3",
 					"standing_up"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0282_gardevoir"
 			},
 			{
-				"extra_states": [],
-				"missing_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"deep_breath",
 					"eat",
@@ -8196,16 +7986,17 @@
 				"slug": "0296_makuhita"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"bow",
 					"cry",
 					"special0"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0298_azurill"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0",
 					"special2",
 					"special3",
@@ -8214,48 +8005,54 @@
 					"special6",
 					"standing_up"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0302_sableye"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"dig_in",
 					"dig_out"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0306_aggron"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"fainted",
 					"standing_up"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0308_medicham"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0313_volbeat"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0314_illumise"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"bow",
 					"special0",
 					"special1",
 					"special2",
 					"special3"
 				],
-				"missing_states": [
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"deep_breath",
 					"eat",
@@ -8279,8 +8076,9 @@
 				"slug": "0327_spinda"
 			},
 			{
-				"extra_states": [],
-				"missing_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
 					"deep_breath",
 					"faint",
 					"float",
@@ -8303,8 +8101,9 @@
 				"slug": "0328_trapinch"
 			},
 			{
-				"extra_states": [],
-				"missing_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"deep_breath",
 					"eat",
@@ -8329,14 +8128,55 @@
 				"slug": "0333_swablu"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0341_corphish"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Crying.png",
+					"Dizzy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"newer_states": [],
+				"slug": "0343_baltoy"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"newer_states": [],
+				"slug": "0344_claydol"
+			},
+			{
+				"imported_not_upstream_states": [
 					"roar",
 					"special0",
 					"special1",
@@ -8344,14 +8184,16 @@
 					"special3",
 					"special4"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0348_armaldo"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"jump"
 				],
-				"missing_states": [
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"deep_breath",
 					"eat",
@@ -8376,40 +8218,45 @@
 				"slug": "0352_kecleon"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"pose"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0354_banette"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0358_chimecho"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"jump",
 					"special0",
 					"special1"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0359_absol"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"bow"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0360_wynaut"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0"
 				],
-				"missing_states": [
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"deep_breath",
 					"eat",
@@ -8434,15 +8281,17 @@
 				"slug": "0361_snorunt"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0365_walrein"
 			},
 			{
-				"extra_states": [],
-				"missing_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"deep_breath",
 					"eat",
@@ -8467,16 +8316,17 @@
 				"slug": "0371_bagon"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0",
 					"special1",
 					"special2"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0380_latias"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"faint",
 					"injured",
 					"special0",
@@ -8486,11 +8336,12 @@
 					"special4",
 					"special5"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0381_latios"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"faint",
 					"fainted",
 					"special0",
@@ -8498,21 +8349,24 @@
 					"special2",
 					"special3"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0383_groudon"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0",
 					"special1",
 					"special2"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0385_jirachi"
 			},
 			{
-				"extra_states": [],
-				"missing_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"deep_breath",
 					"look_up",
@@ -8521,8 +8375,9 @@
 				"slug": "0392_infernape"
 			},
 			{
-				"extra_states": [],
-				"missing_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"deep_breath",
 					"eat",
@@ -8547,29 +8402,63 @@
 				"slug": "0396_starly"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"fainted",
 					"special0",
 					"special1",
 					"standing_up",
 					"wave"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0399_bidoof"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Special0.png",
+					"Special0^.png"
+				],
+				"newer_states": [],
+				"slug": "0406_budew"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"newer_states": [],
+				"slug": "0414_mothim"
+			},
+			{
+				"imported_not_upstream_states": [
 					"fainted",
 					"jump",
 					"pose",
 					"standing_up"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0428_lopunny"
 			},
 			{
-				"extra_states": [],
-				"missing_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"deep_breath",
 					"eat",
@@ -8594,8 +8483,9 @@
 				"slug": "0433_chingling"
 			},
 			{
-				"extra_states": [],
-				"missing_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"deep_breath",
 					"eat",
@@ -8620,7 +8510,7 @@
 				"slug": "0434_stunky"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"cringe",
 					"deep_breath",
 					"eat",
@@ -8631,12 +8521,14 @@
 					"jump",
 					"look_up"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0435_skuntank"
 			},
 			{
-				"extra_states": [],
-				"missing_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"deep_breath",
 					"eat",
@@ -8661,7 +8553,7 @@
 				"slug": "0440_happiny"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"fainted",
 					"injured",
 					"special0",
@@ -8673,7 +8565,8 @@
 					"special6",
 					"wiggle"
 				],
-				"missing_states": [
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"deep_breath",
 					"float",
@@ -8695,7 +8588,7 @@
 				"slug": "0441_chatot"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0",
 					"special1",
 					"special2",
@@ -8703,27 +8596,31 @@
 					"special4",
 					"special5"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0442_spiritomb"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"pose"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0451_skorupi"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"faint",
 					"standing_up"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0452_drapion"
 			},
 			{
-				"extra_states": [],
-				"missing_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"deep_breath",
 					"faint",
@@ -8746,44 +8643,60 @@
 				"slug": "0453_croagunk"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"faint",
 					"fainted",
 					"special0",
 					"special1",
 					"standing_up"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0459_snover"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0",
 					"special1"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0461_weavile"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0",
 					"special1",
 					"special2",
 					"special3"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0462_magnezone"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Inspired.png",
+					"Pain.png"
+				],
+				"newer_states": [],
+				"slug": "0466_electivire"
+			},
+			{
+				"imported_not_upstream_states": [
 					"special0",
 					"special1"
 				],
-				"missing_states": [],
+				"newer_portraits": [
+					"Angry.png",
+					"Pain.png"
+				],
+				"newer_states": [],
 				"slug": "0473_mamoswine"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"fainted",
 					"special0",
 					"special1",
@@ -8814,7 +8727,8 @@
 					"special9",
 					"standing_up"
 				],
-				"missing_states": [
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"deep_breath",
 					"eat",
@@ -8837,67 +8751,81 @@
 				"slug": "0477_dusknoir"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0",
 					"special1",
 					"special2"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0481_mesprit"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"fainted",
 					"special0",
 					"special1"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0482_azelf"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"faint",
 					"fainted",
 					"injured",
 					"special0"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0483_dialga"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"injured",
 					"roar",
 					"special0",
 					"special1"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0484_palkia"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Pain.png"
+				],
+				"newer_states": [],
+				"slug": "0485_heatran"
+			},
+			{
+				"imported_not_upstream_states": [
 					"faint",
 					"pain",
 					"roar",
 					"special0",
 					"standing_up"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0486_regigigas"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0",
 					"special1",
 					"special2",
 					"special3",
 					"special4"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0488_cresselia"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"cry",
 					"fainted",
 					"special2",
@@ -8906,72 +8834,163 @@
 					"special5",
 					"standing_up"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0490_manaphy"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0",
 					"special1",
 					"special2",
 					"special20"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0491_darkrai"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"special0"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0492_shaymin"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"bite",
 					"stomp"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0493_arceus"
 			},
 			{
-				"extra_states": [],
-				"missing_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
 					"strike"
 				],
 				"slug": "0502_dewott"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Dizzy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Sigh.png",
+					"Special0.png",
+					"Special1.png",
+					"Stunned.png",
+					"Surprised.png"
+				],
+				"newer_states": [],
+				"slug": "0508_stoutland"
+			},
+			{
+				"imported_not_upstream_states": [
 					"rumble"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0509_purrloin"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"newer_states": [],
+				"slug": "0535_tympole"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"newer_states": [],
+				"slug": "0536_palpitoad"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"newer_states": [],
+				"slug": "0537_seismitoad"
+			},
+			{
+				"imported_not_upstream_states": [
 					"shoot"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0559_scraggy"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"flap_around"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0566_archen"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"shoot"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0572_minccino"
 			},
 			{
-				"extra_states": [],
-				"missing_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"float",
 					"wake"
@@ -8979,45 +8998,124 @@
 				"slug": "0573_cinccino"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"pose"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0575_gothorita"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"rear_up"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0586_sawsbuck"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"shoot"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0607_litwick"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"bite",
 					"emit"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0610_axew"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"punch",
 					"shoot"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0623_golurk"
 			},
 			{
-				"extra_states": [],
-				"missing_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Determined.png",
+					"Sad.png",
+					"Teary-Eyed.png"
+				],
+				"newer_states": [],
+				"slug": "0635_hydreigon"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"newer_states": [],
+				"slug": "0637_volcarona"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Happy.png",
+					"Inspired.png",
+					"Pain.png"
+				],
+				"newer_states": [],
+				"slug": "0651_quilladin"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Inspired.png",
+					"Pain.png"
+				],
+				"newer_states": [],
+				"slug": "0657_frogadier"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"newer_states": [],
+				"slug": "0659_bunnelby"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [],
+				"newer_states": [
 					"cringe",
 					"deep_breath",
 					"eat",
@@ -9027,37 +9125,120 @@
 				"slug": "0666_vivillon"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"swell"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0670_floette"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Angry^.png",
+					"Crying^.png",
+					"Determined^.png",
+					"Dizzy^.png",
+					"Happy^.png",
+					"Inspired^.png",
+					"Joyous^.png",
+					"Normal^.png",
+					"Pain^.png",
+					"Sad^.png",
+					"Shouting^.png",
+					"Sigh^.png",
+					"Special0.png",
+					"Special0^.png",
+					"Stunned^.png",
+					"Surprised^.png",
+					"Teary-Eyed^.png",
+					"Worried^.png"
+				],
+				"newer_states": [],
+				"slug": "0675_pangoro"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Special0.png",
+					"Special1.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"newer_states": [],
+				"slug": "0689_barbaracle"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Angry.png",
+					"Crying.png",
+					"Determined.png",
+					"Dizzy.png",
+					"Happy.png",
+					"Inspired.png",
+					"Joyous.png",
+					"Pain.png",
+					"Sad.png",
+					"Shouting.png",
+					"Sigh.png",
+					"Stunned.png",
+					"Surprised.png",
+					"Teary-Eyed.png",
+					"Worried.png"
+				],
+				"newer_states": [],
+				"slug": "0690_skrelp"
+			},
+			{
+				"imported_not_upstream_states": [],
+				"newer_portraits": [
+					"Joyous^.png",
+					"Sad^.png",
+					"Sigh^.png",
+					"Special3^.png",
+					"Stunned^.png",
+					"Teary-Eyed^.png",
+					"Worried^.png"
+				],
+				"newer_states": [],
+				"slug": "0705_sliggoo"
+			},
+			{
+				"imported_not_upstream_states": [
 					"hover"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0711_gourgeist"
 			},
 			{
-				"extra_states": [
+				"imported_not_upstream_states": [
 					"fainted",
 					"hover"
 				],
-				"missing_states": [],
+				"newer_portraits": [],
+				"newer_states": [],
 				"slug": "0714_noibat"
 			}
 		],
 		"summary": {
-			"imported_portrait_total": 10390,
-			"imported_state_total": 11560,
-			"source_portrait_total": 10514,
-			"source_state_total": 11673,
-			"species_total": 686,
-			"species_with_portrait_gaps": 29,
-			"species_with_state_gaps": 121,
-			"species_with_substitutions": 6
+			"newer_portrait_total": 257,
+			"newer_state_total": 464,
+			"species_with_newer_content": 149
 		}
 	}
 }

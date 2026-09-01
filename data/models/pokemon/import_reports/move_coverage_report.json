@@ -216,8 +216,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_forced_movement",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.1",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -356,8 +356,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_move_copying",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "6.1",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -565,8 +565,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_status_dependent",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "6.3",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -580,8 +580,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_forced_movement",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.1",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -613,7 +613,7 @@
 		{
 			"capability_gate": "",
 			"default_use_no_effect": false,
-			"disposition": "planned_damage_variant",
+			"disposition": "implemented",
 			"disposition_step": "3.2",
 			"effect_families": [
 				"stat_stage"
@@ -632,8 +632,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_item_dependent",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "7.4",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -649,8 +649,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_damage_variant",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.2",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -1218,7 +1218,7 @@
 		{
 			"capability_gate": "",
 			"default_use_no_effect": false,
-			"disposition": "planned_forced_movement",
+			"disposition": "implemented",
 			"disposition_step": "3.1",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -1434,8 +1434,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_move_copying",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "6.1",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -1517,8 +1517,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_item_dependent",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "7.4",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -2453,8 +2453,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_damage_variant",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.2",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -2505,8 +2505,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_ability_dependent",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "6.2",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -2537,8 +2537,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_damage_variant",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.2",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -2885,8 +2885,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_damage_variant",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.2",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -3077,8 +3077,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_forced_movement",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.1",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -3467,7 +3467,7 @@
 		{
 			"capability_gate": "",
 			"default_use_no_effect": false,
-			"disposition": "planned_status_dependent",
+			"disposition": "implemented",
 			"disposition_step": "6.3",
 			"effect_families": [
 				"damage"
@@ -3644,8 +3644,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_stat_hp_manipulation",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.3",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -3659,8 +3659,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_stat_hp_manipulation",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.3",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -3674,8 +3674,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_damage_variant",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.2",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -4124,8 +4124,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_damage_variant",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.2",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -4214,7 +4214,7 @@
 		{
 			"capability_gate": "",
 			"default_use_no_effect": false,
-			"disposition": "planned_status_dependent",
+			"disposition": "implemented",
 			"disposition_step": "6.3",
 			"effect_families": [
 				"damage"
@@ -5338,7 +5338,7 @@
 		{
 			"capability_gate": "",
 			"default_use_no_effect": false,
-			"disposition": "planned_forced_movement",
+			"disposition": "implemented",
 			"disposition_step": "3.1",
 			"effect_families": [
 				"hp_to_1",
@@ -5434,8 +5434,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_move_copying",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "6.1",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -5466,8 +5466,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_move_copying",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "6.1",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -5552,8 +5552,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_move_copying",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "6.1",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -5844,8 +5844,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_move_copying",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "6.1",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -6117,8 +6117,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_stat_hp_manipulation",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.3",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -6144,7 +6144,7 @@
 		{
 			"capability_gate": "",
 			"default_use_no_effect": false,
-			"disposition": "planned_forced_movement",
+			"disposition": "implemented",
 			"disposition_step": "3.1",
 			"effect_families": [
 				"stat_stage"
@@ -6546,8 +6546,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_stat_hp_manipulation",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.3",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -6561,8 +6561,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_stat_hp_manipulation",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.3",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -6576,8 +6576,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_stat_hp_manipulation",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.3",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -6699,8 +6699,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_stat_hp_manipulation",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.3",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -6751,8 +6751,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_status_dependent",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "6.3",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -6803,8 +6803,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_damage_variant",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.2",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -7082,8 +7082,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_item_dependent",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "7.4",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -7149,9 +7149,9 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_heal_sleep",
-			"disposition_step": "4.1",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
+			"disposition_step": "6.3",
 			"effect_families": [],
 			"pmdc_classes": [
 				"PMDC.Dungeon.RestEvent, PMDC"
@@ -7232,8 +7232,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_forced_movement",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.1",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -7248,7 +7248,7 @@
 		{
 			"capability_gate": "",
 			"default_use_no_effect": false,
-			"disposition": "planned_status_dependent",
+			"disposition": "implemented",
 			"disposition_step": "6.3",
 			"effect_families": [
 				"damage",
@@ -7402,8 +7402,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_ability_dependent",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "6.2",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -7734,8 +7734,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_forced_movement",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.1",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -7749,8 +7749,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_damage_variant",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.2",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -7869,8 +7869,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_damage_variant",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.2",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -7991,8 +7991,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_move_copying",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "6.1",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -8006,8 +8006,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_ability_dependent",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "6.2",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -8424,8 +8424,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_damage_variant",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.2",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -8567,8 +8567,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_forced_movement",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.1",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -8667,8 +8667,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_status_dependent",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "6.3",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -8895,8 +8895,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_damage_variant",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.2",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -9029,8 +9029,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_item_dependent",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "7.4",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -9550,8 +9550,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_forced_movement",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.1",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -9820,7 +9820,7 @@
 		{
 			"capability_gate": "",
 			"default_use_no_effect": false,
-			"disposition": "planned_forced_movement",
+			"disposition": "implemented",
 			"disposition_step": "3.1",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -10013,8 +10013,8 @@
 		},
 		{
 			"capability_gate": "",
-			"default_use_no_effect": true,
-			"disposition": "planned_forced_movement",
+			"default_use_no_effect": false,
+			"disposition": "implemented",
 			"disposition_step": "3.1",
 			"effect_families": [],
 			"pmdc_classes": [
@@ -10315,58 +10315,14 @@
 	],
 	"no_effect_moves": [
 		"acupressure",
-		"ally_switch",
-		"assist",
-		"baton_pass",
-		"beat_up",
-		"bestow",
-		"bide",
 		"camouflage",
-		"copycat",
-		"covet",
-		"endeavor",
-		"entrainment",
-		"explosion",
-		"fissure",
-		"fling",
 		"forests_curse",
-		"guard_split",
-		"guard_swap",
-		"guillotine",
-		"horn_drill",
-		"metronome",
-		"mimic",
-		"mirror_move",
 		"mud_sport",
-		"nature_power",
-		"pain_split",
-		"power_split",
-		"power_swap",
-		"power_trick",
-		"psych_up",
-		"psycho_shift",
-		"psywave",
-		"recycle",
 		"reflect_type",
-		"rest",
-		"roar",
-		"role_play",
-		"seismic_toss",
-		"self_destruct",
-		"sheer_cold",
-		"sketch",
-		"skill_swap",
 		"soak",
-		"sonic_boom",
-		"splash",
-		"sticky_web",
-		"super_fang",
-		"switcheroo",
 		"transform",
-		"trick",
 		"trick_or_treat",
-		"water_sport",
-		"whirlwind"
+		"water_sport"
 	],
 	"schema_version": 1,
 	"source": "smoke_test_move_coverage",
@@ -10374,19 +10330,11 @@
 		"disposition_counts": {
 			"decide_future_only": 7,
 			"decide_type_form_change": 8,
-			"implemented": 513,
-			"maps_gated": 1,
-			"planned_ability_dependent": 3,
-			"planned_damage_variant": 12,
-			"planned_forced_movement": 12,
-			"planned_heal_sleep": 1,
-			"planned_item_dependent": 4,
-			"planned_move_copying": 7,
-			"planned_stat_hp_manipulation": 7,
-			"planned_status_dependent": 6
+			"implemented": 565,
+			"maps_gated": 1
 		},
 		"move_total": 581,
-		"no_effect_move_count": 53,
+		"no_effect_move_count": 9,
 		"unsupported_move_count": 68,
 		"unsupported_tag_instance_count": 69
 	}

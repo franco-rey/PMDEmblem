@@ -52,6 +52,7 @@ var animator: AnimationNodeStateMachinePlayback = null
 var state_textures: Dictionary = {}
 var state_texture_paths: Dictionary = {}
 var state_frame_counts: Dictionary = {}
+var state_column_counts: Dictionary = {}
 var state_row_counts: Dictionary = {}
 var state_cell_widths: Dictionary = {}
 var state_cell_heights: Dictionary = {}
@@ -130,19 +131,18 @@ func _load_state_textures(base_sprite_path: String, sprite_set: PokemonSpriteSet
 			cell_h = int(tex.get_height() / SPRITE_ROW_COUNT_FALLBACK)
 			cell_w = cell_h
 
-		var hframes_local: int = maxi(1, int(tex.get_width() / max(1, cell_w)))
-		var vframes_local: int = maxi(1, int(tex.get_height() / max(1, cell_h)))
+		var columns_local: int = maxi(1, int(tex.get_width() / max(1, cell_w)))
+		var rows_local: int = maxi(1, int(tex.get_height() / max(1, cell_h)))
+		var frames_local: int = columns_local
 		var imported_frame_count: int = int(metadata.get("frame_count", 0))
 		if imported_frame_count > 0:
-			hframes_local = mini(hframes_local, imported_frame_count)
-		var imported_directions: int = int(metadata.get("directions", 0))
-		if imported_directions > 0:
-			vframes_local = mini(vframes_local, imported_directions)
-		state_frame_counts[state] = hframes_local
-		state_row_counts[state] = vframes_local
+			frames_local = mini(columns_local, imported_frame_count)
+		state_frame_counts[state] = frames_local
+		state_column_counts[state] = columns_local
+		state_row_counts[state] = rows_local
 		state_cell_widths[state] = cell_w
 		state_cell_heights[state] = cell_h
-		state_bottom_paddings[state] = _find_lowest_bottom_padding(tex, cell_w, cell_h, hframes_local, vframes_local)
+		state_bottom_paddings[state] = _find_lowest_bottom_padding(tex, cell_w, cell_h, columns_local, rows_local)
 		state_frame_durations[state] = _duration_from_timing(metadata.get("timing", []), state)
 
 
@@ -260,9 +260,10 @@ func _apply_state_texture(state: String) -> void:
 	var tex: Texture2D = state_textures[state]
 	var rows_local: int = maxi(1, int(state_row_counts.get(state, 1)))
 	var frames_local: int = maxi(1, int(state_frame_counts.get(state, 1)))
+	var columns_local: int = maxi(frames_local, int(state_column_counts.get(state, frames_local)))
 	texture = tex
 	vframes = rows_local
-	hframes = frames_local
+	hframes = columns_local
 	_apply_grounding_offset(state)
 	current_state = state
 	curr_frame = 0
@@ -367,8 +368,9 @@ func rotate_sprite(_global_basis: Basis) -> void:
 		frame = curr_frame
 		return
 
+	var columns: int = maxi(n, int(state_column_counts.get(current_state, n)))
 	var row: int = _direction_row(_global_basis, camera, rows)
-	frame = row * n + curr_frame
+	frame = row * columns + mini(curr_frame, columns - 1)
 
 
 func _direction_row(pawn_basis: Basis, camera: Camera3D, rows: int) -> int:

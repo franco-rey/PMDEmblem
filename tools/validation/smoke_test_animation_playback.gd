@@ -5,6 +5,7 @@ const EXPERTISE_SCENE_PATH: String = "res://data/modules/stats/expertise/experti
 const BULBASAUR_PATH: String = "res://data/models/pokemon/generated/instances/0001_bulbasaur.tres"
 const SQUIRTLE_PATH: String = "res://data/models/pokemon/generated/instances/0007_squirtle.tres"
 const GALLADE_PATH: String = "res://data/models/pokemon/generated/instances/0475_gallade.tres"
+const HELIOPTILE_PATH: String = "res://data/models/pokemon/generated/instances/0694_helioptile.tres"
 
 var failures: int = 0
 
@@ -43,6 +44,12 @@ func _run() -> void:
 	var gallade_sprite: TacticsPawnSprite = gallade.get_node("Character") as TacticsPawnSprite
 	_check_sleep_backed_faint(resolver, gallade, gallade_sprite)
 	gallade.queue_free()
+
+	var helioptile: TacticsPawn = _spawn_pawn(scene, expertise_scene, HELIOPTILE_PATH)
+	await process_frame
+	var helioptile_sprite: TacticsPawnSprite = helioptile.get_node("Character") as TacticsPawnSprite
+	_check_explicit_faint_grid_slicing(resolver, helioptile, helioptile_sprite)
+	helioptile.queue_free()
 
 	await _check_current_roster_faint_reactions(scene, expertise_scene, resolver)
 	_finish("animation_playback")
@@ -95,7 +102,7 @@ func _check_move_map_ignored_for_reactions(resolver: BattleAnimationResolver, pa
 	sprite.set_anim_state(faint_chosen)
 	_assert_true(faint_chosen == "faint", "faint reaction ignores same-species move-use animation map")
 	_assert_true(sprite.hframes == 4, "explicit faint sheet is sliced into four frames")
-	_assert_true(sprite.vframes == 1, "explicit faint sheet uses one facing row")
+	_assert_sheet_grid_sliced(sprite, "explicit faint")
 	_assert_true(sprite.frame == 0, "explicit faint resets displayed frame")
 	_assert_true(_has_animation_event(damage_log, "receive_damage"), "receive-damage reaction emitted animation event")
 	_assert_true(_has_animation_event(faint_log, "faint"), "faint reaction emitted animation event")
@@ -110,9 +117,21 @@ func _check_sleep_backed_faint(resolver: BattleAnimationResolver, pawn: TacticsP
 	sprite.set_anim_state(chosen)
 	_assert_true(chosen == "faint", "sleep-backed faint keeps faint semantic state")
 	_assert_true(sprite.hframes == 2, "sleep-backed faint is sliced into two frames")
-	_assert_true(sprite.vframes == 1, "sleep-backed faint uses one facing row")
+	_assert_sheet_grid_sliced(sprite, "sleep-backed faint")
 	_assert_true(sprite.frame == 0, "sleep-backed faint resets displayed frame")
 	_assert_true(_has_animation_event(log, "faint"), "sleep-backed faint emitted animation event")
+
+
+func _check_explicit_faint_grid_slicing(resolver: BattleAnimationResolver, pawn: TacticsPawn, sprite: TacticsPawnSprite) -> void:
+	var log := BattleLog.new()
+	var chosen: String = resolver.select_reaction(pawn, _move("faint_probe", PokemonMoveResource.CATEGORY_STATUS), "faint", log)
+	sprite.set_anim_state(chosen)
+	var snapshot: Dictionary = sprite.debug_animation_snapshot()
+	_assert_true(chosen == "faint", "Helioptile explicit faint state selected")
+	_assert_true(sprite.hframes == 4, "Helioptile faint uses four logical columns")
+	_assert_true(sprite.vframes == 8, "Helioptile faint keeps eight texture rows sliced")
+	_assert_true(int(snapshot.get("cell_height", 0)) == 32 and int(snapshot.get("texture_height", 0)) == 256, "Helioptile faint repro dimensions are covered")
+	_assert_sheet_grid_sliced(sprite, "Helioptile faint")
 
 
 func _check_current_roster_faint_reactions(scene: PackedScene, expertise_scene: PackedScene, resolver: BattleAnimationResolver) -> void:
@@ -127,7 +146,8 @@ func _check_current_roster_faint_reactions(scene: PackedScene, expertise_scene: 
 		_assert_true(sprite.frame == 0, "%s faint reaction resets displayed frame" % path.get_file().get_basename())
 		var expected_frames: int = _expected_frame_count(pawn, chosen)
 		if expected_frames > 1:
-			_assert_true(sprite.hframes == expected_frames, "%s faint reaction uses expected frame slicing" % path.get_file().get_basename())
+			_assert_true(sprite.hframes >= expected_frames, "%s faint reaction has enough frame columns" % path.get_file().get_basename())
+		_assert_sheet_grid_sliced(sprite, "%s faint reaction" % path.get_file().get_basename())
 		pawn.queue_free()
 
 
@@ -141,6 +161,19 @@ func _expected_frame_count(pawn: TacticsPawn, state: String) -> int:
 	if entry is Dictionary:
 		return int((entry as Dictionary).get("frame_count", 0))
 	return 0
+
+
+func _assert_sheet_grid_sliced(sprite: TacticsPawnSprite, label: String) -> void:
+	var snapshot: Dictionary = sprite.debug_animation_snapshot()
+	var texture_width: int = int(snapshot.get("texture_width", 0))
+	var texture_height: int = int(snapshot.get("texture_height", 0))
+	var cell_width: int = int(snapshot.get("cell_width", 0))
+	var cell_height: int = int(snapshot.get("cell_height", 0))
+	if texture_width > cell_width and cell_width > 0:
+		_assert_true(sprite.hframes >= int(texture_width / cell_width), "%s slices horizontal sheet cells" % label)
+	if texture_height > cell_height and cell_height > 0:
+		_assert_true(sprite.vframes >= int(texture_height / cell_height), "%s slices vertical sheet cells" % label)
+	_assert_true(sprite.frame >= 0 and sprite.frame < sprite.hframes * sprite.vframes, "%s frame index stays inside sliced sheet" % label)
 
 
 func _move(move_id: String, category: int) -> PokemonMoveResource:

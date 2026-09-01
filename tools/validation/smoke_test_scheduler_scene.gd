@@ -34,6 +34,9 @@ func _init() -> void:
 
 	var turn_count: int = _count_turn_events(level.battle_log)
 	_assert_true(turn_count >= 1, "scheduler dispatched at least one turn_started event (got %d)" % turn_count)
+	_force_skip_active_unit(level, "flinch")
+	_assert_true(_log_has_status(level.battle_log, "turn_skipped", "flinch"), "flinched scheduled unit skipped its turn")
+	_assert_true(_log_has_status(level.battle_log, "status_removed", "flinch"), "flinch was consumed by scheduler scene hook")
 
 	level.queue_free()
 
@@ -73,6 +76,25 @@ func _count_turn_events(log: BattleLog) -> int:
 		if event.get("kind", "") == "turn_started":
 			n += 1
 	return n
+
+
+func _force_skip_active_unit(level: TacticsLevel, status_id: String) -> void:
+	if level == null or level.scheduler == null:
+		return
+	var unit: BattleUnit = level.scheduler.get_active_unit()
+	if unit == null or unit.pawn == null or unit.pawn.stats == null:
+		return
+	unit.pawn.stats.apply_battle_status(status_id, {"source": "scheduler_scene_smoke"})
+	level._on_turn_started(unit)
+
+
+func _log_has_status(log: BattleLog, kind: String, status_id: String) -> bool:
+	if log == null:
+		return false
+	for event in log.events:
+		if event.get("kind", "") == kind and event.get("status_id", "") == status_id:
+			return true
+	return false
 
 
 func _assert_true(value: bool, label: String) -> void:

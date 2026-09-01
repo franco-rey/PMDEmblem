@@ -49,16 +49,18 @@ func _init() -> void:
 		push_error("smoke: asset_coverage failed %d precondition(s)" % failures)
 		quit(1)
 		return
-	var species_section: Dictionary = _build_species_section(manifest, sprite_collab_root)
+	var species_section: Dictionary = _build_species_section(manifest, raw_asset_root)
+	var upstream_section: Dictionary = _build_upstream_section(manifest, sprite_collab_root)
 	var category_section: Dictionary = _build_category_section(raw_asset_root, visual_manifest)
 	var mapping_section: Dictionary = _build_icon_mapping_section()
 	var payload: Dictionary = {
 		"categories": category_section,
 		"icon_mappings": mapping_section,
-		"schema_version": 1,
-		"scope": "686 released base forms; VFX categories BG/Beam/Icon/Item/Particle; Object/Tile/TileDtef/font out of scope",
+		"schema_version": 2,
+		"scope": "686 released base forms; import source of record = RawAsset Sprite/Portrait dump; SpriteCollab tracked separately as upstream reference; VFX categories BG/Beam/Icon/Item/Particle; Object/Tile/TileDtef/font out of scope",
 		"source": "smoke_test_asset_coverage",
 		"species": species_section,
+		"upstream_spritecollab": upstream_section,
 	}
 	var written: bool = _write_text(REPORT_PATH, JSON.stringify(payload, "\t") + "\n")
 	_assert_true(written, "asset coverage report written")
@@ -68,17 +70,64 @@ func _init() -> void:
 		push_error("smoke: asset_coverage failed %d check(s)" % failures)
 		quit(1)
 		return
-	print("smoke: asset_coverage clean - species=%d state_gap_species=%d portrait_gap_species=%d unmapped_item_icons=%d unmapped_status_icons=%d" % [
+	print("smoke: asset_coverage clean - species=%d state_gap_species=%d portrait_gap_species=%d upstream_newer_species=%d unmapped_item_icons=%d unmapped_status_icons=%d" % [
 		int(species_summary.get("species_total", 0)),
 		int(species_summary.get("species_with_state_gaps", 0)),
 		int(species_summary.get("species_with_portrait_gaps", 0)),
+		int((upstream_section.get("summary", {}) as Dictionary).get("species_with_newer_content", 0)),
 		(mapping_section.get("unmapped_item_icons", []) as Array).size(),
 		(mapping_section.get("unmapped_status_icons", []) as Array).size(),
 	])
 	quit(0)
 
 
-func _build_species_section(manifest: Dictionary, sprite_collab_root: String) -> Dictionary:
+func _build_upstream_section(manifest: Dictionary, sprite_collab_root: String) -> Dictionary:
+	var newer_entries: Array[Dictionary] = []
+	var newer_state_total: int = 0
+	var newer_portrait_total: int = 0
+	var slugs: Array[String] = _manifest_slugs(manifest)
+	for slug in slugs:
+		var dex: String = slug.substr(0, 4)
+		var sprite_source_dir: String = _find_sprite_source_dir("%s/sprite/%s" % [sprite_collab_root, dex])
+		var upstream_keys: Array[String] = _source_state_keys(sprite_source_dir)
+		var imported_keys: Array[String] = _imported_state_keys("%s/%s/animations" % [ACTOR_ROOT, slug])
+		var newer_states: Array[String] = _difference(upstream_keys, imported_keys)
+		var imported_not_upstream: Array[String] = _difference(imported_keys, upstream_keys)
+		var portrait_source_dir: String = _find_portrait_source_dir("%s/portrait/%s" % [sprite_collab_root, dex])
+		var upstream_portraits: Array[String] = _png_names(portrait_source_dir)
+		var imported_portraits: Array[String] = _png_names(ProjectSettings.globalize_path("%s/%s" % [PORTRAIT_ROOT, slug]))
+		var newer_portraits: Array[String] = _difference(upstream_portraits, imported_portraits)
+		if newer_states.is_empty() and newer_portraits.is_empty() and imported_not_upstream.is_empty():
+			continue
+		newer_state_total += newer_states.size()
+		newer_portrait_total += newer_portraits.size()
+		newer_entries.append({
+			"imported_not_upstream_states": imported_not_upstream,
+			"newer_portraits": newer_portraits,
+			"newer_states": newer_states,
+			"slug": slug,
+		})
+	return {
+		"note": "SpriteCollab content beyond the imported RawAsset dump; adopt via re-import decision, not a coverage gap",
+		"species": newer_entries,
+		"summary": {
+			"newer_portrait_total": newer_portrait_total,
+			"newer_state_total": newer_state_total,
+			"species_with_newer_content": newer_entries.size(),
+		},
+	}
+
+
+func _manifest_slugs(manifest: Dictionary) -> Array[String]:
+	var slugs: Array[String] = []
+	for raw_entry in manifest.get("species", []):
+		if raw_entry is Dictionary:
+			slugs.append(String((raw_entry as Dictionary).get("slug", "")))
+	slugs.sort()
+	return slugs
+
+
+func _build_species_section(manifest: Dictionary, raw_asset_root: String) -> Dictionary:
 	var entries: Array[Dictionary] = []
 	var state_gap_entries: Array[Dictionary] = []
 	var portrait_gap_entries: Array[Dictionary] = []
@@ -98,7 +147,7 @@ func _build_species_section(manifest: Dictionary, sprite_collab_root: String) ->
 	for slug in slugs:
 		var manifest_entry: Dictionary = entries_by_slug[slug]
 		var dex: String = slug.substr(0, 4)
-		var sprite_source_dir: String = _find_sprite_source_dir("%s/sprite/%s" % [sprite_collab_root, dex])
+		var sprite_source_dir: String = _find_sprite_source_dir("%s/Sprite/%s" % [raw_asset_root, dex])
 		var source_keys: Array[String] = _source_state_keys(sprite_source_dir)
 		var imported_keys: Array[String] = _imported_state_keys("%s/%s/animations" % [ACTOR_ROOT, slug])
 		var missing_states: Array[String] = _difference(source_keys, imported_keys)
@@ -106,7 +155,7 @@ func _build_species_section(manifest: Dictionary, sprite_collab_root: String) ->
 		var substitutions: Dictionary = (manifest_entry.get("assets", {}) as Dictionary).get("sprite_substitutions", {})
 		if not substitutions.is_empty():
 			substitution_count += 1
-		var portrait_source_dir: String = _find_portrait_source_dir("%s/portrait/%s" % [sprite_collab_root, dex])
+		var portrait_source_dir: String = _find_portrait_source_dir("%s/Portrait/%s" % [raw_asset_root, dex])
 		var source_portraits: Array[String] = _png_names(portrait_source_dir)
 		var imported_portraits: Array[String] = _png_names(ProjectSettings.globalize_path("%s/%s" % [PORTRAIT_ROOT, slug]))
 		var missing_portraits: Array[String] = _difference(source_portraits, imported_portraits)

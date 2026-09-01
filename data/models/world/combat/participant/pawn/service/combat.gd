@@ -91,6 +91,7 @@ func _resolve_pokemon_attack(pawn: TacticsPawn, target_pawn: TacticsPawn, move: 
 		"amount": result.damage,
 		"multiplier": result.effectiveness,
 		"stab": result.stab,
+		"critical": result.is_critical,
 	})
 
 	if was_active and not target_pawn.stats.is_active():

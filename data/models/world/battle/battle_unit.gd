@@ -21,4 +21,4 @@ func is_alive() -> bool:
 
 
 func speed() -> int:
-	return stats.speed if stats != null else 0
+	return stats.battle_stat("speed") if stats != null else 0

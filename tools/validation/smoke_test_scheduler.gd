@@ -12,6 +12,7 @@ func _init() -> void:
 	_test_insert_unit()
 	_test_rebuild_queue()
 	_test_fainted_skipped()
+	_test_status_turn_skip()
 	_test_is_battle_over()
 	_test_peek_upcoming()
 
@@ -133,6 +134,36 @@ func _test_fainted_skipped() -> void:
 	b.stats.battle_status = Stats.BattleStatus.FAINTED
 	s.complete_active_unit()
 	_assert_eq([s.get_active_unit()], [c], "fainted unit is skipped without removal")
+
+
+func _test_status_turn_skip() -> void:
+	var a := _make_unit(110, PokemonInstanceResource.Team.PLAYER, 0)
+	var b := _make_unit(90, PokemonInstanceResource.Team.ENEMY, 1)
+	var c := _make_unit(85, PokemonInstanceResource.Team.PLAYER, 2)
+	var completed: Array = []
+	var s := BattleScheduler.new()
+	s.turn_completed.connect(func(unit: BattleUnit) -> void: completed.append(unit))
+	s.start_battle([a, b, c], 42)
+
+	a.stats.apply_battle_status("sleep", {"source": "test"})
+	var sleep_skip: Dictionary = a.stats.consume_turn_skip_status()
+	_assert_true(String(sleep_skip.get("status_id", "")) == "sleep", "sleep reports a turn skip")
+	_assert_true(a.stats.battle_statuses.has("sleep"), "sleep persists after skip consumption")
+	_assert_true(s.skip_active_unit(String(sleep_skip.get("status_id", ""))), "scheduler skips active sleeping unit")
+	_assert_eq([s.get_active_unit()], [b], "skip advances from sleeping unit to next active unit")
+
+	b.stats.apply_battle_status("flinch", {"source": "test"})
+	var flinch_skip: Dictionary = b.stats.consume_turn_skip_status()
+	_assert_true(String(flinch_skip.get("status_id", "")) == "flinch", "flinch reports a turn skip")
+	_assert_true(not b.stats.battle_statuses.has("flinch"), "flinch is consumed by turn skip")
+	_assert_true(s.skip_active_unit(String(flinch_skip.get("status_id", ""))), "scheduler skips active flinched unit")
+	_assert_eq([s.get_active_unit()], [c], "skip advances from flinched unit to next active unit")
+	_assert_eq(completed, [a, b], "skipped units emit turn_completed deterministically")
+
+	c.stats.apply_battle_status("paralyze", {"skip_turn": true})
+	var paralysis_skip: Dictionary = c.stats.consume_turn_skip_status()
+	_assert_true(String(paralysis_skip.get("status_id", "")) == "paralyze", "full-paralysis payload reports a turn skip")
+	_assert_true(not bool((c.stats.battle_statuses["paralyze"] as Dictionary).get("skip_turn", true)), "full-paralysis payload is consumed without removing paralysis")
 
 
 func _test_is_battle_over() -> void:

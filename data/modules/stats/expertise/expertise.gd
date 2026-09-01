@@ -1,4 +1,3 @@
-@tool
 class_name Expertise
 extends Node
 
@@ -10,6 +9,8 @@ extends Node
 
 
 func _ready() -> void:
+	if Engine.is_editor_hint() and (stats == null or not stats.has_method("init_from_pokemon")):
+		return
 	if pokemon_instance != null:
 		stats.init_from_pokemon(pokemon_instance)
 		return

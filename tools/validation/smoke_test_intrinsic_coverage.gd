@@ -6,7 +6,7 @@ const GENERATED_FORMS_DIR: String = "res://data/models/pokemon/generated/forms"
 const REPORT_PATH: String = "res://data/models/pokemon/import_reports/intrinsic_coverage_report.json"
 const EXPECTED_INTRINSICS: int = 208
 const EXPECTED_SPECIES: int = 686
-const IMPLEMENTED_OUTSIDE_SUPPORTED_LIST: Array[String] = ["insomnia"]
+const IMPLEMENTED_OUTSIDE_SUPPORTED_LIST: Array[String] = []
 
 var failures: int = 0
 

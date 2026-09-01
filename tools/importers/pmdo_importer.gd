@@ -370,7 +370,7 @@ func _alias_animation_state(states: Dictionary, alias_key: String, candidates: A
 
 
 func _directions_for_state(state_key: String) -> int:
-	return 1 if state_key in ["sleep", "faint"] else 8
+	return 8
 
 
 func _typed_int_array(values: Variant) -> Array[int]:
@@ -419,8 +419,11 @@ func _move_animation_map_for_entry(entry: Dictionary, moves: Dictionary, sprite_
 
 
 func _animation_key_for_move(move: PokemonMoveResource, sprite_set: PokemonSpriteSetResource) -> String:
+	for exact_key in _exact_animation_candidates_for_move(move):
+		if sprite_set.has_animation_state(exact_key):
+			return exact_key
 	var requested: String = move.animation_key
-	if not requested.is_empty() and sprite_set.has_animation_state(requested):
+	if not requested.is_empty() and _is_exact_animation_key(requested) and sprite_set.has_animation_state(requested):
 		return requested
 	match move.category:
 		PokemonMoveResource.CATEGORY_PHYSICAL:
@@ -438,6 +441,23 @@ func _first_animation_key(sprite_set: PokemonSpriteSetResource, candidates: Arra
 		if sprite_set.has_animation_state(key):
 			return key
 	return "idle"
+
+
+func _exact_animation_candidates_for_move(move: PokemonMoveResource) -> Array[String]:
+	var id: String = move.move_id
+	if id.contains("beam") or id.contains("pulse") or id.contains("sphere") or id.contains("gun") or id.contains("shot") or id.contains("bomb") or id.contains("seed") or id.contains("shuriken") or id.contains("wave"):
+		return ["shoot", "cast", "charge"]
+	if id.contains("slash") or id.contains("cut") or id.contains("blade") or id.contains("claw") or id.contains("cutter"):
+		return ["swing", "strike", "physical_attack"]
+	if id.contains("punch") or id.contains("kick") or id.contains("combat") or id.contains("tackle") or id.contains("edge"):
+		return ["strike", "physical_attack", "attack"]
+	if move.category == PokemonMoveResource.CATEGORY_STATUS or id.contains("protect") or id.contains("dance") or id.contains("mind") or id.contains("synthesis"):
+		return ["cast", "charge", "buff", "status_attack"]
+	return []
+
+
+func _is_exact_animation_key(key: String) -> bool:
+	return not ["physical_attack", "special_attack", "status_attack", "attack", "idle", "hop"].has(key)
 
 
 

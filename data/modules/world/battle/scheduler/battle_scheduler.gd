@@ -44,6 +44,16 @@ func complete_active_unit() -> void:
 	_activate_next()
 
 
+func skip_active_unit(_reason: String = "") -> bool:
+	if _active_unit == null:
+		return false
+	var skipped: BattleUnit = _active_unit
+	_active_unit = null
+	turn_completed.emit(skipped)
+	_activate_next()
+	return true
+
+
 func remove_unit(unit: BattleUnit) -> void:
 	if unit == null:
 		return

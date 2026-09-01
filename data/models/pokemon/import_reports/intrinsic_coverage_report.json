@@ -266,7 +266,7 @@
 			"slug": "bad_dreams"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 8,
 			"slug": "battle_armor"
 		},
@@ -276,7 +276,7 @@
 			"slug": "berserk"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 10,
 			"slug": "big_pecks"
 		},
@@ -301,7 +301,7 @@
 			"slug": "chlorophyll"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 10,
 			"slug": "clear_body"
 		},
@@ -431,7 +431,7 @@
 			"slug": "flare_boost"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 17,
 			"slug": "flash_fire"
 		},
@@ -501,7 +501,7 @@
 			"slug": "grass_pelt"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 20,
 			"slug": "guts"
 		},
@@ -536,7 +536,7 @@
 			"slug": "huge_power"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 18,
 			"slug": "hustle"
 		},
@@ -546,7 +546,7 @@
 			"slug": "hydration"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 9,
 			"slug": "hyper_cutter"
 		},
@@ -566,7 +566,7 @@
 			"slug": "illusion"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 3,
 			"slug": "immunity"
 		},
@@ -591,7 +591,7 @@
 			"slug": "insomnia"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 27,
 			"slug": "intimidate"
 		},
@@ -601,7 +601,7 @@
 			"slug": "iron_barbs"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 12,
 			"slug": "iron_fist"
 		},
@@ -611,7 +611,7 @@
 			"slug": "justified"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 30,
 			"slug": "keen_eye"
 		},
@@ -626,7 +626,7 @@
 			"slug": "leaf_guard"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 31,
 			"slug": "levitate"
 		},
@@ -636,7 +636,7 @@
 			"slug": "light_metal"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 13,
 			"slug": "lightning_rod"
 		},
@@ -751,7 +751,7 @@
 			"slug": "normalize"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 20,
 			"slug": "oblivious"
 		},
@@ -766,7 +766,7 @@
 			"slug": "overgrow"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 18,
 			"slug": "own_tempo"
 		},
@@ -806,7 +806,7 @@
 			"slug": "poison_heal"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 16,
 			"slug": "poison_point"
 		},
@@ -891,7 +891,7 @@
 			"slug": "rivalry"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 19,
 			"slug": "rock_head"
 		},
@@ -901,12 +901,12 @@
 			"slug": "rough_skin"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 24,
 			"slug": "run_away"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 14,
 			"slug": "sand_force"
 		},
@@ -926,7 +926,7 @@
 			"slug": "sand_veil"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 13,
 			"slug": "sap_sipper"
 		},
@@ -961,12 +961,12 @@
 			"slug": "shed_skin"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 24,
 			"slug": "sheer_force"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 18,
 			"slug": "shell_armor"
 		},
@@ -996,7 +996,7 @@
 			"slug": "slush_rush"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 14,
 			"slug": "sniper"
 		},
@@ -1041,7 +1041,7 @@
 			"slug": "stance_change"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 14,
 			"slug": "static"
 		},
@@ -1071,7 +1071,7 @@
 			"slug": "strong_jaw"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 29,
 			"slug": "sturdy"
 		},
@@ -1091,7 +1091,7 @@
 			"slug": "surge_surfer"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 21,
 			"slug": "swarm"
 		},
@@ -1101,7 +1101,7 @@
 			"slug": "sweet_veil"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 36,
 			"slug": "swift_swim"
 		},
@@ -1126,7 +1126,7 @@
 			"slug": "tangling_hair"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 14,
 			"slug": "technician"
 		},
@@ -1206,7 +1206,7 @@
 			"slug": "vital_spirit"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 5,
 			"slug": "volt_absorb"
 		},
@@ -1216,7 +1216,7 @@
 			"slug": "wandering_spirit"
 		},
 		{
-			"implemented": false,
+			"implemented": true,
 			"roster_frequency": 19,
 			"slug": "water_absorb"
 		},
@@ -1254,9 +1254,9 @@
 	"schema_version": 1,
 	"source": "smoke_test_intrinsic_coverage",
 	"summary": {
-		"implemented_count": 29,
+		"implemented_count": 59,
 		"intrinsic_total": 208,
-		"report_only_count": 179,
+		"report_only_count": 149,
 		"species_total": 686
 	}
 }
