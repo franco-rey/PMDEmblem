@@ -49,6 +49,11 @@ var is_rotating: bool = false:
 @export var x_rot: int
 @export var y_rot: int
 @export var z_rot: int
+const PERSPECTIVE_ISOMETRIC: String = "isometric"
+const PERSPECTIVE_TOP_DOWN: String = "top_down"
+const TOP_DOWN_PITCH: int = -80
+var perspective: String = PERSPECTIVE_ISOMETRIC
+var isometric_pitch: int = -30
 var mouse_pos: Vector2
 var in_free_look: bool:
 	set(val):
@@ -66,6 +71,22 @@ var viewport_size: Vector2i
 
 func move_camera(h: float, v: float, joystick: bool, delta: float) -> void:
 	called_move_camera.emit(h, v, joystick, delta)
+
+
+func zoom_step(direction: int) -> void:
+	target_fov = clampf(target_fov + float(signi(direction)) * zoom_speed, min_zoom, max_zoom)
+
+
+func toggle_perspective() -> String:
+	if perspective == PERSPECTIVE_ISOMETRIC:
+		isometric_pitch = x_rot
+		perspective = PERSPECTIVE_TOP_DOWN
+		x_rot = TOP_DOWN_PITCH
+	else:
+		perspective = PERSPECTIVE_ISOMETRIC
+		x_rot = isometric_pitch
+	is_rotating = true
+	return perspective
 
 
 func rotate_camera(delta: float, twist: float = 0.0) -> void:

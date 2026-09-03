@@ -2610,6 +2610,7 @@ source: sprite/0642
 source: sprite/0643
 2022-09-12 11:47:25.480107	<@!276369635304275968>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
 2022-09-17 05:02:35.966333	<@!276369635304275968>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
+2026-07-18 01:57:05.669939	<@!276369635304275968>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,RearUp,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
 
 [0644_zekrom] Zekrom (actor)
 source: sprite/0644
@@ -2939,6 +2940,7 @@ source: sprite/0718
 2024-05-06 06:53:14.428868	JHONY_REX	CUR	CC_BY-NC_4	"
 2024-11-09 05:12:38.208525	<@!356635814668664832>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Swing,Double,Rotate,Hop
 2024-11-29 23:42:01.188118	<@!157796074457661440>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Swing,Double,Rotate,Hop
+2026-08-02 06:42:50.296196	<@!272761782269902848>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,RearUp,Swing,Double,Rotate,Hop
 
 [0719_diancie] Diancie (actor)
 source: Sprite/0719

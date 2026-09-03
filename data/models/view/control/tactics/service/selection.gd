@@ -103,12 +103,156 @@ func player_wants_to_cancel() -> void:
 		participant.display_opponent_stats = false
 	if controls != null:
 		controls.clear_hover_preview()
-	if participant.stage in [participant.STAGE_DISPLAY_TARGETS, participant.STAGE_SELECT_ATTACK_TARGET] and _has_pokemon_moves(participant.curr_pawn):
+	if participant.stage == participant.STAGE_SELECT_THROW_TARGET:
+		participant.pending_intent = null
+		participant.throw_options = []
+		participant.attackable_pawn = null
+		participant.stage = participant.STAGE_SELECT_ITEM_ACTION
+	elif participant.stage == participant.STAGE_SELECT_ITEM_ACTION:
+		participant.pending_intent = null
+		participant.stage = participant.STAGE_SHOW_ACTIONS
+	elif participant.stage in [participant.STAGE_DISPLAY_TARGETS, participant.STAGE_SELECT_ATTACK_TARGET] and _has_pokemon_moves(participant.curr_pawn):
 		participant.stage = participant.STAGE_SELECT_MOVE
 	elif participant.stage == participant.STAGE_SELECT_MOVE:
 		participant.stage = participant.STAGE_SHOW_ACTIONS
 	else:
 		participant.stage = 1 if participant.stage > 1 else 0
+
+
+func player_wants_to_use_item() -> void:
+	if controls != null:
+		controls.clear_hover_preview()
+	var pawn: TacticsPawn = participant.curr_pawn
+	if pawn == null or pawn.stats == null or PokemonItemService.held_item_for(pawn.stats) == null or not pawn.res.can_attack:
+		return
+	participant.pending_intent = null
+	participant.throw_options = []
+	participant.stage = participant.STAGE_SELECT_ITEM_ACTION
+
+
+func select_item_action(ctrl: TacticsControls) -> void:
+	controls.set_actions_menu_visibility(false, participant.curr_pawn)
+	(ctrl.serv.ui_service as TacticsUIService).set_item_picker_visibility(true, participant.curr_pawn, ctrl)
+	_update_actions_preview()
+
+
+func player_wants_to_select_item_use() -> void:
+	var pawn: TacticsPawn = participant.curr_pawn
+	if pawn == null or pawn.stats == null:
+		return
+	var item: PokemonItemResource = PokemonItemService.held_item_for(pawn.stats)
+	if item == null:
+		return
+	var entry: Dictionary = BattleItemCatalog.entry_for(item.item_id)
+	if not bool(entry.get("can_use", false)):
+		return
+	if controls != null:
+		controls.clear_hover_preview()
+	participant.pending_intent = BattleActionIntent.use_item(pawn, item.item_id)
+	participant.attackable_pawn = pawn
+	_log_item_action_selected(pawn, participant.pending_intent)
+	if t_cam != null:
+		t_cam.target = pawn
+	participant.stage = participant.STAGE_ITEM_ACTION
+
+
+func player_wants_to_select_item_throw() -> void:
+	var pawn: TacticsPawn = participant.curr_pawn
+	if pawn == null or pawn.stats == null:
+		return
+	var item: PokemonItemResource = PokemonItemService.held_item_for(pawn.stats)
+	if item == null:
+		return
+	var options: Array[Dictionary] = Targeting.throw_options(pawn, _throw_range(item), _all_units_for_selection(), Targeting.arena_tile_keys(_level_node()))
+	if options.is_empty():
+		return
+	if controls != null:
+		controls.clear_hover_preview()
+	participant.throw_options = options
+	participant.pending_intent = null
+	participant.attackable_pawn = null
+	participant.stage = participant.STAGE_SELECT_THROW_TARGET
+
+
+func select_throw_target(ctrl: TacticsControls) -> void:
+	controls.set_actions_menu_visibility(false, participant.curr_pawn)
+	(ctrl.serv.ui_service as TacticsUIService).set_item_picker_visibility(false, participant.curr_pawn, ctrl)
+	var pawn: TacticsPawn = participant.curr_pawn
+	var arena_node: TacticsArena = _arena_node()
+	if pawn == null or arena_node == null:
+		return
+	if participant.attackable_pawn != null:
+		controls.set_actions_menu_visibility(false, participant.attackable_pawn)
+		participant.attackable_pawn.show_pawn_stats(false)
+		participant.attackable_pawn = null
+	arena_node.reset_all_tile_markers()
+	var keys: Dictionary = Targeting.arena_tile_keys(_level_node())
+	for option in participant.throw_options:
+		for key in option.get("path", []):
+			var tile: Variant = keys.get(key, null)
+			if tile is TacticsTile:
+				(tile as TacticsTile).attackable = true
+	var hovered: TacticsTile = _select_hovered_tile(ctrl)
+	var chosen: Dictionary = _throw_option_for_tile(hovered)
+	var hit_unit: TacticsPawn = chosen.get("hit_unit", null) as TacticsPawn if not chosen.is_empty() else null
+	if hit_unit != null and hit_unit.is_alive():
+		participant.attackable_pawn = hit_unit
+		controls.set_actions_menu_visibility(true, hit_unit)
+		hit_unit.show_pawn_stats(true)
+	if Input.is_action_just_pressed("ui_accept") and hovered != null and hovered.attackable and not chosen.is_empty():
+		var item: PokemonItemResource = PokemonItemService.held_item_for(pawn.stats)
+		if item == null:
+			participant.stage = participant.STAGE_SHOW_ACTIONS
+			return
+		participant.pending_intent = BattleActionIntent.throw_item(pawn, item.item_id, chosen.get("direction", Vector3i.ZERO), hit_unit)
+		_log_item_action_selected(pawn, participant.pending_intent)
+		if t_cam != null:
+			t_cam.target = hit_unit if hit_unit != null else hovered
+		participant.stage = participant.STAGE_ITEM_ACTION
+
+
+func _throw_option_for_tile(tile: TacticsTile) -> Dictionary:
+	if tile == null:
+		return {}
+	var key: Vector3i = Targeting._tile_key(tile)
+	for option in participant.throw_options:
+		var path: Array = option.get("path", [])
+		if path.has(key):
+			return option
+	return {}
+
+
+func _throw_range(item: PokemonItemResource) -> int:
+	var presentation: ActionPresentationCatalog = ActionPresentationCatalog.shared()
+	var entry: Dictionary = presentation.item(item.item_id)
+	var throw_spec: Dictionary = entry.get("throw", {}) if entry.get("throw", null) is Dictionary else {}
+	var params: Dictionary = throw_spec.get("params", {}) if throw_spec.get("params", null) is Dictionary else {}
+	if params.has("range"):
+		return int(params["range"])
+	var defaults: Dictionary = presentation.throw_defaults.get("projectile", {}) if presentation.throw_defaults.get("projectile", null) is Dictionary else {}
+	return int(defaults.get("range", 8))
+
+
+func _level_node() -> TacticsLevel:
+	var node: Node = participant.curr_pawn
+	while node != null:
+		if node is TacticsLevel:
+			return node as TacticsLevel
+		node = node.get_parent()
+	return null
+
+
+func _log_item_action_selected(pawn: TacticsPawn, intent: BattleActionIntent) -> void:
+	var level: TacticsLevel = _level_node()
+	if level == null or intent == null:
+		return
+	level.battle_log.append({
+		"kind": "item_action_selected",
+		"attacker": pawn,
+		"item_id": intent.item_id,
+		"action": intent.kind,
+		"direction": intent.direction,
+	})
 
 
 func player_wants_to_wait() -> void:

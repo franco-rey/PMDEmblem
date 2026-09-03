@@ -12,6 +12,7 @@ func _init() -> void:
 	_check_bots_seed()
 	_check_series_expansion()
 	_check_explicit_teams_and_moves()
+	_check_ability_item_fields()
 	_check_semicolon_matches()
 	_check_invalid_inputs()
 
@@ -101,6 +102,33 @@ func _check_invalid_inputs() -> void:
 	_assert_build_fails("series seed=1 matches=11", "matches=11 fails")
 	_assert_build_fails("match seed=1 p=missingno e=0094_gengar", "unknown Pokemon slug fails")
 	_assert_build_fails("match seed=1 p=0448_lucario:not_a_move e=0094_gengar", "unknown move slug fails")
+
+
+const OWNER_TEST_CODE: String = "match seed=7 mode=pvp p=0007_squirtle@50:rain_dance,water_gun,withdraw,bite:torrent:berry_sitrus|0001_bulbasaur@50:leech_seed,growl,synthesis,razor_leaf:chlorophyll:berry_oran|0004_charmander@50:ember,smokescreen,scary_face,fire_spin:blaze e=0005_charmeleon@50:ember,slash,dragon_rage,growl:blaze|0008_wartortle@50:water_gun,bite,rapid_spin,protect:torrent|0002_ivysaur@50:vine_whip,poison_powder,sleep_powder,growth:overgrow:berry_oran"
+const COMPLETION_TEST_CODE: String = "match seed=11 mode=pvp p=0003_venusaur@50:leech_seed,toxic_spikes,solar_beam,sunny_day:chlorophyll:berry_sitrus|0006_charizard@50:fly,roar,stealth_rock,flamethrower:blaze:held_life_orb|0009_blastoise@50:rain_dance,hydro_pump,rapid_spin,protect:torrent:berry_lum e=0009_blastoise@50:water_pulse,yawn,spikes,ice_beam:torrent:berry_oran|0003_venusaur@50:sludge_bomb,giga_drain,stockpile,swallow:overgrow:berry_sitrus|0006_charizard@50:hyper_beam,dragon_claw,defog,earthquake:blaze"
+
+
+func _check_ability_item_fields() -> void:
+	var built: Dictionary = SkirmishCode.build_definitions(OWNER_TEST_CODE, {"map_path": TEST_ARENA_MAP_PATH})
+	_assert_true(bool(built.get("ok", false)), "owner test code builds (%s)" % String(built.get("error", "")))
+	if not bool(built.get("ok", false)):
+		return
+	var definition: SkirmishDefinitionResource = built["definitions"][0]
+	_assert_true(definition.player_team.size() == 3 and definition.enemy_team.size() == 3, "owner test code builds 3v3")
+	_assert_true(definition.player_team[0].ability_override == "torrent" and definition.player_team[0].held_item != null and definition.player_team[0].held_item.item_id == "berry_sitrus", "code sets Squirtle's ability and Sitrus Berry")
+	_assert_true(definition.player_team[2].held_item == null and definition.player_team[2].ability_override == "blaze", "code leaves Charmander itemless with Blaze")
+	_assert_true(definition.enemy_team[2].held_item != null and definition.enemy_team[2].held_item.item_id == "berry_oran" and _move_slugs(definition.enemy_team[2]) == ["vine_whip", "poison_powder", "sleep_powder", "growth"], "code sets the enemy Ivysaur moves and Oran Berry")
+	_assert_true(definition.player_team[0].loadout_locked and definition.control_mode == SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_PLAYER, "code locks loadouts and sets PvP")
+	var encoded: String = SkirmishCode.encode_definition(definition)
+	var rebuilt: Dictionary = SkirmishCode.build_definitions(encoded, {"map_path": TEST_ARENA_MAP_PATH})
+	_assert_true(bool(rebuilt.get("ok", false)) and SkirmishCode.encode_definition(rebuilt["definitions"][0]) == encoded, "encoded code round-trips (%s)" % encoded)
+	var showcase: Dictionary = SkirmishCode.build_definitions(COMPLETION_TEST_CODE, {"map_path": TEST_ARENA_MAP_PATH})
+	_assert_true(bool(showcase.get("ok", false)) and showcase["definitions"][0].player_team.size() == 3, "completion-pass showcase code builds (%s)" % String(showcase.get("error", "")))
+	_assert_build_fails("match seed=1 p=0001_bulbasaur@50:tackle::seed_blast e=0007_squirtle", "PMD seeds are rejected as held items")
+	_assert_build_fails("match seed=1 p=0001_bulbasaur@50:tackle:blaze e=0007_squirtle", "ability not owned by the species fails")
+	_assert_build_fails("match seed=1 p=0001_bulbasaur@50:tackle::not_an_item e=0007_squirtle", "unknown item fails")
+	var random_built: Dictionary = SkirmishCode.build_definitions("match seed=3 p=0001_bulbasaur@50::random:random e=0007_squirtle", {"map_path": TEST_ARENA_MAP_PATH})
+	_assert_true(bool(random_built.get("ok", false)) and ["overgrow", "chlorophyll"].has(random_built["definitions"][0].player_team[0].ability_override) and random_built["definitions"][0].player_team[0].held_item != null, "random ability and item fields resolve")
 
 
 func _assert_build_fails(code: String, label: String) -> void:

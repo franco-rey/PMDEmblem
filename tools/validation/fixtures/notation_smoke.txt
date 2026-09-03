@@ -1,0 +1,6 @@
+code match seed=7 mode=pvp p=0007_squirtle@50:rain_dance,water_gun,withdraw,bite:torrent:berry_sitrus e=0004_charmander@50:ember,scratch:blaze
+attack P1 1 E1
+end P1
+end E1
+attack P1 2 E1
+end P1

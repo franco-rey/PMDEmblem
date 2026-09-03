@@ -55,7 +55,7 @@ func _check_turn_processed_statuses() -> void:
 	target.stats.curr_health = 120
 	target.stats.apply_battle_status("leech_seed", {"source_unit": source})
 	level._process_turn_start_statuses(target)
-	_assert_true(target.stats.curr_health == 110 and source.stats.curr_health == 60, "Leech Seed drains target and heals source")
+	_assert_true(target.stats.curr_health == 105 and source.stats.curr_health == 65, "Leech Seed drains 1/8 from the target and heals the seeder (%d/%d)" % [target.stats.curr_health, source.stats.curr_health])
 	level.battle_log.events.clear()
 
 	target.stats.battle_statuses = {}

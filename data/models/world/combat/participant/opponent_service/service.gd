@@ -59,9 +59,26 @@ func chase_nearest_enemy(opponent: Node3D, player_node: Node) -> void:
 			print_rich("[color=orange]Through: [i]", res.curr_pawn.res.pathfinding_tilestack, "[/i][/color]")
 			print_rich("[color=cyan]Camera target updated to destination tile.[/color]")
 		res.stage = res.STAGE_SHOW_MOVEMENTS
+	elif res.curr_pawn.is_alive() and res.curr_pawn.res.can_attack:
+		var action: AIAction = minimum_viable_ai.choose_action(
+			res.curr_pawn,
+			opponent.get_children(),
+			player_node.get_children(),
+			type_chart
+		)
+		if action.move_index >= 0:
+			res.curr_pawn.res.selected_move_index = action.move_index
+			if action.move_index < res.curr_pawn.stats.move_slots.size():
+				var held_move: PokemonMoveResource = res.curr_pawn.stats.move_slots[action.move_index]
+				res.curr_pawn.stats.attack_range = max(1, held_move.tactical_range_value)
+		if DebugLog.debug_enabled:
+			print_rich("[color=orange]", res.curr_pawn, " cannot move this turn; attacking in place.[/color]")
+		res.stage = res.STAGE_SELECT_LOCATION
 	else:
+		if DebugLog.debug_enabled:
+			print_rich("[color=orange]", res.curr_pawn, " can neither move nor attack; ending its turn.[/color]")
+		res.curr_pawn.end_pawn_turn()
 		res.stage = res.STAGE_SELECT_PAWN
-		push_error("Tried to make a pawn that cannot move chase nearest enemy: ", res.curr_pawn)
 
 
 func is_pawn_done_moving() -> void:
@@ -83,9 +100,16 @@ func choose_pawn_to_attack() -> void:
 		res.curr_pawn,
 		res.curr_pawn.get_parent().get_children(),
 		res.targets.get_children(),
-		type_chart
+		type_chart,
+		_level_for(res.curr_pawn)
 	)
-	if action.move_index >= 0:
+	res.pending_intent = null
+	if action.intent != null and action.intent.is_item_action():
+		res.curr_pawn.res.use_legacy_attack_fallback = false
+		res.pending_intent = action.intent
+		res.attackable_pawn = action.target_unit
+		_log_item_intent(res.curr_pawn, action.intent)
+	elif action.move_index >= 0:
 		res.curr_pawn.res.selected_move_index = action.move_index
 		res.curr_pawn.res.use_legacy_attack_fallback = false
 		res.attackable_pawn = action.target_unit
@@ -103,6 +127,29 @@ func choose_pawn_to_attack() -> void:
 			print_rich("[color=orange]No target detected.[/color]")
 
 	res.stage = res.STAGE_MOVE_PAWN
+
+
+func _level_for(pawn: TacticsPawn) -> TacticsLevel:
+	var node: Node = pawn
+	while node != null:
+		if node is TacticsLevel:
+			return node as TacticsLevel
+		node = node.get_parent()
+	return null
+
+
+func _log_item_intent(pawn: TacticsPawn, intent: BattleActionIntent) -> void:
+	var level: TacticsLevel = _level_for(pawn)
+	if level == null:
+		return
+	level.battle_log.append({
+		"kind": "item_action_selected",
+		"attacker": pawn,
+		"item_id": intent.item_id,
+		"action": intent.kind,
+		"direction": intent.direction,
+		"source": "ai",
+	})
 
 
 func _log_no_usable_move(pawn: TacticsPawn) -> void:

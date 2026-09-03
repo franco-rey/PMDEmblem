@@ -65,12 +65,21 @@ func get_pathfinding_tilestack(to: TacticsTile) -> Array:
 func get_nearest_target_adjacent_tile(pawn: TacticsPawn, target_pawns: Array) -> TacticsTile:
 	var _nearest_target: Node3D = null
 
+	var hazards: BattleHazardService = _hazards_for(pawn)
+	var fallback: Node3D = null
 	for _p: TacticsPawn in target_pawns:
 		if not _p.is_alive(): continue
 		for _n: TacticsTile in _p.get_tile().get_neighbors(pawn.stats.jump):
+			if _n.pf_distance <= 0 or _n.is_taken():
+				continue
+			if hazards != null and hazards.threatens(pawn, Targeting._tile_key(_n)):
+				if not fallback or _n.pf_distance < fallback.pf_distance:
+					fallback = _n
+				continue
 			if not _nearest_target or _n.pf_distance < _nearest_target.pf_distance:
-				if _n.pf_distance > 0 and not _n.is_taken():
-					_nearest_target = _n
+				_nearest_target = _n
+	if not _nearest_target:
+		_nearest_target = fallback
 
 	while _nearest_target and not _nearest_target.reachable:
 		_nearest_target = _nearest_target.pf_root
@@ -157,4 +166,13 @@ func _tile_grid_key(tile: TacticsTile) -> Vector3i:
 	if tile == null:
 		return Vector3i.ZERO
 	var pos: Vector3 = tile.global_position if tile.is_inside_tree() else tile.position
-	return Vector3i(roundi(pos.x), 0, roundi(pos.z))
+	return Vector3i(floori(pos.x + 0.5), 0, floori(pos.z + 0.5))
+
+
+func _hazards_for(pawn: TacticsPawn) -> BattleHazardService:
+	var node: Node = pawn.get_parent() if pawn != null else null
+	while node != null and not (node is TacticsLevel):
+		node = node.get_parent()
+	if node is TacticsLevel and (node as TacticsLevel).hazard_service != null:
+		return (node as TacticsLevel).hazard_service
+	return null

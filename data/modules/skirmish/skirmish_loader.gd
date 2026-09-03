@@ -28,6 +28,7 @@ func load_skirmish(definition: SkirmishDefinitionResource, battle_parent: Node =
 	level.name = "TacticsLevel"
 	level.use_speed_scheduler = true
 	level.battle_seed = definition.seed
+	level.battle_label = definition.skirmish_id
 
 	var arena: TacticsArena = map_scene.instantiate() as TacticsArena
 	if arena == null:
@@ -162,7 +163,7 @@ func _spawn_anchor_order(anchor_name: String) -> int:
 func _spawn_team(team: Array[PokemonInstanceResource], parent: Node3D, anchors: Array[Node3D], spawn_order: Array[int], level: TacticsLevel) -> void:
 	for i in range(team.size()):
 		var instance: PokemonInstanceResource = team[i]
-		if instance != null and instance.move_slots.size() < PokemonInstanceResource.MAX_MOVE_SLOTS:
+		if instance != null and instance.move_slots.size() < PokemonInstanceResource.MAX_MOVE_SLOTS and not instance.loadout_locked:
 			instance = SkirmishMoveLoadout.clone_with_loadout(instance, instance.team, instance.control_type, level.battle_seed, parent.name, i)
 		var pawn: TacticsPawn = _pawn_scene.instantiate() as TacticsPawn
 		pawn.name = "Pawn" if i == 0 else "Pawn%d" % (i + 1)

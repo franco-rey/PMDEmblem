@@ -12,7 +12,12 @@ const STAGE_DISPLAY_TARGETS: int = 5
 const STAGE_SELECT_ATTACK_TARGET: int = 6
 const STAGE_ATTACK: int = 7
 const STAGE_SELECT_MOVE: int = 8
+const STAGE_SELECT_ITEM_ACTION: int = 9
+const STAGE_SELECT_THROW_TARGET: int = 10
+const STAGE_ITEM_ACTION: int = 11
 var stage: int = 0
+var pending_intent: BattleActionIntent = null
+var throw_options: Array[Dictionary] = []
 
 var curr_pawn: TacticsPawn = null:
 	set(val):

@@ -59,10 +59,12 @@ func calculate_damage(
 	if effectiveness <= 0.0:
 		return 0
 
-	var attack_stat: int = attacker.battle_stat("attack") if move.category == PokemonMoveResource.CATEGORY_PHYSICAL else attacker.battle_stat("special_attack")
-	var defense_stat: int = defender.battle_stat("defense") if move.category == PokemonMoveResource.CATEGORY_PHYSICAL else defender.battle_stat("special_defense")
+	var attack_id: String = "attack" if move.category == PokemonMoveResource.CATEGORY_PHYSICAL else "special_attack"
+	var defense_id: String = "defense" if move.category == PokemonMoveResource.CATEGORY_PHYSICAL else "special_defense"
+	var attack_stat: int = attacker.raw_battle_stat(attack_id) if bool(outcome.get("ignore_attacker_stages", false)) else attacker.battle_stat(attack_id)
+	var defense_stat: int = defender.raw_battle_stat(defense_id) if bool(outcome.get("ignore_defender_stages", false)) else defender.battle_stat(defense_id)
 	var source_rng: RandomNumberGenerator = rng if rng != null else _fallback_rng
-	var crit_level: int = _crit_level_for(move)
+	var crit_level: int = _crit_level_for(move) + int(outcome.get("crit_bonus", 0))
 	if critical_blocked:
 		crit_level = 0
 		outcome["critical_blocked"] = true
@@ -76,7 +78,7 @@ func calculate_damage(
 
 	var level_term: int = int(attacker.level / 3) + 6
 	var base: int = level_term * maxi(attack_stat, 1) * maxi(move.base_power, 0)
-	var scaled: int = _apply_pmd_damage_multiplier(base, effectiveness, stab, extra_multiplier, is_critical, _has_intrinsic(attacker, "sniper"))
+	var scaled: int = _apply_pmd_damage_multiplier(base, effectiveness, stab, extra_multiplier, is_critical, _has_intrinsic(attacker, "sniper"), _has_intrinsic(attacker, "adaptability"))
 	var variance: int = source_rng.randi_range(90, 100)
 	outcome["variance"] = variance
 	var damage: int = int(scaled / maxi(defense_stat, 1))
@@ -113,11 +115,12 @@ func _apply_pmd_damage_multiplier(
 		stab: bool,
 		extra_multiplier: float,
 		is_critical: bool,
-		has_sniper: bool
+		has_sniper: bool,
+		has_adaptability: bool = false
 ) -> int:
 	var scaled: int = value
 	if stab:
-		scaled = int(scaled * STAB_NUMERATOR / STAB_DENOMINATOR)
+		scaled = scaled * 2 if has_adaptability else int(scaled * STAB_NUMERATOR / STAB_DENOMINATOR)
 	if is_critical:
 		scaled = int(scaled * (5 if has_sniper else 3) / 2)
 	scaled = int(floor(float(scaled) * effectiveness))
@@ -171,12 +174,19 @@ func _has_intrinsic(stats: Stats, intrinsic_id: String) -> bool:
 		if String(slug).to_lower() == key:
 			return true
 	var instance: PokemonInstanceResource = stats.pokemon_instance
-	var form: PokemonFormResource = instance.resolved_form() if instance != null else null
+	if instance == null:
+		return false
+	var override_slug: String = String(instance.ability_override).strip_edges().to_lower()
+	if not override_slug.is_empty() and override_slug != "none":
+		return override_slug == key
+	var form: PokemonFormResource = instance.resolved_form()
 	if form == null:
 		return false
 	for slug in [form.intrinsic1, form.intrinsic2, form.intrinsic3]:
-		if String(slug).to_lower() == key:
-			return true
+		var natural: String = String(slug).to_lower()
+		if natural.is_empty() or natural == "none":
+			continue
+		return natural == key
 	return false
 
 

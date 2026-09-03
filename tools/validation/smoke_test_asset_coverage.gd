@@ -25,6 +25,17 @@ const SOURCE_STATE_TO_RUNTIME_KEY: Dictionary = {
 	"Faint": "faint",
 	"Attack": "attack",
 }
+const SOURCE_STATE_TO_RUNTIME_KEY_V2: Dictionary = {
+	"Idle": "idle",
+	"Walk": "walk",
+	"Hurt": "hurt",
+	"Sleep": "sleep",
+	"Laying": "laying",
+	"EventSleep": "event_sleep",
+	"Hop": "hop",
+	"Faint": "faint",
+	"Attack": "attack",
+}
 const REQUIRED_STATE_SOURCES: Dictionary = {
 	"idle": ["Idle-Anim.png"],
 	"walk": ["Walk-Anim.png"],
@@ -148,7 +159,8 @@ func _build_species_section(manifest: Dictionary, raw_asset_root: String) -> Dic
 		var manifest_entry: Dictionary = entries_by_slug[slug]
 		var dex: String = slug.substr(0, 4)
 		var sprite_source_dir: String = _find_sprite_source_dir("%s/Sprite/%s" % [raw_asset_root, dex])
-		var source_keys: Array[String] = _source_state_keys(sprite_source_dir)
+		var schema_version: int = int((manifest_entry.get("assets", {}) as Dictionary).get("animation_schema_version", 1))
+		var source_keys: Array[String] = _source_state_keys(sprite_source_dir, schema_version)
 		var imported_keys: Array[String] = _imported_state_keys("%s/%s/animations" % [ACTOR_ROOT, slug])
 		var missing_states: Array[String] = _difference(source_keys, imported_keys)
 		var extra_states: Array[String] = _difference(imported_keys, source_keys)
@@ -289,7 +301,7 @@ func _find_portrait_source_dir(dex_root: String) -> String:
 	return ""
 
 
-func _source_state_keys(source_dir: String) -> Array[String]:
+func _source_state_keys(source_dir: String, schema_version: int = 1) -> Array[String]:
 	var keys: Dictionary = {}
 	if source_dir.is_empty():
 		return []
@@ -297,7 +309,7 @@ func _source_state_keys(source_dir: String) -> Array[String]:
 		if not file_name.ends_with(ANIM_SUFFIX):
 			continue
 		var source_name: String = file_name.substr(0, file_name.length() - ANIM_SUFFIX.length())
-		keys[_runtime_state_key(source_name)] = true
+		keys[_runtime_state_key(source_name, schema_version)] = true
 	var out: Array[String] = []
 	for key in keys.keys():
 		out.append(String(key))
@@ -314,9 +326,10 @@ func _imported_state_keys(res_dir: String) -> Array[String]:
 	return out
 
 
-func _runtime_state_key(source_name: String) -> String:
-	if SOURCE_STATE_TO_RUNTIME_KEY.has(source_name):
-		return String(SOURCE_STATE_TO_RUNTIME_KEY[source_name])
+func _runtime_state_key(source_name: String, schema_version: int = 1) -> String:
+	var table: Dictionary = SOURCE_STATE_TO_RUNTIME_KEY_V2 if schema_version >= 2 else SOURCE_STATE_TO_RUNTIME_KEY
+	if table.has(source_name):
+		return String(table[source_name])
 	var regex: RegEx = RegEx.new()
 	regex.compile("([a-z0-9])([A-Z])")
 	var with_separators: String = regex.sub(source_name, "$1_$2", true)

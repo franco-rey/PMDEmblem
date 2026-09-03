@@ -2,6 +2,7 @@ class_name TacticsLevel
 extends Node3D
 
 signal battle_ended(result: int)
+signal weather_changed(weather_id: String)
 
 const RESULT_ONGOING: int = 0
 const RESULT_PLAYER_WIN: int = 1
@@ -12,6 +13,10 @@ const STATUS_POISON: String = "poison"
 const STATUS_TOXIC: String = "poison_toxic"
 const STATUS_LEECH_SEED: String = "leech_seed"
 const STATUS_INGRAIN: String = "ingrain"
+const STATUS_SLEEP: String = "sleep"
+const STATUS_CONFUSE: String = "confuse"
+const RAMPAGE_STATUSES: Array[String] = ["outrage", "thrash", "petal_dance"]
+const TRAP_STATUSES: Array[String] = ["bind", "wrap", "clamp", "fire_spin", "sand_tomb", "whirlpool", "magma_storm", "infestation"]
 const STATUS_AQUA_RING: String = "aqua_ring"
 const STATUS_HEAL_BLOCK: String = "heal_block"
 const STATUS_PARALYZE: String = "paralyze"
@@ -28,18 +33,30 @@ var opponent: TacticsOpponent
 var arena: TacticsArena
 var turn_stage: int = 0
 var battle_rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var hazard_service: BattleHazardService = null
 var battle_log: BattleLog = BattleLog.new()
 var intrinsic_service: BattleIntrinsicService = BattleIntrinsicService.new()
+var state_ops: BattleStateOps = null
 var battle_conditions: Dictionary = {}
+var message_log: BattleMessageLog = null
+var notation: BattleNotation = BattleNotation.new()
+var battle_label: String = ""
+var weather_overlay: WeatherOverlay = null
 var battle_finished: bool = false
 var scheduler: BattleScheduler = null
 var battle_units: Array[BattleUnit] = []
+var presentation_runner: BattlePresentationRunner = null
+var vfx_player: BattleVFXPlayer = null
+var force_timed_presentation: bool = false
+var landed_items: Dictionary = {}
 var _scheduler_started: bool = false
 var _type_chart: TypeChartResource = null
 
 func _ready() -> void:
 	battle_rng.seed = battle_seed
 	battle_log.event_appended.connect(_on_battle_event_appended)
+	_ops()
+	_setup_presentation()
 	if not ui_control:
 		push_error("TacticsControls needs a ControlResource from /data/models/view/control/tactics/")
 	if not camera:
@@ -60,6 +77,7 @@ func _ready() -> void:
 		scheduler = BattleScheduler.new()
 		scheduler.turn_started.connect(_on_turn_started)
 		scheduler.turn_completed.connect(_on_turn_completed)
+		scheduler.round_building.connect(_on_round_building)
 		scheduler.round_started.connect(_on_round_started)
 
 func _physics_process(delta: float) -> void:
@@ -72,6 +90,108 @@ func _physics_process(delta: float) -> void:
 			0: _init_turn()
 			1: _handle_turn(delta)
 	_check_and_handle_battle_end()
+
+func _setup_presentation() -> void:
+	vfx_player = BattleVFXPlayer.new()
+	vfx_player.name = "BattleVFXPlayer"
+	vfx_player.setup(battle_seed, battle_log)
+	add_child(vfx_player)
+	presentation_runner = BattlePresentationRunner.new()
+	presentation_runner.name = "BattlePresentationRunner"
+	presentation_runner.battle_log = battle_log
+	presentation_runner.vfx_player = vfx_player
+	presentation_runner.immediate_mode = DisplayServer.get_name() == "headless" and not force_timed_presentation
+	add_child(presentation_runner)
+	message_log = BattleMessageLog.new()
+	message_log.setup(battle_log)
+	add_child(message_log)
+	weather_overlay = WeatherOverlay.new()
+	add_child(weather_overlay)
+	weather_changed.connect(weather_overlay.set_weather)
+
+
+func is_presentation_busy() -> bool:
+	return presentation_runner != null and presentation_runner.is_busy()
+
+
+func land_item(item_id: String, key: Vector3i, world_position: Vector3, source: String = "", defer_visual: bool = false) -> void:
+	if item_id.is_empty():
+		return
+	remove_landed_item(key)
+	landed_items[key] = {"item_id": item_id, "node": null, "source": source, "world_position": world_position}
+	battle_log.append({"kind": "item_landed", "item_id": item_id, "tile": key, "source": source})
+	if not defer_visual:
+		show_landed_item(key)
+
+
+func show_landed_item(key: Vector3i) -> void:
+	var record: Variant = landed_items.get(key, null)
+	if not (record is Dictionary):
+		return
+	var existing: Variant = (record as Dictionary).get("node", null)
+	if existing is Node and is_instance_valid(existing):
+		return
+	var item_id: String = String((record as Dictionary).get("item_id", ""))
+	var world_position: Vector3 = (record as Dictionary).get("world_position", Vector3.ZERO)
+	var sprite := Sprite3D.new()
+	sprite.name = "LandedItem_%s_%d_%d" % [item_id, key.x, key.z]
+	var item: PokemonItemResource = PokemonItemService.load_item(item_id)
+	if item != null and not item.icon_path.is_empty() and ResourceLoader.exists(item.icon_path):
+		sprite.texture = load(item.icon_path) as Texture2D
+	sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	sprite.pixel_size = 0.04
+	sprite.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	_landed_items_root().add_child(sprite)
+	sprite.global_position = world_position + Vector3.UP * 0.3
+	(record as Dictionary)["node"] = sprite
+	landed_items[key] = record
+	battle_log.append({"kind": "item_landed_visible", "item_id": item_id, "tile": key})
+
+
+func landed_item_at(key: Vector3i) -> String:
+	var record: Variant = landed_items.get(key, null)
+	return String((record as Dictionary).get("item_id", "")) if record is Dictionary else ""
+
+
+func remove_landed_item(key: Vector3i) -> String:
+	var record: Variant = landed_items.get(key, null)
+	if not (record is Dictionary):
+		return ""
+	var node: Variant = (record as Dictionary).get("node", null)
+	if node is Node and is_instance_valid(node):
+		(node as Node).queue_free()
+	landed_items.erase(key)
+	return String((record as Dictionary).get("item_id", ""))
+
+
+func try_pickup_landed_item(pawn: TacticsPawn) -> bool:
+	if pawn == null or pawn.stats == null or pawn.stats.pokemon_instance == null or landed_items.is_empty():
+		return false
+	var key: Vector3i = Targeting._tile_key(pawn.get_tile())
+	var item_id: String = landed_item_at(key)
+	if item_id.is_empty():
+		return false
+	if pawn.stats.pokemon_instance.held_item != null:
+		battle_log.append({"kind": "item_pickup_blocked", "unit": pawn, "item_id": item_id, "reason": "held_slot_full"})
+		return false
+	var item: PokemonItemResource = PokemonItemService.load_item(item_id)
+	if item == null:
+		return false
+	remove_landed_item(key)
+	pawn.stats.pokemon_instance.held_item = item
+	battle_log.append({"kind": "item_picked_up", "unit": pawn, "item_id": item_id, "tile": key})
+	return true
+
+
+func _landed_items_root() -> Node3D:
+	var existing: Node = get_node_or_null("LandedItems")
+	if existing is Node3D:
+		return existing as Node3D
+	var node := Node3D.new()
+	node.name = "LandedItems"
+	add_child(node)
+	return node
+
 
 func _init_turn() -> void:
 	if participant.is_configured(player) and participant.is_configured(opponent):
@@ -118,6 +238,9 @@ func _run_scheduler_loop(delta: float) -> void:
 		return
 
 	if not pawn.can_act():
+		if pawn.res.presentation_locked or is_presentation_busy():
+			_advance_presentation_wait(unit, delta)
+			return
 		scheduler.complete_active_unit()
 		return
 
@@ -136,13 +259,145 @@ func _run_scheduler_loop(delta: float) -> void:
 	_sweep_fainted_units()
 
 
+func _advance_presentation_wait(unit: BattleUnit, delta: float) -> void:
+	var pawn: TacticsPawn = unit.pawn
+	if pawn == null:
+		return
+	if pawn.res.presentation_locked:
+		pawn.res.presentation_wait += delta
+		if not is_presentation_busy() or pawn.res.presentation_wait > TacticsPawnResource.PRESENTATION_TIMEOUT:
+			if pawn.res.presentation_wait > TacticsPawnResource.PRESENTATION_TIMEOUT and presentation_runner != null:
+				presentation_runner.cancel_all("turn_wait_timeout")
+			pawn.res.presentation_locked = false
+			pawn.res.presentation_wait = 0.0
+			pawn.res.wait_delay = 0.0
+			pawn.res.intent_executed = false
+			participant.res.pending_intent = null
+			participant.res.attackable_pawn = null
+			participant.res.throw_options = []
+			if ui_control != null:
+				ui_control.set_actions_menu_visibility(false, null)
+
+
 func _start_scheduler() -> void:
 	battle_conditions = {}
 	battle_units = _build_battle_units()
+	notation.setup(self, battle_label if not battle_label.is_empty() else name, battle_seed)
 	intrinsic_service.log_battle_start(battle_units, battle_log, self)
-	intrinsic_service.apply_speed_modifiers(battle_units, self, battle_log)
 	scheduler.start_battle(battle_units, int(battle_rng.seed))
 	_scheduler_started = true
+
+
+func current_terrain() -> String:
+	for terrain_id in BattleWeatherService.TERRAIN_IDS:
+		if battle_conditions.has(terrain_id):
+			return terrain_id
+	return ""
+
+
+func set_terrain(terrain_id: String, rounds: int, source_move_id: String = "") -> void:
+	var previous: String = current_terrain()
+	if previous == terrain_id:
+		battle_log.append({"kind": "field_condition_failed", "condition_id": terrain_id, "reason": "already_active"})
+		return
+	if not previous.is_empty():
+		battle_conditions.erase(previous)
+		battle_log.append({"kind": "field_condition_ended", "condition_id": previous, "reason": "replaced"})
+	battle_conditions[terrain_id] = {"condition_id": terrain_id, "counter": rounds + (1 if not _scheduler_started else 0), "move_id": source_move_id}
+	battle_log.append({"kind": "field_condition_applied", "condition_id": terrain_id, "move_id": source_move_id, "scope": "field", "rounds": rounds})
+
+
+func is_grounded(pawn: TacticsPawn) -> bool:
+	return hazards()._is_grounded(pawn)
+
+
+func end_strong_weather_from(pawn: TacticsPawn) -> void:
+	var weather: String = current_weather()
+	if weather.is_empty() or not BattleWeatherService.is_permanent(weather):
+		return
+	var stored: Dictionary = battle_condition(weather)
+	if String(stored.get("unit", "")) == pawn.name:
+		for other in units_on_map():
+			if other != pawn and other.stats != null and other.stats.is_active() and intrinsic_service.intrinsic_slugs_for(other.stats).has(String(stored.get("source_intrinsic", ""))):
+				return
+		clear_weather("source_fainted")
+
+
+func hazards() -> BattleHazardService:
+	if hazard_service == null:
+		hazard_service = BattleHazardService.new(self)
+	return hazard_service
+
+
+func place_hazard(source: TacticsPawn, hazard_id: String) -> Array[Vector3i]:
+	return hazards().place(source, hazard_id, battle_log)
+
+
+func clear_hazards(source: TacticsPawn, foes_only: bool, move_id: String) -> int:
+	return hazards().clear(source, foes_only, battle_log, move_id)
+
+
+func on_pawn_reached_tile(pawn: TacticsPawn, position: Vector3) -> void:
+	if hazard_service != null:
+		hazard_service.on_pawn_reached(pawn, position)
+
+
+func release_bide(pawn: TacticsPawn) -> void:
+	var payload: Dictionary = _status_payload(pawn, "bide")
+	_ops().remove_status(pawn, "bide", {"source": "released"})
+	var stored: int = int(payload.get("stored", 0))
+	var target: Variant = pawn.stats.last_attacker
+	if stored <= 0 or not (target is TacticsPawn) or not is_instance_valid(target) or (target as TacticsPawn).stats == null or not (target as TacticsPawn).stats.is_active():
+		battle_log.append({"kind": "move_rejected", "attacker": pawn, "move_id": "bide", "reason": "no_effect"})
+		return
+	_ops().damage(target, stored * 2, {"kind": "hit", "attacker": pawn, "move": load("res://data/models/pokemon/generated/moves/bide.tres"), "event": {"source": "bide", "multiplier": 1.0}})
+	battle_log.append({"kind": "status_triggered", "unit": pawn, "status_id": "bide", "defender": target, "amount": stored * 2})
+
+
+func _resolve_future_sight(pawn: TacticsPawn) -> void:
+	var payload: Dictionary = _status_payload(pawn, "future_sight")
+	_ops().remove_status(pawn, "future_sight", {"source": "expired"})
+	var source: Variant = payload.get("source_unit", null)
+	var move: PokemonMoveResource = load("res://data/models/pokemon/generated/moves/future_sight.tres") as PokemonMoveResource
+	if move == null or not pawn.stats.is_active():
+		return
+	var attacker_stats: Stats = (source as TacticsPawn).stats if source is TacticsPawn and is_instance_valid(source) and (source as TacticsPawn).stats != null else pawn.stats
+	var chart: TypeChartResource = get_type_chart()
+	var resolver := DamageResolver.new()
+	var effectiveness: float = resolver._effectiveness(move, pawn.stats, chart)
+	var stab: bool = chart.is_stab(move.type, attacker_stats.types) if chart != null else false
+	var damage: int = resolver.calculate_damage(attacker_stats, pawn.stats, move, effectiveness, stab, 1.0, battle_rng, {}, false)
+	if damage > 0:
+		_ops().damage(pawn, damage, {"kind": "future_sight", "attacker": source if source is TacticsPawn else null, "move": move, "event": {"source": "future_sight", "multiplier": effectiveness}})
+
+
+func is_trapped(pawn: TacticsPawn) -> bool:
+	if pawn == null or pawn.stats == null:
+		return false
+	if pawn.stats.battle_statuses.has("rooted"):
+		return true
+	for trap_id in TRAP_STATUSES:
+		if pawn.stats.battle_statuses.has(trap_id):
+			return true
+	return false
+
+
+func _ops() -> BattleStateOps:
+	if state_ops == null:
+		state_ops = BattleStateOps.new(self, battle_log, intrinsic_service)
+		intrinsic_service.state_ops = state_ops
+	return state_ops
+
+
+func units_on_map() -> Array[TacticsPawn]:
+	var out: Array[TacticsPawn] = []
+	for team_node in [player, opponent]:
+		if team_node == null:
+			continue
+		for child in team_node.get_children():
+			if child is TacticsPawn and (child as TacticsPawn).is_alive():
+				out.append(child as TacticsPawn)
+	return out
 
 
 func _build_battle_units() -> Array[BattleUnit]:
@@ -177,11 +432,14 @@ func _on_turn_started(unit: BattleUnit) -> void:
 	var pawn: TacticsPawn = unit.pawn
 	if not pawn.is_alive():
 		return
+	notation.mark_turn_start(pawn)
+	intrinsic_service.on_turn_started(pawn, self, battle_log)
 	_process_turn_start_statuses(pawn)
 	if not pawn.is_alive():
 		return
-	intrinsic_service.on_turn_started(pawn, self, battle_log)
 	pawn.reset_turn()
+	if is_trapped(pawn):
+		pawn.res.can_move = false
 	pawn.res.has_acted_this_round = false
 	pawn.res.use_legacy_attack_fallback = false
 	if not pawn.stats.move_slots.is_empty():
@@ -192,6 +450,8 @@ func _on_turn_started(unit: BattleUnit) -> void:
 	p_res.curr_pawn = pawn
 	p_res.stage = p_res.STAGE_SHOW_ACTIONS
 	p_res.attackable_pawn = null
+	p_res.pending_intent = null
+	p_res.throw_options = []
 	p_res.display_opponent_stats = false
 	p_res.turn_just_started = false
 	camera.target = pawn
@@ -226,7 +486,14 @@ func _on_turn_started(unit: BattleUnit) -> void:
 func _expire_turn_start_statuses(pawn: TacticsPawn) -> void:
 	if pawn == null or pawn.stats == null:
 		return
-	for status_id: String in ["protect", "counter"]:
+	for status_id: String in ["protect", "detect", "kings_shield", "crafty_shield", "wide_guard", "quick_guard", "spiky_shield", "mat_block", "snatch", "follow_me", "rage_powder", "endure", "destiny_bond", "grudge", "powder", "counter", "mirror_coat", "metal_burst", "enraged", "roosting"]:
+		if status_id == "roosting" and pawn.stats.battle_statuses.has("roosting"):
+			var roost_payload: Dictionary = _status_payload(pawn, "roosting")
+			if roost_payload.has("original_types"):
+				var restored: Array[String] = []
+				for type_id in roost_payload["original_types"]:
+					restored.append(String(type_id))
+				pawn.stats.types = restored
 		var removed: Dictionary = pawn.stats.remove_battle_status(status_id)
 		if removed.is_empty():
 			continue
@@ -253,8 +520,13 @@ func _process_status_turn_effects(pawn: TacticsPawn) -> void:
 	if pawn.stats.battle_statuses.has(STATUS_BURN):
 		_apply_status_damage(pawn, STATUS_BURN, 8)
 	if pawn.stats.battle_statuses.has(STATUS_POISON):
-		_apply_status_damage(pawn, STATUS_POISON, _status_hp_fraction(pawn, STATUS_POISON, 16))
-	if pawn.stats.battle_statuses.has(STATUS_TOXIC):
+		if intrinsic_service.heals_from_poison(pawn.stats):
+			_apply_status_heal(pawn, STATUS_POISON, 8)
+		else:
+			_apply_status_damage(pawn, STATUS_POISON, _status_hp_fraction(pawn, STATUS_POISON, 16))
+	if pawn.stats.battle_statuses.has(STATUS_TOXIC) and intrinsic_service.heals_from_poison(pawn.stats):
+		_apply_status_heal(pawn, STATUS_TOXIC, 8)
+	elif pawn.stats.battle_statuses.has(STATUS_TOXIC):
 		var toxic_payload: Dictionary = _status_payload(pawn, STATUS_TOXIC)
 		var stage: int = maxi(1, int(toxic_payload.get("toxic_stage", 1)))
 		_apply_status_damage(pawn, STATUS_TOXIC, _status_hp_fraction(pawn, STATUS_TOXIC, 16), stage)
@@ -266,6 +538,40 @@ func _process_status_turn_effects(pawn: TacticsPawn) -> void:
 		_apply_status_heal(pawn, STATUS_INGRAIN, _status_hp_fraction(pawn, STATUS_INGRAIN, 6))
 	if pawn.stats.battle_statuses.has(STATUS_AQUA_RING):
 		_apply_status_heal(pawn, STATUS_AQUA_RING, _status_hp_fraction(pawn, STATUS_AQUA_RING, 8))
+	for trap_id in TRAP_STATUSES:
+		if pawn.stats.battle_statuses.has(trap_id) and pawn.stats.is_active():
+			_apply_status_damage(pawn, trap_id, _status_hp_fraction(pawn, trap_id, 8))
+	if pawn.stats.battle_statuses.has("nightmare"):
+		if pawn.stats.battle_statuses.has(STATUS_SLEEP):
+			_apply_status_damage(pawn, "nightmare", 4)
+		else:
+			_ops().remove_status(pawn, "nightmare", {"source": "woke_up"})
+	if pawn.stats.battle_statuses.has("perish_song") and pawn.stats.is_active():
+		var perish: Dictionary = _status_payload(pawn, "perish_song")
+		var left: int = int(perish.get("perish_left", 3)) - 1
+		if left <= 0:
+			_ops().damage(pawn, pawn.stats.curr_health, {"kind": "status_tick", "status_id": "perish_song"})
+			_ops().remove_status(pawn, "perish_song", {"source": "expired"})
+		else:
+			perish["perish_left"] = left
+			pawn.stats.battle_statuses["perish_song"] = perish
+			battle_log.append({"kind": "status_tick", "unit": pawn, "status_id": "perish_song", "amount": 0, "before": pawn.stats.curr_health, "after": pawn.stats.curr_health, "perish_left": left})
+	if pawn.stats.battle_statuses.has("yawning") and int(_status_payload(pawn, "yawning").get("counter", 2)) <= 1:
+		_ops().remove_status(pawn, "yawning", {"source": "expired"})
+		_ops().apply_status(pawn, STATUS_SLEEP, {"source": "yawn"}, {"kind": "status", "source": "yawn"})
+	if pawn.stats.battle_statuses.has("wish") and int(_status_payload(pawn, "wish").get("counter", 2)) <= 1:
+		_apply_status_heal(pawn, "wish", 2)
+	if pawn.stats.battle_statuses.has("future_sight") and int(_status_payload(pawn, "future_sight").get("counter", 3)) <= 1:
+		_resolve_future_sight(pawn)
+	if pawn.stats.battle_statuses.has("bide") and int(_status_payload(pawn, "bide").get("counter", 2)) <= 1:
+		release_bide(pawn)
+	if pawn.stats.battle_statuses.has("cud_chew") and int(_status_payload(pawn, "cud_chew").get("counter", 1)) <= 1:
+		PokemonItemService.cud_chew(pawn, String(_status_payload(pawn, "cud_chew").get("item_id", "")), battle_log)
+		_ops().remove_status(pawn, "cud_chew", {"source": "expired"})
+	if current_terrain() == "grassy_terrain" and is_grounded(pawn) and pawn.stats.is_active() and pawn.stats.curr_health < pawn.stats.max_health:
+		_apply_status_heal(pawn, "grassy_terrain", 16)
+	_apply_weather_chip(pawn)
+	PokemonItemService.on_turn_started(pawn, battle_log)
 
 
 func _prepare_paralysis_skip(pawn: TacticsPawn) -> void:
@@ -295,16 +601,9 @@ func _decrement_status_counters(pawn: TacticsPawn) -> void:
 			continue
 		var next_counter: int = int(data.get("counter", 0)) - 1
 		if next_counter <= 0:
-			var removed: Dictionary = pawn.stats.remove_battle_status(status_id)
-			if not removed.is_empty():
-				battle_log.append({
-					"kind": "status_removed",
-					"unit": pawn,
-					"status_id": status_id,
-					"source": "counter_expired",
-				})
-				if SCREEN_CONDITIONS.has(status_id):
-					refresh_team_battle_condition(status_id, pawn)
+			_ops().remove_status(pawn, status_id, {"source": "counter_expired"})
+			if RAMPAGE_STATUSES.has(status_id) and pawn.stats.is_active():
+				_ops().apply_status(pawn, STATUS_CONFUSE, {"source": "rampage"}, {"kind": "status", "source": "rampage"})
 			continue
 		data["counter"] = next_counter
 		pawn.stats.battle_statuses[status_id] = data
@@ -314,52 +613,14 @@ func _apply_status_damage(pawn: TacticsPawn, status_id: String, hp_fraction: int
 	if pawn == null or pawn.stats == null or not pawn.stats.is_active():
 		return 0
 	var amount: int = maxi(1, int(floor(float(pawn.stats.max_health) / float(maxi(1, hp_fraction)))) * maxi(1, multiplier))
-	var before: int = pawn.stats.curr_health
-	pawn.stats.apply_to_curr_health(-amount)
-	var applied: int = before - pawn.stats.curr_health
-	battle_log.append({
-		"kind": "status_tick",
-		"unit": pawn,
-		"status_id": status_id,
-		"amount": applied,
-		"before": before,
-		"after": pawn.stats.curr_health,
-	})
-	if before > 0 and not pawn.stats.is_active():
-		battle_log.append({
-			"kind": "unit_fainted",
-			"unit": pawn,
-			"source": status_id,
-		})
-	return applied
+	return int(_ops().damage(pawn, amount, {"kind": "status_tick", "status_id": status_id}).get("applied", 0))
 
 
 func _apply_status_heal(pawn: TacticsPawn, status_id: String, hp_fraction: int) -> int:
 	if pawn == null or pawn.stats == null or not pawn.stats.is_active():
 		return 0
-	if pawn.stats.battle_statuses.has(STATUS_HEAL_BLOCK):
-		battle_log.append({
-			"kind": "status_heal_blocked",
-			"unit": pawn,
-			"status_id": status_id,
-			"blocked_by": STATUS_HEAL_BLOCK,
-		})
-		return 0
 	var amount: int = maxi(1, int(floor(float(pawn.stats.max_health) / float(maxi(1, hp_fraction)))))
-	var before: int = pawn.stats.curr_health
-	pawn.stats.apply_to_curr_health(amount)
-	var applied: int = pawn.stats.curr_health - before
-	if applied <= 0:
-		return 0
-	battle_log.append({
-		"kind": "status_healed",
-		"unit": pawn,
-		"status_id": status_id,
-		"amount": applied,
-		"before": before,
-		"after": pawn.stats.curr_health,
-	})
-	return applied
+	return int(_ops().heal(pawn, amount, {"kind": "status", "status_id": status_id}).get("applied", 0))
 
 
 func _apply_leech_seed(pawn: TacticsPawn) -> void:
@@ -377,21 +638,7 @@ func _apply_leech_seed(pawn: TacticsPawn) -> void:
 func _apply_status_heal_flat(pawn: TacticsPawn, status_id: String, amount: int) -> int:
 	if pawn == null or pawn.stats == null or not pawn.stats.is_active() or amount <= 0:
 		return 0
-	if pawn.stats.battle_statuses.has(STATUS_HEAL_BLOCK):
-		return 0
-	var before: int = pawn.stats.curr_health
-	pawn.stats.apply_to_curr_health(amount)
-	var applied: int = pawn.stats.curr_health - before
-	if applied > 0:
-		battle_log.append({
-			"kind": "status_healed",
-			"unit": pawn,
-			"status_id": status_id,
-			"amount": applied,
-			"before": before,
-			"after": pawn.stats.curr_health,
-		})
-	return applied
+	return int(_ops().heal(pawn, amount, {"kind": "status", "status_id": status_id}).get("applied", 0))
 
 
 func _status_payload(pawn: TacticsPawn, status_id: String) -> Dictionary:
@@ -410,12 +657,21 @@ func _on_turn_completed(unit: BattleUnit) -> void:
 	if unit == null or unit.pawn == null:
 		return
 	unit.pawn.res.has_acted_this_round = true
+	intrinsic_service.on_turn_completed(unit.pawn, battle_log)
+	notation.mark_turn_end(unit.pawn)
+
+
+func _on_round_building() -> void:
+	intrinsic_service.apply_speed_modifiers(battle_units, self, battle_log)
+	PokemonItemService.apply_speed_multipliers(battle_units, battle_log)
 
 
 func _on_round_started() -> void:
 	for unit in battle_units:
 		if unit.pawn != null:
 			unit.pawn.res.has_acted_this_round = false
+	_tick_weather()
+	_tick_battle_conditions()
 
 
 func get_type_chart() -> TypeChartResource:
@@ -427,6 +683,9 @@ func get_type_chart() -> TypeChartResource:
 func set_battle_condition(condition_id: String, payload: Dictionary = {}) -> void:
 	var key: String = condition_id.strip_edges().to_lower()
 	if key.is_empty():
+		return
+	if BattleWeatherService.is_weather(key):
+		_set_weather(BattleWeatherService.normalize(key), payload)
 		return
 	var stored: Dictionary = payload.duplicate(true)
 	stored["condition_id"] = key
@@ -492,10 +751,116 @@ func battle_condition(condition_id: String) -> Dictionary:
 
 
 func current_weather() -> String:
-	for key in ["rain", "sunny", "sandstorm", "hail", "snow"]:
+	for key in BattleWeatherService.WEATHER_IDS:
 		if battle_conditions.has(key):
 			return key
 	return ""
+
+
+func effective_weather() -> String:
+	var weather: String = current_weather()
+	if weather.is_empty():
+		return ""
+	return "" if intrinsic_service.suppresses_weather(units_on_map()) else weather
+
+
+func are_foes(a: TacticsPawn, b: TacticsPawn) -> bool:
+	return _team_condition_key(a) != _team_condition_key(b)
+
+
+func weather_rounds_left() -> int:
+	var weather: String = current_weather()
+	if weather.is_empty():
+		return 0
+	return int(battle_condition(weather).get("rounds_left", 0))
+
+
+func _set_weather(weather_id: String, payload: Dictionary) -> void:
+	var previous: String = current_weather()
+	if previous == weather_id:
+		battle_log.append({"kind": "weather_failed", "condition_id": weather_id, "reason": "already_active"})
+		return
+	if not previous.is_empty() and BattleWeatherService.is_permanent(previous) and not BattleWeatherService.is_permanent(weather_id):
+		battle_log.append({"kind": "weather_failed", "condition_id": weather_id, "reason": "strong_weather_active"})
+		return
+	if not previous.is_empty():
+		battle_conditions.erase(previous)
+		battle_log.append({"kind": "weather_ended", "condition_id": previous, "reason": "replaced"})
+	var stored: Dictionary = payload.duplicate(true)
+	stored["condition_id"] = weather_id
+	var rounds: int = int(payload.get("rounds", 0))
+	stored["rounds_left"] = rounds if rounds > 0 else BattleWeatherService.DEFAULT_ROUNDS
+	if BattleWeatherService.is_permanent(weather_id):
+		stored["rounds_left"] = -1
+	elif not _scheduler_started:
+		stored["rounds_left"] = int(stored["rounds_left"]) + 1
+	battle_conditions[weather_id] = stored
+	battle_log.append({"kind": "weather_started", "condition_id": weather_id, "rounds": int(stored["rounds_left"]), "move_id": String(payload.get("move_id", ""))})
+	weather_changed.emit(weather_id)
+
+
+func clear_weather(reason: String = "cleared") -> void:
+	var weather: String = current_weather()
+	if weather.is_empty():
+		return
+	battle_conditions.erase(weather)
+	battle_log.append({"kind": "weather_ended", "condition_id": weather, "reason": reason})
+	weather_changed.emit("")
+
+
+func _tick_battle_conditions() -> void:
+	for key in battle_conditions.keys():
+		var stored: Dictionary = battle_conditions[key]
+		if not stored.has("counter") or int(stored.get("counter", 0)) <= 0:
+			continue
+		var left: int = int(stored["counter"]) - 1
+		if left <= 0:
+			battle_conditions.erase(key)
+			battle_log.append({"kind": "field_condition_ended", "condition_id": key})
+		else:
+			stored["counter"] = left
+			battle_conditions[key] = stored
+
+
+func _tick_weather() -> void:
+	var weather: String = current_weather()
+	if weather.is_empty():
+		return
+	var stored: Dictionary = battle_condition(weather)
+	if int(stored.get("rounds_left", 0)) < 0:
+		return
+	var rounds_left: int = int(stored.get("rounds_left", 0)) - 1
+	if rounds_left <= 0:
+		clear_weather("expired")
+		return
+	stored["rounds_left"] = rounds_left
+	battle_conditions[weather] = stored
+	battle_log.append({"kind": "weather_tick", "condition_id": weather, "rounds": rounds_left})
+
+
+func weather_damage_multiplier(move: PokemonMoveResource, target: TacticsPawn) -> float:
+	var target_types: Array = target.stats.types if target != null and target.stats != null else []
+	return BattleWeatherService.damage_multiplier(effective_weather(), move, target_types)
+
+
+func weather_accuracy_override(move: PokemonMoveResource) -> int:
+	return BattleWeatherService.accuracy_override(effective_weather(), move)
+
+
+func weather_blocks_status(status_id: String) -> bool:
+	return BattleWeatherService.blocks_status(effective_weather(), status_id)
+
+
+func _apply_weather_chip(pawn: TacticsPawn) -> void:
+	var weather: String = effective_weather()
+	if weather.is_empty() or pawn == null or pawn.stats == null or not pawn.stats.is_active():
+		return
+	if PokemonItemService.ignores_weather(pawn.stats):
+		return
+	var fraction: int = BattleWeatherService.chip_fraction(weather, pawn.stats.types, intrinsic_service.intrinsic_slugs_for(pawn.stats))
+	if fraction <= 0:
+		return
+	_apply_status_damage(pawn, weather, fraction)
 
 
 func _team_condition_key(unit: TacticsPawn) -> String:
@@ -571,6 +936,10 @@ func _check_and_handle_battle_end() -> void:
 		"kind": "battle_ended",
 		"winner": "player" if result == RESULT_PLAYER_WIN else "opponent",
 	})
+	notation.finish(result)
+	var notation_path: String = notation.save()
+	if not notation_path.is_empty():
+		print("battle: notation saved to %s" % notation_path)
 	battle_ended.emit(result)
 	if ui_control != null:
 		ui_control.set_actions_menu_visibility(false, null)
@@ -595,6 +964,7 @@ func _refill_pp_for_units(units: Array) -> void:
 
 func _on_battle_event_appended(event: Dictionary) -> void:
 	print_rich("[color=gray]battle:[/color] %s" % _format_battle_event(event))
+	notation.record(event)
 
 
 func _format_battle_event(event: Dictionary) -> String:

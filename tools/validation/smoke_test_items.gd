@@ -75,7 +75,7 @@ func _init() -> void:
 	fire_move.category = PokemonMoveResource.CATEGORY_SPECIAL
 	_assert_true(is_equal_approx(PokemonItemService.held_damage_multiplier(stats, fire_move), 1.2), "Charcoal boosts Fire move damage")
 	PokemonItemService.give_held_item(stats, flame_plate, log, "smoke")
-	_assert_true(is_equal_approx(PokemonItemService.held_defense_multiplier(stats, fire_move), 0.5), "Flame Plate halves Fire move damage")
+	_assert_true(is_equal_approx(PokemonItemService.held_defense_multiplier(stats, fire_move), 1.0) and is_equal_approx(PokemonItemService.held_damage_multiplier(stats, fire_move), 1.2), "Flame Plate boosts Fire moves like the other type items")
 
 	PokemonItemService.give_held_item(stats, life_orb, log, "smoke")
 	var pawn := FakePawn.new()

@@ -94,6 +94,8 @@ var skirmish_queue_code: String = ""
 @onready var tactics_controls: Control = $TacticsControls
 
 func _ready() -> void:
+	UiScale.watch(get_tree().root)
+	BattleNotation.clear_output_dir()
 	_style_main_menu()
 	_set_tactics_controls_enabled(false)
 	skirmish_loader = SkirmishLoader.new()
@@ -106,6 +108,10 @@ func _ready() -> void:
 		skirmish_lobby.launch_series_requested.connect(_on_lobby_launch_series_requested)
 		skirmish_lobby.close_requested.connect(_on_lobby_close_requested)
 	launch_button.grab_focus()
+
+func _process(_delta: float) -> void:
+	UiScale.apply(get_tree().root)
+
 
 func _on_launch_button_pressed() -> void:
 	load_selected_skirmish()

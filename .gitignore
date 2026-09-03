@@ -7,6 +7,9 @@ assets/visuals/raw_asset/**/*.import
 assets/textures/actor/pokemon/**/*.import
 assets/textures/pokemon/portraits/**/*.import
 data/models/pokemon/generated/
+data/models/pokemon/import_reports/
+data/models/visuals/generated/
+data/models/visuals/import_reports/
 assets/textures/pokemon/
 assets/textures/actor/pokemon/
 
@@ -50,15 +53,9 @@ assets/visuals/raw_asset/*
 !assets/visuals/raw_asset/BG/
 assets/visuals/raw_asset/BG/*
 !assets/visuals/raw_asset/BG/.gdignore
-!assets/visuals/raw_asset/Beam/
-assets/visuals/raw_asset/Beam/*
-!assets/visuals/raw_asset/Beam/.gdignore
 !assets/visuals/raw_asset/Object/
 assets/visuals/raw_asset/Object/*
 !assets/visuals/raw_asset/Object/.gdignore
-!assets/visuals/raw_asset/Particle/
-assets/visuals/raw_asset/Particle/*
-!assets/visuals/raw_asset/Particle/.gdignore
 !assets/visuals/raw_asset/Tile/
 assets/visuals/raw_asset/Tile/*
 !assets/visuals/raw_asset/Tile/.gdignore

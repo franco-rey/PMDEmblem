@@ -30,7 +30,7 @@ static var view: Dictionary = {
 }
 
 static var ui_elem: Array[String] = [
-	"%Actions", "%MovePicker", "%Hints",
+	"%Actions", "%MovePicker", "%ItemPicker", "%Hints",
 ]
 
 

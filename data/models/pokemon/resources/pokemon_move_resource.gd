@@ -43,6 +43,7 @@ const ACCURACY_NEVER_MISS: int = -1
 @export var unsupported_effect_tags: Array[String] = []
 @export var effect_records: Array[Dictionary] = []
 @export var strike_count: int = 1
+@export var flags: Array[String] = []
 @export var animation_key: String = ""
 
 
@@ -70,3 +71,7 @@ func display_name() -> String:
 	if not name.is_empty():
 		return name
 	return move_id
+
+
+func has_flag(flag: String) -> bool:
+	return flags.has(flag)

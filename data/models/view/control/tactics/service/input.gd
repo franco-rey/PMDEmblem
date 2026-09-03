@@ -42,7 +42,7 @@ func is_mouse_hovering_ui_elem(
 						var action_button: Button = action as Button
 						if action_button.get_global_rect().has_point(ctrl.get_viewport().get_mouse_position()):
 							return true
-				"%MovePicker":
+				"%MovePicker", "%ItemPicker":
 					for action: Node in elem.get_children():
 						if not (action is Button):
 							continue
@@ -65,6 +65,8 @@ func _ui_elem(ctrl: TacticsControls, path: String) -> Control:
 	var node: Node = ctrl.get_node_or_null(path)
 	if node == null and path == "%MovePicker":
 		node = ctrl.get_node_or_null("HBox/MovePicker")
+	if node == null and path == "%ItemPicker":
+		node = ctrl.get_node_or_null("HBox/ItemPicker")
 	if node == null and path == "%Actions":
 		node = ctrl.get_node_or_null("HBox/Actions")
 	if node == null and path == "%Hints":

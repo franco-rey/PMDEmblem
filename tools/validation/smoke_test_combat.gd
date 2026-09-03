@@ -45,12 +45,12 @@ func _stats_from_instance(path: String) -> Stats:
 
 
 func _check_type_chart(type_chart: TypeChartResource) -> void:
-	_assert_close(type_chart.get_effectiveness("fire", "steel"), 1.5, "fire > steel is super-effective")
+	_assert_close(type_chart.get_effectiveness("fire", "steel"), 2.0, "fire > steel is super-effective")
 	_assert_close(type_chart.get_effectiveness("fighting", "fire"), 1.0, "fighting > fire is neutral")
 	_assert_close(type_chart.get_effectiveness("fighting", "poison"), 0.5, "fighting > poison is resisted")
 	_assert_close(type_chart.get_effectiveness("normal", "ghost"), 0.0, "normal > ghost is immune")
 	_assert_close(type_chart.get_effectiveness_dual("fire", "water", "rock"), 0.25, "fire > water/rock double-resist")
-	_assert_close(type_chart.get_effectiveness_dual("fighting", "rock", "steel"), 2.25, "fighting > rock/steel double-super")
+	_assert_close(type_chart.get_effectiveness_dual("fighting", "rock", "steel"), 4.0, "fighting > rock/steel double-super")
 
 
 func _check_accuracy() -> void:
@@ -93,8 +93,8 @@ func _check_damage_round(lucario: Stats, magmortar: Stats, type_chart: TypeChart
 	var reply: DamageResult = resolver.resolve(magmortar, lucario, flamethrower, type_chart, rng)
 	_assert_true(reply.hit, "Flamethrower hit")
 	_assert_true(reply.stab, "Flamethrower gets Magmortar STAB")
-	_assert_close(reply.effectiveness, 1.5, "Fire > Fighting/Steel is single-super")
-	_assert_true(reply.damage == 95, "Flamethrower damage is deterministic 95")
+	_assert_close(reply.effectiveness, 2.0, "Fire > Fighting/Steel is single-super")
+	_assert_true(reply.damage == 127, "Flamethrower damage is deterministic 127 (got %d)" % reply.damage)
 	magmortar.consume_pp(0)
 	_assert_true(magmortar.current_pp[0] == 7, "Flamethrower PP decremented 8 -> 7")
 

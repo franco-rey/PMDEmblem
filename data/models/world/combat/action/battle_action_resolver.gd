@@ -1,6 +1,15 @@
 class_name BattleActionResolver
 extends RefCounted
 
+const HAZARD_MOVES: Array[String] = ["spikes", "toxic_spikes", "stealth_rock", "sticky_web"]
+const PROTECTION_STATUSES: Array[String] = ["protect", "detect", "kings_shield", "crafty_shield", "wide_guard", "spiky_shield", "mat_block"]
+const RAMPAGE_STATUSES: Array[String] = ["outrage", "thrash", "petal_dance"]
+const MINIMIZE_DOUBLE_MOVES: Array[String] = ["stomp", "body_slam", "dragon_rush", "steamroller", "heat_crash", "flying_press", "heavy_slam", "phantom_force", "shadow_force"]
+const STAGE_ACCURACY_TABLE: Array[float] = [3.0 / 9.0, 3.0 / 8.0, 3.0 / 7.0, 3.0 / 6.0, 3.0 / 5.0, 3.0 / 4.0, 1.0, 4.0 / 3.0, 5.0 / 3.0, 2.0, 7.0 / 3.0, 8.0 / 3.0, 3.0]
+const TRAP_STATUSES: Array[String] = ["bind", "wrap", "clamp", "fire_spin", "sand_tomb", "whirlpool", "magma_storm", "infestation"]
+const TRAP_EXTEND_ITEM: String = "held_grip_claw"
+const TRAP_DAMAGE_ITEM: String = "held_binding_band"
+
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves"
 const TYPE_CHART_PATH: String = "res://data/models/pokemon/generated/types/type_chart.tres"
 const STATUS_COUNTER: String = "counter"
@@ -92,7 +101,7 @@ const TAG_BESTOW_ITEM: String = "PMDC.Dungeon.BestowItemEvent, PMDC"
 const TAG_LAND_ITEM: String = "PMDC.Dungeon.LandItemEvent, PMDC"
 const TAG_ITEM_RESTORE: String = "PMDC.Dungeon.ItemRestoreEvent, PMDC"
 const TAG_SWITCH_HELD_ITEM: String = "PMDC.Dungeon.SwitchHeldItemEvent, PMDC"
-const NATURE_POWER_DEFAULT_MOVE: String = "swift"
+const NATURE_POWER_DEFAULT_MOVE: String = "tri_attack"
 const FORCED_MOVEMENT_TAGS: Array[String] = [
 	TAG_KNOCK_BACK,
 	TAG_THROW_BACK,
@@ -177,31 +186,62 @@ const STAT_SPLIT_STATS_BY_MOVE: Dictionary = {
 const STAGE_STATS_BY_MOVE: Dictionary = {
 	"guard_swap": ["defense", "special_defense"],
 	"power_swap": ["attack", "special_attack"],
-	"psych_up": ["speed", "attack", "defense", "special_attack", "special_defense", "accuracy"],
+	"psych_up": ["speed", "attack", "defense", "special_attack", "special_defense", "accuracy", "evasion"],
 }
 
 var damage_resolver := DamageResolver.new()
 var animation_resolver := BattleAnimationResolver.new()
 var intrinsic_service := BattleIntrinsicService.new()
+var presentation_catalog: ActionPresentationCatalog = ActionPresentationCatalog.shared()
+var item_actions: BattleItemActions = null
+var _presentation_entry: Dictionary = {}
+var _bound_level: TacticsLevel = null
+var _detached_ops: BattleStateOps = null
+var _current_move_index: int = -1
+var move_specials: BattleMoveSpecials = BattleMoveSpecials.new()
 var _fallback_rng := RandomNumberGenerator.new()
 
 
 func _init() -> void:
 	_fallback_rng.seed = 0
+	item_actions = BattleItemActions.new(self)
+
+
+func execute_intent(intent: BattleActionIntent, battle_level: TacticsLevel = null) -> Dictionary:
+	if intent == null:
+		return {"ok": false, "reason": "no_intent"}
+	match intent.kind:
+		BattleActionIntent.KIND_MOVE:
+			var ok: bool = execute(intent.actor, intent.target, intent.slot_index, battle_level)
+			return {"ok": ok, "kind": intent.kind, "slot_index": intent.slot_index}
+		BattleActionIntent.KIND_USE_ITEM, BattleActionIntent.KIND_THROW_ITEM:
+			_bind_presentation(battle_level)
+			return item_actions.execute(intent, battle_level)
+	return {"ok": false, "reason": "unsupported_intent", "kind": intent.kind}
 
 
 func execute(attacker: TacticsPawn, declared_target: TacticsPawn, move_index: int, battle_level: TacticsLevel = null) -> bool:
 	if attacker == null or attacker.stats == null or not attacker.is_alive():
 		return false
 	var move: PokemonMoveResource = _move_for(attacker, move_index)
-	var battle_log: BattleLog = battle_level.battle_log if battle_level != null else null
 	if move == null:
-		_append(battle_log, {
+		_append(battle_level.battle_log if battle_level != null else null, {
 			"kind": "no_usable_move",
 			"attacker": attacker,
 			"slot_index": move_index,
 		})
 		return false
+	return _run_move(attacker, declared_target, move, move_index, battle_level)
+
+
+func execute_move(attacker: TacticsPawn, declared_target: TacticsPawn, move: PokemonMoveResource, battle_level: TacticsLevel = null) -> bool:
+	if attacker == null or attacker.stats == null or not attacker.is_alive() or move == null:
+		return false
+	return _run_move(attacker, declared_target, move, -1, battle_level)
+
+
+func _run_move(attacker: TacticsPawn, declared_target: TacticsPawn, move: PokemonMoveResource, move_index: int, battle_level: TacticsLevel) -> bool:
+	var battle_log: BattleLog = battle_level.battle_log if battle_level != null else null
 	if declared_target == null or not declared_target.is_alive():
 		_append(battle_log, {
 			"kind": "move_rejected",
@@ -213,8 +253,22 @@ func execute(attacker: TacticsPawn, declared_target: TacticsPawn, move_index: in
 		return false
 
 	var rng: RandomNumberGenerator = battle_level.battle_rng if battle_level != null else _fallback_rng
+	_ops(battle_level, battle_log)
 	if _status_blocks_move(attacker, move, move_index, rng, battle_log):
 		return false
+	if BattleIntrinsicService.EXPLOSION_MOVES.has(move.move_id) and intrinsic_service.field_blocks_explosions(attacker):
+		_append(battle_log, {"kind": "move_rejected", "attacker": attacker, "move_id": move.move_id, "slot_index": move_index, "reason": "damp"})
+		return false
+	intrinsic_service.before_move_used(attacker, move, battle_log)
+	if attacker.stats.battle_statuses.has("powder") and move.type == "fire":
+		_ops(battle_level, battle_log).remove_status(attacker, "powder", {"source": "triggered"})
+		_ops(battle_level, battle_log).damage(attacker, maxi(1, int(floor(float(attacker.stats.max_health) / 4.0))), {"kind": "status_tick", "status_id": "powder"})
+		_append(battle_log, {"kind": "move_rejected", "attacker": attacker, "move_id": move.move_id, "slot_index": move_index, "reason": "powder"})
+		return false
+	if move.move_id == "belch" and not attacker.stats.last_consumed_item_id.begins_with("berry_"):
+		_append(battle_log, {"kind": "move_rejected", "attacker": attacker, "move_id": move.move_id, "slot_index": move_index, "reason": "no_berry_eaten"})
+		return false
+	_current_move_index = move_index
 
 	var targets: Array[TacticsPawn] = _expanded_targets(attacker, declared_target, move, battle_level)
 	if targets.is_empty():
@@ -227,6 +281,23 @@ func execute(attacker: TacticsPawn, declared_target: TacticsPawn, move_index: in
 		})
 		return false
 
+	if battle_level != null and BattleWeatherService.blocks_move(battle_level.effective_weather(), move):
+		_append(battle_log, {"kind": "move_rejected", "attacker": attacker, "move_id": move.move_id, "slot_index": move_index, "reason": "weather"})
+		return false
+	if battle_level != null and targets.size() == 1 and targets[0] != attacker and battle_level.are_foes(attacker, targets[0]):
+		for other in battle_level.units_on_map():
+			if other != targets[0] and other != attacker and other.stats != null and other.stats.is_active() and battle_level.are_foes(attacker, other) and not battle_level.are_foes(targets[0], other) and (other.stats.battle_statuses.has("follow_me") or (other.stats.battle_statuses.has("rage_powder") and not BattleStateOps.POWDER_MOVES.has(move.move_id) and not intrinsic_service.intrinsic_slugs_for(attacker.stats).has("overcoat"))):
+				_append(battle_log, {"kind": "move_redirected", "attacker": attacker, "defender": other, "move_id": move.move_id, "status_id": "follow_me" if other.stats.battle_statuses.has("follow_me") else "rage_powder"})
+				targets = [other] as Array[TacticsPawn]
+				declared_target = other
+				break
+	if battle_level != null and move.category == PokemonMoveResource.CATEGORY_STATUS and targets.size() == 1 and targets[0] == attacker:
+		for other in battle_level.units_on_map():
+			if other != attacker and other.stats != null and other.stats.is_active() and other.stats.battle_statuses.has("snatch") and battle_level.are_foes(attacker, other):
+				_remove_status_with_log(other, "snatch", move.move_id, "snatched", battle_log)
+				_append(battle_log, {"kind": "move_snatched", "attacker": attacker, "defender": other, "move_id": move.move_id})
+				targets = [other] as Array[TacticsPawn]
+				break
 	var type_chart: TypeChartResource = battle_level.get_type_chart() if battle_level != null else _load_type_chart()
 	_append(battle_log, {
 		"kind": "move_used",
@@ -235,19 +306,27 @@ func execute(attacker: TacticsPawn, declared_target: TacticsPawn, move_index: in
 		"slot_index": move_index,
 		"target_count": targets.size(),
 	})
-	animation_resolver.select_for_move(attacker, move, battle_log)
-	_play_move_vfx(attacker, declared_target, move, battle_level, battle_log)
+	_bind_presentation(battle_level)
+	var chosen_state: String = animation_resolver.select_for_move(attacker, move, battle_log)
+	_presentation_entry = presentation_catalog.skill(move.move_id)
+	if animation_resolver.runner != null and not _presentation_entry.is_empty():
+		BattleActionPresentation.enqueue_move_start(animation_resolver.runner, attacker, declared_target, targets, move, _presentation_entry, chosen_state, battle_log)
+	else:
+		_play_move_vfx(attacker, declared_target, move, battle_level, battle_log)
 
-	attacker.stats.consume_pp(move_index)
+	if move_index >= 0:
+		attacker.stats.consume_pp(move_index)
 	attacker.stats.record_move_use(move.move_id, move_index)
-	_append(battle_log, {
-		"kind": "pp_decremented",
-		"attacker": attacker,
-		"move_id": move.move_id,
-		"slot_index": move_index,
-		"remaining": attacker.stats.current_pp[move_index] if move_index < attacker.stats.current_pp.size() else 0,
-	})
-	var pressure_cost: int = intrinsic_service.pressure_extra_pp_cost(targets)
+	PokemonItemService.note_move_used(attacker.stats)
+	if move_index >= 0:
+		_append(battle_log, {
+			"kind": "pp_decremented",
+			"attacker": attacker,
+			"move_id": move.move_id,
+			"slot_index": move_index,
+			"remaining": attacker.stats.current_pp[move_index] if move_index < attacker.stats.current_pp.size() else 0,
+		})
+	var pressure_cost: int = intrinsic_service.pressure_extra_pp_cost(targets) if move_index >= 0 else 0
 	if pressure_cost > 0:
 		for i in range(pressure_cost):
 			attacker.stats.consume_pp(move_index)
@@ -261,7 +340,12 @@ func execute(attacker: TacticsPawn, declared_target: TacticsPawn, move_index: in
 			"amount": pressure_cost,
 		})
 
-	var hit_count: int = maxi(1, move.strike_count)
+	if move_specials.pre_execute(self, attacker, declared_target, move, targets, battle_level, battle_log, rng):
+		_after_move_statuses(attacker, move, battle_level, battle_log)
+		move_specials.after_move(self, attacker, move, battle_level, battle_log)
+		_finish_presentation()
+		return true
+	var hit_count: int = move_specials.hit_count(intrinsic_service, attacker, move, rng)
 	if hit_count > 1:
 		_append(battle_log, {
 			"kind": "multi_hit_started",
@@ -275,7 +359,11 @@ func execute(attacker: TacticsPawn, declared_target: TacticsPawn, move_index: in
 			if target == null or not target.is_alive():
 				continue
 			_resolve_one_target(attacker, target, move, hit_index, type_chart, rng, battle_log, battle_level)
-	if move.effect_records.is_empty() and not move.unsupported_effect_tags.is_empty():
+	_after_move_statuses(attacker, move, battle_level, battle_log)
+	_after_move_field(attacker, move, battle_level, battle_log)
+	move_specials.after_move(self, attacker, move, battle_level, battle_log)
+	PokemonItemService.after_move_used(attacker, move, battle_log)
+	if move.effect_records.is_empty() and not move.unsupported_effect_tags.is_empty() and not HAZARD_MOVES.has(move.move_id):
 		for unsupported_tag in move.unsupported_effect_tags:
 			if _is_runtime_supported_tag(unsupported_tag):
 				continue
@@ -285,7 +373,194 @@ func execute(attacker: TacticsPawn, declared_target: TacticsPawn, move_index: in
 				"move_id": move.move_id,
 				"source_event": unsupported_tag,
 			})
+	_finish_presentation()
 	return true
+
+
+func _ops(battle_level: TacticsLevel = null, battle_log: BattleLog = null) -> BattleStateOps:
+	var level: TacticsLevel = battle_level if battle_level != null else _bound_level
+	if level != null:
+		var shared: BattleStateOps = level._ops()
+		intrinsic_service.state_ops = shared
+		return shared
+	if _detached_ops == null:
+		_detached_ops = BattleStateOps.new(null, battle_log, intrinsic_service)
+	_detached_ops.battle_log = battle_log
+	intrinsic_service.state_ops = _detached_ops
+	return _detached_ops
+
+
+func _terrain_multiplier(attacker: TacticsPawn, target: TacticsPawn, move: PokemonMoveResource, battle_level: TacticsLevel) -> float:
+	if battle_level == null or move == null:
+		return 1.0
+	var terrain: String = battle_level.current_terrain()
+	if terrain.is_empty():
+		return 1.0
+	var multiplier: float = 1.0
+	var attacker_grounded: bool = battle_level.is_grounded(attacker)
+	var target_grounded: bool = battle_level.is_grounded(target)
+	match terrain:
+		"grassy_terrain":
+			if move.type == "grass" and attacker_grounded:
+				multiplier *= 1.3
+			if move.move_id in ["earthquake", "bulldoze", "magnitude"] and target_grounded:
+				multiplier *= 0.5
+		"electric_terrain":
+			if move.type == "electric" and attacker_grounded:
+				multiplier *= 1.3
+		"psychic_terrain":
+			if move.type == "psychic" and attacker_grounded:
+				multiplier *= 1.3
+		"misty_terrain":
+			if move.type == "dragon" and target_grounded:
+				multiplier *= 0.5
+	return multiplier
+
+
+func _stage_accuracy_multiplier(attacker: TacticsPawn, target: TacticsPawn, move: PokemonMoveResource) -> float:
+	if attacker == null or target == null or attacker.stats == null or target.stats == null:
+		return 1.0
+	var accuracy_stage: int = attacker.stats.get_stat_stage("accuracy")
+	var evasion_stage: int = target.stats.get_stat_stage("evasion")
+	if target.stats.battle_statuses.has("exposed") or target.stats.battle_statuses.has("miracle_eye"):
+		evasion_stage = mini(evasion_stage, 0)
+	var combined: int = clampi(accuracy_stage - evasion_stage, -6, 6)
+	return STAGE_ACCURACY_TABLE[combined + 6]
+
+
+func _lock_on_active(attacker: TacticsPawn, target: TacticsPawn) -> bool:
+	if attacker == null or attacker.stats == null or not attacker.stats.battle_statuses.has("sure_shot"):
+		return false
+	var payload: Dictionary = _status_payload(attacker.stats, "sure_shot")
+	var locked: Variant = payload.get("target_unit", null)
+	return locked == null or locked == target
+
+
+func _status_adjusted_effectiveness(target: TacticsPawn, move: PokemonMoveResource, effectiveness: float, type_chart: TypeChartResource) -> float:
+	if target == null or target.stats == null or move == null:
+		return effectiveness
+	if move.type == "ground" and (target.stats.battle_statuses.has("magnet_rise") or target.stats.battle_statuses.has("telekinesis")):
+		return 0.0
+	if _bound_level != null and BattleWeatherService.neutralizes_flying_weakness(_bound_level.effective_weather()) and target.stats.types.has("flying") and type_chart != null and type_chart.get_effectiveness(move.type, "flying") > 1.0:
+		var other_type: String = "none"
+		for type_id in target.stats.types:
+			if String(type_id) != "flying":
+				other_type = String(type_id)
+		effectiveness = type_chart.get_effectiveness_dual(move.type, other_type, "none")
+	if effectiveness <= 0.0 and type_chart != null and PokemonItemService.ignores_type_immunity(target.stats):
+		var type_a: String = target.stats.types[0] if target.stats.types.size() > 0 else "none"
+		var type_b: String = target.stats.types[1] if target.stats.types.size() > 1 else "none"
+		return type_chart.get_effectiveness_dual_ignoring_immunity(move.type, type_a, type_b)
+	if effectiveness > 0.0 or type_chart == null:
+		return effectiveness
+	var ignored: String = ""
+	if target.stats.battle_statuses.has("exposed") and (move.type == "normal" or move.type == "fighting") and target.stats.types.has("ghost"):
+		ignored = "ghost"
+	elif target.stats.battle_statuses.has("miracle_eye") and move.type == "psychic" and target.stats.types.has("dark"):
+		ignored = "dark"
+	if ignored.is_empty():
+		return effectiveness
+	var other: String = "none"
+	for type_id in target.stats.types:
+		if String(type_id) != ignored:
+			other = String(type_id)
+	return type_chart.get_effectiveness_dual(move.type, other, "none")
+
+
+func _after_move_field(attacker: TacticsPawn, move: PokemonMoveResource, battle_level: TacticsLevel, battle_log: BattleLog) -> void:
+	if attacker == null or move == null or battle_level == null:
+		return
+	if HAZARD_MOVES.has(move.move_id):
+		battle_level.place_hazard(attacker, move.move_id)
+	elif move.move_id == "rapid_spin" and attacker.stats != null and attacker.stats.is_active():
+		battle_level.clear_hazards(attacker, true, move.move_id)
+	elif move.move_id == "defog":
+		battle_level.clear_hazards(attacker, false, move.move_id)
+
+
+func _after_move_statuses(attacker: TacticsPawn, move: PokemonMoveResource, battle_level: TacticsLevel, battle_log: BattleLog) -> void:
+	if attacker == null or attacker.stats == null or move == null:
+		return
+	var ops: BattleStateOps = _ops(battle_level, battle_log)
+	if attacker.stats.battle_statuses.has("charge") and move.type == "electric":
+		ops.remove_status(attacker, "charge", {"source": "consumed"})
+	if attacker.stats.battle_statuses.has("electrified"):
+		ops.remove_status(attacker, "electrified", {"source": "consumed"})
+	if attacker.stats.battle_statuses.has("sure_shot"):
+		ops.remove_status(attacker, "sure_shot", {"source": "consumed"})
+	if (move.move_id == "spit_up" or move.move_id == "swallow") and attacker.stats.battle_statuses.has("stockpile"):
+		var stacks: int = int(_status_payload(attacker.stats, "stockpile").get("stacks", 1))
+		if move.move_id == "swallow":
+			var fractions: Array[int] = [4, 2, 1]
+			var divisor: int = fractions[clampi(stacks, 1, 3) - 1]
+			ops.heal(attacker, maxi(1, int(floor(float(attacker.stats.max_health) / float(divisor)))), {"kind": "move", "move": move})
+		ops.remove_status(attacker, "stockpile", {"source": "released", "move": move})
+		ops.change_stat_stage(attacker, "defense", -stacks, {"kind": "move", "move": move, "skip_rules": true})
+		ops.change_stat_stage(attacker, "special_defense", -stacks, {"kind": "move", "move": move, "skip_rules": true})
+	if move.move_id == "conversion" and not attacker.stats.move_slots.is_empty() and attacker.stats.move_slots[0] != null:
+		var first_type: String = attacker.stats.move_slots[0].type
+		if first_type != "none":
+			attacker.stats.types = [first_type] as Array[String]
+			_append(battle_log, {"kind": "type_changed", "unit": attacker, "types": [first_type], "source": "move", "move_id": move.move_id})
+	if move.move_id == "conversion_2" and not attacker.stats.last_hit_move_type.is_empty():
+		var chart: TypeChartResource = battle_level.get_type_chart() if battle_level != null else _load_type_chart()
+		for candidate in ["steel", "rock", "ghost", "fairy", "poison", "fire", "water", "grass", "electric", "ice", "fighting", "ground", "flying", "psychic", "bug", "dragon", "dark", "normal"]:
+			if chart != null and chart.get_effectiveness_dual(attacker.stats.last_hit_move_type, candidate, "none") < 1.0:
+				attacker.stats.types = [candidate] as Array[String]
+				_append(battle_log, {"kind": "type_changed", "unit": attacker, "types": [candidate], "source": "move", "move_id": move.move_id})
+				break
+	if move.move_id == "roost" and attacker.stats.types.has("flying"):
+		var roost_payload: Dictionary = _status_payload(attacker.stats, "roosting") if attacker.stats.battle_statuses.has("roosting") else {}
+		if not roost_payload.has("original_types"):
+			var remaining: Array[String] = []
+			for type_id in attacker.stats.types:
+				if String(type_id) != "flying":
+					remaining.append(String(type_id))
+			if remaining.is_empty():
+				remaining.append("normal")
+			roost_payload["original_types"] = attacker.stats.types.duplicate()
+			if attacker.stats.battle_statuses.has("roosting"):
+				attacker.stats.battle_statuses["roosting"] = roost_payload
+			else:
+				ops.apply_status(attacker, "roosting", roost_payload, {"kind": "move", "move": move, "skip_rules": true})
+			attacker.stats.types = remaining
+	if RAMPAGE_STATUSES.has(move.move_id) and attacker.stats.battle_statuses.has(move.move_id):
+		var rampage: Dictionary = _status_payload(attacker.stats, move.move_id)
+		if not rampage.has("locked_turns"):
+			rampage["locked_turns"] = true
+			rampage["counter"] = 2 + (1 if (battle_level.battle_rng if battle_level != null else _fallback_rng).randf() < 0.5 else 0)
+			attacker.stats.battle_statuses[move.move_id] = rampage
+
+
+func _effective_move_for_hit(attacker: TacticsPawn, move: PokemonMoveResource) -> PokemonMoveResource:
+	if attacker == null or attacker.stats == null or move == null:
+		return move
+	var override: String = intrinsic_service.move_type_override(attacker.stats, move)
+	if attacker.stats.battle_statuses.has("electrified"):
+		override = "electric"
+	var stacks: int = int(_status_payload(attacker.stats, "stockpile").get("stacks", 0)) if attacker.stats.battle_statuses.has("stockpile") else 0
+	if (override.is_empty() or override == move.type) and not (move.move_id == "spit_up" and stacks > 0):
+		return move
+	var copy: PokemonMoveResource = move.duplicate()
+	if not override.is_empty() and override != move.type:
+		copy.type = override
+		copy.set_meta("type_overridden", true)
+	if move.move_id == "spit_up" and stacks > 0:
+		copy.base_power = 100 * stacks
+	return copy
+
+
+func _bind_presentation(battle_level: TacticsLevel) -> void:
+	_bound_level = battle_level
+	animation_resolver.runner = battle_level.presentation_runner if battle_level != null else null
+	animation_resolver.presentation_catalog = presentation_catalog
+	_presentation_entry = {}
+
+
+func _finish_presentation() -> void:
+	if animation_resolver.runner != null and not _presentation_entry.is_empty():
+		BattleActionPresentation.enqueue_move_end(animation_resolver.runner)
+	_presentation_entry = {}
 
 
 func _resolve_one_target(
@@ -299,7 +574,28 @@ func _resolve_one_target(
 		battle_level: TacticsLevel = null
 ) -> void:
 	var was_active: bool = target.stats.is_active()
-	var hit: bool = AccuracyResolver.roll(move, rng)
+	move = move_specials.prepare_weight_move(attacker, target, _effective_move_for_hit(attacker, move), intrinsic_service)
+	intrinsic_service.begin_hit(attacker.stats, target.stats)
+	var weather_accuracy: int = battle_level.weather_accuracy_override(move) if battle_level != null else -1
+	var accuracy_multiplier: float = intrinsic_service.accuracy_multiplier(attacker, target, move, battle_level) * _stage_accuracy_multiplier(attacker, target, move) * PokemonItemService.accuracy_multiplier(attacker.stats) * PokemonItemService.target_accuracy_multiplier(target.stats) * PokemonItemService.zoom_lens_multiplier(attacker.stats, target.stats)
+	var guaranteed: bool = intrinsic_service.sure_hit(attacker.stats, target.stats) or move.is_sure_hit() or target.stats.battle_statuses.has("telekinesis") or _lock_on_active(attacker, target) or (target.stats.battle_statuses.has("minimized") and MINIMIZE_DOUBLE_MOVES.has(move.move_id))
+	var hit: bool = true
+	var invulnerable: String = move_specials.target_invulnerable(target, move)
+	if not invulnerable.is_empty():
+		_append(battle_log, {"kind": "miss", "attacker": attacker, "defender": target, "move_id": move.move_id, "hit_index": hit_index, "reason": invulnerable})
+		animation_resolver.select_reaction(target, move, "miss", battle_log)
+		move_specials.on_miss(self, attacker, target, move, battle_level, battle_log)
+		PokemonItemService.on_miss(attacker, battle_log)
+		intrinsic_service.end_hit()
+		return
+	if guaranteed:
+		hit = true
+	elif weather_accuracy >= 0:
+		hit = weather_accuracy >= 100 or rng.randf() * 100.0 < float(weather_accuracy) * accuracy_multiplier
+	elif is_equal_approx(accuracy_multiplier, 1.0):
+		hit = AccuracyResolver.roll(move, rng)
+	else:
+		hit = rng.randf() * 100.0 < float(move.accuracy) * accuracy_multiplier
 	if not hit:
 		_append(battle_log, {
 			"kind": "miss",
@@ -309,24 +605,50 @@ func _resolve_one_target(
 			"hit_index": hit_index,
 		})
 		animation_resolver.select_reaction(target, move, "miss", battle_log)
+		move_specials.on_miss(self, attacker, target, move, battle_level, battle_log)
+		PokemonItemService.on_miss(attacker, battle_log)
+		intrinsic_service.end_hit()
 		return
 
 	if _handle_protection(attacker, target, move, battle_log):
+		intrinsic_service.end_hit()
 		return
 
 	if intrinsic_service.damage_intercepted(target, move, battle_log):
 		animation_resolver.select_reaction(target, move, "miss", battle_log)
 		return
 
-	var effectiveness: float = damage_resolver._effectiveness(move, target.stats, type_chart)
+	if animation_resolver.runner != null and not _presentation_entry.is_empty():
+		BattleActionPresentation.enqueue_hit_fx(animation_resolver.runner, _presentation_entry, attacker, target, move.move_id)
+
+	var effectiveness: float = _status_adjusted_effectiveness(target, move, intrinsic_service.adjust_effectiveness(attacker.stats, target.stats, move, damage_resolver._effectiveness(move, target.stats, type_chart), type_chart), type_chart)
+	if target.stats.battle_statuses.has("magic_coat") and move.category == PokemonMoveResource.CATEGORY_STATUS and attacker != target:
+		_remove_status_with_log(target, "magic_coat", move.move_id, "reflected", battle_log)
+		_append(battle_log, {"kind": "move_reflected", "attacker": attacker, "defender": target, "move_id": move.move_id, "status_id": "magic_coat"})
+		target = attacker
+	elif move.category == PokemonMoveResource.CATEGORY_STATUS and attacker != target and intrinsic_service.intrinsic_slugs_for(target.stats).has("magic_bounce") and (battle_level == null or battle_level.are_foes(attacker, target)):
+		_append(battle_log, {"kind": "move_reflected", "attacker": attacker, "defender": target, "move_id": move.move_id, "intrinsic_id": "magic_bounce"})
+		target = attacker
+	if intrinsic_service.wonder_guard_blocks(target.stats, effectiveness, move):
+		_append(battle_log, {"kind": "damage_prevented", "unit": target, "defender": target, "attacker": attacker, "move_id": move.move_id, "source": "intrinsic", "intrinsic_id": "wonder_guard", "reason": "wonder_guard"})
+		animation_resolver.select_reaction(target, move, "miss", battle_log)
+		intrinsic_service.end_hit()
+		return
 	var stab: bool = type_chart.is_stab(move.type, attacker.stats.types) if type_chart != null else false
 	var damage: int = 0
 	var damage_outcome: Dictionary = {}
 	if _should_apply_formula_damage(move):
 		var screen_multiplier: float = _screen_damage_multiplier(target, move, battle_level)
 		damage_outcome["screen_multiplier"] = screen_multiplier
-		var extra_multiplier: float = intrinsic_service.before_damage_multiplier(attacker.stats, move, battle_log, attacker, battle_level) * intrinsic_service.defender_damage_multiplier(target.stats, move, battle_log, target) * PokemonItemService.held_damage_multiplier(attacker.stats, move, battle_log, attacker) * PokemonItemService.held_defense_multiplier(target.stats, move, battle_log, target) * _status_damage_multiplier(attacker.stats, move) * screen_multiplier
+		var weather_multiplier: float = battle_level.weather_damage_multiplier(move, target) if battle_level != null else 1.0
+		damage_outcome["weather_multiplier"] = weather_multiplier
+		var extra_multiplier: float = intrinsic_service.before_damage_multiplier(attacker.stats, move, battle_log, attacker, battle_level, effectiveness, target) * intrinsic_service.defender_damage_multiplier(target.stats, move, battle_log, target, effectiveness) * PokemonItemService.held_damage_multiplier(attacker.stats, move, battle_log, attacker, effectiveness) * PokemonItemService.held_defense_multiplier(target.stats, move, battle_log, target, effectiveness) * _status_damage_multiplier(attacker.stats, move) * screen_multiplier * weather_multiplier * intrinsic_service.field_damage_multiplier(attacker, target, move) * move_specials.sport_multiplier(move, battle_level) * move_specials.power_multiplier(attacker, move) * _terrain_multiplier(attacker, target, move, battle_level) * (0.25 if hit_index == 1 and intrinsic_service.intrinsic_slugs_for(attacker.stats).has("parental_bond") and move.strike_count <= 1 else 1.0)
 		var critical_blocked: bool = _critical_blocked(target, battle_level) or intrinsic_service.blocks_critical(target.stats)
+		damage_outcome["crit_bonus"] = intrinsic_service.crit_stage_bonus(attacker.stats) + PokemonItemService.crit_stage_bonus(attacker.stats) + (2 if attacker.stats.battle_statuses.has("focus_energy") else 0)
+		if target.stats.battle_statuses.has("minimized") and MINIMIZE_DOUBLE_MOVES.has(move.move_id):
+			extra_multiplier *= 2.0
+		damage_outcome["ignore_defender_stages"] = intrinsic_service.ignores_stages(attacker.stats)
+		damage_outcome["ignore_attacker_stages"] = intrinsic_service.ignores_stages(target.stats)
 		damage = damage_resolver.calculate_damage(attacker.stats, target.stats, move, effectiveness, stab, extra_multiplier, rng, damage_outcome, critical_blocked)
 
 	var damage_done: int = 0
@@ -339,10 +661,11 @@ func _resolve_one_target(
 			"critical": bool(damage_outcome.get("is_critical", false)),
 			"critical_blocked": bool(damage_outcome.get("critical_blocked", false)),
 			"screen_multiplier": float(damage_outcome.get("screen_multiplier", 1.0)),
+			"weather_multiplier": float(damage_outcome.get("weather_multiplier", 1.0)),
 			"variance": int(damage_outcome.get("variance", 100)),
 		})
 		if damage_done > 0:
-			intrinsic_service.after_damage(attacker, target, move, damage_done, rng, battle_log)
+			intrinsic_service.after_damage(attacker, target, move, damage_done, rng, battle_log, bool(damage_outcome.get("is_critical", false)))
 			PokemonItemService.after_damage_dealt(attacker, move, damage_done, battle_log)
 
 	var variant_damage_done: int = _apply_runtime_damage_variant_tags(attacker, target, move, effectiveness, battle_log)
@@ -367,6 +690,24 @@ func _resolve_one_target(
 			"move_id": move.move_id,
 		})
 		animation_resolver.select_reaction(target, move, "faint", battle_log)
+		intrinsic_service.on_knockout(attacker, target, move, battle_log)
+		if attacker != target and target.stats.battle_statuses.has("destiny_bond") and attacker.stats.is_active():
+			_append(battle_log, {"kind": "status_triggered", "unit": target, "status_id": "destiny_bond", "defender": attacker})
+			var bond: Dictionary = _ops(battle_level, battle_log).damage(attacker, attacker.stats.curr_health, {"kind": "destiny_bond", "attacker": target, "move": move, "event": {"source": "destiny_bond"}})
+			if bool(bond.get("fainted", false)):
+				animation_resolver.select_reaction(attacker, move, "faint", battle_log)
+		if attacker != target and target.stats.battle_statuses.has("grudge") and _current_move_index >= 0 and _current_move_index < attacker.stats.current_pp.size():
+			attacker.stats.current_pp[_current_move_index] = 0
+			_append(battle_log, {"kind": "status_triggered", "unit": target, "status_id": "grudge", "defender": attacker, "move_id": move.move_id})
+	elif damage_done > 0 and target.stats.battle_statuses.has("enraged") and attacker != target:
+		_ops(battle_level, battle_log).change_stat_stage(target, "attack", 1, {"kind": "status", "event": {"source": "enraged"}})
+	if damage_done > 0:
+		PokemonItemService.after_hit_taken(target, attacker, move, damage_done, effectiveness, battle_log)
+		var flinch_chance: int = PokemonItemService.flinch_chance(attacker.stats, move)
+		if flinch_chance > 0 and target.stats.is_active() and attacker != target and not PokemonItemService.blocks_additional_effects(target.stats) and rng.randi_range(1, 100) <= flinch_chance:
+			_ops(battle_level, battle_log).apply_status(target, "flinch", {"source": "held_item"}, {"kind": "status", "attacker": attacker, "move": move, "item_id": "held_kings_rock"})
+	move_specials.after_hit(self, attacker, target, move, damage_done, was_active, battle_level, battle_log)
+	intrinsic_service.end_hit()
 
 
 func _apply_effect_record(
@@ -394,7 +735,9 @@ func _apply_effect_record(
 		return
 	if intrinsic_service.blocks_additional_effect(attacker.stats, record, move, battle_log, attacker):
 		return
-	var chance: int = int(record.get("chance", 100))
+	if recipient != attacker and intrinsic_service.shields_additional_effect(recipient.stats, record, move, battle_log, recipient):
+		return
+	var chance: int = mini(100, int(round(float(record.get("chance", 100)) * intrinsic_service.effect_chance_multiplier(attacker.stats))))
 	if chance < 100:
 		var roll: float = rng.randf() * 100.0
 		if roll >= float(chance):
@@ -413,123 +756,50 @@ func _apply_effect_record(
 			var status_id: String = String(record.get("status_id", ""))
 			if status_id.is_empty():
 				return
-			if _safeguard_blocks_status(recipient, status_id, battle_level, battle_log, move):
-				return
-			if intrinsic_service.blocks_status(recipient.stats, status_id, battle_log, recipient, move):
-				return
 			var payload: Dictionary = {"move_id": move.move_id, "source_event": record.get("source_event", ""), "source_unit": attacker}
+			if status_id == "sure_shot" and target != attacker:
+				payload["target_unit"] = target
+			if TRAP_STATUSES.has(status_id):
+				var trap_item: PokemonItemResource = PokemonItemService.held_item_for(attacker)
+				payload["counter"] = 7 if trap_item != null and trap_item.item_id == TRAP_EXTEND_ITEM else 4 + (1 if rng.randf() < 0.5 else 0)
+				payload["hp_fraction"] = 6 if trap_item != null and trap_item.item_id == TRAP_DAMAGE_ITEM else 8
+				payload["source_unit"] = attacker
 			if status_id == STATUS_DISABLE:
 				payload["disabled_move_id"] = recipient.stats.last_used_move_id
 				payload["disabled_slot_index"] = recipient.stats.last_used_move_index
 			elif status_id == STATUS_ENCORE:
 				payload["locked_move_id"] = recipient.stats.last_used_move_id
 				payload["locked_slot_index"] = recipient.stats.last_used_move_index
-			recipient.stats.apply_battle_status(status_id, payload)
-			if _is_screen_status(status_id) and battle_level != null:
-				battle_level.set_team_battle_condition(status_id, recipient, payload)
-				_append(battle_log, {
-					"kind": "field_condition_applied",
-					"condition_id": status_id,
-					"move_id": move.move_id,
-					"attacker": attacker,
-					"unit": recipient,
-					"scope": "team",
-					"source_event": record.get("source_event", ""),
-				})
-			_append(battle_log, {
-				"kind": "status_applied",
-				"unit": recipient,
-				"move_id": move.move_id,
-				"status_id": status_id,
-			})
-			intrinsic_service.maybe_reflect_status(attacker, recipient, status_id, move, battle_log)
+			_ops(battle_level, battle_log).apply_status(recipient, status_id, payload, {"kind": "move", "attacker": attacker, "move": move, "source_event": String(record.get("source_event", ""))})
 		"status_remove":
 			var remove_id: String = String(record.get("status_id", ""))
 			if remove_id.is_empty():
 				return
-			var removed: Dictionary = recipient.stats.remove_battle_status(remove_id)
-			if not removed.is_empty():
-				if _is_screen_status(remove_id) and battle_level != null:
-					battle_level.refresh_team_battle_condition(remove_id, recipient)
-				_append(battle_log, {
-					"kind": "status_removed",
-					"unit": recipient,
-					"move_id": move.move_id,
-					"status_id": remove_id,
-				})
+			_ops(battle_level, battle_log).remove_status(recipient, remove_id, {"move": move})
 		"stat_stage":
-			var stat_delta: int = int(record.get("delta", 0))
-			if intrinsic_service.blocks_stat_stage(recipient.stats, String(record.get("stat", "")), stat_delta, battle_log, recipient, move):
-				return
-			if _mist_blocks_stat_stage(recipient, stat_delta, battle_level, battle_log, move, String(record.get("stat", ""))):
-				return
-			var change: Dictionary = recipient.stats.change_stat_stage(String(record.get("stat", "")), int(record.get("delta", 0)))
-			if not change.is_empty():
-				_append(battle_log, {
-					"kind": "stat_stage_changed",
-					"unit": recipient,
-					"move_id": move.move_id,
-					"stat": change["stat"],
-					"before": change["before"],
-					"after": change["after"],
-					"delta": change["delta"],
-				})
+			_ops(battle_level, battle_log).change_stat_stage(recipient, String(record.get("stat", "")), int(record.get("delta", 0)), {"kind": "move", "attacker": attacker, "move": move})
 		"weather_stat_stage":
 			var weather_id: String = String(record.get("weather_id", ""))
-			var delta: int = int(record.get("weather_delta", record.get("delta", 0))) if battle_level != null and battle_level.has_battle_condition(weather_id) else int(record.get("delta", 0))
-			if intrinsic_service.blocks_stat_stage(recipient.stats, String(record.get("stat", "")), delta, battle_log, recipient, move):
-				return
-			if _mist_blocks_stat_stage(recipient, delta, battle_level, battle_log, move, String(record.get("stat", ""))):
-				return
-			var weather_change: Dictionary = recipient.stats.change_stat_stage(String(record.get("stat", "")), delta)
-			if not weather_change.is_empty():
-				_append(battle_log, {
-					"kind": "stat_stage_changed",
-					"unit": recipient,
-					"move_id": move.move_id,
-					"stat": weather_change["stat"],
-					"before": weather_change["before"],
-					"after": weather_change["after"],
-					"delta": weather_change["delta"],
-					"condition_id": weather_id if battle_level != null and battle_level.has_battle_condition(weather_id) else "",
-				})
+			var weather_active: bool = battle_level != null and battle_level.has_battle_condition(weather_id)
+			var delta: int = int(record.get("weather_delta", record.get("delta", 0))) if weather_active else int(record.get("delta", 0))
+			_ops(battle_level, battle_log).change_stat_stage(recipient, String(record.get("stat", "")), delta, {"kind": "move", "attacker": attacker, "move": move, "event": {"condition_id": weather_id if weather_active else ""}})
 		"ability_change":
 			var target_ability: String = String(record.get("target_ability", ""))
 			if target_ability.is_empty():
 				return
 			intrinsic_service.replace_intrinsic(recipient, target_ability, move, battle_log, String(record.get("source_event", "")))
 		"heal":
-			if _healing_blocked(recipient, move, battle_log):
-				return
-			var amount: int = _heal_amount(record, recipient)
+			var amount: int = _heal_amount(record, recipient, battle_level)
 			if amount <= 0:
 				return
-			var before: int = recipient.stats.curr_health
-			recipient.stats.apply_to_curr_health(amount)
-			_append(battle_log, {
-				"kind": "healed",
-				"unit": recipient,
-				"move_id": move.move_id,
-				"amount": recipient.stats.curr_health - before,
-				"before": before,
-				"after": recipient.stats.curr_health,
-			})
+			_ops(battle_level, battle_log).heal(recipient, amount, {"kind": "move", "move": move})
 		"drain":
-			var drain_amount: int = int(floor(float(damage_done) * float(record.get("fraction", 0.5))))
+			var drain_amount: int = int(floor(float(damage_done) * float(record.get("fraction", 0.5)) * PokemonItemService.drain_multiplier(attacker.stats)))
 			if drain_amount > 0:
-				if _healing_blocked(attacker, move, battle_log):
-					return
-				var before_heal: int = attacker.stats.curr_health
-				attacker.stats.apply_to_curr_health(drain_amount)
-				_append(battle_log, {
-					"kind": "healed",
-					"unit": attacker,
-					"move_id": move.move_id,
-					"amount": attacker.stats.curr_health - before_heal,
-					"before": before_heal,
-					"after": attacker.stats.curr_health,
-					"source": "drain",
-				})
+				if intrinsic_service.reverses_drain(target.stats):
+					_ops(battle_level, battle_log).damage(attacker, drain_amount, {"kind": "intrinsic", "attacker": target, "move": move, "intrinsic_id": "liquid_ooze", "event": {"source": "liquid_ooze"}})
+				else:
+					_ops(battle_level, battle_log).heal(attacker, drain_amount, {"kind": "drain", "move": move, "event": {"source": "drain"}})
 		"recoil":
 			var recoil: int = _recoil_amount(record, attacker)
 			if recoil > 0:
@@ -542,23 +812,8 @@ func _apply_effect_record(
 						"intrinsic_id": "rock_head",
 					})
 					return
-				var attacker_was_active: bool = attacker.stats.is_active()
-				attacker.stats.apply_to_curr_health(-recoil)
-				_append(battle_log, {
-					"kind": "damage_dealt",
-					"attacker": attacker,
-					"defender": attacker,
-					"move_id": move.move_id,
-					"amount": recoil,
-					"source": "recoil",
-				})
-				if attacker != target and attacker_was_active and not attacker.stats.is_active():
-					_append(battle_log, {
-						"kind": "unit_fainted",
-						"unit": attacker,
-						"move_id": move.move_id,
-						"source": "recoil",
-					})
+				var recoil_outcome: Dictionary = _ops(battle_level, battle_log).damage(attacker, recoil, {"kind": "recoil", "attacker": attacker, "move": move, "emit_faint": attacker != target})
+				if attacker != target and bool(recoil_outcome.get("fainted", false)):
 					animation_resolver.select_reaction(attacker, move, "faint", battle_log)
 		"fixed_damage":
 			var fixed: int = int(record.get("amount", 0))
@@ -686,6 +941,28 @@ func _status_blocks_move(attacker: TacticsPawn, move: PokemonMoveResource, move_
 		if (not locked_move.is_empty() and move.move_id != locked_move) or (locked_move.is_empty() and locked_slot >= 0 and move_index != locked_slot):
 			_log_status_move_blocked(attacker, move, STATUS_ENCORE, "encore_locked", battle_log)
 			return true
+	if attacker.stats.battle_statuses.has("bide") and move.move_id != "bide":
+		_log_status_move_blocked(attacker, move, "bide", "biding", battle_log)
+		return true
+	if attacker.stats.battle_statuses.has("in_love"):
+		var love_rng: RandomNumberGenerator = rng if rng != null else _fallback_rng
+		if love_rng.randf() < 0.5:
+			_log_status_move_blocked(attacker, move, "in_love", "infatuated", battle_log)
+			return true
+	if attacker.stats.battle_statuses.has("torment") and not attacker.stats.last_used_move_id.is_empty() and move.move_id == attacker.stats.last_used_move_id:
+		_log_status_move_blocked(attacker, move, "torment", "torment_blocked", battle_log)
+		return true
+	if move_specials.charging_lock(attacker, move):
+		_log_status_move_blocked(attacker, move, "charging", "charging_locked", battle_log)
+		return true
+	var item_block: String = PokemonItemService.blocks_move(attacker.stats, move)
+	if not item_block.is_empty():
+		_log_status_move_blocked(attacker, move, item_block, item_block, battle_log)
+		return true
+	for rampage_id in RAMPAGE_STATUSES:
+		if attacker.stats.battle_statuses.has(rampage_id) and move.move_id != rampage_id:
+			_log_status_move_blocked(attacker, move, rampage_id, "rampage_locked", battle_log)
+			return true
 	if attacker.stats.battle_statuses.has(STATUS_CONFUSE):
 		var source_rng: RandomNumberGenerator = rng if rng != null else _fallback_rng
 		if source_rng.randi_range(0, 1) == 0:
@@ -697,9 +974,12 @@ func _status_blocks_move(attacker: TacticsPawn, move: PokemonMoveResource, move_
 func _status_damage_multiplier(stats: Stats, move: PokemonMoveResource) -> float:
 	if stats == null or move == null:
 		return 1.0
+	var multiplier: float = 1.0
 	if stats.battle_statuses.has(STATUS_BURN) and move.category == PokemonMoveResource.CATEGORY_PHYSICAL:
-		return 2.0 / 3.0
-	return 1.0
+		multiplier *= 2.0 / 3.0
+	if stats.battle_statuses.has("charge") and move.type == "electric":
+		multiplier *= 2.0
+	return multiplier
 
 
 func _screen_damage_multiplier(defender: TacticsPawn, move: PokemonMoveResource, battle_level: TacticsLevel) -> float:
@@ -862,6 +1142,8 @@ func _apply_runtime_damage_variant_tags(
 		battle_log: BattleLog
 ) -> int:
 	var total: int = 0
+	if BattleMoveSpecials.SELF_FAINT_MOVES.has(move.move_id):
+		return 0
 	for tag in move.unsupported_effect_tags:
 		if not DAMAGE_VARIANT_TAGS.has(tag):
 			continue
@@ -874,6 +1156,15 @@ func _apply_runtime_damage_variant_tags(
 				"source": "type_immunity",
 				"source_event": tag,
 			})
+			continue
+		if tag == TAG_OHKO_DAMAGE and target.stats.level > attacker.stats.level:
+			_append(battle_log, {"kind": "move_rejected", "attacker": attacker, "move_id": move.move_id, "reason": "target_level_higher"})
+			continue
+		if tag == TAG_OHKO_DAMAGE and intrinsic_service.intrinsic_slugs_for(target.stats).has("sturdy"):
+			_append(battle_log, {"kind": "damage_prevented", "unit": target, "defender": target, "attacker": attacker, "move_id": move.move_id, "source": "intrinsic", "intrinsic_id": "sturdy", "reason": "sturdy"})
+			continue
+		if tag == TAG_OHKO_DAMAGE and move.move_id == "sheer_cold" and target.stats.types.has("ice"):
+			_append(battle_log, {"kind": "damage_prevented", "unit": target, "defender": target, "attacker": attacker, "move_id": move.move_id, "source": "type"})
 			continue
 		var amount: int = _damage_variant_amount(attacker, target, move, tag)
 		if amount <= 0:
@@ -896,15 +1187,14 @@ func _damage_variant_amount(attacker: TacticsPawn, target: TacticsPawn, move: Po
 			var cut_fraction: int = _damage_variant_hp_fraction(move, 2)
 			return maxi(1, int(floor(float(target.stats.curr_health * (cut_fraction - 1)) / float(cut_fraction))))
 		TAG_MAX_HP_DAMAGE:
+			if move.move_id == "sonic_boom":
+				return 20
 			var max_fraction: int = _damage_variant_hp_fraction(move, 2)
 			return maxi(1, int(floor(float(target.stats.max_health) / float(max_fraction))))
 		TAG_ENDEAVOR_DAMAGE:
 			return maxi(0, target.stats.curr_health - attacker.stats.curr_health)
 		TAG_PSYWAVE_DAMAGE:
-			var distance: int = _grid_distance(attacker, target)
-			var diff: int = distance % 4
-			var power: int = 1 if diff > 2 else diff
-			return maxi(1, int(floor(float(attacker.stats.level * power) / 2.0)))
+			return maxi(1, int(floor(float(attacker.stats.level) * (0.5 + _fallback_rng.randf()))))
 		TAG_BASE_POWER_DAMAGE:
 			return maxi(0, move.base_power)
 	return 0
@@ -991,7 +1281,11 @@ func _use_last_observed_move(
 	if move.move_id == "assist":
 		copied = _last_ally_move(attacker, battle_level)
 	else:
-		copied = _last_used_move(target)
+		copied = _last_used_move(target) if target != attacker else null
+		if copied == null and battle_level != null:
+			for unit in battle_level.units_on_map():
+				if unit != attacker and unit.stats != null and not unit.stats.last_used_move_id.is_empty():
+					copied = _load_generated_move(unit.stats.last_used_move_id)
 	_resolve_copied_move(attacker, target, move, copied, source_event, rng, battle_log, battle_level)
 
 
@@ -1513,6 +1807,9 @@ func _warp_allies_in(attacker: TacticsPawn, move: PokemonMoveResource, source_ev
 func _move_unit_steps(unit: TacticsPawn, direction: Vector3i, distance: int, move: PokemonMoveResource, source_event: String, battle_level: TacticsLevel, battle_log: BattleLog) -> void:
 	if unit == null or direction == Vector3i.ZERO:
 		return
+	if unit.stats != null and intrinsic_service.intrinsic_slugs_for(unit.stats).has("suction_cups") and move != null and not move.can_target_self():
+		_append(battle_log, {"kind": "forced_movement_blocked", "unit": unit, "move_id": move.move_id, "reason": "suction_cups", "intrinsic_id": "suction_cups"})
+		return
 	var from_key: Vector3i = _unit_key(unit)
 	var current: Vector3i = from_key
 	var truncated: bool = false
@@ -1581,7 +1878,7 @@ func _facing_direction(unit: TacticsPawn) -> Vector3i:
 	if unit == null:
 		return Vector3i(1, 0, 0)
 	var basis: Basis = unit.global_basis if unit.is_inside_tree() else unit.basis
-	var forward: Vector3 = -basis.z
+	var forward: Vector3 = basis.z
 	if absf(forward.x) > absf(forward.z):
 		return Vector3i(1 if forward.x > 0.0 else -1, 0, 0)
 	return Vector3i(0, 0, 1 if forward.z > 0.0 else -1)
@@ -1592,7 +1889,7 @@ func _unit_key(unit: TacticsPawn) -> Vector3i:
 		return Vector3i.ZERO
 	var tile: TacticsTile = unit.get_tile()
 	var pos: Vector3 = tile.global_position if tile != null and tile.is_inside_tree() else (tile.position if tile != null else unit.global_position)
-	return Vector3i(roundi(pos.x), 0, roundi(pos.z))
+	return Vector3i(floori(pos.x + 0.5), 0, floori(pos.z + 0.5))
 
 
 func _set_unit_key(unit: TacticsPawn, key: Vector3i, battle_level: TacticsLevel) -> void:
@@ -1605,6 +1902,12 @@ func _set_unit_key(unit: TacticsPawn, key: Vector3i, battle_level: TacticsLevel)
 		unit.global_position = destination
 	else:
 		unit.position = destination
+	var ray: Node = unit.get_node_or_null("Tile")
+	if ray is RayCast3D and unit.is_inside_tree():
+		(ray as RayCast3D).force_raycast_update()
+		if unit.has_method("center"):
+			unit.center()
+		(ray as RayCast3D).force_raycast_update()
 	var current_tile: TacticsTile = unit.get_tile()
 	if current_tile != null and current_tile.get_parent() == unit:
 		current_tile.position = Vector3(key.x, current_tile.position.y, key.z)
@@ -1676,7 +1979,7 @@ func _tile_key(tile: TacticsTile) -> Vector3i:
 	if tile == null:
 		return Vector3i.ZERO
 	var pos: Vector3 = tile.global_position if tile.is_inside_tree() else tile.position
-	return Vector3i(roundi(pos.x), 0, roundi(pos.z))
+	return Vector3i(floori(pos.x + 0.5), 0, floori(pos.z + 0.5))
 
 
 func _grid_distance(a: TacticsPawn, b: TacticsPawn) -> int:
@@ -1689,9 +1992,15 @@ func _apply_field_condition(record: Dictionary, attacker: TacticsPawn, move: Pok
 	var condition_id: String = String(record.get("condition_id", "")).strip_edges().to_lower()
 	if condition_id.is_empty() or battle_level == null:
 		return
+	if BattleWeatherService.is_terrain(condition_id):
+		var extender: PokemonItemResource = PokemonItemService.held_item_for(attacker.stats) if attacker != null else null
+		battle_level.set_terrain(condition_id, 8 if extender != null and extender.item_id == "held_terrain_extender" else 5, move.move_id)
+		return
+	var rock_rounds: int = PokemonItemService.weather_rounds_for(attacker.stats, BattleWeatherService.normalize(condition_id)) if attacker != null and attacker.stats != null and BattleWeatherService.is_weather(condition_id) else 0
 	battle_level.set_battle_condition(condition_id, {
 		"move_id": move.move_id,
 		"attacker": attacker.name if attacker != null else "",
+		"rounds": rock_rounds,
 		"counter": int(record.get("counter", 0)),
 		"source_event": record.get("source_event", ""),
 	})
@@ -1711,11 +2020,11 @@ func _cure_statuses(unit: TacticsPawn, move: PokemonMoveResource, battle_log: Ba
 	for status_id in unit.stats.battle_statuses.keys():
 		statuses.append(String(status_id))
 	for status_id in statuses:
-		var removed: Dictionary = unit.stats.remove_battle_status(status_id)
+		var removed: Dictionary = _ops(null, battle_log).remove_status(unit, status_id, {"move": move, "source": "cure_statuses"})
 		if removed.is_empty():
 			continue
 		_append(battle_log, {
-			"kind": "status_removed",
+			"kind": "status_cured",
 			"unit": unit,
 			"move_id": move.move_id,
 			"status_id": status_id,
@@ -1756,10 +2065,27 @@ func _records_for_runtime(move: PokemonMoveResource) -> Array[Dictionary]:
 func _handle_protection(attacker: TacticsPawn, target: TacticsPawn, move: PokemonMoveResource, battle_log: BattleLog) -> bool:
 	if attacker == null or target == null or attacker == target or target.stats == null:
 		return false
-	if not target.stats.battle_statuses.has(STATUS_PROTECT):
+	var shield_id: String = ""
+	for candidate in PROTECTION_STATUSES:
+		if target.stats.battle_statuses.has(candidate):
+			shield_id = candidate
+			break
+	if shield_id.is_empty():
 		return false
+	if shield_id == "kings_shield" and not move.is_damaging():
+		return false
+	if shield_id == "crafty_shield" and move.is_damaging():
+		return false
+	if shield_id == "wide_guard" and not (move.tactical_range_kind in [PokemonMoveResource.TacticalRangeKind.AREA, PokemonMoveResource.TacticalRangeKind.LINE, PokemonMoveResource.TacticalRangeKind.ROOM]):
+		return false
+	if shield_id == "mat_block" and not move.is_damaging():
+		return false
+	if shield_id == "kings_shield" and move.has_flag("contact"):
+		_ops(null, battle_log).change_stat_stage(attacker, "attack", -1, {"kind": "status", "attacker": target, "move": move, "event": {"source": "kings_shield"}})
+	if shield_id == "spiky_shield" and move.has_flag("contact") and attacker.stats != null and attacker.stats.is_active():
+		_ops(null, battle_log).damage(attacker, maxi(1, int(floor(float(attacker.stats.max_health) / 8.0))), {"kind": "status_tick", "status_id": "spiky_shield", "attacker": target})
 	if move.move_id == MOVE_FEINT:
-		_remove_status_with_log(target, STATUS_PROTECT, move.move_id, "protection_broken", battle_log)
+		_remove_status_with_log(target, shield_id, move.move_id, "protection_broken", battle_log)
 		_append(battle_log, {
 			"kind": "protection_broken",
 			"attacker": attacker,
@@ -1767,13 +2093,14 @@ func _handle_protection(attacker: TacticsPawn, target: TacticsPawn, move: Pokemo
 			"move_id": move.move_id,
 		})
 		return false
-	_remove_status_with_log(target, STATUS_PROTECT, move.move_id, "blocked", battle_log)
+	if shield_id != "wide_guard" and shield_id != "crafty_shield" and shield_id != "mat_block":
+		_remove_status_with_log(target, shield_id, move.move_id, "blocked", battle_log)
 	_append(battle_log, {
 		"kind": "move_blocked",
 		"attacker": attacker,
 		"defender": target,
 		"move_id": move.move_id,
-		"status_id": STATUS_PROTECT,
+		"status_id": shield_id,
 	})
 	animation_resolver.select_reaction(target, move, "miss", battle_log)
 	return true
@@ -1782,16 +2109,26 @@ func _handle_protection(attacker: TacticsPawn, target: TacticsPawn, move: Pokemo
 func _apply_counter(attacker: TacticsPawn, target: TacticsPawn, move: PokemonMoveResource, damage_done: int, battle_log: BattleLog) -> void:
 	if attacker == null or target == null or attacker == target or target.stats == null or attacker.stats == null:
 		return
-	if damage_done <= 0 or move.category != PokemonMoveResource.CATEGORY_PHYSICAL:
+	if damage_done <= 0 or not target.stats.is_active():
 		return
-	if not target.stats.is_active() or not target.stats.battle_statuses.has(STATUS_COUNTER):
+	var counter_id: String = ""
+	var reflected_damage: int = 0
+	if target.stats.battle_statuses.has(STATUS_COUNTER) and move.category == PokemonMoveResource.CATEGORY_PHYSICAL:
+		counter_id = STATUS_COUNTER
+		reflected_damage = damage_done * 2
+	elif target.stats.battle_statuses.has("mirror_coat") and move.category == PokemonMoveResource.CATEGORY_SPECIAL:
+		counter_id = "mirror_coat"
+		reflected_damage = damage_done * 2
+	elif target.stats.battle_statuses.has("metal_burst") and move.is_damaging():
+		counter_id = "metal_burst"
+		reflected_damage = int(floor(float(damage_done) * 1.5))
+	if counter_id.is_empty():
 		return
-	_remove_status_with_log(target, STATUS_COUNTER, move.move_id, "counter_triggered", battle_log)
-	var reflected_damage: int = damage_done * 2
+	_remove_status_with_log(target, counter_id, move.move_id, "counter_triggered", battle_log)
 	var attacker_was_active: bool = attacker.stats.is_active()
 	var applied: int = _apply_damage(target, attacker, move, reflected_damage, battle_log, {
 		"kind": "damage_dealt",
-		"source": STATUS_COUNTER,
+		"source": counter_id,
 		"source_move_id": move.move_id,
 	})
 	if applied <= 0:
@@ -1802,6 +2139,7 @@ func _apply_counter(attacker: TacticsPawn, target: TacticsPawn, move: PokemonMov
 		"defender": attacker,
 		"move_id": move.move_id,
 		"amount": applied,
+		"status_id": counter_id,
 	})
 	if attacker_was_active and not attacker.stats.is_active():
 		_append(battle_log, {
@@ -1820,17 +2158,11 @@ func _apply_damage(attacker: TacticsPawn, defender: TacticsPawn, move: PokemonMo
 	amount = _capped_damage(move, defender, amount)
 	if amount <= 0:
 		return 0
-	defender.stats.apply_to_curr_health(-amount)
-	defender.res.hurt_remaining = TacticsPawnResource.HURT_DURATION
-	var payload: Dictionary = event.duplicate(true)
-	payload["attacker"] = attacker
-	payload["defender"] = defender
-	payload["move_id"] = move.move_id
-	payload["amount"] = amount
-	_append(battle_log, payload)
+	var outcome: Dictionary = _ops(null, battle_log).damage(defender, amount, {"kind": "hit", "attacker": attacker, "move": move, "event": event, "emit_faint": false})
+	if animation_resolver.runner == null:
+		defender.res.hurt_remaining = TacticsPawnResource.HURT_DURATION
 	animation_resolver.select_reaction(defender, move, "receive_damage", battle_log)
-	PokemonItemService.try_trigger_held_threshold(defender, battle_log)
-	return amount
+	return int(outcome.get("applied", 0))
 
 
 func _capped_damage(move: PokemonMoveResource, defender: TacticsPawn, requested_damage: int) -> int:
@@ -1855,6 +2187,8 @@ func _remove_status_with_log(unit: TacticsPawn, status_id: String, move_id: Stri
 func _should_apply_formula_damage(move: PokemonMoveResource) -> bool:
 	if move == null or not move.is_damaging():
 		return false
+	if BattleMoveSpecials.SELF_FAINT_MOVES.has(move.move_id):
+		return true
 	if _has_damage_variant_tag(move):
 		return false
 	if move.effect_records.is_empty():
@@ -1882,7 +2216,10 @@ func _recipient_for(record: Dictionary, attacker: TacticsPawn, target: TacticsPa
 			return target
 
 
-func _heal_amount(record: Dictionary, recipient: TacticsPawn) -> int:
+func _heal_amount(record: Dictionary, recipient: TacticsPawn, battle_level: TacticsLevel = null) -> int:
+	if String(record.get("source_event", "")).contains("WeatherHPEvent"):
+		var fraction: Vector2i = BattleWeatherService.weather_heal_fraction(battle_level.current_weather() if battle_level != null else "")
+		return maxi(1, int(floor(float(recipient.stats.max_health) * float(fraction.x) / float(fraction.y))))
 	var amount: int = int(record.get("amount", 0))
 	if amount > 0:
 		return amount

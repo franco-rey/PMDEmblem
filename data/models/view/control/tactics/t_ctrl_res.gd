@@ -7,6 +7,8 @@ signal called_camera_rotation
 signal called_select_pawn
 signal called_select_pawn_to_attack
 signal called_select_move
+signal called_select_item_action
+signal called_select_throw_target
 signal called_select_new_location
 signal called_set_cursor_shape_to_move
 signal called_set_cursor_shape_to_arrow
@@ -25,12 +27,13 @@ var actions: Dictionary = {
 	"Wait": "_player_wants_to_wait",
 	"Cancel": "_player_wants_to_cancel",
 	"Attack": "_player_wants_to_attack",
+	"Item": "_player_wants_to_use_item",
 	"Debug_next_turn": "_player_wants_to_skip_turn"
 }
 
 
-func set_actions_menu_visibility(v: bool, p: TacticsPawn) -> void:
-	called_set_actions_menu_visibility.emit(v, p)
+func set_actions_menu_visibility(v: bool, p: Variant) -> void:
+	called_set_actions_menu_visibility.emit(v, p if p is TacticsPawn and is_instance_valid(p) else null)
 
 
 func move_camera(delta: float) -> void:
@@ -51,6 +54,14 @@ func select_pawn_to_attack() -> void:
 
 func select_move() -> void:
 	called_select_move.emit()
+
+
+func select_item_action() -> void:
+	called_select_item_action.emit()
+
+
+func select_throw_target() -> void:
+	called_select_throw_target.emit()
 
 
 func select_new_location() -> void:

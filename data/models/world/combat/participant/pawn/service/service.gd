@@ -29,20 +29,33 @@ func process(pawn: TacticsPawn, delta: float) -> void:
 
 
 func _update_sprite_anim_state(pawn: TacticsPawn, delta: float) -> void:
+	var sprite: TacticsPawnSprite = pawn.get_node("Character") as TacticsPawnSprite
 	if pawn.res.hurt_remaining > 0.0:
 		pawn.res.hurt_remaining = max(0.0, pawn.res.hurt_remaining - delta)
 	if pawn.res.forced_anim_remaining > 0.0:
 		pawn.res.forced_anim_remaining = max(0.0, pawn.res.forced_anim_remaining - delta)
 		if pawn.res.forced_anim_remaining <= 0.0:
-			pawn.res.forced_anim_state = ""
+			pawn.res.clear_forced_animation()
+
+	if pawn.res.forced_anim_remaining > 0.0 and not pawn.res.forced_anim_state.is_empty():
+		if pawn.res.forced_anim_pending:
+			pawn.res.forced_anim_pending = false
+			if pawn.res.forced_anim_one_shot and sprite.can_play_state(pawn.res.forced_anim_state):
+				sprite.play_action(pawn.res.forced_anim_state)
+			else:
+				sprite.set_anim_state(pawn.res.forced_anim_state)
+		elif sprite.current_state != pawn.res.forced_anim_state and sprite.can_play_state(pawn.res.forced_anim_state):
+			if pawn.res.forced_anim_one_shot:
+				sprite.play_action(pawn.res.forced_anim_state)
+			else:
+				sprite.set_anim_state(pawn.res.forced_anim_state)
+		return
 
 	var state: String
-	if pawn.res.forced_anim_remaining > 0.0 and not pawn.res.forced_anim_state.is_empty():
-		state = pawn.res.forced_anim_state
-	elif pawn.res.hurt_remaining > 0.0:
+	if pawn.res.hurt_remaining > 0.0:
 		state = TacticsPawnSprite.ANIM_HURT
 	elif not pawn.is_alive():
-		state = TacticsPawnSprite.ANIM_SLEEP
+		state = TacticsPawnSprite.ANIM_FAINT if sprite.can_play_state(TacticsPawnSprite.ANIM_FAINT) else TacticsPawnSprite.ANIM_SLEEP
 	elif pawn.res.is_jumping:
 		state = TacticsPawnSprite.ANIM_HOP
 	elif pawn.res.is_moving:
@@ -50,7 +63,7 @@ func _update_sprite_anim_state(pawn: TacticsPawn, delta: float) -> void:
 	else:
 		state = TacticsPawnSprite.ANIM_IDLE
 
-	(pawn.get_node("Character") as TacticsPawnSprite).set_anim_state(state)
+	sprite.set_anim_state(state)
 
 
 func attack_target_pawn(pawn: TacticsPawn, target_pawn: TacticsPawn, delta: float) -> bool:

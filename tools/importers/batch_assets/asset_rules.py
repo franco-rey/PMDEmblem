@@ -8,12 +8,14 @@ from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree
 
+from anchor_rules import ANCHORS_FILENAME, decode_state_anchors, pil_available, write_anchor_file
+
 
 SPRITE_STATE_SOURCES: dict[str, tuple[str, ...]] = {
     "idle": ("Idle-Anim.png",),
     "walk": ("Walk-Anim.png",),
     "hurt": ("Hurt-Anim.png",),
-    "sleep": ("Laying-Anim.png", "EventSleep-Anim.png", "Sleep-Anim.png"),
+    "sleep": ("Sleep-Anim.png", "Laying-Anim.png", "EventSleep-Anim.png"),
     "hop": ("Hop-Anim.png",),
 }
 
@@ -22,12 +24,15 @@ SOURCE_STATE_TO_RUNTIME_KEY: dict[str, str] = {
     "Walk": "walk",
     "Hurt": "hurt",
     "Sleep": "sleep",
-    "Laying": "sleep",
-    "EventSleep": "sleep",
+    "Laying": "laying",
+    "EventSleep": "event_sleep",
     "Hop": "hop",
     "Faint": "faint",
     "Attack": "attack",
 }
+
+ABSENT_FRAME_MARKER: int = -1
+ANIM_STATES_SCHEMA_VERSION: int = 2
 
 
 @dataclass(frozen=True)
@@ -164,15 +169,20 @@ def copy_expanded_animation_states(
     source_dir: Path | None,
     destination_dir: Path,
     dry_run: bool,
-) -> tuple[dict[str, dict[str, object]], dict[str, str], list[str], list[CopyResult]]:
+    decode_anchors: bool = True,
+    source_repo: str = "RawAsset",
+    source_rel_dir: str = "",
+    source_revision: str = "",
+) -> tuple[dict[str, dict[str, object]], dict[str, str], list[str], list[CopyResult], dict[str, Any]]:
     states: dict[str, dict[str, object]] = {}
     checksums: dict[str, str] = {}
     warnings: list[str] = []
     copies: list[CopyResult] = []
+    extras: dict[str, Any] = {"schema_version": ANIM_STATES_SCHEMA_VERSION}
 
     if source_dir is None:
         warnings.append("missing source animation directory")
-        return states, checksums, warnings, copies
+        return states, checksums, warnings, copies, extras
 
     anim_files = sorted(
         path
@@ -181,12 +191,18 @@ def copy_expanded_animation_states(
     )
     if not anim_files:
         warnings.append("no expanded animation states discovered")
-        return states, checksums, warnings, copies
+        return states, checksums, warnings, copies, extras
 
-    metadata_by_source = parse_anim_data(source_dir / "AnimData.xml")
+    root_data = parse_anim_root(source_dir / "AnimData.xml")
+    metadata_by_source: dict[str, dict[str, object]] = root_data["anims"]
+    extras["shadow_size"] = int(root_data.get("shadow_size", 0))
+    physical_by_source: dict[str, dict[str, object]] = {}
+    key_owner: dict[str, str] = {}
     for source in anim_files:
         source_name = source.name.removesuffix("-Anim.png")
         state_key = runtime_state_key(source_name)
+        if state_key in key_owner and key_owner[state_key] != source_name:
+            warnings.append(f"animation state key collision {state_key}: {key_owner[state_key]} and {source_name}")
         destination = destination_dir / "animations" / f"{state_key}.png"
         result = _copy_optional(project_root, source, destination, dry_run)
         copies.append(result)
@@ -194,15 +210,94 @@ def copy_expanded_animation_states(
             warnings.append(f"missing expanded animation state {source_name}")
             continue
         checksums[f"animation:{state_key}"] = result.checksum
-        states[state_key] = {
+        entry: dict[str, object] = {
             "path": result.res_path,
             "source_name": source_name,
             "source_filename": source.name,
             "checksum": result.checksum,
+            "alias_only": False,
             "metadata": metadata_by_source.get(source_name, {}),
         }
+        states[state_key] = entry
+        physical_by_source[source_name] = entry
+        key_owner[state_key] = source_name
 
-    return states, checksums, warnings, copies
+    for source_name, metadata in metadata_by_source.items():
+        copy_of = str(metadata.get("copy_of", ""))
+        if not copy_of or source_name in physical_by_source:
+            continue
+        target_name, chain_error = resolve_copy_chain(source_name, metadata_by_source)
+        if chain_error:
+            warnings.append(chain_error)
+            continue
+        target_entry = physical_by_source.get(target_name)
+        if target_entry is None:
+            warnings.append(f"alias {source_name} resolves to {target_name} which has no sheet")
+            continue
+        state_key = runtime_state_key(source_name)
+        if state_key in states:
+            warnings.append(f"alias {source_name} collides with existing state key {state_key}")
+            continue
+        alias_metadata = dict(target_entry["metadata"])
+        alias_metadata["index"] = int(metadata.get("index", ABSENT_FRAME_MARKER))
+        alias_metadata["copy_of"] = copy_of
+        states[state_key] = {
+            "path": target_entry["path"],
+            "source_name": source_name,
+            "source_filename": str(target_entry["source_filename"]),
+            "checksum": str(target_entry["checksum"]),
+            "alias_only": True,
+            "alias_target": target_name,
+            "metadata": alias_metadata,
+        }
+
+    if decode_anchors:
+        if not pil_available():
+            warnings.append("anchor decoding skipped: Pillow unavailable")
+        else:
+            anchor_states: dict[str, Any] = {}
+            for source_name, entry in physical_by_source.items():
+                metadata = entry["metadata"]
+                decoded = decode_state_anchors(
+                    source_dir,
+                    source_name,
+                    int(metadata.get("frame_width", 0)),
+                    int(metadata.get("frame_height", 0)),
+                )
+                if decoded is None:
+                    warnings.append(f"anchor sidecars unreadable for {source_name}")
+                    continue
+                anchor_states[source_name] = decoded
+            if anchor_states:
+                anchor_result = write_anchor_file(
+                    destination=destination_dir / ANCHORS_FILENAME,
+                    states=anchor_states,
+                    shadow_size=int(root_data.get("shadow_size", 0)),
+                    source_repo=source_repo,
+                    source_dir=source_rel_dir,
+                    source_revision=source_revision,
+                    dry_run=dry_run,
+                )
+                extras["anchors"] = to_res_path(project_root, anchor_result["path"])
+                extras["anchor_state_count"] = int(anchor_result["state_count"])
+
+    return states, checksums, warnings, copies, extras
+
+
+def resolve_copy_chain(source_name: str, metadata_by_source: dict[str, dict[str, object]]) -> tuple[str, str]:
+    seen: list[str] = [source_name]
+    current = source_name
+    while True:
+        metadata = metadata_by_source.get(current)
+        if metadata is None:
+            return current, f"alias chain from {source_name} references unknown state {current}"
+        copy_of = str(metadata.get("copy_of", ""))
+        if not copy_of:
+            return current, ""
+        if copy_of in seen:
+            return current, f"alias chain from {source_name} is cyclic at {copy_of}"
+        seen.append(copy_of)
+        current = copy_of
 
 
 def copy_portrait(
@@ -279,14 +374,20 @@ def runtime_state_key(source_name: str) -> str:
 
 
 def parse_anim_data(path: Path) -> dict[str, dict[str, object]]:
+    return parse_anim_root(path)["anims"]
+
+
+def parse_anim_root(path: Path) -> dict[str, Any]:
+    out: dict[str, Any] = {"shadow_size": 0, "anims": {}}
     if not path.exists():
-        return {}
+        return out
     try:
         root = ElementTree.parse(path).getroot()
     except ElementTree.ParseError:
-        return {}
+        return out
 
-    out: dict[str, dict[str, object]] = {}
+    out["shadow_size"] = _child_int(root, "ShadowSize", 0)
+    anims: dict[str, dict[str, object]] = {}
     for anim in root.findall("./Anims/Anim"):
         name = _child_text(anim, "Name")
         if not name:
@@ -296,17 +397,18 @@ def parse_anim_data(path: Path) -> dict[str, dict[str, object]]:
             for duration in anim.findall("./Durations/Duration")
             if (duration.text or "").strip().lstrip("-").isdigit()
         ]
-        out[name] = {
-            "index": _child_int(anim, "Index"),
+        anims[name] = {
+            "index": _child_int(anim, "Index", ABSENT_FRAME_MARKER),
             "copy_of": _child_text(anim, "CopyOf"),
             "frame_width": _child_int(anim, "FrameWidth"),
             "frame_height": _child_int(anim, "FrameHeight"),
-            "rush_frame": _child_int(anim, "RushFrame"),
-            "hit_frame": _child_int(anim, "HitFrame"),
-            "return_frame": _child_int(anim, "ReturnFrame"),
+            "rush_frame": _child_int(anim, "RushFrame", ABSENT_FRAME_MARKER),
+            "hit_frame": _child_int(anim, "HitFrame", ABSENT_FRAME_MARKER),
+            "return_frame": _child_int(anim, "ReturnFrame", ABSENT_FRAME_MARKER),
             "durations": durations,
             "frame_count": len(durations),
         }
+    out["anims"] = anims
     return out
 
 
@@ -317,10 +419,10 @@ def _child_text(parent: ElementTree.Element, tag: str) -> str:
     return child.text.strip()
 
 
-def _child_int(parent: ElementTree.Element, tag: str) -> int:
+def _child_int(parent: ElementTree.Element, tag: str, default: int = 0) -> int:
     text = _child_text(parent, tag)
     if not text or not text.lstrip("-").isdigit():
-        return 0
+        return default
     return int(text)
 
 

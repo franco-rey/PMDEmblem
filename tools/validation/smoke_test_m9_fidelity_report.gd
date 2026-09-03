@@ -113,14 +113,14 @@ func _check_static_idle_substitutions() -> void:
 		if sprite_set == null:
 			continue
 		var idle: Dictionary = sprite_set.animation_states.get("idle", {})
-		_assert_true(String(idle.get("substitution", "")) == "idle_static_from_walk", "%s records idle_static_from_walk" % slug)
-		_assert_true(int(idle.get("frame_count", 0)) == 1, "%s static idle uses one frame" % slug)
-		_assert_true((idle.get("timing", []) as Array).is_empty(), "%s static idle timing is empty" % slug)
+		_assert_true(bool(idle.get("alias_only", false)) and String(idle.get("alias_target", "")) == "Walk", "%s idle is the source alias of Walk" % slug)
+		_assert_true(String(idle.get("substitution", "")).is_empty(), "%s no longer uses the static idle substitution" % slug)
+		_assert_true(int(idle.get("frame_count", 0)) > 1 and not (idle.get("timing", []) as Array).is_empty(), "%s alias idle keeps the walk frames and timing (%d)" % [slug, int(idle.get("frame_count", 0))])
 		var cell_size: Vector2i = idle.get("cell_size", Vector2i.ZERO)
-		_assert_true(cell_size.x > 0 and cell_size.y > 0, "%s static idle has cell size" % slug)
+		_assert_true(cell_size.x > 0 and cell_size.y > 0, "%s alias idle has cell size" % slug)
 		var path: String = String(idle.get("path", ""))
-		_assert_true(path.ends_with("/animations/walk.png"), "%s static idle uses canonical walk sheet" % slug)
-		_assert_true(FileAccess.file_exists(path), "%s static idle sheet exists" % slug)
+		_assert_true(path.ends_with("/animations/walk.png"), "%s alias idle uses the canonical walk sheet" % slug)
+		_assert_true(FileAccess.file_exists(path), "%s alias idle sheet exists" % slug)
 
 
 func _check_runtime_resource_paths() -> void:

@@ -265,8 +265,8 @@ func _check_damage_variants() -> void:
 	attacker.stats.move_slots = [sonic_boom]
 	attacker.stats.current_pp = [sonic_boom.pp]
 	resolver.execute(attacker, defender, 0, level)
-	_assert_true(defender.stats.curr_health == 102, "Sonic Boom deals one quarter max HP")
-	_assert_true(_damage_amount_by_source(level.battle_log, "sonic_boom", "max_hp") == 33, "MaxHPDamageEvent logs max-HP damage")
+	_assert_true(defender.stats.curr_health == 115, "Sonic Boom deals a flat 20")
+	_assert_true(_damage_amount_by_source(level.battle_log, "sonic_boom", "max_hp") == 20, "MaxHPDamageEvent logs the flat damage")
 	level.battle_log.events.clear()
 
 	var endeavor := _move("endeavor", PokemonMoveResource.CATEGORY_PHYSICAL, 90, PokemonMoveResource.TacticalRangeKind.MELEE, PokemonMoveResource.TARGET_FOE, [])
@@ -288,14 +288,15 @@ func _check_damage_variants() -> void:
 	attacker.stats.move_slots = [psywave]
 	attacker.stats.current_pp = [psywave.pp]
 	resolver.execute(attacker, defender, 0, level)
-	_assert_true(defender.stats.curr_health == 75, "Psywave adjacent distance deals level/2 damage")
-	_assert_true(_damage_amount_by_source(level.battle_log, "psywave", "psywave") == 25, "Psywave logs distance-wave damage")
+	var psywave_amount: int = _damage_amount_by_source(level.battle_log, "psywave", "psywave")
+	_assert_true(psywave_amount >= 25 and psywave_amount <= 75 and defender.stats.curr_health == 100 - psywave_amount, "Psywave deals between half and 1.5x the user's level (%d)" % psywave_amount)
 	level.battle_log.events.clear()
 
 	var fissure := _move("fissure", PokemonMoveResource.CATEGORY_PHYSICAL, 90, PokemonMoveResource.TacticalRangeKind.MELEE, PokemonMoveResource.TARGET_FOE, [])
 	fissure.unsupported_effect_tags = ["PMDC.Dungeon.OHKODamageEvent, PMDC"]
 	defender.stats.curr_health = 77
 	defender.stats.battle_status = Stats.BattleStatus.ACTIVE
+	defender.stats.level = attacker.stats.level
 	attacker.stats.move_slots = [fissure]
 	attacker.stats.current_pp = [fissure.pp]
 	resolver.execute(attacker, defender, 0, level)
@@ -435,7 +436,7 @@ func _check_stat_hp_manipulation() -> void:
 	resolver.execute(attacker, defender, 0, level)
 	_assert_true(attacker.stats.get_stat_stage("attack") == 5 and attacker.stats.get_stat_stage("defense") == -2, "Psych Up copies attack and defense stages")
 	_assert_true(attacker.stats.get_stat_stage("speed") == 4 and attacker.stats.get_stat_stage("accuracy") == -1, "Psych Up copies speed and accuracy stages")
-	_assert_true(attacker.stats.get_stat_stage("evasion") == 0, "Psych Up leaves evasion unchanged per PMDC status list")
+	_assert_true(attacker.stats.get_stat_stage("evasion") == 6, "Psych Up copies evasion too")
 	level.battle_log.events.clear()
 	level.free()
 
@@ -570,7 +571,7 @@ func _check_move_copying() -> void:
 	before_hp = defender.stats.curr_health
 	resolver.execute(attacker, attacker, 0, level)
 	_assert_true(defender.stats.curr_health < before_hp, "Nature Power maps to a skirmish default damaging move")
-	_assert_true(_log_copied_id(level.battle_log, "nature_power") == "swift", "Nature Power logs Swift as the skirmish default")
+	_assert_true(_log_copied_id(level.battle_log, "nature_power") == "tri_attack", "Nature Power logs Tri Attack as the mainline default")
 	level.battle_log.events.clear()
 
 	var metronome := _move("metronome", PokemonMoveResource.CATEGORY_STATUS, 0, PokemonMoveResource.TacticalRangeKind.SELF, PokemonMoveResource.TARGET_SELF, [])

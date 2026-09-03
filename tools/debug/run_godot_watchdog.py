@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-"""Run Godot with wall-clock and output-idle watchdogs."""
-
 from __future__ import annotations
 
 import argparse
@@ -17,7 +14,7 @@ DEFAULT_GODOT = "/Applications/Godot_mono.app/Contents/MacOS/Godot"
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description="Run a Godot script with wall-clock and idle timeouts.")
     parser.add_argument("--godot", default=DEFAULT_GODOT)
     parser.add_argument("--project", default=".")
     parser.add_argument("--script")

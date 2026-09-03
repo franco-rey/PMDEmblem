@@ -110,11 +110,17 @@ func _check_responsive_layout(label: String, expect_wide: bool) -> void:
 	_assert_true(roster_scroll != null, "%s roster scroll exists for layout check" % label)
 	if roster_scroll == null:
 		return
-	var budget: float = float(lobby.call("_roster_width_budget"))
-	var available_width: float = minf(budget, roster_scroll.size.x) if roster_scroll.size.x > 1.0 else budget
-	var expected_columns: int = clampi(int(floor((available_width + SkirmishLobby.GRID_GAP) / (SkirmishLobby.CELL_SIZE.x + SkirmishLobby.GRID_GAP))), SkirmishLobby.GRID_MIN_COLUMNS, SkirmishLobby.GRID_MAX_COLUMNS)
-	_assert_true(roster_grid.columns == expected_columns, "%s roster grid columns use available width" % label)
-	_assert_true((roster_grid.columns > 8) == expect_wide, "%s roster column count matches layout mode" % label)
+	var available_width: float = float(lobby.call("_roster_available_width"))
+	var expected_layout: Dictionary = lobby.call("_grid_layout_for_width", available_width)
+	var expected_columns: int = int(expected_layout["columns"])
+	var cell_px: float = float(lobby.get("roster_cell_px"))
+	_assert_true(roster_grid.columns == expected_columns, "%s roster grid columns use available width (%d vs %d)" % [label, roster_grid.columns, expected_columns])
+	_assert_true(roster_grid.columns == SkirmishLobby.ROSTER_COLUMNS, "%s roster keeps %d columns (%d)" % [label, SkirmishLobby.ROSTER_COLUMNS, roster_grid.columns])
+	_assert_true(is_equal_approx(cell_px, float(expected_layout["cell"])) and cell_px >= SkirmishLobby.ROSTER_MIN_CELL, "%s roster cells fill the row at %.0f px" % [label, cell_px])
+	_assert_true((cell_px > 90.0) == expect_wide, "%s roster cell size matches layout mode (%.0f px)" % [label, cell_px])
+	_assert_true(float(roster_grid.columns) * cell_px + SkirmishLobby.GRID_GAP * float(roster_grid.columns - 1) <= available_width + 1.0, "%s roster cells fit the available width" % label)
+	var first_cell: Button = roster_grid.get_child(0) as Button
+	_assert_true(first_cell != null and first_cell.flat and first_cell.find_child("NameLabel", true, false) == null and not first_cell.tooltip_text.is_empty(), "%s roster cells are flat portraits with name tooltips" % label)
 	_assert_control_inside_lobby("PlayerTeamTray", label)
 	_assert_control_inside_lobby("EnemyTeamTray", label)
 	_assert_control_inside_lobby("MiddleLayout", label)

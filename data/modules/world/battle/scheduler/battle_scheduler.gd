@@ -3,6 +3,7 @@ extends RefCounted
 
 signal turn_started(unit: BattleUnit)
 signal turn_completed(unit: BattleUnit)
+signal round_building
 signal round_started
 signal battle_ended
 
@@ -26,6 +27,7 @@ func start_battle(units: Array, battle_seed: int) -> void:
 		if u is BattleUnit:
 			_units.append(u)
 			_tie_values[u] = _rng.randi()
+	round_building.emit()
 	_build_queue()
 	round_started.emit()
 	_activate_next()
@@ -137,6 +139,7 @@ func _activate_next() -> void:
 			battle_ended.emit()
 		return
 
+	round_building.emit()
 	_build_queue()
 	round_started.emit()
 	while _queue.size() > 0:

@@ -12,7 +12,15 @@ const DEFAULT_STATUS_PAYLOADS: Dictionary = {
 	"freeze": {"counter": 5},
 	"heal_block": {"counter": 50},
 	"ingrain": {"counter": 10, "hp_fraction": 6},
-	"leech_seed": {"hp_fraction": 12},
+	"leech_seed": {"hp_fraction": 8},
+	"bind": {"counter": 5, "hp_fraction": 8},
+	"wrap": {"counter": 5, "hp_fraction": 8},
+	"clamp": {"counter": 5, "hp_fraction": 8},
+	"fire_spin": {"counter": 5, "hp_fraction": 8},
+	"sand_tomb": {"counter": 5, "hp_fraction": 8},
+	"whirlpool": {"counter": 5, "hp_fraction": 8},
+	"magma_storm": {"counter": 5, "hp_fraction": 8},
+	"infestation": {"counter": 5, "hp_fraction": 8},
 	"light_screen": {"counter": 10},
 	"lucky_chant": {"counter": 25},
 	"mist": {"counter": 15},
@@ -25,10 +33,39 @@ const DEFAULT_STATUS_PAYLOADS: Dictionary = {
 	"safeguard": {"counter": 15},
 	"sleep": {"counter": 5},
 	"taunted": {"counter": 15},
+	"perish_song": {"perish_left": 3},
+	"yawning": {"counter": 2},
+	"wish": {"counter": 2},
+	"future_sight": {"counter": 3},
+	"telekinesis": {"counter": 3},
+	"magnet_rise": {"counter": 5},
+	"stockpile": {"stacks": 1},
+	"sleepless": {"counter": 3},
+	"sure_shot": {"counter": 2},
+	"outrage": {"counter": 3},
+	"thrash": {"counter": 3},
+	"petal_dance": {"counter": 3},
+	"in_love": {"counter": 5},
+	"rooted": {"counter": 3},
+	"bide": {"counter": 2, "stored": 0},
+	"cud_chew": {"counter": 1},
+	"embargo": {"counter": 5},
+	"decoy": {},
+	"follow_me": {},
+	"rage_powder": {},
+	"fairy_lock": {"counter": 1},
 }
 
 var modifiers: Dictionary = {}
 var override_name: String
+var last_hit_move_type: String = ""
+var same_move_streak: int = 0
+var gender: int = 2
+var weight_kg: float = 0.0
+var transformed: bool = false
+var last_attacker: Variant = null
+var consumed_berry_id: String = ""
+var choice_locked_item: String = ""
 var expertise: String
 var level: int = 1
 
@@ -111,6 +148,8 @@ func init_from_pokemon(instance: PokemonInstanceResource) -> void:
 		speed = int(calculated.get("speed", 1))
 		attack_power = int(maxi(attack, special_attack) / 5.0)
 		sprite = form.sprite_set.idle_path if form.sprite_set != null else ""
+		weight_kg = form.weight
+		gender = instance.gender if instance.gender >= 0 else _roll_gender(form, instance)
 	else:
 		types = []
 		hp_max = 1
@@ -177,8 +216,71 @@ func first_usable_move_index(require_damaging: bool = false) -> int:
 	return -1
 
 
+func _roll_gender(form: PokemonFormResource, instance: PokemonInstanceResource) -> int:
+	var weights: Vector3i = form.gender_weights
+	var total: int = weights.x + weights.y + weights.z
+	if total <= 0:
+		return 2
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("%s:%d:%s:%d:%d" % [instance.species.species_id if instance.species != null else "", instance.form_index, instance.nickname, instance.level, instance.team])
+	var roll: int = rng.randi_range(1, total)
+	if roll <= weights.x:
+		return 0
+	if roll <= weights.x + weights.y:
+		return 1
+	return 2
+
+
+func change_form(form_index: int) -> bool:
+	if pokemon_instance == null or pokemon_instance.species == null:
+		return false
+	if form_index < 0 or form_index >= pokemon_instance.species.forms.size() or form_index == pokemon_instance.form_index:
+		return false
+	var ratio: float = float(curr_health) / float(maxi(1, max_health))
+	pokemon_instance.form_index = form_index
+	var form: PokemonFormResource = pokemon_instance.resolved_form()
+	if form == null:
+		return false
+	var calculated: Dictionary = PokemonStatCalculator.calculate_for_instance(pokemon_instance)
+	hp_max = int(calculated.get("hp", 1))
+	max_health = hp_max
+	attack = int(calculated.get("attack", 1))
+	defense = int(calculated.get("defense", 1))
+	special_attack = int(calculated.get("special_attack", 1))
+	special_defense = int(calculated.get("special_defense", 1))
+	speed = int(calculated.get("speed", 1))
+	types = form.types()
+	weight_kg = form.weight
+	curr_health = clampi(int(round(float(max_health) * ratio)), 1 if ratio > 0.0 else 0, max_health)
+	return true
+
+
+func transform_into(other: Stats, other_intrinsics: Array[String]) -> bool:
+	if other == null or other == self or transformed:
+		return false
+	types = other.types.duplicate()
+	for stat in ["attack", "defense", "special_attack", "special_defense", "speed"]:
+		proxy_stats[stat] = other.raw_battle_stat(stat)
+	stat_stages = other.stat_stages.duplicate(true)
+	move_slots = other.move_slots.duplicate()
+	current_pp = []
+	for move in move_slots:
+		current_pp.append(mini(5, move.pp) if move != null else 0)
+	var copied: Array[String] = []
+	for slug in other_intrinsics:
+		copied.append(String(slug))
+	temporary_intrinsic_slugs = copied
+	intrinsic_override_active = true
+	weight_kg = other.weight_kg
+	transformed = true
+	return true
+
+
 func reset_battle_modifiers() -> void:
 	battle_statuses = {}
+	transformed = false
+	last_attacker = null
+	consumed_berry_id = ""
 	temporary_intrinsic_slugs = []
 	intrinsic_override_active = false
 	stat_stages = {}
@@ -241,6 +343,7 @@ func remove_battle_status(status_id: String) -> Dictionary:
 
 
 func record_move_use(move_id: String, slot_index: int) -> void:
+	same_move_streak = same_move_streak + 1 if move_id == last_used_move_id and not move_id.is_empty() else 1
 	last_used_move_id = move_id
 	last_used_move_index = slot_index
 

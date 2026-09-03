@@ -74,5 +74,7 @@ static func clone_for_run(template: PokemonInstanceResource) -> PokemonInstanceR
 	instance.held_item = template.held_item
 	instance.runtime_modifiers = template.runtime_modifiers.duplicate(true)
 	instance.temporary_statuses = template.temporary_statuses.duplicate()
+	instance.ability_override = template.ability_override
+	instance.loadout_locked = template.loadout_locked
 	prepare_for_spawn(instance, false, false)
 	return instance

@@ -84,7 +84,8 @@ func _check_reaction(resolver: BattleAnimationResolver, pawn: TacticsPawn, sprit
 	var log := BattleLog.new()
 	var chosen: String = resolver.select_reaction(pawn, _move(purpose, PokemonMoveResource.CATEGORY_STATUS), purpose, log)
 	_assert_true(sprite.can_play_state(chosen), "%s reaction chose playable state %s" % [purpose, chosen])
-	_assert_true(pawn.res.forced_anim_state == chosen, "%s reaction handed state to pawn playback" % purpose)
+	var handed: bool = pawn.res.forced_anim_state == chosen or (chosen == TacticsPawnSprite.ANIM_HURT and pawn.res.hurt_remaining > 0.0)
+	_assert_true(handed, "%s reaction handed state to pawn playback" % purpose)
 	_assert_true(_has_animation_event(log, purpose), "%s reaction emitted animation event" % purpose)
 
 

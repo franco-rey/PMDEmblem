@@ -50,15 +50,31 @@ func get_effectiveness_dual(attacker_type: String, defender_type1: String, defen
 		def1 = get_type_index("none")
 	if def2 < 0:
 		def2 = get_type_index("none")
-	var lvl1: int = _level(att, def1)
-	var lvl2: int = _level(att, def2)
-	var combined: int = lvl1 + lvl2
-	if combined < 0 or combined >= effectiveness_table.size():
+	return _level_multiplier(_level(att, def1)) * _level_multiplier(_level(att, def2))
+
+
+func get_effectiveness_dual_ignoring_immunity(attacker_type: String, defender_type1: String, defender_type2: String) -> float:
+	var att: int = get_type_index(attacker_type)
+	if att < 0:
 		return DEFAULT_NEUTRAL_MULTIPLIER
-	var divisor: float = float(effectiveness_table[neutral_index]) if neutral_index < effectiveness_table.size() else 0.0
-	if divisor <= 0.0:
-		return DEFAULT_NEUTRAL_MULTIPLIER
-	return float(effectiveness_table[combined]) / divisor
+	var def1: int = get_type_index(defender_type1)
+	var def2: int = get_type_index(defender_type2 if not defender_type2.is_empty() else "none")
+	var total: float = 1.0
+	for level in [_level(att, def1 if def1 >= 0 else get_type_index("none")), _level(att, def2 if def2 >= 0 else get_type_index("none"))]:
+		total *= 1.0 if level == LEVEL_IMMUNE else _level_multiplier(level)
+	return total
+
+
+static func _level_multiplier(level: int) -> float:
+	match level:
+		LEVEL_IMMUNE:
+			return 0.0
+		LEVEL_NOT_VERY_EFFECTIVE:
+			return 0.5
+		LEVEL_SUPER_EFFECTIVE:
+			return 2.0
+		_:
+			return 1.0
 
 
 func get_level(attacker_type: String, defender_type: String) -> int:

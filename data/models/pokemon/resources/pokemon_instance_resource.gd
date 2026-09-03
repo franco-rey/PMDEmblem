@@ -39,6 +39,9 @@ enum ControlType {
 @export var held_item: PokemonItemResource
 @export var runtime_modifiers: Dictionary = {}
 @export var temporary_statuses: Array[String] = []
+@export var ability_override: String = ""
+@export var gender: int = -1
+@export var loadout_locked: bool = false
 
 
 func display_name() -> String:

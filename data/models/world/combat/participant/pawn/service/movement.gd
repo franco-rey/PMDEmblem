@@ -9,6 +9,33 @@ func look_at_direction(pawn: TacticsPawn, dir: Vector3) -> void:
 	pawn.set_rotation(_new_rot)
 
 
+func look_at_direction_8(pawn: TacticsPawn, dir: Vector3) -> Vector3i:
+	var flat: Vector3 = Vector3(dir.x, 0.0, dir.z)
+	if flat.length() < 0.0001:
+		return Vector3i.ZERO
+	var grid: Vector3i = snap_direction_8(flat)
+	var facing: Vector3 = Vector3(float(grid.x), 0.0, float(grid.z)).normalized()
+	var _angle: float = Vector3.FORWARD.signed_angle_to(facing, Vector3.UP) + PI
+	pawn.set_rotation(Vector3.UP * _angle)
+	return grid
+
+
+func facing_direction_8(pawn: TacticsPawn) -> Vector3i:
+	if pawn == null:
+		return Vector3i.ZERO
+	return snap_direction_8(Vector3.FORWARD.rotated(Vector3.UP, pawn.rotation.y - PI))
+
+
+static func snap_direction_8(dir: Vector3) -> Vector3i:
+	var flat: Vector2 = Vector2(dir.x, dir.z)
+	if flat.length() < 0.0001:
+		return Vector3i.ZERO
+	var angle: float = flat.angle()
+	var octant: int = int(round(angle / (PI / 4.0)))
+	var snapped: Vector2 = Vector2.RIGHT.rotated(float(octant) * PI / 4.0)
+	return Vector3i(int(round(snapped.x)), 0, int(round(snapped.y)))
+
+
 func move_along_path(pawn: TacticsPawn, delta: float) -> void:
 	if pawn.res.pathfinding_tilestack.is_empty() or not pawn.res.can_move:
 		return
@@ -22,9 +49,19 @@ func move_along_path(pawn: TacticsPawn, delta: float) -> void:
 		if pawn.global_position.distance_to(_first_tile_in_stack) >= 0.15:
 			return
 
-	pawn.res.pathfinding_tilestack.pop_front()
+	var reached: Variant = pawn.res.pathfinding_tilestack.pop_front()
 	reset_movement_state(pawn)
+	if reached is Vector3:
+		_notify_tile_reached(pawn, reached)
 	check_movement_completion(pawn)
+
+
+func _notify_tile_reached(pawn: TacticsPawn, position: Vector3) -> void:
+	var node: Node = pawn.get_parent()
+	while node != null and not (node is TacticsLevel):
+		node = node.get_parent()
+	if node is TacticsLevel:
+		(node as TacticsLevel).on_pawn_reached_tile(pawn, position)
 
 
 func start_movement(pawn: TacticsPawn) -> void:
@@ -78,3 +115,9 @@ func check_movement_completion(pawn: TacticsPawn) -> void:
 	if not pawn.res.can_move:
 		pawn.res.set_moving(false)
 		pawn.character.adjust_to_center(pawn)
+		var node: Node = pawn.get_parent()
+		while node != null:
+			if node is TacticsLevel:
+				(node as TacticsLevel).try_pickup_landed_item(pawn)
+				break
+			node = node.get_parent()

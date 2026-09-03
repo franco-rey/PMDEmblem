@@ -92,7 +92,10 @@ static func build(
 	enemy_paths: Array[String],
 	map_path: String,
 	seed_text: String,
-	control_mode: String = SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU
+	control_mode: String = SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU,
+	player_item_ids: Array[String] = [],
+	enemy_item_ids: Array[String] = [],
+	slot_specs: Dictionary = {}
 ) -> Dictionary:
 	if player_paths.size() < MIN_TEAM_SIZE or player_paths.size() > MAX_TEAM_SIZE:
 		return {"ok": false, "error": "Player team must be %d-%d Pokemon" % [MIN_TEAM_SIZE, MAX_TEAM_SIZE]}
@@ -126,6 +129,16 @@ static func build(
 	var enemy_team: Array[PokemonInstanceResource] = _load_team_for_side(enemy_paths, PokemonInstanceResource.Team.ENEMY, SkirmishControlMode.enemy_control_type(resolved_mode), seed, "enemy")
 	if player_team.size() != player_paths.size() or enemy_team.size() != enemy_paths.size():
 		return {"ok": false, "error": "One or more instance files could not load"}
+	var item_error: String = apply_held_items(player_team, player_item_ids, seed, "player")
+	if item_error.is_empty():
+		item_error = apply_held_items(enemy_team, enemy_item_ids, seed, "enemy")
+	if not item_error.is_empty():
+		return {"ok": false, "error": item_error}
+	var spec_error: String = apply_slot_specs(player_team, _spec_list(slot_specs, "player"), seed, "player")
+	if spec_error.is_empty():
+		spec_error = apply_slot_specs(enemy_team, _spec_list(slot_specs, "enemy"), seed, "enemy")
+	if not spec_error.is_empty():
+		return {"ok": false, "error": spec_error}
 
 	var player_order: Array[int] = build_spawn_order(seed, player_team.size(), player_pool)
 	var enemy_order: Array[int] = build_spawn_order(seed ^ 0x5A5A5A5A, enemy_team.size(), enemy_pool)
@@ -146,10 +159,109 @@ static func build(
 		"enemy_spawn_order": enemy_order,
 		"player_roster": player_paths,
 		"enemy_roster": enemy_paths,
+		"player_items": _normalized_item_ids(player_item_ids, player_paths.size()),
+		"enemy_items": _normalized_item_ids(enemy_item_ids, enemy_paths.size()),
+		"player_specs": _spec_list(slot_specs, "player"),
+		"enemy_specs": _spec_list(slot_specs, "enemy"),
 		"map_path": map_path,
 	}
 	SkirmishControlMode.apply_to_definition(definition, resolved_mode)
 	return {"ok": true, "definition": definition, "seed": seed}
+
+
+const RANDOM_CHOICE: String = "random"
+const ITEM_SEED_SALT: int = 0x17E3A5C1
+const ABILITY_SEED_SALT: int = 0x2B1D9F07
+
+
+static func apply_held_items(team: Array[PokemonInstanceResource], item_ids: Array[String], seed: int = 0, side_key: String = "") -> String:
+	for i in range(team.size()):
+		var instance: PokemonInstanceResource = team[i]
+		if instance == null:
+			continue
+		var item_id: String = String(item_ids[i]).strip_edges() if i < item_ids.size() else ""
+		if item_id == RANDOM_CHOICE:
+			item_id = random_item_id(seed, side_key, i)
+		if item_id.is_empty():
+			instance.held_item = null
+			continue
+		var item: PokemonItemResource = PokemonItemService.load_item(item_id)
+		if item == null:
+			return "Unknown held item %s for slot %d" % [item_id, i + 1]
+		if not BattleItemCatalog.is_applicable(item, ActionPresentationCatalog.shared()):
+			return "%s cannot be held in a standalone battle" % item.display_name()
+		instance.held_item = item
+	return ""
+
+
+static func random_item_id(seed: int, side_key: String, slot_index: int) -> String:
+	var pool: Array[Dictionary] = BattleItemCatalog.entries()
+	if pool.is_empty():
+		return ""
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("%d:%s:%d:item" % [seed ^ ITEM_SEED_SALT, side_key, slot_index])
+	return String(pool[int(rng.randi_range(0, pool.size() - 1))].get("item_id", ""))
+
+
+static func apply_slot_specs(team: Array[PokemonInstanceResource], specs: Array, seed: int, side_key: String) -> String:
+	for i in range(team.size()):
+		var instance: PokemonInstanceResource = team[i]
+		if instance == null or i >= specs.size() or not (specs[i] is Dictionary):
+			continue
+		var spec: Dictionary = specs[i]
+		var moves: Variant = spec.get("moves", [])
+		if moves is Array and not (moves as Array).is_empty():
+			var move_error: String = SkirmishMoveLoadout.apply_explicit_loadout(instance, moves)
+			if not move_error.is_empty():
+				return "%s slot %d: %s" % [side_key.capitalize(), i + 1, move_error]
+		var ability: String = String(spec.get("ability", "")).strip_edges()
+		if ability == RANDOM_CHOICE:
+			ability = random_ability_id(instance, seed, side_key, i)
+		if not ability.is_empty():
+			if not available_ability_ids(instance).has(ability):
+				return "%s slot %d: %s is not an ability of this Pokemon" % [side_key.capitalize(), i + 1, ability]
+			instance.ability_override = ability
+	return ""
+
+
+static func available_ability_ids(instance: PokemonInstanceResource) -> Array[String]:
+	var out: Array[String] = []
+	if instance == null:
+		return out
+	var form: PokemonFormResource = instance.resolved_form()
+	if form == null:
+		return out
+	for slug in [form.intrinsic1, form.intrinsic2, form.intrinsic3]:
+		var key: String = String(slug).strip_edges().to_lower()
+		if key.is_empty() or key == "none" or out.has(key):
+			continue
+		out.append(key)
+	return out
+
+
+static func random_ability_id(instance: PokemonInstanceResource, seed: int, side_key: String, slot_index: int) -> String:
+	var pool: Array[String] = available_ability_ids(instance)
+	if pool.is_empty():
+		return ""
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("%d:%s:%d:ability" % [seed ^ ABILITY_SEED_SALT, side_key, slot_index])
+	return pool[int(rng.randi_range(0, pool.size() - 1))]
+
+
+static func _spec_list(slot_specs: Dictionary, side_key: String) -> Array:
+	var raw: Variant = slot_specs.get(side_key, [])
+	var out: Array = []
+	if raw is Array:
+		for entry in raw:
+			out.append((entry as Dictionary).duplicate(true) if entry is Dictionary else {})
+	return out
+
+
+static func _normalized_item_ids(item_ids: Array[String], size: int) -> Array[String]:
+	var out: Array[String] = []
+	for i in range(size):
+		out.append(String(item_ids[i]).strip_edges() if i < item_ids.size() else "")
+	return out
 
 
 static func random_roster_paths(count: int, seed: int = 0) -> Array[String]:

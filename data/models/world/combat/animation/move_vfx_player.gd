@@ -1,6 +1,8 @@
 class_name MoveVFXPlayer
 extends Node3D
 
+const LEGACY_LIFETIME: float = 0.6
+
 const MOVE_VFX_MAP: Dictionary = {
 	"aura_sphere": {"asset_path": "res://assets/visuals/raw_asset/Particle/Aura_Sphere_Shot.Dir8.png", "anchor": "path", "kind": "particle", "hit_frame": 0},
 	"confusion": {"asset_path": "res://assets/visuals/raw_asset/Particle/Confuse_Ray.None.png", "anchor": "target", "kind": "particle", "hit_frame": 0},
@@ -37,7 +39,11 @@ func play_for_move(move: PokemonMoveResource, source: Node3D, target: Node3D, ba
 	sprite.set_meta("asset_path", String(config.get("asset_path", "")))
 	sprite.set_meta("anchor", String(config.get("anchor", "target")))
 	sprite.set_meta("hit_frame", int(config.get("hit_frame", 0)))
+	sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	sprite.pixel_size = 0.04
+	sprite.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 	add_child(sprite)
+	_schedule_release(sprite, LEGACY_LIFETIME)
 	_append(battle_log, {
 		"kind": "move_vfx_spawned",
 		"move_id": move_id,
@@ -51,6 +57,13 @@ func play_for_move(move: PokemonMoveResource, source: Node3D, target: Node3D, ba
 func release_vfx(node: Node) -> void:
 	if node != null and is_instance_valid(node):
 		node.queue_free()
+
+
+func _schedule_release(node: Node, seconds: float) -> void:
+	if node == null or not is_inside_tree():
+		return
+	var timer: SceneTreeTimer = get_tree().create_timer(seconds)
+	timer.timeout.connect(func() -> void: release_vfx(node))
 
 
 func coverage_report() -> Dictionary:

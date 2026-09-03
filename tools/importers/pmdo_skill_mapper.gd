@@ -18,6 +18,7 @@ const WAVE_MOTION_ACTION_TYPE: String = "RogueEssence.Dungeon.WaveMotionAction, 
 const SUPPORTED_HIT_EVENTS: Array = [
 	"PMDC.Dungeon.DamageFormulaEvent, PMDC",
 	"PMDC.Dungeon.StatusBattleEvent, PMDC",
+	"PMDC.Dungeon.GiveContinuousDamageEvent, PMDC",
 	"PMDC.Dungeon.StatusStackBattleEvent, PMDC",
 	"PMDC.Dungeon.RemoveStatusBattleEvent, PMDC",
 	"PMDC.Dungeon.WeatherHPEvent, PMDC",
@@ -116,6 +117,25 @@ static func extract_effect_tags(skill_data: Dictionary) -> Dictionary:
 	return {"all": all_tags, "unsupported": unsupported}
 
 
+static func extract_flags(skill_data: Dictionary) -> Array[String]:
+	var out: Array[String] = []
+	var states: Variant = skill_data.get("SkillStates", [])
+	if not (states is Array):
+		return out
+	for state in states:
+		if not (state is Dictionary):
+			continue
+		var type_parts: PackedStringArray = String((state as Dictionary).get("$type", "")).get_slice(",", 0).split(".")
+		var type_name: String = String(type_parts[type_parts.size() - 1]) if not type_parts.is_empty() else ""
+		if type_name.ends_with("State"):
+			type_name = type_name.substr(0, type_name.length() - 5)
+		var flag: String = type_name.to_snake_case()
+		if flag.is_empty() or flag == "base_power" or out.has(flag):
+			continue
+		out.append(flag)
+	return out
+
+
 static func extract_effect_records(skill_data: Dictionary, move_slug: String, strikes: int) -> Array[Dictionary]:
 	var records: Array[Dictionary] = []
 	if strikes > 1:
@@ -172,6 +192,8 @@ static func _append_records_for_entry(records: Array[Dictionary], entry: Variant
 				"target": "hit_target",
 			})
 		"PMDC.Dungeon.StatusBattleEvent, PMDC":
+			records.append(_status_record(value, tag, source_bucket))
+		"PMDC.Dungeon.GiveContinuousDamageEvent, PMDC":
 			records.append(_status_record(value, tag, source_bucket))
 		"PMDC.Dungeon.StatusStackBattleEvent, PMDC":
 			records.append(_status_stack_record(value, tag, source_bucket))

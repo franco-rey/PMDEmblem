@@ -17,6 +17,11 @@ func _ready() -> void:
 	serv.setup(self)
 	controls.set_actions_menu_visibility(false, self)
 	show_pawn_stats(false)
+	var badges := StatusBadgeRow.new()
+	badges.name = "StatusBadges"
+	badges.pawn = self
+	badges.position = Vector3(0.0, 1.32, 0.0)
+	$Character.add_child(badges)
 
 
 func _physics_process(delta: float) -> void:
@@ -65,6 +70,10 @@ func end_pawn_turn() -> void:
 
 func attack_target_pawn(target_pawn: TacticsPawn, delta: float) -> bool:
 	return serv.attack_target_pawn(self, target_pawn, delta)
+
+
+func perform_intent(intent: BattleActionIntent, delta: float) -> bool:
+	return serv.combat.perform_intent(self, intent, delta)
 
 
 func move_along_path(delta: float) -> void:

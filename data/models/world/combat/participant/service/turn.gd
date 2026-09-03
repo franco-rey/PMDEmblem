@@ -32,6 +32,9 @@ func handle_human_turn(delta: float, actor_parent: Node3D, target_parent: Node3D
 		res.STAGE_DISPLAY_TARGETS: participant.player.display_attackable_targets()
 		res.STAGE_SELECT_ATTACK_TARGET: controls.select_pawn_to_attack()
 		res.STAGE_ATTACK: participant.serv.combat_service.attack_pawn(delta, true)
+		res.STAGE_SELECT_ITEM_ACTION: controls.select_item_action()
+		res.STAGE_SELECT_THROW_TARGET: controls.select_throw_target()
+		res.STAGE_ITEM_ACTION: participant.serv.combat_service.perform_item_action(delta, true)
 
 
 func handle_ai_turn(delta: float, actor_parent: Node3D, target_parent: Node3D, participant: TacticsParticipant) -> void:

@@ -2,6 +2,10 @@
 class_name PMDOImporter
 extends RefCounted
 
+const HAZARD_MOVES: Array[String] = ["spikes", "toxic_spikes", "stealth_rock", "sticky_web"]
+const SELF_FIELD_MOVES: Array[String] = ["mat_block", "rototiller", "substitute"]
+const EXPLOSION_MOVES: Array[String] = ["explosion", "self_destruct", "mind_blown", "misty_explosion"]
+const ROAR_MOVES: Array[String] = ["roar", "whirlwind"]
 const _SkillMapper: GDScript = preload("res://tools/importers/pmdo_skill_mapper.gd")
 const _Paths: GDScript = preload("res://tools/importers/pmdo_paths.gd")
 const _Validation: GDScript = preload("res://tools/validation/pokemon_validation.gd")
@@ -191,6 +195,42 @@ func _find_element_table_state(node: Variant) -> Dictionary:
 
 
 
+func run_scoped_sprite_sets(slugs: Array[String]) -> Dictionary:
+	var report: PokemonValidation = _Validation.new()
+	var import_context: Dictionary = _load_import_context()
+	var import_entries: Array = import_context.get("species", [])
+	var selected: Array = []
+	var selected_slugs: Array[String] = []
+	for raw_entry in import_entries:
+		if not (raw_entry is Dictionary):
+			continue
+		var slug: String = String((raw_entry as Dictionary).get("slug", ""))
+		if slugs.has(slug):
+			selected.append(raw_entry)
+			selected_slugs.append(slug)
+	var missing: Array[String] = []
+	for slug in slugs:
+		if not selected_slugs.has(slug):
+			missing.append(slug)
+	var moves: Dictionary = {}
+	for move_slug in _move_slugs_for_import(selected):
+		var move_path: String = _Paths.generated_move_path(move_slug)
+		if ResourceLoader.exists(move_path):
+			moves[move_slug] = move_path
+		else:
+			report.add_warning("Scoped sprite import: generated move %s missing at %s" % [move_slug, move_path])
+	var sprite_sets: Dictionary = _import_sprite_sets(selected, report)
+	_finalize_sprite_sets(selected, sprite_sets, moves, report)
+	return {
+		"selected": selected_slugs,
+		"missing": missing,
+		"sprite_sets": sprite_sets,
+		"errors": report.errors.duplicate(),
+		"warnings": report.aggregate_warnings.duplicate(),
+		"manifest_entry_count": import_entries.size(),
+	}
+
+
 func _import_sprite_sets(import_entries: Array, report: PokemonValidation) -> Dictionary:
 	var out: Dictionary = {}
 	for raw_entry in import_entries:
@@ -224,6 +264,9 @@ func _build_sprite_set(entry: Dictionary, report: PokemonValidation) -> PokemonS
 	sprite_set.sleep_path = String(assets.get("sleep", ""))
 	sprite_set.hop_path = String(assets.get("hop", ""))
 	sprite_set.anim_data_path = String(assets.get("anim_data", ""))
+	sprite_set.anchors_path = String(assets.get("anchors", ""))
+	sprite_set.shadow_size = int(assets.get("shadow_size", 0))
+	sprite_set.animation_schema_version = int(assets.get("animation_schema_version", 1))
 	sprite_set.animation_states = _animation_states_from_manifest(sprite_set, entry)
 	sprite_set.portrait_paths = _portrait_paths_from_manifest(assets)
 
@@ -240,6 +283,11 @@ func _build_sprite_set(entry: Dictionary, report: PokemonValidation) -> PokemonS
 		if not sprite_set.validation_warnings.has(anim_msg):
 			sprite_set.validation_warnings.append(anim_msg)
 		report.add_warning(anim_msg)
+	if not sprite_set.anchors_path.is_empty() and not _res_path_exists(sprite_set.anchors_path):
+		var anchors_msg: String = "%s missing anchors at %s" % [project_slug, sprite_set.anchors_path]
+		if not sprite_set.validation_warnings.has(anchors_msg):
+			sprite_set.validation_warnings.append(anchors_msg)
+		report.add_warning(anchors_msg)
 
 	return sprite_set
 
@@ -248,8 +296,12 @@ func _animation_states_from_manifest(sprite_set: PokemonSpriteSetResource, entry
 	var assets: Dictionary = entry.get("assets", {})
 	var states: Dictionary = _default_animation_states(sprite_set)
 	var raw_states: Variant = assets.get("animation_states", {})
+	var schema_version: int = int(assets.get("animation_schema_version", 1))
+	var absent_default: int = PokemonSpriteSetResource.ABSENT_FRAME if schema_version >= 2 else 0
 	if raw_states is Dictionary:
-		for state_key_v in (raw_states as Dictionary).keys():
+		var state_keys: Array = (raw_states as Dictionary).keys()
+		state_keys.sort()
+		for state_key_v in state_keys:
 			var state_key: String = String(state_key_v)
 			var raw_entry: Variant = (raw_states as Dictionary)[state_key_v]
 			if not (raw_entry is Dictionary):
@@ -259,7 +311,7 @@ func _animation_states_from_manifest(sprite_set: PokemonSpriteSetResource, entry
 			if path.is_empty():
 				continue
 			var metadata: Dictionary = state_entry.get("metadata", {})
-			states[state_key] = {
+			var built: Dictionary = {
 				"path": path,
 				"source_name": String(state_entry.get("source_name", state_key.capitalize())),
 				"source_filename": String(state_entry.get("source_filename", "")),
@@ -268,12 +320,16 @@ func _animation_states_from_manifest(sprite_set: PokemonSpriteSetResource, entry
 				"directions": _directions_for_sheet(path, int(metadata.get("frame_height", 0))),
 				"frame_count": int(metadata.get("frame_count", 0)),
 				"timing": _typed_int_array(metadata.get("durations", [])),
-				"source_index": int(metadata.get("index", 0)),
+				"source_index": int(metadata.get("index", absent_default)),
 				"copy_of": String(metadata.get("copy_of", "")),
-				"rush_frame": int(metadata.get("rush_frame", 0)),
-				"hit_frame": int(metadata.get("hit_frame", 0)),
-				"return_frame": int(metadata.get("return_frame", 0)),
+				"rush_frame": int(metadata.get("rush_frame", absent_default)),
+				"hit_frame": int(metadata.get("hit_frame", absent_default)),
+				"return_frame": int(metadata.get("return_frame", absent_default)),
 			}
+			if bool(state_entry.get("alias_only", false)):
+				built["alias_only"] = true
+				built["alias_target"] = String(state_entry.get("alias_target", ""))
+			states[state_key] = built
 	_apply_sprite_substitutions(states, sprite_set, assets)
 	_apply_animation_aliases(states)
 	return states
@@ -302,6 +358,8 @@ func _apply_sprite_substitutions(states: Dictionary, sprite_set: PokemonSpriteSe
 	if not (substitutions is Dictionary):
 		return
 	if String((substitutions as Dictionary).get("idle", "")) != "idle_static_from_walk":
+		return
+	if states.has("idle") and states["idle"] is Dictionary and bool((states["idle"] as Dictionary).get("alias_only", false)):
 		return
 	if sprite_set.idle_path.is_empty() or not states.has("walk"):
 		return
@@ -517,6 +575,22 @@ func _import_move(slug: String, source_roots: Dictionary, report: PokemonValidat
 	var range_info: Dictionary = _SkillMapper.map_hitbox(hitbox)
 	move.tactical_range_kind = int(range_info[_SkillMapper.RESULT_KIND])
 	move.tactical_range_value = int(range_info[_SkillMapper.RESULT_VALUE])
+	if HAZARD_MOVES.has(slug) or SELF_FIELD_MOVES.has(slug):
+		move.tactical_range_kind = PokemonMoveResource.TacticalRangeKind.SELF
+		move.tactical_range_value = 0
+		move.target_alignment = PokemonMoveResource.TARGET_SELF
+	if EXPLOSION_MOVES.has(slug):
+		move.tactical_range_kind = PokemonMoveResource.TacticalRangeKind.AREA
+		move.tactical_range_value = 1
+		move.target_alignment = PokemonMoveResource.TARGET_FOE | PokemonMoveResource.TARGET_FRIEND
+	if ROAR_MOVES.has(slug):
+		move.tactical_range_kind = PokemonMoveResource.TacticalRangeKind.MELEE
+		move.tactical_range_value = 1
+		move.target_alignment = PokemonMoveResource.TARGET_FOE
+	if slug == "mirror_move":
+		move.tactical_range_kind = PokemonMoveResource.TacticalRangeKind.PROJECTILE
+		move.tactical_range_value = 2
+		move.target_alignment = PokemonMoveResource.TARGET_FOE
 	if move.tactical_range_kind == PokemonMoveResource.TacticalRangeKind.UNSUPPORTED:
 		var raw_type: String = String(range_info[_SkillMapper.RESULT_RAW])
 		if not raw_type.is_empty():
@@ -526,6 +600,7 @@ func _import_move(slug: String, source_roots: Dictionary, report: PokemonValidat
 	move.effect_tags = tags["all"]
 	move.unsupported_effect_tags.append_array(tags["unsupported"])
 	move.effect_records = _SkillMapper.extract_effect_records(data, slug, move.strike_count)
+	move.flags = _SkillMapper.extract_flags(data)
 
 	var save_path: String = _Paths.generated_move_path(slug)
 	var err: int = ResourceSaver.save(move, save_path)

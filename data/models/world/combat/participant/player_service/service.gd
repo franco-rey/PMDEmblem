@@ -14,18 +14,27 @@ func _init(_res: TacticsParticipantResource, _camera: TacticsCameraResource, _co
 	arena = _arena
 
 
-func toggle_enemy_stats(opponent_node: Node) -> void:
-	var enemy_pawns: Array = opponent_node.get_children()
+func toggle_enemy_stats(opponent_node: Node, other_node: Node = null) -> void:
+	var enemy_pawns: Array = opponent_node.get_children() if opponent_node != null else []
 
 	if res.display_opponent_stats:
-		for p: TacticsPawn in enemy_pawns:
-			p.res.pawn_hud_enabled = true
-			p.show_pawn_stats(true)
+		for p in enemy_pawns:
+			if p is TacticsPawn:
+				p.res.pawn_hud_enabled = true
+				p.show_pawn_stats(true)
+		_hide_side_stats(other_node)
 	else:
-		for p: TacticsPawn in enemy_pawns:
-			if p.res.pawn_hud_enabled == true:
-				p.show_pawn_stats(false)
-				p.res.pawn_hud_enabled = false
+		_hide_side_stats(opponent_node)
+		_hide_side_stats(other_node)
+
+
+func _hide_side_stats(node: Node) -> void:
+	if node == null:
+		return
+	for p in node.get_children():
+		if p is TacticsPawn and p.res.pawn_hud_enabled:
+			p.show_pawn_stats(false)
+			p.res.pawn_hud_enabled = false
 
 
 func is_pawn_configured(player: TacticsPlayer) -> bool:

@@ -87,7 +87,7 @@ func _check_high_frequency_batch(service: BattleIntrinsicService) -> void:
 	sand_level.free()
 
 	var intimidate := _blank_stats(["intimidate"])
-	_assert_true(is_equal_approx(service.defender_damage_multiplier(intimidate, physical), 2.0 / 3.0), "Intimidate reduces incoming physical damage")
+	_assert_true(is_equal_approx(service.defender_damage_multiplier(intimidate, physical), 1.0), "Intimidate no longer cuts incoming damage; it lowers foes' Attack at battle start")
 
 	var levitate := _pawn_with_intrinsics(["levitate"], "LevitateTarget")
 	var ground := _move("earth_power", "ground", PokemonMoveResource.CATEGORY_SPECIAL, 90)

@@ -61,6 +61,139 @@ func _ensure_move_buttons(picker: VBoxContainer, ctrl: TacticsControls) -> void:
 	_replace_signal_connections(cancel_button.gui_input, _on_move_picker_cancel_gui_input.bind(ctrl))
 
 
+func ensure_item_action_button(ctrl: TacticsControls) -> Button:
+	var actions: VBoxContainer = _actions_container(ctrl)
+	if actions == null:
+		return null
+	var existing: Button = actions.get_node_or_null("Item") as Button
+	if existing != null:
+		return existing
+	var button := Button.new()
+	button.name = "Item"
+	button.text = "Item"
+	var attack: Button = actions.get_node_or_null("Attack") as Button
+	if attack != null:
+		button.custom_minimum_size = attack.custom_minimum_size
+		button.size_flags_horizontal = attack.size_flags_horizontal
+		button.focus_mode = attack.focus_mode
+		button.mouse_default_cursor_shape = attack.mouse_default_cursor_shape
+	button.mouse_filter = Control.MOUSE_FILTER_STOP
+	actions.add_child(button)
+	if attack != null:
+		actions.move_child(button, attack.get_index() + 1)
+	return button
+
+
+func ensure_item_picker(ctrl: TacticsControls) -> VBoxContainer:
+	if ctrl == null:
+		return null
+	var existing: VBoxContainer = _item_picker(ctrl)
+	if existing != null:
+		_ensure_item_buttons(existing, ctrl)
+		return existing
+	var hbox: HBoxContainer = ctrl.get_node_or_null("HBox") as HBoxContainer
+	if hbox == null:
+		return null
+	var picker: VBoxContainer = VBoxContainer.new()
+	picker.name = "ItemPicker"
+	picker.unique_name_in_owner = true
+	picker.visible = false
+	picker.mouse_filter = Control.MOUSE_FILTER_STOP
+	picker.alignment = BoxContainer.ALIGNMENT_END
+	hbox.add_child(picker)
+	_ensure_item_buttons(picker, ctrl)
+	return picker
+
+
+func _ensure_item_buttons(picker: VBoxContainer, ctrl: TacticsControls) -> void:
+	var specs: Array = [
+		["ItemUse", "Use", Callable(ctrl, "_player_wants_to_select_item_use")],
+		["ItemThrow", "Throw", Callable(ctrl, "_player_wants_to_select_item_throw")],
+		["Cancel", "Cancel", Callable(ctrl, "_player_wants_to_cancel_item_picker")],
+	]
+	for spec in specs:
+		var button: Button = picker.get_node_or_null(String(spec[0])) as Button
+		if button == null:
+			button = Button.new()
+			button.name = String(spec[0])
+			picker.add_child(button)
+		button.custom_minimum_size = Vector2(240, 48)
+		button.mouse_filter = Control.MOUSE_FILTER_STOP
+		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		if button.text.is_empty():
+			button.text = String(spec[1])
+		var callable: Callable = spec[2]
+		_replace_signal_connections(button.pressed, callable)
+		_replace_signal_connections(button.button_down, callable)
+		_replace_signal_connections(button.gui_input, _on_item_picker_gui_input.bind(callable, ctrl))
+
+
+func _on_item_picker_gui_input(event: InputEvent, callable: Callable, ctrl: TacticsControls) -> void:
+	if ctrl == null:
+		return
+	if event is InputEventMouseButton:
+		var mouse_event: InputEventMouseButton = event as InputEventMouseButton
+		if mouse_event.button_index == MOUSE_BUTTON_LEFT and mouse_event.pressed:
+			if callable.is_valid():
+				callable.call()
+			if ctrl.get_viewport() != null:
+				ctrl.get_viewport().set_input_as_handled()
+
+
+func set_item_picker_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls) -> void:
+	var picker: VBoxContainer = ensure_item_picker(ctrl)
+	if picker == null:
+		return
+	var item: PokemonItemResource = PokemonItemService.held_item_for(p.stats) if p != null and p.stats != null else null
+	picker.visible = v and p != null and p.is_alive() and item != null
+	if not picker.visible:
+		return
+	var entry: Dictionary = BattleItemCatalog.entry_for(item.item_id)
+	var use_button: Button = picker.get_node("ItemUse") as Button
+	var throw_button: Button = picker.get_node("ItemThrow") as Button
+	var can_use: bool = bool(entry.get("can_use", false))
+	use_button.text = "%s %s" % [String(entry.get("use_verb", "Use")), item.display_name()]
+	use_button.disabled = not can_use
+	use_button.tooltip_text = "" if can_use else "This item has no use action; it can be thrown"
+	var options: Array[Dictionary] = Targeting.throw_options(p, 8, _units_for(p), Targeting.arena_tile_keys(_level_for(p)))
+	throw_button.text = "Throw %s" % item.display_name()
+	throw_button.disabled = options.is_empty()
+	throw_button.tooltip_text = "" if not options.is_empty() else "No open tile to throw toward"
+	var first: Control = _first_enabled_child(picker)
+	if first != null and first.is_inside_tree():
+		first.grab_focus()
+
+
+func _units_for(p: TacticsPawn) -> Array[TacticsPawn]:
+	var out: Array[TacticsPawn] = []
+	var level: TacticsLevel = _level_for(p)
+	if level == null:
+		return out
+	for node in [level.player, level.opponent]:
+		if node == null:
+			continue
+		for child in node.get_children():
+			if child is TacticsPawn:
+				out.append(child)
+	return out
+
+
+func _level_for(p: TacticsPawn) -> TacticsLevel:
+	var node: Node = p
+	while node != null:
+		if node is TacticsLevel:
+			return node as TacticsLevel
+		node = node.get_parent()
+	return null
+
+
+func _item_picker(ctrl: TacticsControls) -> VBoxContainer:
+	var node: Node = ctrl.get_node_or_null("HBox/ItemPicker")
+	if node == null:
+		node = ctrl.find_child("ItemPicker", true, false)
+	return node as VBoxContainer
+
+
 func _on_move_picker_slot_gui_input(event: InputEvent, ctrl: TacticsControls, slot_index: int) -> void:
 	if ctrl == null:
 		return
@@ -117,6 +250,9 @@ func set_actions_menu_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls)
 	var picker: VBoxContainer = ensure_move_picker(ctrl)
 	if v and picker != null:
 		picker.visible = false
+	var item_picker: VBoxContainer = ensure_item_picker(ctrl)
+	if v and item_picker != null:
+		item_picker.visible = false
 	var actions: VBoxContainer = _actions_container(ctrl)
 	if actions == null:
 		return
@@ -140,6 +276,11 @@ func set_actions_menu_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls)
 	var has_usable_move: bool = p.stats.move_slots.is_empty() or p.stats.first_usable_move_index(false) >= 0
 	if action_attack != null:
 		action_attack.disabled = not p.res.can_attack or not has_usable_move
+	var action_item: Button = ensure_item_action_button(ctrl)
+	if action_item != null:
+		var held: PokemonItemResource = PokemonItemService.held_item_for(p.stats) if p.stats != null else null
+		action_item.disabled = held == null or not p.res.can_attack
+		action_item.text = "Item" if held == null else "Item: %s" % held.display_name()
 
 
 func _on_move_action_mouse_entered(ctrl: TacticsControls) -> void:

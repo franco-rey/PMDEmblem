@@ -77,6 +77,51 @@ func select_move() -> void:
 	serv.select_move(self)
 
 
+func select_item_action() -> void:
+	serv.select_item_action(self)
+
+
+func select_throw_target() -> void:
+	serv.select_throw_target(self)
+
+
+func _player_wants_to_use_item() -> void:
+	serv.player_wants_to_use_item()
+
+
+func _player_wants_to_select_item_use() -> void:
+	var picker: Control = get_node_or_null("HBox/ItemPicker") as Control
+	if participant == null or participant.stage != participant.STAGE_SELECT_ITEM_ACTION:
+		return
+	if picker != null and not picker.visible:
+		return
+	serv.player_wants_to_select_item_use()
+	if picker != null and participant.stage != participant.STAGE_SELECT_ITEM_ACTION:
+		picker.visible = false
+
+
+func _player_wants_to_select_item_throw() -> void:
+	var picker: Control = get_node_or_null("HBox/ItemPicker") as Control
+	if participant == null or participant.stage != participant.STAGE_SELECT_ITEM_ACTION:
+		return
+	if picker != null and not picker.visible:
+		return
+	serv.player_wants_to_select_item_throw()
+	if picker != null and participant.stage != participant.STAGE_SELECT_ITEM_ACTION:
+		picker.visible = false
+
+
+func _player_wants_to_cancel_item_picker() -> void:
+	var picker: Control = get_node_or_null("HBox/ItemPicker") as Control
+	if participant == null or participant.stage != participant.STAGE_SELECT_ITEM_ACTION:
+		return
+	if picker != null and not picker.visible:
+		return
+	serv.player_wants_to_cancel()
+	if participant.stage == participant.STAGE_SHOW_ACTIONS:
+		serv.set_actions_menu_visibility(true, participant.curr_pawn, self)
+
+
 func _player_wants_to_move() -> void:
 	serv.player_wants_to_move()
 

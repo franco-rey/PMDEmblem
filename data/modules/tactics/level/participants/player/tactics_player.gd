@@ -10,7 +10,9 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	player_serv.toggle_enemy_stats(get_node("../TacticsOpponent"))
+	var opposing: Node = res.targets if res.targets != null and is_instance_valid(res.targets) else get_node("../TacticsOpponent")
+	var other: Node = get_node("../TacticsOpponent") if opposing == self else self
+	player_serv.toggle_enemy_stats(opposing, other)
 
 
 func is_pawn_configured() -> bool:

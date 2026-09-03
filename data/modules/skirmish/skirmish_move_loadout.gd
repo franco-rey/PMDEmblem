@@ -40,11 +40,13 @@ static func clone_for_side(template: PokemonInstanceResource, team: int, control
 	instance.held_item = template.held_item
 	instance.runtime_modifiers = template.runtime_modifiers.duplicate(true)
 	instance.temporary_statuses = template.temporary_statuses.duplicate()
+	instance.ability_override = template.ability_override
+	instance.loadout_locked = template.loadout_locked
 	return instance
 
 
 static func assign_loadout(instance: PokemonInstanceResource, seed: int, side_key: String, slot_index: int) -> void:
-	if instance == null:
+	if instance == null or instance.loadout_locked:
 		return
 	var pool: Array[PokemonMoveResource] = move_pool_for_instance(instance)
 	if pool.is_empty():
@@ -192,3 +194,30 @@ static func _salt_seed(seed: int, side_key: String, slot_index: int, instance: P
 		h = int(((h * 131) ^ species_id.unicode_at(i)) & 0x7FFFFFFF)
 	h = int((h ^ (slot_index + 1) * 0x45D9F3B) & 0x7FFFFFFF)
 	return maxi(1, h)
+
+
+static func apply_explicit_loadout(instance: PokemonInstanceResource, move_ids: Array) -> String:
+	if instance == null:
+		return "missing instance"
+	var slots: Array[PokemonMoveResource] = []
+	var pp: Array[int] = []
+	for raw in move_ids:
+		var move_id: String = String(raw).strip_edges()
+		if move_id.is_empty():
+			continue
+		var move: PokemonMoveResource = _load_move(move_id)
+		if move == null:
+			return "Unknown move %s" % move_id
+		if _has_move_id(slots, move_id):
+			continue
+		slots.append(move)
+		pp.append(move.pp)
+		if slots.size() >= MAX_MOVE_SLOTS:
+			break
+	if slots.is_empty():
+		return "Choose at least one move"
+	instance.move_slots = slots
+	instance.pp_state = pp
+	instance.loadout_locked = true
+	return ""
+

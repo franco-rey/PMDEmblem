@@ -9,7 +9,8 @@ const MIN_HEIGHT_TO_JUMP: int = 1
 const GRAVITY_STRENGTH: int = 7
 const MIN_TIME_FOR_ATTACK: float = 1.0
 const ANIMATION_FRAMES: int = 1
-const HURT_DURATION: float = 0.4
+const HURT_DURATION: float = 0.5
+const PRESENTATION_TIMEOUT: float = 8.0
 
 var pawn_hud_enabled: bool = false
 var can_move: bool = true
@@ -25,9 +26,14 @@ var walk_speed: int = TacticsConfig.pawn.base_walk_speed
 var hurt_remaining: float = 0.0
 var forced_anim_state: String = ""
 var forced_anim_remaining: float = 0.0
+var forced_anim_one_shot: bool = true
+var forced_anim_pending: bool = false
 var selected_move_index: int = 0
 var use_legacy_attack_fallback: bool = false
 var has_acted_this_round: bool = false
+var presentation_locked: bool = false
+var presentation_wait: float = 0.0
+var intent_executed: bool = false
 
 
 func reset_turn() -> void:
@@ -41,11 +47,19 @@ func end_pawn_turn() -> void:
 	turn_ended.emit()
 
 
-func force_animation(state: String, duration: float = 0.35) -> void:
+func force_animation(state: String, duration: float = 0.35, one_shot: bool = true) -> void:
 	if state.is_empty():
 		return
 	forced_anim_state = state
 	forced_anim_remaining = maxf(duration, 0.05)
+	forced_anim_one_shot = one_shot
+	forced_anim_pending = true
+
+
+func clear_forced_animation() -> void:
+	forced_anim_state = ""
+	forced_anim_remaining = 0.0
+	forced_anim_pending = false
 
 
 func set_moving(value: bool) -> void:

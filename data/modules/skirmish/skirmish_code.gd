@@ -56,6 +56,45 @@ static func build_definitions(code: String, fallback_state: Dictionary = {}) -> 
 	}
 
 
+static func encode_definition(definition: SkirmishDefinitionResource) -> String:
+	if definition == null:
+		return ""
+	var tokens: Array[String] = ["match", "seed=%d" % definition.seed, "mode=%s" % _mode_token(definition.control_mode)]
+	var player: String = _encode_team(definition.player_team)
+	var enemy: String = _encode_team(definition.enemy_team)
+	if not player.is_empty():
+		tokens.append("p=%s" % player)
+	if not enemy.is_empty():
+		tokens.append("e=%s" % enemy)
+	return " ".join(tokens)
+
+
+static func _encode_team(team: Array[PokemonInstanceResource]) -> String:
+	var entries: Array[String] = []
+	for instance in team:
+		if instance == null or instance.species == null:
+			continue
+		var moves: Array[String] = []
+		for move in instance.move_slots:
+			if move != null and not moves.has(move.move_id):
+				moves.append(move.move_id)
+		var fields: Array[String] = ["%s@%d" % [instance.species.species_id, instance.level], ",".join(moves), instance.ability_override, instance.held_item.item_id if instance.held_item != null else ""]
+		while fields.size() > 1 and String(fields[fields.size() - 1]).is_empty():
+			fields.remove_at(fields.size() - 1)
+		entries.append(":".join(fields))
+	return "|".join(entries)
+
+
+static func _mode_token(mode: String) -> String:
+	match SkirmishControlMode.normalize(mode):
+		SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_PLAYER:
+			return "pvp"
+		SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU:
+			return "bots"
+		_:
+			return "pvc"
+
+
 static func encode_summary(definitions: Array[SkirmishDefinitionResource]) -> String:
 	if definitions.is_empty():
 		return "0 matches"
@@ -236,11 +275,15 @@ static func _parse_pokemon_list(value: String) -> Dictionary:
 		var entry: String = String(raw_entry).strip_edges()
 		if entry.is_empty():
 			return {"ok": false, "error": "Pokemon list contains an empty entry"}
-		var move_part: String = ""
-		var base_part: String = entry
-		if entry.contains(":"):
-			base_part = entry.get_slice(":", 0)
-			move_part = entry.substr(base_part.length() + 1)
+		var fields: PackedStringArray = entry.split(":", true)
+		if fields.size() > 4:
+			return {"ok": false, "error": "Pokemon entry has too many fields (slug@level:moves:ability:item)"}
+		var base_part: String = String(fields[0])
+		var move_part: String = String(fields[1]) if fields.size() > 1 else ""
+		var ability_part: String = String(fields[2]).strip_edges().to_lower() if fields.size() > 2 else ""
+		var item_part: String = String(fields[3]).strip_edges().to_lower() if fields.size() > 3 else ""
+		if item_part == "none":
+			item_part = ""
 		var slug: String = base_part
 		var level: int = 0
 		if base_part.contains("@"):
@@ -267,6 +310,8 @@ static func _parse_pokemon_list(value: String) -> Dictionary:
 			"slug": slug,
 			"level": level,
 			"moves": moves,
+			"ability": ability_part,
+			"item": item_part,
 		})
 	return {"ok": true, "specs": out}
 
@@ -423,6 +468,24 @@ static func _apply_side_specs(team: Array[PokemonInstanceResource], specs: Array
 		instance.pp_state = []
 		for move in moves:
 			instance.pp_state.append(move.pp if move != null else 0)
+		instance.loadout_locked = true
+	var slot_specs: Array = []
+	var item_ids: Array[String] = []
+	var any_item: bool = false
+	for i in range(team.size()):
+		var spec: Dictionary = specs[i] as Dictionary if i < specs.size() else {}
+		slot_specs.append({"ability": String(spec.get("ability", ""))})
+		var item_id: String = String(spec.get("item", ""))
+		item_ids.append(item_id)
+		if not item_id.is_empty():
+			any_item = true
+	var ability_error: String = CustomSkirmishBuilder.apply_slot_specs(team, slot_specs, seed, side_key)
+	if not ability_error.is_empty():
+		return {"ok": false, "error": ability_error}
+	if any_item:
+		var item_error: String = CustomSkirmishBuilder.apply_held_items(team, item_ids, seed, side_key)
+		if not item_error.is_empty():
+			return {"ok": false, "error": item_error}
 	return {"ok": true}
 
 

@@ -26,6 +26,8 @@ func _init(_controls: TacticsControlsResource, _t_cam: TacticsCameraResource, _p
 
 func setup(ctrl: TacticsControls) -> void:
 	ui_service.ensure_move_picker(ctrl)
+	ui_service.ensure_item_picker(ctrl)
+	ui_service.ensure_item_action_button(ctrl)
 	if not controls:
 		push_error("TacticsControls needs a ControlResource from /data/models/view/controls/tactics/")
 	else:
@@ -37,6 +39,8 @@ func setup(ctrl: TacticsControls) -> void:
 		controls.connect("called_select_pawn", ctrl.select_pawn)
 		controls.connect("called_select_pawn_to_attack", ctrl.select_pawn_to_attack)
 		controls.connect("called_select_move", ctrl.select_move)
+		controls.connect("called_select_item_action", ctrl.select_item_action)
+		controls.connect("called_select_throw_target", ctrl.select_throw_target)
 		controls.connect("called_select_new_location", ctrl.select_new_location)
 	if not t_cam:
 		push_error("TacticsCamera needs a CameraResource (T Cam) from /data/models/view/camera/tactics/")
@@ -83,6 +87,26 @@ func select_pawn_to_attack(ctrl: TacticsControls) -> void:
 
 func select_move(ctrl: TacticsControls) -> void:
 	pawn_selection_service.select_move(ctrl)
+
+
+func select_item_action(ctrl: TacticsControls) -> void:
+	pawn_selection_service.select_item_action(ctrl)
+
+
+func select_throw_target(ctrl: TacticsControls) -> void:
+	pawn_selection_service.select_throw_target(ctrl)
+
+
+func player_wants_to_use_item() -> void:
+	pawn_selection_service.player_wants_to_use_item()
+
+
+func player_wants_to_select_item_use() -> void:
+	pawn_selection_service.player_wants_to_select_item_use()
+
+
+func player_wants_to_select_item_throw() -> void:
+	pawn_selection_service.player_wants_to_select_item_throw()
 
 
 func refresh_hover_preview() -> void:
