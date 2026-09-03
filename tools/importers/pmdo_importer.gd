@@ -265,7 +265,7 @@ func _animation_states_from_manifest(sprite_set: PokemonSpriteSetResource, entry
 				"source_filename": String(state_entry.get("source_filename", "")),
 				"checksum": String(state_entry.get("checksum", "")),
 				"cell_size": Vector2i(int(metadata.get("frame_width", 0)), int(metadata.get("frame_height", 0))),
-				"directions": _directions_for_state(state_key),
+				"directions": _directions_for_sheet(path, int(metadata.get("frame_height", 0))),
 				"frame_count": int(metadata.get("frame_count", 0)),
 				"timing": _typed_int_array(metadata.get("durations", [])),
 				"source_index": int(metadata.get("index", 0)),
@@ -335,7 +335,7 @@ func _default_animation_states(sprite_set: PokemonSpriteSetResource) -> Dictiona
 			"path": path,
 			"source_name": key.capitalize(),
 			"cell_size": Vector2i.ZERO,
-			"directions": _directions_for_state(key),
+			"directions": 8,
 			"frame_count": 0,
 			"timing": [],
 		}
@@ -369,7 +369,11 @@ func _alias_animation_state(states: Dictionary, alias_key: String, candidates: A
 		return
 
 
-func _directions_for_state(state_key: String) -> int:
+func _directions_for_sheet(path: String, cell_height: int) -> int:
+	if cell_height > 0 and FileAccess.file_exists(path):
+		var image := Image.new()
+		if image.load_png_from_buffer(FileAccess.get_file_as_bytes(path)) == OK and image.get_height() % cell_height == 0:
+			return maxi(1, image.get_height() / cell_height)
 	return 8
 
 

@@ -337,18 +337,18 @@ animation_states = {
 }
 }
 move_animation_map = {
-"clear_smog": "special_attack",
-"confuse_ray": "status_attack",
+"clear_smog": "shoot",
+"confuse_ray": "charge",
 "ember": "special_attack",
 "feint_attack": "physical_attack",
-"fire_punch": "physical_attack",
+"fire_punch": "strike",
 "fire_spin": "special_attack",
-"flame_burst": "special_attack",
-"flamethrower": "special_attack",
+"flame_burst": "shoot",
+"flamethrower": "shoot",
 "lava_plume": "special_attack",
-"leer": "status_attack",
+"leer": "charge",
 "smog": "special_attack",
-"smokescreen": "status_attack",
-"sunny_day": "status_attack",
-"thunder_punch": "physical_attack"
+"smokescreen": "charge",
+"sunny_day": "charge",
+"thunder_punch": "strike"
 }

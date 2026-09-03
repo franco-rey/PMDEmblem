@@ -323,17 +323,17 @@ animation_states = {
 }
 move_animation_map = {
 "double_edge": "physical_attack",
-"growl": "status_attack",
-"growth": "status_attack",
-"leech_seed": "status_attack",
-"poison_powder": "status_attack",
+"growl": "charge",
+"growth": "charge",
+"leech_seed": "shoot",
+"poison_powder": "charge",
 "razor_leaf": "physical_attack",
-"sleep_powder": "status_attack",
-"solar_beam": "special_attack",
-"sweet_scent": "status_attack",
-"synthesis": "status_attack",
+"sleep_powder": "charge",
+"solar_beam": "shoot",
+"sweet_scent": "charge",
+"synthesis": "charge",
 "tackle": "physical_attack",
 "take_down": "physical_attack",
 "vine_whip": "physical_attack",
-"worry_seed": "status_attack"
+"worry_seed": "shoot"
 }

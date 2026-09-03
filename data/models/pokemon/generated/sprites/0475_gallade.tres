@@ -337,23 +337,23 @@ animation_states = {
 }
 }
 move_animation_map = {
-"close_combat": "physical_attack",
+"close_combat": "strike",
 "confusion": "special_attack",
-"double_team": "status_attack",
+"double_team": "charge",
 "false_swipe": "physical_attack",
 "feint": "physical_attack",
-"fury_cutter": "physical_attack",
-"heal_pulse": "status_attack",
-"helping_hand": "status_attack",
-"leaf_blade": "physical_attack",
-"leer": "status_attack",
-"night_slash": "physical_attack",
-"protect": "status_attack",
-"psycho_cut": "physical_attack",
-"quick_guard": "status_attack",
-"slash": "physical_attack",
+"fury_cutter": "swing",
+"heal_pulse": "shoot",
+"helping_hand": "charge",
+"leaf_blade": "swing",
+"leer": "charge",
+"night_slash": "swing",
+"protect": "charge",
+"psycho_cut": "swing",
+"quick_guard": "charge",
+"slash": "swing",
 "stored_power": "special_attack",
-"swords_dance": "status_attack",
-"teleport": "status_attack",
-"wide_guard": "status_attack"
+"swords_dance": "charge",
+"teleport": "charge",
+"wide_guard": "charge"
 }

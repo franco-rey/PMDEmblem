@@ -397,23 +397,23 @@ animation_states = {
 }
 }
 move_animation_map = {
-"calm_mind": "status_attack",
-"captivate": "status_attack",
+"calm_mind": "charge",
+"captivate": "charge",
 "confusion": "special_attack",
 "disarming_voice": "special_attack",
-"double_team": "status_attack",
+"double_team": "charge",
 "draining_kiss": "special_attack",
 "future_sight": "special_attack",
-"growl": "status_attack",
-"heal_pulse": "status_attack",
-"healing_wish": "status_attack",
-"hypnosis": "status_attack",
-"imprison": "status_attack",
+"growl": "charge",
+"heal_pulse": "charge",
+"healing_wish": "charge",
+"hypnosis": "charge",
+"imprison": "charge",
 "magical_leaf": "special_attack",
-"misty_terrain": "status_attack",
+"misty_terrain": "charge",
 "moonblast": "special_attack",
 "psychic": "special_attack",
 "stored_power": "special_attack",
-"teleport": "status_attack",
-"wish": "status_attack"
+"teleport": "charge",
+"wish": "charge"
 }

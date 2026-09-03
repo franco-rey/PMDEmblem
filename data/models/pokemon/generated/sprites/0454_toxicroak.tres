@@ -339,15 +339,15 @@ animation_states = {
 move_animation_map = {
 "astonish": "physical_attack",
 "feint_attack": "physical_attack",
-"mud_bomb": "special_attack",
-"mud_slap": "special_attack",
-"nasty_plot": "status_attack",
+"mud_bomb": "shoot",
+"mud_slap": "shoot",
+"nasty_plot": "charge",
 "poison_jab": "physical_attack",
 "poison_sting": "physical_attack",
-"pursuit": "status_attack",
+"pursuit": "charge",
 "revenge": "physical_attack",
-"sucker_punch": "physical_attack",
-"swagger": "status_attack",
-"taunt": "status_attack",
+"sucker_punch": "strike",
+"swagger": "charge",
+"taunt": "charge",
 "venoshock": "special_attack"
 }

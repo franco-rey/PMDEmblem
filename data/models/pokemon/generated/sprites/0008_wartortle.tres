@@ -340,15 +340,15 @@ move_animation_map = {
 "aqua_tail": "physical_attack",
 "bite": "physical_attack",
 "bubble": "special_attack",
-"hydro_pump": "special_attack",
-"iron_defense": "status_attack",
-"protect": "status_attack",
-"rain_dance": "status_attack",
+"hydro_pump": "shoot",
+"iron_defense": "charge",
+"protect": "charge",
+"rain_dance": "charge",
 "rapid_spin": "physical_attack",
 "skull_bash": "physical_attack",
 "tackle": "physical_attack",
-"tail_whip": "status_attack",
-"water_gun": "special_attack",
-"water_pulse": "special_attack",
-"withdraw": "status_attack"
+"tail_whip": "charge",
+"water_gun": "shoot",
+"water_pulse": "shoot",
+"withdraw": "charge"
 }
