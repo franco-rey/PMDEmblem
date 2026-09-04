@@ -1,5 +1,6 @@
-[gd_scene load_steps=18 format=3 uid="uid://6eofg7n4asn5"]
+[gd_scene load_steps=19 format=3 uid="uid://6eofg7n4asn5"]
 
+[ext_resource type="FontFile" path="res://assets/fonts/pmd/pmd_text.fnt" id="pmd_font"]
 [ext_resource type="Script" path="res://data/modules/tactics/level/pawn/pawn.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://bob12its3i651" path="res://assets/textures/actor/chr_pawn_placeholder.png" id="2"]
 [ext_resource type="Script" path="res://data/models/world/combat/participant/pawn/service/sprite.gd" id="3_cbwp5"]
@@ -133,12 +134,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
 billboard = 1
 outline_modulate = Color(0, 0, 0, 0)
 text = "PawnName"
-font_size = 42
+font = ExtResource("pmd_font")
+font_size = 48
 outline_size = 0
 
 [node name="HealthLabel" type="Label3D" parent="Character/CharacterUI"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 billboard = 1
 text = "100/100"
+font = ExtResource("pmd_font")
 font_size = 48
 outline_size = 0

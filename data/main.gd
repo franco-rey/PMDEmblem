@@ -77,8 +77,8 @@ const MANUAL_SKIRMISHES: Array[Dictionary] = [
 		"code": "series seed=6300 team=6 matches=10 -bots",
 	},
 ]
-const MENU_CONTROL_SIZE: Vector2 = Vector2(400, 48)
-const MENU_FONT_SIZE: int = 20
+const MENU_CONTROL_SIZE: Vector2 = Vector2(520, 72)
+const MENU_FONT_SIZE: int = 36
 
 var level_instance: TacticsLevel
 var skirmish_loader: SkirmishLoader

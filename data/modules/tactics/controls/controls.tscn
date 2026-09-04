@@ -65,35 +65,35 @@ mouse_filter = 2
 alignment = 2
 
 [node name="Move" type="Button" parent="HBox/Actions"]
-custom_minimum_size = Vector2(196, 64)
+custom_minimum_size = Vector2(300, 64)
 layout_mode = 2
 mouse_filter = 1
 mouse_default_cursor_shape = 2
 text = "Move"
 
 [node name="Attack" type="Button" parent="HBox/Actions"]
-custom_minimum_size = Vector2(196, 64)
+custom_minimum_size = Vector2(300, 64)
 layout_mode = 2
 mouse_filter = 1
 mouse_default_cursor_shape = 2
 text = "Attack"
 
 [node name="Wait" type="Button" parent="HBox/Actions"]
-custom_minimum_size = Vector2(196, 64)
+custom_minimum_size = Vector2(300, 64)
 layout_mode = 2
 mouse_filter = 1
 mouse_default_cursor_shape = 2
 text = "Wait"
 
 [node name="Debug_next_turn" type="Button" parent="HBox/Actions"]
-custom_minimum_size = Vector2(196, 64)
+custom_minimum_size = Vector2(300, 64)
 layout_mode = 2
 mouse_filter = 1
 mouse_default_cursor_shape = 2
 text = "Debug: End Turn"
 
 [node name="Cancel" type="Button" parent="HBox/Actions"]
-custom_minimum_size = Vector2(196, 64)
+custom_minimum_size = Vector2(300, 64)
 layout_mode = 2
 mouse_filter = 1
 mouse_default_cursor_shape = 2
@@ -107,35 +107,35 @@ mouse_filter = 0
 alignment = 2
 
 [node name="MoveSlot0" type="Button" parent="HBox/MovePicker"]
-custom_minimum_size = Vector2(240, 58)
+custom_minimum_size = Vector2(340, 58)
 layout_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 2
 text = "-"
 
 [node name="MoveSlot1" type="Button" parent="HBox/MovePicker"]
-custom_minimum_size = Vector2(240, 58)
+custom_minimum_size = Vector2(340, 58)
 layout_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 2
 text = "-"
 
 [node name="MoveSlot2" type="Button" parent="HBox/MovePicker"]
-custom_minimum_size = Vector2(240, 58)
+custom_minimum_size = Vector2(340, 58)
 layout_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 2
 text = "-"
 
 [node name="MoveSlot3" type="Button" parent="HBox/MovePicker"]
-custom_minimum_size = Vector2(240, 58)
+custom_minimum_size = Vector2(340, 58)
 layout_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 2
 text = "-"
 
 [node name="Cancel" type="Button" parent="HBox/MovePicker"]
-custom_minimum_size = Vector2(240, 48)
+custom_minimum_size = Vector2(340, 48)
 layout_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 2

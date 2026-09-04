@@ -49,6 +49,10 @@ folder_colors={
 "res://modules/": "yellow"
 }
 
+[gui]
+
+theme/custom="res://assets/ui/pmd_theme.tres"
+
 [input]
 
 ui_accept={

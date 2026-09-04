@@ -1,0 +1,17 @@
+[remap]
+
+importer="font_data_bmfont"
+type="FontFile"
+uid="uid://dske2juirbmtx"
+path="res://.godot/imported/pmd_blue.fnt-ef15dddcbd8cc1e0e1781947b6aac2a8.fontdata"
+
+[deps]
+
+source_file="res://assets/fonts/pmd/pmd_blue.fnt"
+dest_files=["res://.godot/imported/pmd_blue.fnt-ef15dddcbd8cc1e0e1781947b6aac2a8.fontdata"]
+
+[params]
+
+fallbacks=[]
+compress=true
+scaling_mode=2

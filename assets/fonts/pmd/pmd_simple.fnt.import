@@ -1,0 +1,17 @@
+[remap]
+
+importer="font_data_bmfont"
+type="FontFile"
+uid="uid://dw8ohkpfc4q7m"
+path="res://.godot/imported/pmd_simple.fnt-0120db6c48128bbeacb83e718fd3e3b3.fontdata"
+
+[deps]
+
+source_file="res://assets/fonts/pmd/pmd_simple.fnt"
+dest_files=["res://.godot/imported/pmd_simple.fnt-0120db6c48128bbeacb83e718fd3e3b3.fontdata"]
+
+[params]
+
+fallbacks=[]
+compress=true
+scaling_mode=2

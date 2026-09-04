@@ -10,9 +10,14 @@ const SIDE_ENEMY: String = "enemy"
 const RosterProvider = preload("res://data/modules/skirmish/skirmish_roster_provider.gd")
 const SkirmishCode = preload("res://data/modules/skirmish/skirmish_code.gd")
 const SkirmishControlMode = preload("res://data/modules/skirmish/skirmish_control_mode.gd")
-const FONT_SIZE: int = 20
-const SMALL_FONT_SIZE: int = 18
-const TITLE_FONT_SIZE: int = 24
+const FONT_SIZE: int = 36
+const SMALL_FONT_SIZE: int = 36
+const TITLE_FONT_SIZE: int = 48
+const COMPACT_FONT_SIZE: int = 24
+const COMPACT_TITLE_FONT_SIZE: int = 36
+const LARGE_FONT_LAYOUT_WIDTH: float = 1700.0
+const TITLE_FONT_GROUP: String = "lobby_title_font"
+const BODY_FONT_GROUP: String = "lobby_body_font"
 const CELL_SIZE: Vector2 = Vector2(108, 108)
 const ROSTER_COLUMNS: int = 10
 const ROSTER_MIN_CELL: float = 40.0
@@ -45,6 +50,8 @@ const ACTIVE_COLOR: Color = Color(0.22, 0.31, 0.28, 1.0)
 const BORDER_COLOR: Color = Color(0.62, 0.75, 0.70, 0.95)
 const MUTED_BORDER_COLOR: Color = Color(0.28, 0.35, 0.33, 0.95)
 
+var body_font_size: int = FONT_SIZE
+var title_font_size: int = TITLE_FONT_SIZE
 var roster_entries: Array[Dictionary] = []
 var map_paths: Array[String] = []
 var player_team_paths: Array[String] = []
@@ -259,6 +266,8 @@ func show_battle_summary(result: int, definition: SkirmishDefinitionResource, le
 func _build_ui() -> void:
 	_built = true
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	body_font_size = _font_step_for_width(_layout_width())
+	title_font_size = TITLE_FONT_SIZE if body_font_size == FONT_SIZE else COMPACT_TITLE_FONT_SIZE
 	theme = _make_lobby_theme()
 
 	var background := ColorRect.new()
@@ -330,7 +339,7 @@ func _create_team_tray(node_name: String, title: String, side: String) -> PanelC
 	var label := Label.new()
 	label.name = "%sTitle" % side.capitalize()
 	label.text = title
-	label.add_theme_font_size_override("font_size", TITLE_FONT_SIZE)
+	_apply_title_font(label)
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(label)
 
@@ -401,7 +410,7 @@ func _create_setup_panel() -> PanelContainer:
 
 	var title := Label.new()
 	title.text = "Skirmish"
-	title.add_theme_font_size_override("font_size", TITLE_FONT_SIZE)
+	_apply_title_font(title)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top_row.add_child(title)
 
@@ -601,7 +610,7 @@ func _create_details_panel() -> PanelContainer:
 
 	target_label = Label.new()
 	target_label.name = "TargetLabel"
-	target_label.add_theme_font_size_override("font_size", TITLE_FONT_SIZE)
+	_apply_title_font(target_label)
 	target_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(target_label)
 
@@ -613,7 +622,7 @@ func _create_details_panel() -> PanelContainer:
 	slot_title_label = Label.new()
 	slot_title_label.name = "SlotTitleLabel"
 	slot_title_label.text = "Pokemon setup"
-	slot_title_label.add_theme_font_size_override("font_size", TITLE_FONT_SIZE)
+	_apply_title_font(slot_title_label)
 	slot_title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(slot_title_label)
 
@@ -687,7 +696,7 @@ func _create_details_panel() -> PanelContainer:
 func _section_header(text: String) -> Label:
 	var label := Label.new()
 	label.text = text
-	label.add_theme_font_size_override("font_size", SMALL_FONT_SIZE)
+	_apply_body_font(label)
 	label.modulate = Color(1, 1, 1, 0.7)
 	return label
 
@@ -695,7 +704,7 @@ func _section_header(text: String) -> Label:
 func _section_value(node_name: String) -> Label:
 	var label := Label.new()
 	label.name = node_name
-	label.add_theme_font_size_override("font_size", SMALL_FONT_SIZE)
+	_apply_body_font(label)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	return label
 
@@ -737,7 +746,7 @@ func _create_chooser_panel() -> PanelContainer:
 
 	chooser_title = Label.new()
 	chooser_title.name = "ChooserTitle"
-	chooser_title.add_theme_font_size_override("font_size", TITLE_FONT_SIZE)
+	_apply_title_font(chooser_title)
 	chooser_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(chooser_title)
 
@@ -783,7 +792,7 @@ func _labeled_control(label_text: String, control: Control) -> HBoxContainer:
 	var label := Label.new()
 	label.text = label_text
 	label.custom_minimum_size.x = 92
-	label.add_theme_font_size_override("font_size", SMALL_FONT_SIZE)
+	_apply_body_font(label)
 	box.add_child(label)
 	control.custom_minimum_size.y = maxf(control.custom_minimum_size.y, CONTROL_HEIGHT)
 	control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -1292,7 +1301,7 @@ func _create_slot_button(path: String, index: int, side: String) -> Button:
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.clip_text = true
 	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	label.add_theme_font_size_override("font_size", SMALL_FONT_SIZE)
+	_apply_body_font(label)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	content.add_child(label)
 
@@ -1682,6 +1691,8 @@ func _queue_update_grid_columns() -> void:
 
 
 func _apply_responsive_layout() -> void:
+	if is_inside_tree():
+		_apply_font_step()
 	var compact: bool = _uses_compact_layout()
 	if setup_panel != null:
 		setup_panel.custom_minimum_size.x = SETUP_PANEL_COMPACT_WIDTH if compact else SETUP_PANEL_WIDTH
@@ -1826,13 +1837,39 @@ func _style_box(color: Color, border: Color, border_width: int) -> StyleBoxFlat:
 
 func _make_lobby_theme() -> Theme:
 	var lobby_theme := Theme.new()
-	lobby_theme.set_font_size("font_size", "Button", FONT_SIZE)
-	lobby_theme.set_font_size("font_size", "CheckBox", FONT_SIZE)
-	lobby_theme.set_font_size("font_size", "Label", FONT_SIZE)
-	lobby_theme.set_font_size("font_size", "LineEdit", FONT_SIZE)
-	lobby_theme.set_font_size("font_size", "OptionButton", FONT_SIZE)
-	lobby_theme.set_font_size("font_size", "SpinBox", FONT_SIZE)
+	for type_name in ["Button", "CheckBox", "Label", "LineEdit", "OptionButton", "SpinBox"]:
+		lobby_theme.set_font_size("font_size", type_name, body_font_size)
 	return lobby_theme
+
+
+func _font_step_for_width(width: float) -> int:
+	return FONT_SIZE if width >= LARGE_FONT_LAYOUT_WIDTH else COMPACT_FONT_SIZE
+
+
+func _apply_font_step() -> void:
+	var body: int = _font_step_for_width(_layout_width())
+	var title: int = TITLE_FONT_SIZE if body == FONT_SIZE else COMPACT_TITLE_FONT_SIZE
+	if body == body_font_size and title == title_font_size and theme != null:
+		return
+	body_font_size = body
+	title_font_size = title
+	theme = _make_lobby_theme()
+	for node in get_tree().get_nodes_in_group(TITLE_FONT_GROUP):
+		if node is Control:
+			(node as Control).add_theme_font_size_override("font_size", title_font_size)
+	for node in get_tree().get_nodes_in_group(BODY_FONT_GROUP):
+		if node is Control:
+			(node as Control).add_theme_font_size_override("font_size", body_font_size)
+
+
+func _apply_title_font(control: Control) -> void:
+	control.add_theme_font_size_override("font_size", title_font_size)
+	control.add_to_group(TITLE_FONT_GROUP, true)
+
+
+func _apply_body_font(control: Control) -> void:
+	control.add_theme_font_size_override("font_size", body_font_size)
+	control.add_to_group(BODY_FONT_GROUP, true)
 
 
 func _turn_count(level: TacticsLevel) -> int:

@@ -5,7 +5,7 @@ const MAX_VISIBLE: int = 4
 const LINE_LIFETIME: float = 4.0
 const FADE_TIME: float = 0.6
 const HISTORY_LIMIT: int = 300
-const FONT_SIZE: int = 20
+const FONT_SIZE: int = 36
 
 var history: Array[String] = []
 var _lines: VBoxContainer = null
