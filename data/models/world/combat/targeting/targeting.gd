@@ -1,6 +1,5 @@
 class_name Targeting
 extends RefCounted
-## Move range and alignment helper shared by player targeting and M2 AI.
 
 
 static func compute_range(unit: TacticsPawn, move: PokemonMoveResource) -> Array[Vector3i]:
@@ -10,7 +9,7 @@ static func compute_range(unit: TacticsPawn, move: PokemonMoveResource) -> Array
 
 	var origin: Vector3i = _tile_key(unit.get_tile())
 	var kind: int = move.tactical_range_kind
-	var distance: int = maxi(1, move.tactical_range_value)
+	var distance: int = maxi(1, move.tactical_range_value + BattleIntrinsicService.range_bonus_for(unit.stats, move))
 	if kind in [
 			PokemonMoveResource.TacticalRangeKind.UNSUPPORTED,
 			PokemonMoveResource.TacticalRangeKind.ALLY,
@@ -81,12 +80,6 @@ static func has_legal_target(unit: TacticsPawn, move: PokemonMoveResource, units
 
 
 static func is_target_legal(unit: TacticsPawn, target: TacticsPawn, move: PokemonMoveResource) -> bool:
-	# Source of truth is the visual `mark_attackable_tiles` pass that
-	# `display_attackable_targets` runs before the player can click. The
-	# height-aware BFS that paints those red tiles uses a different metric
-	# than the geometric Chebyshev box `compute_range` emits, so the two
-	# disagree on short-range moves like Gallade's Psycho Cut (range 2). Trust
-	# the marker the player can see.
 	if unit == null or target == null or move == null or not target.is_alive():
 		return false
 	var tile: TacticsTile = target.get_tile()
@@ -100,13 +93,82 @@ static func alignment_allows(unit: TacticsPawn, target: TacticsPawn, move: Pokem
 		return move.can_target_self()
 	var same_team: bool = _team_key(unit) == _team_key(target)
 	if same_team:
-		# PMD's `target_alignment` bitmask often includes TARGET_FRIEND on
-		# damaging moves to model AoE friendly-fire. Our tactical model picks a
-		# single target, so damaging moves must never voluntarily target allies.
 		if move.is_damaging():
 			return false
 		return move.can_target_allies()
 	return move.can_target_foes()
+
+
+const DIRECTIONS_8: Array[Vector3i] = [
+	Vector3i(0, 0, 1), Vector3i(1, 0, 1), Vector3i(1, 0, 0), Vector3i(1, 0, -1),
+	Vector3i(0, 0, -1), Vector3i(-1, 0, -1), Vector3i(-1, 0, 0), Vector3i(-1, 0, 1),
+]
+
+
+static func arena_tile_keys(battle_level: TacticsLevel) -> Dictionary:
+	var out: Dictionary = {}
+	if battle_level == null or battle_level.arena == null:
+		return out
+	var tiles: Node = battle_level.arena.get_node_or_null("Tiles")
+	if tiles == null:
+		return out
+	for child in tiles.get_children():
+		if child is TacticsTile:
+			out[_tile_key(child as TacticsTile)] = child
+	return out
+
+
+static func unit_at_key(key: Vector3i, units_on_map: Array[TacticsPawn]) -> TacticsPawn:
+	for other: TacticsPawn in units_on_map:
+		if other == null or not other.is_alive():
+			continue
+		if _tile_key(other.get_tile()) == key:
+			return other
+	return null
+
+
+static func ray_from(unit: TacticsPawn, direction: Vector3i, max_range: int, units_on_map: Array[TacticsPawn], tile_keys: Dictionary, stop_at_hit: bool = true, stop_at_wall: bool = true) -> Dictionary:
+	var origin: Vector3i = _tile_key(unit.get_tile())
+	var path: Array[Vector3i] = []
+	var hit_unit: TacticsPawn = null
+	var landing: Vector3i = origin
+	var blocked_by_wall: bool = false
+	if direction == Vector3i.ZERO:
+		return {"direction": direction, "path": path, "hit_unit": null, "landing": origin, "blocked_by_wall": false, "distance": 0}
+	for step in range(1, maxi(1, max_range) + 1):
+		var key: Vector3i = origin + direction * step
+		if stop_at_wall and not tile_keys.is_empty() and not tile_keys.has(key):
+			blocked_by_wall = true
+			break
+		path.append(key)
+		landing = key
+		var occupant: TacticsPawn = unit_at_key(key, units_on_map)
+		if occupant != null and occupant != unit:
+			hit_unit = occupant
+			if stop_at_hit:
+				break
+	return {"direction": direction, "path": path, "hit_unit": hit_unit, "landing": landing, "blocked_by_wall": blocked_by_wall, "distance": path.size()}
+
+
+static func throw_options(unit: TacticsPawn, max_range: int, units_on_map: Array[TacticsPawn], tile_keys: Dictionary) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	if unit == null:
+		return out
+	for direction in DIRECTIONS_8:
+		var ray: Dictionary = ray_from(unit, direction, max_range, units_on_map, tile_keys, true, true)
+		if (ray.get("path", []) as Array).is_empty():
+			continue
+		out.append(ray)
+	return out
+
+
+static func direction_between_keys(from: Vector3i, to: Vector3i) -> Vector3i:
+	var delta: Vector3i = to - from
+	if delta == Vector3i.ZERO:
+		return Vector3i.ZERO
+	if delta.x == 0 or delta.z == 0 or absi(delta.x) == absi(delta.z):
+		return Vector3i(signi(delta.x), 0, signi(delta.z))
+	return Vector3i.ZERO
 
 
 static func _team_key(unit: TacticsPawn) -> String:
@@ -127,18 +189,27 @@ static func _team_key(unit: TacticsPawn) -> String:
 
 
 static func _tile_key(tile: TacticsTile) -> Vector3i:
-	# Drop y on purpose. Tiles sit at varying heights, but range / alignment
-	# checks operate on the x/z grid; `compute_range` emits offsets with y=0,
-	# so keying by y would reject same-column tiles at different elevations.
 	if tile == null:
 		return Vector3i.ZERO
 	var pos: Vector3 = tile.global_position if tile.is_inside_tree() else tile.position
-	return Vector3i(roundi(pos.x), 0, roundi(pos.z))
+	return Vector3i(floori(pos.x + 0.5), 0, floori(pos.z + 0.5))
 
 
 static func _facing_direction(unit: TacticsPawn) -> Vector3i:
 	var basis: Basis = unit.global_basis if unit.is_inside_tree() else unit.basis
-	var forward: Vector3 = -basis.z
+	var forward: Vector3 = basis.z
 	if absf(forward.x) > absf(forward.z):
 		return Vector3i(1 if forward.x > 0.0 else -1, 0, 0)
 	return Vector3i(0, 0, 1 if forward.z > 0.0 else -1)
+
+
+static func facing_direction_8(unit: TacticsPawn) -> Vector3i:
+	var basis: Basis = unit.global_basis if unit.is_inside_tree() else unit.basis
+	var forward: Vector3 = basis.z
+	forward.y = 0.0
+	if forward.length() < 0.0001:
+		return Vector3i(0, 0, 1)
+	var angle: float = Vector2(forward.x, forward.z).angle()
+	var octant: int = int(round(angle / (PI / 4.0)))
+	var snapped: Vector2 = Vector2.RIGHT.rotated(float(octant) * PI / 4.0)
+	return Vector3i(int(round(snapped.x)), 0, int(round(snapped.y)))

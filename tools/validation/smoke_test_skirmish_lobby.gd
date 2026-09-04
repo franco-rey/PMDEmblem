@@ -1,10 +1,7 @@
 extends SceneTree
-## Headless smoke test for the M5.5 skirmish setup lobby.
-##
-## Recipe:
-##   godot --headless --path . --script tools/validation/smoke_test_skirmish_lobby.gd
 
 const LOBBY_SCENE_PATH: String = "res://assets/scene/skirmish_lobby.tscn"
+const MAIN_SCENE_PATH: String = "res://assets/scene/main.tscn"
 const EXTERNAL_PATH_MARKERS: Array[String] = [
 	"/Users/",
 	"SpriteCollab",
@@ -22,6 +19,9 @@ func _init() -> void:
 	await _check_active_side_and_direct_adds()
 	_check_duplicate_cap()
 	_check_explicit_build()
+	_check_control_mode_builds()
+	_check_rich_code_series_build()
+	await _check_premade_series_entries()
 	_check_random_enemy_build()
 	await _cleanup()
 
@@ -49,6 +49,10 @@ func _setup_lobby() -> void:
 	_assert_true(lobby.get_node_or_null("LayoutMargin/LobbyLayout/MiddleLayout/RosterPanel") != null, "roster panel exists between trays")
 	_assert_true(lobby.find_child("PlayAgainButton", true, false) != null, "summary exposes Play Again")
 	_assert_true(lobby.find_child("BackToLobbyButton", true, false) != null, "summary exposes Back to Lobby")
+	var mode_picker := lobby.find_child("ControlModePicker", true, false) as OptionButton
+	_assert_true(mode_picker != null, "ControlModePicker exists")
+	if mode_picker != null:
+		_assert_true(String(mode_picker.get_item_metadata(mode_picker.selected)) == SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU, "ControlModePicker defaults to Player vs CPU")
 	_check_responsive_layout("small", false)
 	await _resize_lobby(Vector2(1980, 1200))
 	_check_responsive_layout("wide", true)
@@ -106,11 +110,17 @@ func _check_responsive_layout(label: String, expect_wide: bool) -> void:
 	_assert_true(roster_scroll != null, "%s roster scroll exists for layout check" % label)
 	if roster_scroll == null:
 		return
-	var budget: float = float(lobby.call("_roster_width_budget"))
-	var available_width: float = minf(budget, roster_scroll.size.x) if roster_scroll.size.x > 1.0 else budget
-	var expected_columns: int = clampi(int(floor((available_width + SkirmishLobby.GRID_GAP) / (SkirmishLobby.CELL_SIZE.x + SkirmishLobby.GRID_GAP))), SkirmishLobby.GRID_MIN_COLUMNS, SkirmishLobby.GRID_MAX_COLUMNS)
-	_assert_true(roster_grid.columns == expected_columns, "%s roster grid columns use available width" % label)
-	_assert_true((roster_grid.columns > 8) == expect_wide, "%s roster column count matches layout mode" % label)
+	var available_width: float = float(lobby.call("_roster_available_width"))
+	var expected_layout: Dictionary = lobby.call("_grid_layout_for_width", available_width)
+	var expected_columns: int = int(expected_layout["columns"])
+	var cell_px: float = float(lobby.get("roster_cell_px"))
+	_assert_true(roster_grid.columns == expected_columns, "%s roster grid columns use available width (%d vs %d)" % [label, roster_grid.columns, expected_columns])
+	_assert_true(roster_grid.columns == SkirmishLobby.ROSTER_COLUMNS, "%s roster keeps %d columns (%d)" % [label, SkirmishLobby.ROSTER_COLUMNS, roster_grid.columns])
+	_assert_true(is_equal_approx(cell_px, float(expected_layout["cell"])) and cell_px >= SkirmishLobby.ROSTER_MIN_CELL, "%s roster cells fill the row at %.0f px" % [label, cell_px])
+	_assert_true((cell_px > 90.0) == expect_wide, "%s roster cell size matches layout mode (%.0f px)" % [label, cell_px])
+	_assert_true(float(roster_grid.columns) * cell_px + SkirmishLobby.GRID_GAP * float(roster_grid.columns - 1) <= available_width + 1.0, "%s roster cells fit the available width" % label)
+	var first_cell: Button = roster_grid.get_child(0) as Button
+	_assert_true(first_cell != null and first_cell.flat and first_cell.find_child("NameLabel", true, false) == null and not first_cell.tooltip_text.is_empty(), "%s roster cells are flat portraits with name tooltips" % label)
 	_assert_control_inside_lobby("PlayerTeamTray", label)
 	_assert_control_inside_lobby("EnemyTeamTray", label)
 	_assert_control_inside_lobby("MiddleLayout", label)
@@ -213,6 +223,74 @@ func _check_explicit_build() -> void:
 	_assert_true(_loader_accepts(definition), "explicit lobby definition is loader-ready")
 
 
+func _check_control_mode_builds() -> void:
+	if lobby == null:
+		return
+	var picker := lobby.find_child("ControlModePicker", true, false) as OptionButton
+	_assert_true(picker != null, "control mode picker is reachable for build checks")
+	if picker == null:
+		return
+	var expectations: Dictionary = {
+		SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU: [PokemonInstanceResource.ControlType.PLAYER, PokemonInstanceResource.ControlType.AI],
+		SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_PLAYER: [PokemonInstanceResource.ControlType.PLAYER, PokemonInstanceResource.ControlType.PLAYER],
+		SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU: [PokemonInstanceResource.ControlType.AI, PokemonInstanceResource.ControlType.AI],
+	}
+	for i in range(picker.item_count):
+		var mode: String = String(picker.get_item_metadata(i))
+		picker.select(i)
+		picker.item_selected.emit(i)
+		var result: Dictionary = lobby.build_current_definition()
+		_assert_true(result.get("ok", false), "lobby builds mode %s" % mode)
+		if not result.get("ok", false):
+			continue
+		var definition: SkirmishDefinitionResource = result["definition"]
+		var expected: Array = expectations[mode]
+		_assert_true(definition.control_mode == mode, "lobby definition records mode %s" % mode)
+		_assert_true(_all_controlled_by(definition.player_team, int(expected[0])), "lobby player control for %s" % mode)
+		_assert_true(_all_controlled_by(definition.enemy_team, int(expected[1])), "lobby enemy control for %s" % mode)
+	picker.select(0)
+	picker.item_selected.emit(0)
+
+
+func _check_rich_code_series_build() -> void:
+	if lobby == null:
+		return
+	var seed := lobby.find_child("SeedInput", true, false) as LineEdit
+	_assert_true(seed != null, "seed/code input is reachable")
+	if seed == null:
+		return
+	seed.text = "series seed=700 team=6 matches=2 -bots"
+	seed.text_changed.emit(seed.text)
+	var result: Dictionary = lobby.build_current_definition()
+	_assert_true(result.get("ok", false), "rich series code builds from lobby")
+	if result.get("ok", false):
+		var definitions: Array = result.get("definitions", [])
+		_assert_true(definitions.size() == 2, "rich series code builds a two-match queue")
+		if definitions.size() == 2:
+			_assert_true((definitions[0] as SkirmishDefinitionResource).control_mode == SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU, "rich series first match is bots")
+			_assert_true((definitions[1] as SkirmishDefinitionResource).seed == 701, "rich series increments seeds")
+	seed.text = ""
+	seed.text_changed.emit(seed.text)
+
+
+func _check_premade_series_entries() -> void:
+	var scene: PackedScene = load(MAIN_SCENE_PATH) as PackedScene
+	_assert_true(scene != null, "main scene loads for premade series check")
+	if scene == null:
+		return
+	var instance: Node = scene.instantiate()
+	root.add_child(instance)
+	await process_frame
+	var picker := instance.get_node_or_null("UI/MapSelector/SkirmishMenu/SkirmishPicker") as OptionButton
+	_assert_true(picker != null, "main scene SkirmishPicker exists for premade series check")
+	if picker != null:
+		_assert_true(_picker_has_text(picker, "1 Random 6v6 CPU vs CPU"), "premade menu has 1 random 6v6 CPU vs CPU")
+		_assert_true(_picker_has_text(picker, "5 Random 6v6 CPU vs CPU"), "premade menu has 5 random 6v6 CPU vs CPU")
+		_assert_true(_picker_has_text(picker, "10 Random 6v6 CPU vs CPU"), "premade menu has 10 random 6v6 CPU vs CPU")
+	instance.queue_free()
+	await process_frame
+
+
 func _check_random_enemy_build() -> void:
 	if lobby == null:
 		return
@@ -250,6 +328,20 @@ func _non_button_children_ignore_mouse(node: Node) -> bool:
 		if child is Control and not child is Button and child.mouse_filter != Control.MOUSE_FILTER_IGNORE:
 			return false
 		if not _non_button_children_ignore_mouse(child):
+			return false
+	return true
+
+
+func _picker_has_text(picker: OptionButton, text: String) -> bool:
+	for i in range(picker.item_count):
+		if picker.get_item_text(i) == text:
+			return true
+	return false
+
+
+func _all_controlled_by(team: Array[PokemonInstanceResource], control_type: int) -> bool:
+	for instance in team:
+		if instance == null or instance.control_type != control_type:
 			return false
 	return true
 

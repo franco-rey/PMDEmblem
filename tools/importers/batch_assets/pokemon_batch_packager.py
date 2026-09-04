@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from __future__ import annotations
 
 import argparse
@@ -15,6 +14,7 @@ from asset_rules import (
     find_first_portrait_dir,
     generation_from_dex,
     project_slug,
+    read_credit_text,
 )
 from manifest import MANIFEST_PATH, REPORT_JSON_PATH, render_text_report, write_json
 from source_config import PROJECT_ROOT, load_config
@@ -23,6 +23,7 @@ from source_config import PROJECT_ROOT, load_config
 DEFAULT_DEX_RANGE = (1, 721)
 LEVEL_FOR_DEFAULT_MOVES = 50
 FALLBACK_ICON_PATH = "res://assets/textures/ui/icons/icon.png"
+PREFLIGHT_TEXT_PATH = Path("data/models/pokemon/import_reports/pokemon_batch_preflight_report.txt")
 
 
 def main() -> int:
@@ -40,6 +41,14 @@ def main() -> int:
     only = _parse_only(args.only)
     generations = _parse_generations(args.generations)
     dex_min, dex_max = _parse_dex_range(args.dex_range)
+    filtered = bool(only) or args.limit > 0 or (dex_min, dex_max) != DEFAULT_DEX_RANGE or generations != list(range(1, 7))
+    if args.write and filtered and not args.merge and not args.replace_manifest:
+        print("error: a filtered --write replaces the full roster manifest; pass --merge to update only the selected entries or --replace-manifest to overwrite")
+        return 2
+    if args.merge and args.replace_manifest:
+        print("error: --merge and --replace-manifest are mutually exclusive")
+        return 2
+
     entries = _discover_entries(sources, only, generations, dex_min, dex_max)
     excluded_unreleased = _discover_excluded_unreleased(sources, only, generations, dex_min, dex_max)
     if args.limit > 0:
@@ -47,11 +56,12 @@ def main() -> int:
 
     manifest_species: list[dict[str, Any]] = []
     for entry in entries:
-        manifest_species.append(_package_entry(entry, sources, dry_run=args.dry_run))
+        manifest_species.append(_package_entry(entry, sources, dry_run=args.dry_run, source_revision=args.source_revision))
 
+    generated_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     payload = {
         "schema_version": 1,
-        "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+        "generated_at": generated_at,
         "mode": "dry_run" if args.dry_run else "write",
         "target": {
             "generations": generations,
@@ -65,25 +75,107 @@ def main() -> int:
         "species": manifest_species,
     }
 
+    if args.merge:
+        existing = _load_existing_manifest(PROJECT_ROOT / MANIFEST_PATH)
+        payload = _merge_manifest(existing, manifest_species)
+        print(_merge_summary_line(existing, manifest_species, args.dry_run))
+    print(_summary_line(manifest_species, args.dry_run))
+    if args.diff_manifest:
+        _print_manifest_diff(_load_existing_manifest(PROJECT_ROOT / MANIFEST_PATH), manifest_species)
+
     report = {
         "schema_version": 1,
-        "generated_at": payload["generated_at"],
+        "generated_at": generated_at,
         "source": "pokemon_batch_packager",
-        "summary": _summary(manifest_species),
-        "excluded_unreleased": excluded_unreleased,
-        "species": manifest_species,
+        "summary": _summary(payload["species"]),
+        "excluded_unreleased": payload["target"].get("excluded_unreleased", excluded_unreleased),
+        "species": payload["species"],
     }
 
-    print(_summary_line(manifest_species, args.dry_run))
     if args.write:
+        if args.merge:
+            _merge_consolidated_credits(entries, sources)
+        else:
+            _write_consolidated_credits(entries, sources, payload["generated_at"])
         write_json(PROJECT_ROOT / MANIFEST_PATH, payload)
-        write_json(PROJECT_ROOT / REPORT_JSON_PATH, report)
-        report_txt = PROJECT_ROOT / "data/models/pokemon/import_reports/pokemon_batch_preflight_report.txt"
+        print(f"wrote {MANIFEST_PATH}")
+        if not args.merge:
+            write_json(PROJECT_ROOT / REPORT_JSON_PATH, report)
+            print(f"wrote {REPORT_JSON_PATH}")
+        report_txt = PROJECT_ROOT / PREFLIGHT_TEXT_PATH
         report_txt.parent.mkdir(parents=True, exist_ok=True)
         report_txt.write_text(render_text_report(payload), encoding="utf-8")
-        print(f"wrote {MANIFEST_PATH}")
-        print(f"wrote {REPORT_JSON_PATH}")
+        print(f"wrote {PREFLIGHT_TEXT_PATH}")
     return 0
+
+
+def _load_existing_manifest(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    with path.open("r", encoding="utf-8") as handle:
+        loaded = json.load(handle)
+    return loaded if isinstance(loaded, dict) else {}
+
+
+def _merge_manifest(existing: dict[str, Any], species: list[dict[str, Any]]) -> dict[str, Any]:
+    merged = dict(existing) if existing else {"schema_version": 1, "target": {}, "species": []}
+    by_slug: dict[str, dict[str, Any]] = {}
+    for entry in merged.get("species", []):
+        if isinstance(entry, dict) and entry.get("slug"):
+            by_slug[str(entry["slug"])] = entry
+    for entry in species:
+        by_slug[str(entry["slug"])] = entry
+    merged_species = sorted(by_slug.values(), key=lambda item: (int(item.get("dex_number", 0)), str(item.get("pmdo_slug", ""))))
+    merged["species"] = merged_species
+    merged["mode"] = "write"
+    merged.setdefault("schema_version", 1)
+    merged.setdefault("generated_at", datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"))
+    merged.setdefault("target", {})
+    return merged
+
+
+def _merge_summary_line(existing: dict[str, Any], species: list[dict[str, Any]], dry_run: bool) -> str:
+    existing_slugs = {str(entry.get("slug", "")) for entry in existing.get("species", []) if isinstance(entry, dict)}
+    updated = [str(entry["slug"]) for entry in species if str(entry["slug"]) in existing_slugs]
+    added = [str(entry["slug"]) for entry in species if str(entry["slug"]) not in existing_slugs]
+    preserved = len(existing_slugs) - len(updated)
+    mode = "dry-run" if dry_run else "write"
+    return "manifest merge %s: existing=%d updated=%d added=%d preserved=%d" % (mode, len(existing_slugs), len(updated), len(added), preserved)
+
+
+def _print_manifest_diff(existing: dict[str, Any], species: list[dict[str, Any]]) -> None:
+    by_slug: dict[str, dict[str, Any]] = {}
+    for entry in existing.get("species", []):
+        if isinstance(entry, dict) and entry.get("slug"):
+            by_slug[str(entry["slug"])] = entry
+    for entry in species:
+        slug = str(entry["slug"])
+        before = by_slug.get(slug)
+        if before is None:
+            print(f"diff {slug}: new entry")
+            continue
+        before_states = set((before.get("assets", {}) or {}).get("animation_states", {}).keys())
+        after_states = set((entry.get("assets", {}) or {}).get("animation_states", {}).keys())
+        added = sorted(after_states - before_states)
+        removed = sorted(before_states - after_states)
+        before_checks = before.get("checksums", {}) or {}
+        after_checks = entry.get("checksums", {}) or {}
+        changed = sorted(key for key in after_checks if key in before_checks and before_checks[key] != after_checks[key])
+        top_level = sorted(key for key in entry if key not in ("assets", "checksums", "warnings") and before.get(key) != entry.get(key))
+        print(f"diff {slug}: states+{added} states-{removed} checksums~{changed} fields~{top_level} warnings={entry.get('warnings', [])}")
+
+
+def _credit_entries_from_species(species: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for entry in species:
+        out.append({
+            "slug": str(entry.get("slug", "")),
+            "pmdo_slug": str(entry.get("pmdo_slug", "")),
+            "dex_number": int(entry.get("dex_number", 0)),
+            "display_name": str(entry.get("display_name", "")),
+            "default_form_index": int(entry.get("default_form_index", 0)),
+        })
+    return out
 
 
 def _parse_args() -> argparse.Namespace:
@@ -95,6 +187,10 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--dex-range", default=f"{DEFAULT_DEX_RANGE[0]}-{DEFAULT_DEX_RANGE[1]}")
     parser.add_argument("--only", default="", help="Comma-separated bare or project slugs.")
     parser.add_argument("--limit", type=int, default=0)
+    parser.add_argument("--merge", action="store_true", help="Update only the selected entries inside the existing full manifest/report.")
+    parser.add_argument("--replace-manifest", action="store_true", help="Overwrite the manifest with only the selected entries (legacy behavior).")
+    parser.add_argument("--diff-manifest", action="store_true", help="Print per-entry differences against the existing manifest.")
+    parser.add_argument("--source-revision", default="", help="Source repository revision recorded in per-actor anchor files.")
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--dry-run", action="store_true")
     mode.add_argument("--write", action="store_true")
@@ -157,6 +253,86 @@ def _discover_entries(sources: Any, only: set[str], generations: list[int], dex_
     return out
 
 
+def _write_consolidated_credits(entries: list[dict[str, Any]], sources: Any, generated_at: str) -> None:
+    actor_blocks: list[str] = []
+    portrait_blocks: list[str] = []
+    for entry in entries:
+        dex = int(entry["dex_number"])
+        slug = str(entry["slug"])
+        form_index = int(entry["default_form_index"])
+        sprite_source = find_first_complete_sprite_dir(sources.raw_sprite_dir, dex, form_index)
+        portrait_source = find_first_portrait_dir(sources.raw_portrait_dir, dex, form_index)
+        sprite_collab_source = find_first_complete_sprite_dir(sources.sprite_collab_sprite_dir, dex, form_index) if sources.sprite_collab_sprite_dir else None
+        portrait_collab_source = find_first_portrait_dir(sources.sprite_collab_portrait_dir, dex, form_index) if sources.sprite_collab_portrait_dir else None
+        actor_blocks.append(_credit_block(entry, "actor", sprite_source, sprite_collab_source, sources))
+        portrait_blocks.append(_credit_block(entry, "portrait", portrait_source, portrait_collab_source, sources))
+
+    output = [
+        "Pokemon Texture Credits",
+        "=======================",
+        f"Generated: {generated_at}",
+        "",
+        "Actor Sprites",
+        "-------------",
+        *actor_blocks,
+        "",
+        "Portraits",
+        "---------",
+        *portrait_blocks,
+        "",
+    ]
+    path = PROJECT_ROOT / "assets/textures/credits.txt"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(output), encoding="utf-8")
+
+
+def _merge_consolidated_credits(entries: list[dict[str, Any]], sources: Any) -> None:
+    path = PROJECT_ROOT / "assets/textures/credits.txt"
+    if not path.exists():
+        _write_consolidated_credits(entries, sources, datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"))
+        return
+    lines = path.read_text(encoding="utf-8").split("\n")
+    replacements: dict[str, list[str]] = {}
+    for entry in entries:
+        dex = int(entry["dex_number"])
+        form_index = int(entry["default_form_index"])
+        sprite_source = find_first_complete_sprite_dir(sources.raw_sprite_dir, dex, form_index)
+        portrait_source = find_first_portrait_dir(sources.raw_portrait_dir, dex, form_index)
+        sprite_collab_source = find_first_complete_sprite_dir(sources.sprite_collab_sprite_dir, dex, form_index) if sources.sprite_collab_sprite_dir else None
+        portrait_collab_source = find_first_portrait_dir(sources.sprite_collab_portrait_dir, dex, form_index) if sources.sprite_collab_portrait_dir else None
+        for label, source_dir, fallback_dir in (("actor", sprite_source, sprite_collab_source), ("portrait", portrait_source, portrait_collab_source)):
+            block = _credit_block(entry, label, source_dir, fallback_dir, sources).split("\n")
+            replacements[block[0]] = block
+    out: list[str] = []
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        if line in replacements:
+            block = [entry_line for entry_line in replacements[line] if entry_line != ""]
+            out.extend(block)
+            index += 1
+            while index < len(lines) and lines[index] != "":
+                index += 1
+            continue
+        out.append(line)
+        index += 1
+    path.write_text("\n".join(out), encoding="utf-8")
+
+
+def _credit_block(entry: dict[str, Any], label: str, source_dir: Path | None, fallback_dir: Path | None, sources: Any) -> str:
+    use_source = source_dir is not None and (source_dir / "credits.txt").exists()
+    chosen_dir = source_dir if use_source else fallback_dir
+    source_root = sources.raw_asset_root if use_source else sources.sprite_collab_root
+    source = _source_rel(source_root, chosen_dir)
+    credit_text = read_credit_text(source_dir, fallback_dir) or "No source credits found."
+    return "\n".join([
+        f"[{entry.get('slug', '?')}] {entry.get('display_name', '?')} ({label})",
+        f"source: {source}",
+        credit_text,
+        "",
+    ])
+
+
 def _discover_excluded_unreleased(sources: Any, only: set[str], generations: list[int], dex_min: int, dex_max: int) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     for path in sorted(sources.monster_dir.glob("*.json")):
@@ -188,7 +364,7 @@ def _discover_excluded_unreleased(sources: Any, only: set[str], generations: lis
     return out
 
 
-def _package_entry(entry: dict[str, Any], sources: Any, dry_run: bool) -> dict[str, Any]:
+def _package_entry(entry: dict[str, Any], sources: Any, dry_run: bool, source_revision: str = "") -> dict[str, Any]:
     dex = int(entry["dex_number"])
     slug = str(entry["slug"])
     form_index = int(entry["default_form_index"])
@@ -206,11 +382,14 @@ def _package_entry(entry: dict[str, Any], sources: Any, dry_run: bool) -> dict[s
         credits_source_dir=sprite_collab_source,
         dry_run=dry_run,
     )
-    expanded_assets, expanded_checksums, expanded_warnings, _expanded_copies = copy_expanded_animation_states(
+    expanded_assets, expanded_checksums, expanded_warnings, _expanded_copies, expanded_extras = copy_expanded_animation_states(
         project_root=PROJECT_ROOT,
         source_dir=sprite_source,
         destination_dir=actor_dest,
         dry_run=dry_run,
+        source_repo="RawAsset",
+        source_rel_dir=_source_rel(sources.raw_asset_root, sprite_source),
+        source_revision=source_revision,
     )
     portrait_assets, portrait_checksums, portrait_warnings, _portrait_copies = copy_portrait(
         project_root=PROJECT_ROOT,
@@ -226,6 +405,10 @@ def _package_entry(entry: dict[str, Any], sources: Any, dry_run: bool) -> dict[s
 
     if expanded_assets:
         sprite_assets["animation_states"] = expanded_assets
+        sprite_assets["animation_schema_version"] = int(expanded_extras.get("schema_version", 1))
+        sprite_assets["shadow_size"] = int(expanded_extras.get("shadow_size", 0))
+        if expanded_extras.get("anchors"):
+            sprite_assets["anchors"] = str(expanded_extras["anchors"])
 
     warnings = sprite_warnings + expanded_warnings + portrait_warnings
     disabled_reason = ""

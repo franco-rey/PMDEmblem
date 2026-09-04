@@ -1,5 +1,4 @@
 extends SceneTree
-## M8 smoke: shared stat calculator replaces placeholder level math.
 
 const BULBASAUR_PATH: String = "res://data/models/pokemon/generated/instances/0001_bulbasaur.tres"
 const LUCARIO_PATH: String = "res://data/models/pokemon/overrides/instances/0448_lucario.tres"

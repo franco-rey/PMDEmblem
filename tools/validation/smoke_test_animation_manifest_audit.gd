@@ -1,5 +1,4 @@
 extends SceneTree
-## M7 smoke: expanded current-roster animation manifests are project-owned.
 
 var failures: int = 0
 
@@ -34,6 +33,13 @@ func _check_entry(entry: Dictionary) -> void:
 		var path: String = String(state.get("path", ""))
 		_assert_true(path.begins_with("res://"), "%s/%s uses res path" % [slug, key])
 		_assert_true(FileAccess.file_exists(path), "%s/%s animation file exists" % [slug, key])
+		var cell: Array = state.get("cell_size", [])
+		if cell.size() == 2 and int(cell[1]) > 0 and ResourceLoader.exists(path):
+			var texture: Texture2D = load(path) as Texture2D
+			var expected_rows: int = texture.get_height() / int(cell[1])
+			_assert_true(int(state.get("directions", 0)) == expected_rows, "%s/%s direction count matches sheet rows" % [slug, key])
+			var importer := PMDOImporter.new()
+			_assert_true(importer._directions_for_sheet(path, int(cell[1])) == expected_rows, "%s/%s importer preserves sheet rows" % [slug, key])
 		if not String(state.get("source_filename", "")).is_empty():
 			source_backed += 1
 			_assert_true(not String(state.get("source_name", "")).is_empty(), "%s/%s records source name" % [slug, key])

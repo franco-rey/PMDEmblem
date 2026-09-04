@@ -1,33 +1,20 @@
 class_name BattleScheduler
 extends RefCounted
-## Speed-ordered tactical initiative queue.
-##
-## One round = every living unit acts once, ordered by Speed descending.
-## Player- and AI-controlled units share the same queue; the caller dispatches
-## by control type. See [code]plan/architecture/scheduler_model.md[/code] for
-## the API contract, tie-breaking rules, and determinism guarantees.
 
-## Emitted after a unit becomes the active one (start of its turn).
 signal turn_started(unit: BattleUnit)
-## Emitted after [method complete_active_unit] finishes the active turn.
 signal turn_completed(unit: BattleUnit)
-## Emitted whenever a fresh round begins (initial battle start and every
-## subsequent queue rebuild after all units have taken their turn).
+signal round_building
 signal round_started
-## Emitted once when [method is_battle_over] flips to true.
 signal battle_ended
 
 var _units: Array[BattleUnit] = []
 var _queue: Array[BattleUnit] = []
 var _active_unit: BattleUnit = null
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
-## Seeded tie-break value per unit. Filled on `start_battle` / `insert_unit`.
 var _tie_values: Dictionary = {}
 var _battle_ended_emitted: bool = false
 
 
-## Initialize the queue from a flat list of living units. Seed drives the
-## final tie-breaker (after Speed, team, and stable insertion order).
 func start_battle(units: Array, battle_seed: int) -> void:
 	_units.clear()
 	_queue.clear()
@@ -40,18 +27,16 @@ func start_battle(units: Array, battle_seed: int) -> void:
 		if u is BattleUnit:
 			_units.append(u)
 			_tie_values[u] = _rng.randi()
+	round_building.emit()
 	_build_queue()
 	round_started.emit()
 	_activate_next()
 
 
-## Returns the unit whose turn it is now. Null after [method is_battle_over]
-## returns true or before [method start_battle] is called.
 func get_active_unit() -> BattleUnit:
 	return _active_unit
 
 
-## Marks the active unit's turn as complete and advances the queue.
 func complete_active_unit() -> void:
 	if _active_unit == null:
 		return
@@ -61,10 +46,16 @@ func complete_active_unit() -> void:
 	_activate_next()
 
 
-## Remove a unit from all current and future turns. Idempotent.
-##
-## If the removed unit is the active one, advance to the next legal unit
-## (per the scheduler-model contract: "mark its turn complete and advance").
+func skip_active_unit(_reason: String = "") -> bool:
+	if _active_unit == null:
+		return false
+	var skipped: BattleUnit = _active_unit
+	_active_unit = null
+	turn_completed.emit(skipped)
+	_activate_next()
+	return true
+
+
 func remove_unit(unit: BattleUnit) -> void:
 	if unit == null:
 		return
@@ -86,8 +77,6 @@ func remove_unit(unit: BattleUnit) -> void:
 		_activate_next()
 
 
-## Insert a new unit into the current round at its Speed-correct position.
-## Honors deterministic tie-breaking. No-op if the unit is already tracked.
 func insert_unit(unit: BattleUnit) -> void:
 	if unit == null:
 		return
@@ -103,16 +92,12 @@ func insert_unit(unit: BattleUnit) -> void:
 	_queue.insert(insert_at, unit)
 
 
-## Drop the current round's remainder and rebuild from the living-unit set.
-## Use sparingly - common-case insertions / removals should use the explicit
-## methods.
 func rebuild_queue() -> void:
 	_active_unit = null
 	_build_queue()
 	_activate_next()
 
 
-## True when only one team has living units (or none do).
 func is_battle_over() -> bool:
 	var teams_alive: Dictionary = {}
 	for u in _units:
@@ -121,8 +106,6 @@ func is_battle_over() -> bool:
 	return teams_alive.size() <= 1
 
 
-## Snapshot of the next [code]count[/code] units in turn order. Convenience for
-## UI panels that need to preview upcoming turns.
 func peek_upcoming(count: int) -> Array[BattleUnit]:
 	var out: Array[BattleUnit] = []
 	var i: int = 0
@@ -156,6 +139,7 @@ func _activate_next() -> void:
 			battle_ended.emit()
 		return
 
+	round_building.emit()
 	_build_queue()
 	round_started.emit()
 	while _queue.size() > 0:

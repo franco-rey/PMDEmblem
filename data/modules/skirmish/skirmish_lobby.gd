@@ -1,32 +1,41 @@
 class_name SkirmishLobby
 extends Control
-## Scalable M5.5 skirmish setup surface.
 
 signal launch_requested(definition: SkirmishDefinitionResource, seed: int)
+signal launch_series_requested(definitions: Array[SkirmishDefinitionResource], code: String)
 signal close_requested
 
 const SIDE_PLAYER: String = "player"
 const SIDE_ENEMY: String = "enemy"
 const RosterProvider = preload("res://data/modules/skirmish/skirmish_roster_provider.gd")
+const SkirmishCode = preload("res://data/modules/skirmish/skirmish_code.gd")
+const SkirmishControlMode = preload("res://data/modules/skirmish/skirmish_control_mode.gd")
 const FONT_SIZE: int = 20
 const SMALL_FONT_SIZE: int = 18
 const TITLE_FONT_SIZE: int = 24
-const CELL_SIZE: Vector2 = Vector2(124, 156)
-const SLOT_SIZE: Vector2 = Vector2(96, 90)
+const CELL_SIZE: Vector2 = Vector2(108, 108)
+const ROSTER_COLUMNS: int = 10
+const ROSTER_MIN_CELL: float = 40.0
+const SLOT_SIZE: Vector2 = Vector2(96, 64)
 const SLOT_PORTRAIT_SIZE: Vector2 = Vector2(52, 52)
-const TRAY_HEIGHT: float = 150.0
+const CHOOSER_ROW_SIZE: Vector2 = Vector2(250, 56)
+const CHOOSER_ICON_SIZE: Vector2 = Vector2(40, 40)
+const CHOOSER_MIN_COLUMNS: int = 2
+const CHOOSER_MAX_COLUMNS: int = 6
+const CHOOSER_ITEM: String = "item"
+const CHOOSER_MOVES: String = "moves"
+const CHOOSER_ABILITY: String = "ability"
+const TRAY_HEIGHT: float = 112.0
 const CONTROL_HEIGHT: float = 42.0
-const GRID_MIN_COLUMNS: int = 3
-const GRID_MAX_COLUMNS: int = 16
-const GRID_GAP: float = 12.0
+const GRID_GAP: float = 8.0
 const LAYOUT_MARGIN_X: float = 20.0
 const PANEL_MARGIN_X: float = 10.0
 const MIDDLE_GAP: float = 12.0
-const COMPACT_LAYOUT_WIDTH: float = 1400.0
+const COMPACT_LAYOUT_WIDTH: float = 1600.0
 const SETUP_PANEL_WIDTH: float = 320.0
 const SETUP_PANEL_COMPACT_WIDTH: float = 260.0
-const DETAILS_PANEL_WIDTH: float = 300.0
-const DETAILS_PANEL_COMPACT_WIDTH: float = 220.0
+const DETAILS_PANEL_WIDTH: float = 310.0
+const DETAILS_PANEL_COMPACT_WIDTH: float = 300.0
 const TYPE_FILTER_WIDTH: float = 170.0
 const TYPE_FILTER_COMPACT_WIDTH: float = 130.0
 const SORT_PICKER_WIDTH: float = 150.0
@@ -40,6 +49,17 @@ var roster_entries: Array[Dictionary] = []
 var map_paths: Array[String] = []
 var player_team_paths: Array[String] = []
 var enemy_team_paths: Array[String] = []
+var player_slot_specs: Array[Dictionary] = []
+var enemy_slot_specs: Array[Dictionary] = []
+var item_choices: Array[Dictionary] = []
+var roster_cell_scale: float = 1.0
+var roster_cell_px: float = CELL_SIZE.x
+var last_launch_code: String = ""
+var code_output: LineEdit = null
+var chooser_mode: String = ""
+var chooser_side: String = SIDE_PLAYER
+var chooser_slot: int = -1
+var chooser_selection: Array[String] = []
 var active_side: String = SIDE_PLAYER
 var selected_player_index: int = -1
 var selected_enemy_index: int = -1
@@ -60,6 +80,7 @@ var search_input: LineEdit
 var type_filter: OptionButton
 var sort_picker: OptionButton
 var map_picker: OptionButton
+var control_mode_picker: OptionButton
 var seed_input: LineEdit
 var difficulty_spin: SpinBox
 var random_enemy_check: CheckBox
@@ -67,6 +88,24 @@ var enemy_size_spin: SpinBox
 var status_label: Label
 var target_label: Label
 var details_label: Label
+var slot_title_label: Label
+var random_moves_check: CheckBox
+var choose_moves_button: Button
+var moves_value_label: Label
+var random_ability_check: CheckBox
+var choose_ability_button: Button
+var ability_value_label: Label
+var random_item_check: CheckBox
+var choose_item_button: Button
+var clear_item_button: Button
+var item_value_label: Label
+var chooser_panel: PanelContainer
+var chooser_title: Label
+var chooser_search: LineEdit
+var chooser_grid: GridContainer
+var chooser_scroll: ScrollContainer
+var chooser_counter: Label
+var chooser_done_button: Button
 var launch_button: Button
 var summary_panel: PanelContainer
 var summary_label: Label
@@ -99,6 +138,14 @@ func get_enemy_team_paths() -> Array[String]:
 	return enemy_team_paths.duplicate()
 
 
+func get_player_item_ids() -> Array[String]:
+	return _items_for_side(SIDE_PLAYER)
+
+
+func get_enemy_item_ids() -> Array[String]:
+	return _items_for_side(SIDE_ENEMY)
+
+
 func get_active_side() -> String:
 	return active_side
 
@@ -124,6 +171,63 @@ func set_random_enemy_enabled(enabled: bool) -> void:
 	_on_random_enemy_toggled(enabled)
 
 
+func get_slot_spec(side: String, index: int) -> Dictionary:
+	var specs: Array[Dictionary] = _specs_for_side(side)
+	return specs[index].duplicate(true) if index >= 0 and index < specs.size() else {}
+
+
+func set_held_item(side: String, index: int, item_id: String) -> bool:
+	var team: Array[String] = player_team_paths if side == SIDE_PLAYER else enemy_team_paths
+	if index < 0 or index >= team.size():
+		_set_status("Pick a team slot first")
+		return false
+	if not item_id.is_empty() and item_id != CustomSkirmishBuilder.RANDOM_CHOICE and not BattleItemCatalog.is_selectable(item_id):
+		_set_status("Unknown item %s" % item_id)
+		return false
+	_sync_specs(side)
+	var spec: Dictionary = _specs_for_side(side)[index]
+	spec["item"] = "" if item_id == CustomSkirmishBuilder.RANDOM_CHOICE else item_id
+	spec["random_item"] = item_id == CustomSkirmishBuilder.RANDOM_CHOICE
+	_set_status("")
+	_refresh_team_trays()
+	_refresh_details()
+	_refresh_slot_section()
+	return true
+
+
+func set_slot_moves(side: String, index: int, move_ids: Array) -> bool:
+	var team: Array[String] = player_team_paths if side == SIDE_PLAYER else enemy_team_paths
+	if index < 0 or index >= team.size():
+		_set_status("Pick a team slot first")
+		return false
+	_sync_specs(side)
+	var spec: Dictionary = _specs_for_side(side)[index]
+	var chosen: Array[String] = []
+	for raw in move_ids:
+		var move_id: String = String(raw)
+		if not move_id.is_empty() and not chosen.has(move_id) and chosen.size() < PokemonInstanceResource.MAX_MOVE_SLOTS:
+			chosen.append(move_id)
+	spec["moves"] = chosen
+	spec["random_moves"] = chosen.is_empty()
+	_refresh_details()
+	_refresh_slot_section()
+	return true
+
+
+func set_slot_ability(side: String, index: int, ability_id: String) -> bool:
+	var team: Array[String] = player_team_paths if side == SIDE_PLAYER else enemy_team_paths
+	if index < 0 or index >= team.size():
+		_set_status("Pick a team slot first")
+		return false
+	_sync_specs(side)
+	var spec: Dictionary = _specs_for_side(side)[index]
+	spec["ability"] = "" if ability_id == CustomSkirmishBuilder.RANDOM_CHOICE else ability_id
+	spec["random_ability"] = ability_id.is_empty() or ability_id == CustomSkirmishBuilder.RANDOM_CHOICE
+	_refresh_details()
+	_refresh_slot_section()
+	return true
+
+
 func build_current_definition() -> Dictionary:
 	return _build_launch_result(false)
 
@@ -131,12 +235,13 @@ func build_current_definition() -> Dictionary:
 func show_battle_summary(result: int, definition: SkirmishDefinitionResource, level: TacticsLevel) -> void:
 	visible = true
 	summary_panel.visible = true
-	var result_text: String = "Player Win" if result == TacticsLevel.RESULT_PLAYER_WIN else "Player Loss"
+	var result_text: String = _result_label(result, definition)
 	var turn_count: int = _turn_count(level)
 	var player_summary: Dictionary = _side_summary(level.player if level != null else null)
 	var enemy_summary: Dictionary = _side_summary(level.opponent if level != null else null)
-	summary_label.text = "%s\nSeed: %d\nTurns: %d\nPlayer: %d/%d standing\nEnemy: %d/%d standing\n%s\n%s" % [
+	summary_label.text = "%s\nMode: %s\nSeed: %d\nTurns: %d\nPlayer: %d/%d standing\nEnemy: %d/%d standing\n%s\n%s" % [
 		result_text,
+		SkirmishControlMode.label(definition.control_mode if definition != null else ""),
 		definition.seed if definition != null else last_resolved_seed,
 		turn_count,
 		int(player_summary.get("alive", 0)),
@@ -195,6 +300,7 @@ func _build_ui() -> void:
 
 	enemy_tray = _create_team_tray("EnemyTeamTray", "Enemy Team", SIDE_ENEMY)
 	outer.add_child(enemy_tray)
+	add_child(_create_chooser_panel())
 	resized.connect(_queue_update_grid_columns)
 
 
@@ -208,13 +314,13 @@ func _create_team_tray(node_name: String, title: String, side: String) -> PanelC
 
 	var margin := MarginContainer.new()
 	margin.add_theme_constant_override("margin_left", 14)
-	margin.add_theme_constant_override("margin_top", 10)
+	margin.add_theme_constant_override("margin_top", 6)
 	margin.add_theme_constant_override("margin_right", 14)
-	margin.add_theme_constant_override("margin_bottom", 10)
+	margin.add_theme_constant_override("margin_bottom", 6)
 	tray.add_child(margin)
 
 	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 8)
+	column.add_theme_constant_override("separation", 4)
 	margin.add_child(column)
 
 	var header := HBoxContainer.new()
@@ -287,7 +393,7 @@ func _create_setup_panel() -> PanelContainer:
 	panel.add_child(margin)
 
 	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 10)
+	column.add_theme_constant_override("separation", 8)
 	margin.add_child(column)
 
 	var top_row := HBoxContainer.new()
@@ -310,9 +416,17 @@ func _create_setup_panel() -> PanelContainer:
 	map_picker.name = "MapPicker"
 	column.add_child(_labeled_control("Map", map_picker))
 
+	control_mode_picker = OptionButton.new()
+	control_mode_picker.name = "ControlModePicker"
+	_add_control_mode_item("Player vs CPU", SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU)
+	_add_control_mode_item("Player vs Player", SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_PLAYER)
+	_add_control_mode_item("CPU vs CPU", SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU)
+	control_mode_picker.item_selected.connect(_on_control_mode_selected)
+	column.add_child(_labeled_control("Control", control_mode_picker))
+
 	seed_input = LineEdit.new()
 	seed_input.name = "SeedInput"
-	seed_input.placeholder_text = "integer or blank"
+	seed_input.placeholder_text = "seed or skirmish code"
 	seed_input.text_changed.connect(_on_seed_changed)
 	column.add_child(_labeled_control("Seed", seed_input))
 
@@ -342,15 +456,24 @@ func _create_setup_panel() -> PanelContainer:
 	launch_button = Button.new()
 	launch_button.name = "LaunchButton"
 	launch_button.text = "Launch Skirmish"
-	launch_button.custom_minimum_size.y = 48
+	launch_button.custom_minimum_size.y = CONTROL_HEIGHT
 	launch_button.pressed.connect(_on_launch_pressed)
 	column.add_child(launch_button)
 
 	status_label = Label.new()
 	status_label.name = "StatusLabel"
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	status_label.custom_minimum_size = Vector2(0, 48)
+	status_label.custom_minimum_size = Vector2(0, 0)
 	column.add_child(status_label)
+	code_output = LineEdit.new()
+	code_output.name = "CodeOutput"
+	code_output.editable = false
+	code_output.selecting_enabled = true
+	code_output.context_menu_enabled = true
+	code_output.placeholder_text = "skirmish code appears after launch"
+	code_output.tooltip_text = "Select all and copy, then paste into the seed box to replay this exact setup"
+	code_output.custom_minimum_size.y = CONTROL_HEIGHT
+	column.add_child(code_output)
 
 	summary_panel = PanelContainer.new()
 	summary_panel.name = "SummaryPanel"
@@ -443,8 +566,8 @@ func _create_roster_panel() -> PanelContainer:
 	roster_grid = GridContainer.new()
 	roster_grid.name = "RosterGrid"
 	roster_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	roster_grid.add_theme_constant_override("h_separation", 12)
-	roster_grid.add_theme_constant_override("v_separation", 12)
+	roster_grid.add_theme_constant_override("h_separation", int(GRID_GAP))
+	roster_grid.add_theme_constant_override("v_separation", int(GRID_GAP))
 	roster_scroll.add_child(roster_grid)
 	return panel
 
@@ -464,9 +587,17 @@ func _create_details_panel() -> PanelContainer:
 	margin.add_theme_constant_override("margin_bottom", 10)
 	panel.add_child(margin)
 
+	var scroll := ScrollContainer.new()
+	scroll.name = "DetailsScroll"
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	margin.add_child(scroll)
+
 	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 12)
-	margin.add_child(column)
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	column.add_theme_constant_override("separation", 8)
+	scroll.add_child(column)
 
 	target_label = Label.new()
 	target_label.name = "TargetLabel"
@@ -477,26 +608,198 @@ func _create_details_panel() -> PanelContainer:
 	details_label = Label.new()
 	details_label.name = "DetailsLabel"
 	details_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	details_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(details_label)
+
+	slot_title_label = Label.new()
+	slot_title_label.name = "SlotTitleLabel"
+	slot_title_label.text = "Pokemon setup"
+	slot_title_label.add_theme_font_size_override("font_size", TITLE_FONT_SIZE)
+	slot_title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	column.add_child(slot_title_label)
+
+	column.add_child(_section_header("Moves"))
+	var moves_row := HBoxContainer.new()
+	moves_row.add_theme_constant_override("separation", 6)
+	column.add_child(moves_row)
+	random_moves_check = CheckBox.new()
+	random_moves_check.name = "RandomMovesCheck"
+	random_moves_check.text = "Random"
+	random_moves_check.button_pressed = true
+	random_moves_check.toggled.connect(_on_random_moves_toggled)
+	moves_row.add_child(random_moves_check)
+	choose_moves_button = Button.new()
+	choose_moves_button.name = "ChooseMovesButton"
+	choose_moves_button.text = "Choose Moves"
+	choose_moves_button.custom_minimum_size.y = CONTROL_HEIGHT
+	choose_moves_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	choose_moves_button.pressed.connect(_open_chooser.bind(CHOOSER_MOVES))
+	moves_row.add_child(choose_moves_button)
+	moves_value_label = _section_value("MovesValueLabel")
+	column.add_child(moves_value_label)
+
+	column.add_child(_section_header("Ability"))
+	var ability_row := HBoxContainer.new()
+	ability_row.add_theme_constant_override("separation", 6)
+	column.add_child(ability_row)
+	random_ability_check = CheckBox.new()
+	random_ability_check.name = "RandomAbilityCheck"
+	random_ability_check.text = "Random"
+	random_ability_check.button_pressed = true
+	random_ability_check.toggled.connect(_on_random_ability_toggled)
+	ability_row.add_child(random_ability_check)
+	choose_ability_button = Button.new()
+	choose_ability_button.name = "ChooseAbilityButton"
+	choose_ability_button.text = "Choose Ability"
+	choose_ability_button.custom_minimum_size.y = CONTROL_HEIGHT
+	choose_ability_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	choose_ability_button.pressed.connect(_open_chooser.bind(CHOOSER_ABILITY))
+	ability_row.add_child(choose_ability_button)
+	ability_value_label = _section_value("AbilityValueLabel")
+	column.add_child(ability_value_label)
+
+	column.add_child(_section_header("Held item"))
+	var held_row := HBoxContainer.new()
+	held_row.add_theme_constant_override("separation", 6)
+	column.add_child(held_row)
+	random_item_check = CheckBox.new()
+	random_item_check.name = "RandomItemCheck"
+	random_item_check.text = "Random"
+	random_item_check.toggled.connect(_on_random_item_toggled)
+	held_row.add_child(random_item_check)
+	choose_item_button = Button.new()
+	choose_item_button.name = "ChooseItemButton"
+	choose_item_button.text = "Choose Item"
+	choose_item_button.custom_minimum_size.y = CONTROL_HEIGHT
+	choose_item_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	choose_item_button.pressed.connect(_open_chooser.bind(CHOOSER_ITEM))
+	held_row.add_child(choose_item_button)
+	clear_item_button = Button.new()
+	clear_item_button.name = "ClearItemButton"
+	clear_item_button.text = "None"
+	clear_item_button.custom_minimum_size = Vector2(52, CONTROL_HEIGHT)
+	clear_item_button.pressed.connect(_on_clear_item_pressed)
+	held_row.add_child(clear_item_button)
+	item_value_label = _section_value("ItemValueLabel")
+	column.add_child(item_value_label)
 	return panel
 
 
-func _labeled_control(label_text: String, control: Control) -> VBoxContainer:
-	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 4)
+func _section_header(text: String) -> Label:
+	var label := Label.new()
+	label.text = text
+	label.add_theme_font_size_override("font_size", SMALL_FONT_SIZE)
+	label.modulate = Color(1, 1, 1, 0.7)
+	return label
+
+
+func _section_value(node_name: String) -> Label:
+	var label := Label.new()
+	label.name = node_name
+	label.add_theme_font_size_override("font_size", SMALL_FONT_SIZE)
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	return label
+
+
+func _create_chooser_panel() -> PanelContainer:
+	var panel := PanelContainer.new()
+	panel.name = "ChooserPanel"
+	panel.visible = false
+	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+	panel.add_theme_stylebox_override("panel", _style_box(Color(0.09, 0.1, 0.1, 0.94), MUTED_BORDER_COLOR, 0))
+	chooser_panel = panel
+
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 60)
+	margin.add_theme_constant_override("margin_top", 40)
+	margin.add_theme_constant_override("margin_right", 60)
+	margin.add_theme_constant_override("margin_bottom", 40)
+	panel.add_child(margin)
+
+	var inner := PanelContainer.new()
+	inner.add_theme_stylebox_override("panel", _style_box(PANEL_COLOR, BORDER_COLOR, 2))
+	margin.add_child(inner)
+
+	var inner_margin := MarginContainer.new()
+	inner_margin.add_theme_constant_override("margin_left", 14)
+	inner_margin.add_theme_constant_override("margin_top", 12)
+	inner_margin.add_theme_constant_override("margin_right", 14)
+	inner_margin.add_theme_constant_override("margin_bottom", 12)
+	inner.add_child(inner_margin)
+
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 10)
+	inner_margin.add_child(column)
+
+	var header := HBoxContainer.new()
+	header.add_theme_constant_override("separation", 10)
+	column.add_child(header)
+
+	chooser_title = Label.new()
+	chooser_title.name = "ChooserTitle"
+	chooser_title.add_theme_font_size_override("font_size", TITLE_FONT_SIZE)
+	chooser_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header.add_child(chooser_title)
+
+	chooser_counter = Label.new()
+	chooser_counter.name = "ChooserCounter"
+	header.add_child(chooser_counter)
+
+	chooser_search = LineEdit.new()
+	chooser_search.name = "ChooserSearch"
+	chooser_search.placeholder_text = "Search"
+	chooser_search.custom_minimum_size = Vector2(240, CONTROL_HEIGHT)
+	chooser_search.text_changed.connect(_on_chooser_search_changed)
+	header.add_child(chooser_search)
+
+	chooser_done_button = Button.new()
+	chooser_done_button.name = "ChooserDoneButton"
+	chooser_done_button.text = "Done"
+	chooser_done_button.custom_minimum_size.y = CONTROL_HEIGHT
+	chooser_done_button.pressed.connect(_close_chooser)
+	header.add_child(chooser_done_button)
+
+	chooser_scroll = ScrollContainer.new()
+	chooser_scroll.name = "ChooserScroll"
+	chooser_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	chooser_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	chooser_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	chooser_scroll.resized.connect(_update_chooser_columns)
+	column.add_child(chooser_scroll)
+
+	chooser_grid = GridContainer.new()
+	chooser_grid.name = "ChooserGrid"
+	chooser_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	chooser_grid.add_theme_constant_override("h_separation", 10)
+	chooser_grid.add_theme_constant_override("v_separation", 8)
+	chooser_grid.columns = 3
+	chooser_scroll.add_child(chooser_grid)
+	return panel
+
+
+func _labeled_control(label_text: String, control: Control) -> HBoxContainer:
+	var box := HBoxContainer.new()
+	box.add_theme_constant_override("separation", 8)
 	var label := Label.new()
 	label.text = label_text
+	label.custom_minimum_size.x = 92
 	label.add_theme_font_size_override("font_size", SMALL_FONT_SIZE)
 	box.add_child(label)
 	control.custom_minimum_size.y = maxf(control.custom_minimum_size.y, CONTROL_HEIGHT)
+	control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	box.add_child(control)
 	return box
+
+
+func _add_control_mode_item(label: String, mode: String) -> void:
+	control_mode_picker.add_item(label)
+	control_mode_picker.set_item_metadata(control_mode_picker.item_count - 1, mode)
 
 
 func _load_data() -> void:
 	roster_entries = RosterProvider.entries()
 	map_paths = CustomSkirmishBuilder.map_paths()
+	item_choices = BattleItemCatalog.labels_for_picker()
 
 	map_picker.clear()
 	for path in map_paths:
@@ -529,7 +832,356 @@ func _refresh_all() -> void:
 	_refresh_roster()
 	_refresh_team_trays()
 	_refresh_details()
+	_refresh_slot_section()
 	_refresh_launch_state()
+
+
+func _specs_for_side(side: String) -> Array[Dictionary]:
+	return player_slot_specs if side == SIDE_PLAYER else enemy_slot_specs
+
+
+func _default_spec() -> Dictionary:
+	return {"moves": [], "random_moves": true, "ability": "", "random_ability": true, "item": "", "random_item": false}
+
+
+func _spec_for(side: String, index: int) -> Dictionary:
+	var specs: Array[Dictionary] = _specs_for_side(side)
+	return specs[index] if index >= 0 and index < specs.size() else _default_spec()
+
+
+func _items_for_side(side: String) -> Array[String]:
+	var out: Array[String] = []
+	_sync_specs(side)
+	for spec in _specs_for_side(side):
+		if bool(spec.get("random_item", false)):
+			out.append(CustomSkirmishBuilder.RANDOM_CHOICE)
+		else:
+			out.append(String(spec.get("item", "")))
+	return out
+
+
+func _specs_payload(side: String) -> Array:
+	var out: Array = []
+	_sync_specs(side)
+	for spec in _specs_for_side(side):
+		var moves: Array = [] if bool(spec.get("random_moves", true)) else (spec.get("moves", []) as Array).duplicate()
+		var ability: String = CustomSkirmishBuilder.RANDOM_CHOICE if bool(spec.get("random_ability", true)) else String(spec.get("ability", ""))
+		out.append({"moves": moves, "ability": ability})
+	return out
+
+
+func _item_id_for(side: String, index: int) -> String:
+	var spec: Dictionary = _spec_for(side, index)
+	if bool(spec.get("random_item", false)):
+		return CustomSkirmishBuilder.RANDOM_CHOICE
+	return String(spec.get("item", ""))
+
+
+func _sync_specs(side: String) -> void:
+	var team: Array[String] = player_team_paths if side == SIDE_PLAYER else enemy_team_paths
+	var specs: Array[Dictionary] = _specs_for_side(side)
+	while specs.size() < team.size():
+		specs.append(_default_spec())
+	while specs.size() > team.size():
+		specs.remove_at(specs.size() - 1)
+
+
+func _sync_item_slots(side: String) -> void:
+	_sync_specs(side)
+
+
+func _refresh_slot_section() -> void:
+	if slot_title_label == null:
+		return
+	var team: Array[String] = player_team_paths if active_side == SIDE_PLAYER else enemy_team_paths
+	var index: int = _selected_index_for(active_side)
+	var has_slot: bool = index >= 0 and index < team.size()
+	for control in [random_moves_check, choose_moves_button, random_ability_check, choose_ability_button, random_item_check, choose_item_button, clear_item_button]:
+		control.disabled = not has_slot
+	if not has_slot:
+		slot_title_label.text = "Select a %s slot" % _side_label(active_side).to_lower()
+		moves_value_label.text = ""
+		ability_value_label.text = ""
+		item_value_label.text = ""
+		return
+	_sync_specs(active_side)
+	var spec: Dictionary = _spec_for(active_side, index)
+	var entry: Dictionary = _entry_for_path(team[index])
+	slot_title_label.text = "%s slot %d: %s" % [_side_label(active_side), index + 1, String(entry.get("label", ""))]
+	random_moves_check.set_pressed_no_signal(bool(spec.get("random_moves", true)))
+	choose_moves_button.disabled = bool(spec.get("random_moves", true))
+	var move_labels: Array[String] = []
+	for move_id in spec.get("moves", []):
+		move_labels.append(_move_label(String(move_id)))
+	moves_value_label.text = "Seeded from the level-up pool" if bool(spec.get("random_moves", true)) else ("" + (", ".join(move_labels) if not move_labels.is_empty() else "(choose at least one)"))
+	random_ability_check.set_pressed_no_signal(bool(spec.get("random_ability", true)))
+	choose_ability_button.disabled = bool(spec.get("random_ability", true))
+	ability_value_label.text = "Seeded from %s" % ", ".join(_ability_labels(team[index])) if bool(spec.get("random_ability", true)) else "%s" % (_ability_label(String(spec.get("ability", ""))) if not String(spec.get("ability", "")).is_empty() else "(choose one)")
+	random_item_check.set_pressed_no_signal(bool(spec.get("random_item", false)))
+	choose_item_button.disabled = bool(spec.get("random_item", false))
+	clear_item_button.disabled = bool(spec.get("random_item", false)) or String(spec.get("item", "")).is_empty()
+	var item_id: String = String(spec.get("item", ""))
+	if bool(spec.get("random_item", false)):
+		item_value_label.text = "Seeded from %d applicable items" % item_choices.size()
+	elif item_id.is_empty():
+		item_value_label.text = "None"
+	else:
+		item_value_label.text = "%s" % String(BattleItemCatalog.entry_for(item_id).get("label", item_id))
+
+
+func _on_random_moves_toggled(enabled: bool) -> void:
+	var index: int = _selected_index_for(active_side)
+	if index < 0:
+		return
+	_sync_specs(active_side)
+	var spec: Dictionary = _spec_for(active_side, index)
+	spec["random_moves"] = enabled
+	_refresh_details()
+	_refresh_slot_section()
+	if not enabled and (spec.get("moves", []) as Array).is_empty():
+		_open_chooser(CHOOSER_MOVES)
+
+
+func _on_random_ability_toggled(enabled: bool) -> void:
+	var index: int = _selected_index_for(active_side)
+	if index < 0:
+		return
+	_sync_specs(active_side)
+	var spec: Dictionary = _spec_for(active_side, index)
+	spec["random_ability"] = enabled
+	_refresh_details()
+	_refresh_slot_section()
+	if not enabled and String(spec.get("ability", "")).is_empty():
+		_open_chooser(CHOOSER_ABILITY)
+
+
+func _on_random_item_toggled(enabled: bool) -> void:
+	var index: int = _selected_index_for(active_side)
+	if index < 0:
+		return
+	_sync_specs(active_side)
+	var spec: Dictionary = _spec_for(active_side, index)
+	spec["random_item"] = enabled
+	if enabled:
+		spec["item"] = ""
+	_refresh_team_trays()
+	_refresh_details()
+	_refresh_slot_section()
+
+
+func _on_clear_item_pressed() -> void:
+	set_held_item(active_side, _selected_index_for(active_side), "")
+
+
+func _move_label(move_id: String) -> String:
+	var move: PokemonMoveResource = load("res://data/models/pokemon/generated/moves/%s.tres" % move_id) as PokemonMoveResource if ResourceLoader.exists("res://data/models/pokemon/generated/moves/%s.tres" % move_id) else null
+	return move.display_name() if move != null else move_id.capitalize()
+
+
+func _ability_label(ability_id: String) -> String:
+	var path: String = "res://data/models/pokemon/generated/intrinsics/%s.tres" % ability_id
+	var intrinsic: PokemonIntrinsicResource = load(path) as PokemonIntrinsicResource if ResourceLoader.exists(path) else null
+	return intrinsic.label() if intrinsic != null else ability_id.capitalize()
+
+
+func _ability_labels(path: String) -> Array[String]:
+	var out: Array[String] = []
+	var instance: PokemonInstanceResource = load(path) as PokemonInstanceResource
+	for ability_id in CustomSkirmishBuilder.available_ability_ids(instance):
+		out.append(_ability_label(ability_id))
+	return out
+
+
+func _open_chooser(mode: String) -> void:
+	var index: int = _selected_index_for(active_side)
+	var team: Array[String] = player_team_paths if active_side == SIDE_PLAYER else enemy_team_paths
+	if index < 0 or index >= team.size() or chooser_panel == null:
+		_set_status("Pick a team slot first")
+		return
+	_sync_specs(active_side)
+	chooser_mode = mode
+	chooser_side = active_side
+	chooser_slot = index
+	var spec: Dictionary = _spec_for(active_side, index)
+	chooser_selection = []
+	match mode:
+		CHOOSER_MOVES:
+			for move_id in spec.get("moves", []):
+				chooser_selection.append(String(move_id))
+		CHOOSER_ABILITY:
+			if not String(spec.get("ability", "")).is_empty():
+				chooser_selection.append(String(spec.get("ability", "")))
+		_:
+			if not String(spec.get("item", "")).is_empty():
+				chooser_selection.append(String(spec.get("item", "")))
+	var entry: Dictionary = _entry_for_path(team[index])
+	var subject: String = "%s slot %d (%s)" % [_side_label(active_side), index + 1, String(entry.get("label", ""))]
+	match mode:
+		CHOOSER_MOVES:
+			chooser_title.text = "Choose up to %d moves for %s" % [PokemonInstanceResource.MAX_MOVE_SLOTS, subject]
+		CHOOSER_ABILITY:
+			chooser_title.text = "Choose the ability for %s" % subject
+		_:
+			chooser_title.text = "Choose the held item for %s" % subject
+	chooser_search.text = ""
+	chooser_panel.visible = true
+	_refresh_chooser()
+	chooser_search.grab_focus()
+
+
+func _close_chooser() -> void:
+	if chooser_panel != null:
+		chooser_panel.visible = false
+	if chooser_mode == CHOOSER_MOVES and chooser_slot >= 0:
+		set_slot_moves(chooser_side, chooser_slot, chooser_selection)
+	chooser_mode = ""
+	_refresh_slot_section()
+	_refresh_launch_state()
+
+
+func chooser_entries() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	var team: Array[String] = player_team_paths if chooser_side == SIDE_PLAYER else enemy_team_paths
+	if chooser_slot < 0 or chooser_slot >= team.size():
+		return out
+	var path: String = team[chooser_slot]
+	match chooser_mode:
+		CHOOSER_MOVES:
+			var instance: PokemonInstanceResource = load(path) as PokemonInstanceResource
+			for move in SkirmishMoveLoadout.move_pool_for_instance(instance):
+				out.append({"id": move.move_id, "label": move.display_name(), "detail": "%s %s  Pow %d" % [move.type.capitalize(), _category_label(move), move.base_power], "icon_path": ""})
+		CHOOSER_ABILITY:
+			var instance: PokemonInstanceResource = load(path) as PokemonInstanceResource
+			for ability_id in CustomSkirmishBuilder.available_ability_ids(instance):
+				out.append({"id": ability_id, "label": _ability_label(ability_id), "detail": "", "icon_path": ""})
+		_:
+			for entry in BattleItemCatalog.entries():
+				out.append({"id": String(entry["item_id"]), "label": String(entry["label"]), "detail": String(entry["category"]).capitalize(), "icon_path": String(entry.get("icon_path", ""))})
+	return out
+
+
+func _refresh_chooser() -> void:
+	if chooser_grid == null:
+		return
+	for child in chooser_grid.get_children():
+		chooser_grid.remove_child(child)
+		child.queue_free()
+	var query: String = chooser_search.text.strip_edges().to_lower()
+	if chooser_mode == CHOOSER_ITEM:
+		chooser_grid.add_child(_create_chooser_row({"id": "", "label": "None", "detail": "No held item", "icon_path": ""}))
+	for entry in chooser_entries():
+		var label: String = String(entry.get("label", ""))
+		var id: String = String(entry.get("id", ""))
+		if not query.is_empty() and not label.to_lower().contains(query) and not id.contains(query) and not String(entry.get("detail", "")).to_lower().contains(query):
+			continue
+		chooser_grid.add_child(_create_chooser_row(entry))
+	_update_chooser_counter()
+	_update_chooser_columns()
+
+
+func _create_chooser_row(entry: Dictionary) -> Button:
+	var id: String = String(entry.get("id", ""))
+	var button := Button.new()
+	button.name = "Choice_%s" % (id if not id.is_empty() else "none")
+	button.custom_minimum_size = CHOOSER_ROW_SIZE
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.mouse_filter = Control.MOUSE_FILTER_STOP
+	button.toggle_mode = chooser_mode == CHOOSER_MOVES
+	button.button_pressed = chooser_selection.has(id) if not id.is_empty() else chooser_selection.is_empty()
+	button.pressed.connect(_on_chooser_row_pressed.bind(id))
+	button.tooltip_text = String(entry.get("label", ""))
+
+	var content := Control.new()
+	content.set_anchors_preset(Control.PRESET_FULL_RECT)
+	content.offset_left = 6
+	content.offset_top = 4
+	content.offset_right = -6
+	content.offset_bottom = -4
+	content.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	button.add_child(content)
+
+	var icon_path: String = String(entry.get("icon_path", ""))
+	var text_left: float = 0.0
+	if not icon_path.is_empty() and ResourceLoader.exists(icon_path):
+		var icon := TextureRect.new()
+		icon.texture = load(icon_path) as Texture2D
+		icon.anchor_top = 0.5
+		icon.anchor_bottom = 0.5
+		icon.offset_left = 0
+		icon.offset_top = -CHOOSER_ICON_SIZE.y * 0.5
+		icon.offset_right = CHOOSER_ICON_SIZE.x
+		icon.offset_bottom = CHOOSER_ICON_SIZE.y * 0.5
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		content.add_child(icon)
+		text_left = CHOOSER_ICON_SIZE.x + 8.0
+
+	var label := Label.new()
+	label.set_anchors_preset(Control.PRESET_FULL_RECT)
+	label.offset_left = text_left
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.clip_text = true
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var detail: String = String(entry.get("detail", ""))
+	label.text = String(entry.get("label", "")) + ("\n" + detail if not detail.is_empty() else "")
+	content.add_child(label)
+	return button
+
+
+func _on_chooser_row_pressed(id: String) -> void:
+	match chooser_mode:
+		CHOOSER_MOVES:
+			if chooser_selection.has(id):
+				chooser_selection.erase(id)
+			elif chooser_selection.size() < PokemonInstanceResource.MAX_MOVE_SLOTS:
+				chooser_selection.append(id)
+			else:
+				_set_status("Up to %d moves; deselect one first" % PokemonInstanceResource.MAX_MOVE_SLOTS)
+			_refresh_chooser()
+		CHOOSER_ABILITY:
+			set_slot_ability(chooser_side, chooser_slot, id)
+			chooser_mode = ""
+			chooser_panel.visible = false
+			_refresh_launch_state()
+		_:
+			set_held_item(chooser_side, chooser_slot, id)
+			chooser_mode = ""
+			chooser_panel.visible = false
+			_refresh_launch_state()
+
+
+func _update_chooser_counter() -> void:
+	if chooser_counter == null:
+		return
+	chooser_counter.text = "%d/%d chosen" % [chooser_selection.size(), PokemonInstanceResource.MAX_MOVE_SLOTS] if chooser_mode == CHOOSER_MOVES else ""
+
+
+func _update_chooser_columns() -> void:
+	if chooser_grid == null or chooser_scroll == null:
+		return
+	var width: float = chooser_scroll.size.x if chooser_scroll.size.x > 1.0 else _layout_width() - 160.0
+	chooser_grid.columns = clampi(int(floor((width + 10.0) / (CHOOSER_ROW_SIZE.x + 10.0))), CHOOSER_MIN_COLUMNS, CHOOSER_MAX_COLUMNS)
+
+
+func _on_chooser_search_changed(_text: String) -> void:
+	_refresh_chooser()
+
+
+func _category_label(move: PokemonMoveResource) -> String:
+	match move.category:
+		PokemonMoveResource.CATEGORY_PHYSICAL:
+			return "Physical"
+		PokemonMoveResource.CATEGORY_SPECIAL:
+			return "Special"
+		_:
+			return "Status"
+
+
+func _on_item_search_changed(_text: String) -> void:
+	_refresh_slot_section()
 
 
 func _refresh_roster() -> void:
@@ -556,44 +1208,28 @@ func _refresh_roster() -> void:
 func _create_roster_cell(entry: Dictionary) -> Button:
 	var button := Button.new()
 	button.name = "Roster_%s" % String(entry.get("slug", "pokemon"))
-	button.custom_minimum_size = CELL_SIZE
+	button.custom_minimum_size = Vector2(roster_cell_px, roster_cell_px)
 	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	button.focus_mode = Control.FOCUS_ALL
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
+	button.flat = true
 	button.tooltip_text = String(entry.get("label", ""))
 	button.pressed.connect(_on_roster_pressed.bind(String(entry.get("path", ""))))
-
-	var content := VBoxContainer.new()
-	content.set_anchors_preset(Control.PRESET_FULL_RECT)
-	content.offset_left = 6
-	content.offset_top = 6
-	content.offset_right = -6
-	content.offset_bottom = -6
-	content.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	content.add_theme_constant_override("separation", 3)
-	button.add_child(content)
 
 	var texture_rect := TextureRect.new()
 	texture_rect.name = "Portrait"
 	texture_rect.texture = RosterProvider.texture_for_entry(entry)
-	texture_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	texture_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	texture_rect.offset_left = 2
+	texture_rect.offset_top = 2
+	texture_rect.offset_right = -2
+	texture_rect.offset_bottom = -2
+	texture_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	texture_rect.custom_minimum_size = Vector2(108, 112)
-	texture_rect.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	texture_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texture_rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	content.add_child(texture_rect)
-
-	var label := Label.new()
-	label.name = "NameLabel"
-	label.text = String(entry.get("label", ""))
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.clip_text = true
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	content.add_child(label)
+	button.add_child(texture_rect)
 	return button
-
 
 func _refresh_team_trays() -> void:
 	_populate_slots(player_slots, player_team_paths, SIDE_PLAYER)
@@ -655,6 +1291,8 @@ func _create_slot_button(path: String, index: int, side: String) -> Button:
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.clip_text = true
+	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	label.add_theme_font_size_override("font_size", SMALL_FONT_SIZE)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	content.add_child(label)
 
@@ -668,15 +1306,22 @@ func _create_slot_button(path: String, index: int, side: String) -> Button:
 		portrait.texture = RosterProvider.texture_for_entry(entry)
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		label.text = String(entry.get("label", RosterProvider.label_for_path(path)))
+		var item_id: String = _item_id_for(side, index)
+		if item_id == CustomSkirmishBuilder.RANDOM_CHOICE:
+			label.text += "\n@ random item"
+		elif not item_id.is_empty():
+			var item_entry: Dictionary = BattleItemCatalog.entry_for(item_id)
+			label.text += "\n@ %s" % String(item_entry.get("label", item_id))
 	return button
 
 
 func _refresh_details() -> void:
 	var target: String = "Player" if active_side == SIDE_PLAYER else "Enemy"
 	target_label.text = "Add Target: %s" % target
-	var player_names: String = _format_team(player_team_paths)
-	var enemy_names: String = _format_team(enemy_team_paths)
-	details_label.text = "Player %d/%d\n%s\n\nEnemy %d/%d\n%s" % [
+	var player_names: String = _format_team(player_team_paths, _items_for_side(SIDE_PLAYER))
+	var enemy_names: String = _format_team(enemy_team_paths, _items_for_side(SIDE_ENEMY))
+	details_label.text = "Mode: %s\nPlayer %d/%d: %s\nEnemy %d/%d: %s" % [
+		SkirmishControlMode.label(_selected_control_mode()),
 		player_team_paths.size(),
 		CustomSkirmishBuilder.MAX_TEAM_SIZE,
 		player_names,
@@ -688,9 +1333,13 @@ func _refresh_details() -> void:
 
 func _refresh_launch_state() -> void:
 	var map_ok: bool = not map_paths.is_empty()
-	var seed_ok: bool = seed_input.text.strip_edges().is_empty() or seed_input.text.strip_edges().is_valid_int()
-	var teams_ok: bool = not player_team_paths.is_empty() and (random_enemy_check.button_pressed or not enemy_team_paths.is_empty())
+	var validation: Dictionary = _validate_seed_text()
+	var seed_ok: bool = bool(validation.get("ok", false))
+	var code_driven: bool = bool(validation.get("code_driven", false))
+	var teams_ok: bool = code_driven or (not player_team_paths.is_empty() and (random_enemy_check.button_pressed or not enemy_team_paths.is_empty()))
 	launch_button.disabled = not (map_ok and seed_ok and teams_ok)
+	if not seed_ok:
+		_set_status(String(validation.get("error", "Invalid skirmish code")))
 
 
 func _selected_type() -> String:
@@ -726,6 +1375,7 @@ func _set_active_side(side: String) -> void:
 	_set_status("")
 	_refresh_team_trays()
 	_refresh_details()
+	_refresh_slot_section()
 
 
 func _on_roster_pressed(path: String) -> void:
@@ -741,6 +1391,7 @@ func _add_to_active_team(path: String) -> bool:
 		_set_status("%s team is at the %d-Pokemon cap" % [_side_label(active_side), CustomSkirmishBuilder.MAX_TEAM_SIZE])
 		return false
 	team.append(path)
+	_sync_item_slots(active_side)
 	if active_side == SIDE_PLAYER:
 		selected_player_index = team.size() - 1
 	else:
@@ -749,6 +1400,7 @@ func _add_to_active_team(path: String) -> bool:
 	_set_status("")
 	_refresh_team_trays()
 	_refresh_details()
+	_refresh_slot_section()
 	_refresh_launch_state()
 	return true
 
@@ -768,6 +1420,7 @@ func _on_team_slot_pressed(side: String, index: int) -> void:
 	else:
 		selected_enemy_index = index
 	_refresh_team_trays()
+	_refresh_slot_section()
 
 
 func _remove_selected_from_side(side: String) -> void:
@@ -779,19 +1432,26 @@ func _remove_selected_from_side(side: String) -> void:
 	if idx < 0 or idx >= team.size():
 		idx = team.size() - 1
 	team.remove_at(idx)
+	var specs: Array[Dictionary] = _specs_for_side(side)
+	if idx < specs.size():
+		specs.remove_at(idx)
+	_sync_specs(side)
 	_set_selected_index_for(side, mini(idx, team.size() - 1))
 	_set_status("")
 	_refresh_team_trays()
 	_refresh_details()
+	_refresh_slot_section()
 	_refresh_launch_state()
 
 
 func _clear_side(side: String) -> void:
 	if side == SIDE_PLAYER:
 		player_team_paths.clear()
+		player_slot_specs.clear()
 		selected_player_index = -1
 	else:
 		enemy_team_paths.clear()
+		enemy_slot_specs.clear()
 		selected_enemy_index = -1
 	_set_active_side(side)
 	_refresh_launch_state()
@@ -806,9 +1466,15 @@ func _move_selected(side: String, delta: int) -> void:
 	var moving: String = team[idx]
 	team[idx] = team[next_idx]
 	team[next_idx] = moving
+	_sync_specs(side)
+	var specs: Array[Dictionary] = _specs_for_side(side)
+	var moving_spec: Dictionary = specs[idx]
+	specs[idx] = specs[next_idx]
+	specs[next_idx] = moving_spec
 	_set_selected_index_for(side, next_idx)
 	_refresh_team_trays()
 	_refresh_details()
+	_refresh_slot_section()
 
 
 func _selected_index_for(side: String) -> int:
@@ -834,6 +1500,11 @@ func _on_seed_changed(_text: String) -> void:
 	_refresh_launch_state()
 
 
+func _on_control_mode_selected(_index: int) -> void:
+	_refresh_details()
+	_refresh_launch_state()
+
+
 func _on_random_enemy_toggled(_enabled: bool) -> void:
 	_refresh_details()
 	_refresh_launch_state()
@@ -842,6 +1513,10 @@ func _on_random_enemy_toggled(_enabled: bool) -> void:
 func _on_launch_pressed() -> void:
 	var result: Dictionary = _build_launch_result(true)
 	if not result.get("ok", false):
+		return
+	var definitions: Array[SkirmishDefinitionResource] = _definitions_from_result(result)
+	if definitions.size() > 1:
+		launch_series_requested.emit(definitions, String(result.get("code", "")))
 		return
 	var definition: SkirmishDefinitionResource = result["definition"]
 	launch_requested.emit(definition, int(result["seed"]))
@@ -854,8 +1529,12 @@ func _on_play_again_pressed() -> void:
 	if not result.get("ok", false):
 		_set_status(String(result.get("error", "Could not replay skirmish")))
 		return
-	var definition: SkirmishDefinitionResource = result["definition"]
 	last_resolved_seed = int(result["seed"])
+	var definitions: Array[SkirmishDefinitionResource] = _definitions_from_result(result)
+	if definitions.size() > 1:
+		launch_series_requested.emit(definitions, String(result.get("code", "")))
+		return
+	var definition: SkirmishDefinitionResource = result["definition"]
 	launch_requested.emit(definition, last_resolved_seed)
 
 
@@ -874,55 +1553,128 @@ func _build_launch_result(store_state: bool) -> Dictionary:
 		_set_status("No maps available")
 		return {"ok": false, "error": "No maps available"}
 	var map_path: String = map_paths[clampi(map_picker.selected, 0, map_paths.size() - 1)]
+	_sync_specs(SIDE_PLAYER)
+	_sync_specs(SIDE_ENEMY)
 	var state: Dictionary = {
 		"random_enemy": random_enemy_check.button_pressed,
 		"player_paths": player_team_paths.duplicate(),
 		"enemy_paths": enemy_team_paths.duplicate(),
+		"player_items": _items_for_side(SIDE_PLAYER),
+		"enemy_items": _items_for_side(SIDE_ENEMY),
+		"player_specs": _specs_payload(SIDE_PLAYER),
+		"enemy_specs": _specs_payload(SIDE_ENEMY),
 		"map_path": map_path,
 		"seed_text": seed_input.text,
 		"enemy_team_size": int(enemy_size_spin.value),
 		"difficulty_tier": int(difficulty_spin.value),
+		"control_mode": _selected_control_mode(),
 	}
 	var result: Dictionary = _build_from_state(state)
 	if not result.get("ok", false):
 		_set_status(String(result.get("error", "Could not build skirmish")))
 		return result
 	last_resolved_seed = int(result["seed"])
-	seed_input.text = str(last_resolved_seed)
+	if not bool(result.get("code_driven", false)):
+		seed_input.text = str(last_resolved_seed)
 	if store_state:
-		state["seed_text"] = str(last_resolved_seed)
+		if not bool(result.get("code_driven", false)):
+			state["seed_text"] = str(last_resolved_seed)
 		_last_launch_state = state
 	summary_panel.visible = false
-	_set_status("Seed: %d" % last_resolved_seed)
+	var definitions: Array[SkirmishDefinitionResource] = _definitions_from_result(result)
+	if definitions.size() > 1:
+		_set_status(SkirmishCode.encode_summary(definitions))
+	elif definitions.size() == 1:
+		last_launch_code = SkirmishCode.encode_definition(definitions[0])
+		if code_output != null:
+			code_output.text = last_launch_code
+		_set_status("Seed %d. Copy the full code from the box below to replay this setup." % last_resolved_seed)
+	else:
+		_set_status("Seed: %d" % last_resolved_seed)
 	return result
 
 
 func _build_from_state(state: Dictionary) -> Dictionary:
+	var seed_text: String = String(state.get("seed_text", ""))
+	if SkirmishCode.is_rich_code(seed_text):
+		var built: Dictionary = SkirmishCode.build_definitions(seed_text, state)
+		if not bool(built.get("ok", false)):
+			return built
+		return _result_with_primary(built, true)
+	var legacy: Dictionary = SkirmishCode.legacy_seed_and_mode(seed_text, String(state.get("control_mode", "")))
+	if legacy.has("error"):
+		return {"ok": false, "error": String(legacy["error"])}
+	var resolved_seed_text: String = String(legacy.get("seed_text", ""))
+	var control_mode: String = String(legacy.get("control_mode", SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU))
 	if bool(state.get("random_enemy", false)):
 		return CustomSkirmishBuilder.build_with_random_enemy(
 			_string_array(state.get("player_paths", [])),
 			String(state.get("map_path", "")),
-			String(state.get("seed_text", "")),
+			resolved_seed_text,
 			int(state.get("enemy_team_size", 1)),
-			int(state.get("difficulty_tier", CustomSkirmishBuilder.DEFAULT_RANDOM_DIFFICULTY_TIER))
+			int(state.get("difficulty_tier", CustomSkirmishBuilder.DEFAULT_RANDOM_DIFFICULTY_TIER)),
+			"",
+			"",
+			control_mode
 		)
 	return CustomSkirmishBuilder.build(
 		_string_array(state.get("player_paths", [])),
 		_string_array(state.get("enemy_paths", [])),
 		String(state.get("map_path", "")),
-		String(state.get("seed_text", ""))
+		resolved_seed_text,
+		control_mode,
+		_string_array(state.get("player_items", [])),
+		_string_array(state.get("enemy_items", [])),
+		{"player": state.get("player_specs", []), "enemy": state.get("enemy_specs", [])}
 	)
 
 
 func _update_grid_columns() -> void:
 	if roster_grid == null or roster_scroll == null:
 		return
-	var available_width: float = _roster_width_budget()
-	if roster_scroll.size.x > 1.0:
-		available_width = minf(available_width, roster_scroll.size.x)
+	var available_width: float = _roster_available_width()
 	if available_width <= 1.0:
 		return
-	roster_grid.columns = clampi(int(floor((available_width + GRID_GAP) / (CELL_SIZE.x + GRID_GAP))), GRID_MIN_COLUMNS, GRID_MAX_COLUMNS)
+	var layout: Dictionary = _grid_layout_for_width(available_width)
+	roster_grid.columns = int(layout["columns"])
+	var cell: float = float(layout["cell"])
+	if not is_equal_approx(cell, roster_cell_px):
+		roster_cell_px = cell
+		roster_cell_scale = cell / CELL_SIZE.x
+		_apply_cell_scale()
+
+
+func _roster_available_width() -> float:
+	var available_width: float = _roster_width_budget()
+	if roster_scroll == null or roster_scroll.size.x <= 1.0:
+		return available_width
+	var scroll_width: float = roster_scroll.size.x
+	var v_bar: VScrollBar = roster_scroll.get_v_scroll_bar()
+	if v_bar != null and v_bar.visible:
+		scroll_width -= v_bar.size.x
+	return minf(available_width, scroll_width)
+
+
+func _grid_layout_for_width(available_width: float) -> Dictionary:
+	var columns: int = ROSTER_COLUMNS
+	var cell: float = maxf(ROSTER_MIN_CELL, floor((available_width - GRID_GAP * float(columns - 1)) / float(columns)))
+	return {
+		"columns": columns,
+		"cell": cell,
+		"scale": cell / CELL_SIZE.x,
+	}
+
+
+func _apply_cell_scale() -> void:
+	if roster_grid == null:
+		return
+	for child in roster_grid.get_children():
+		if child is Button:
+			(child as Button).custom_minimum_size = Vector2(roster_cell_px, roster_cell_px)
+
+
+func roster_cell_size() -> Vector2:
+	return Vector2(roster_cell_px, roster_cell_px)
 
 
 func _queue_update_grid_columns() -> void:
@@ -940,6 +1692,7 @@ func _apply_responsive_layout() -> void:
 	if sort_picker != null:
 		sort_picker.custom_minimum_size.x = SORT_PICKER_COMPACT_WIDTH if compact else SORT_PICKER_WIDTH
 	_update_grid_columns()
+	_update_chooser_columns()
 
 
 func _uses_compact_layout() -> bool:
@@ -954,11 +1707,14 @@ func _layout_width() -> float:
 
 func _roster_width_budget() -> float:
 	var content_width: float = maxf(0.0, _layout_width() - LAYOUT_MARGIN_X * 2.0)
-	var side_width: float = (SETUP_PANEL_COMPACT_WIDTH if _uses_compact_layout() else SETUP_PANEL_WIDTH)
-	side_width += DETAILS_PANEL_COMPACT_WIDTH if _uses_compact_layout() else DETAILS_PANEL_WIDTH
-	side_width += MIDDLE_GAP * 2.0
-	side_width += PANEL_MARGIN_X * 2.0
-	return maxf(CELL_SIZE.x, content_width - side_width)
+	var setup_width: float = SETUP_PANEL_COMPACT_WIDTH if _uses_compact_layout() else SETUP_PANEL_WIDTH
+	var details_width: float = DETAILS_PANEL_COMPACT_WIDTH if _uses_compact_layout() else DETAILS_PANEL_WIDTH
+	if setup_panel != null:
+		setup_width = maxf(setup_width, setup_panel.get_combined_minimum_size().x)
+	if details_panel != null:
+		details_width = maxf(details_width, details_panel.get_combined_minimum_size().x)
+	var side_width: float = setup_width + details_width + MIDDLE_GAP * 2.0 + PANEL_MARGIN_X * 2.0
+	return maxf(ROSTER_MIN_CELL * float(ROSTER_COLUMNS) + GRID_GAP * float(ROSTER_COLUMNS - 1), content_width - side_width)
 
 
 func _entry_for_path(path: String) -> Dictionary:
@@ -973,12 +1729,19 @@ func _entry_for_path(path: String) -> Dictionary:
 	}
 
 
-func _format_team(team: Array[String]) -> String:
+func _format_team(team: Array[String], items: Array[String] = []) -> String:
 	if team.is_empty():
 		return "(empty)"
 	var labels: Array[String] = []
-	for path in team:
-		labels.append(String(_entry_for_path(path).get("label", RosterProvider.label_for_path(path))))
+	for i in range(team.size()):
+		var path: String = team[i]
+		var label: String = String(_entry_for_path(path).get("label", RosterProvider.label_for_path(path)))
+		var item_id: String = String(items[i]) if i < items.size() else ""
+		if item_id == CustomSkirmishBuilder.RANDOM_CHOICE:
+			label += " @ random item"
+		elif not item_id.is_empty():
+			label += " @ %s" % String(BattleItemCatalog.entry_for(item_id).get("label", item_id))
+		labels.append(label)
 	return ", ".join(labels)
 
 
@@ -988,6 +1751,59 @@ func _string_array(value: Variant) -> Array[String]:
 		for item in value:
 			out.append(String(item))
 	return out
+
+
+func _selected_control_mode() -> String:
+	if control_mode_picker == null:
+		return SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU
+	var idx: int = maxi(control_mode_picker.selected, 0)
+	var metadata: Variant = control_mode_picker.get_item_metadata(idx)
+	return SkirmishControlMode.normalize(String(metadata))
+
+
+func _validate_seed_text() -> Dictionary:
+	if seed_input == null:
+		return {"ok": true, "code_driven": false}
+	var text: String = seed_input.text.strip_edges()
+	if text.is_empty() or SkirmishCode.is_legacy_seed_or_flag(text):
+		return {"ok": true, "code_driven": false}
+	if SkirmishCode.is_rich_code(text):
+		var parsed: Dictionary = SkirmishCode.parse(text)
+		return {
+			"ok": bool(parsed.get("ok", false)),
+			"code_driven": bool(parsed.get("ok", false)),
+			"error": String(parsed.get("error", "")),
+		}
+	return {"ok": false, "code_driven": false, "error": "Seed must be an integer, empty, or a skirmish code"}
+
+
+func _result_with_primary(result: Dictionary, code_driven: bool) -> Dictionary:
+	var definitions: Array[SkirmishDefinitionResource] = _definitions_from_result(result)
+	if definitions.is_empty():
+		return {"ok": false, "error": "Skirmish code did not build any definitions"}
+	var out: Dictionary = result.duplicate(true)
+	out["definition"] = definitions[0]
+	out["seed"] = definitions[0].seed
+	out["code_driven"] = code_driven
+	return out
+
+
+func _definitions_from_result(result: Dictionary) -> Array[SkirmishDefinitionResource]:
+	var out: Array[SkirmishDefinitionResource] = []
+	if result.has("definitions") and result["definitions"] is Array:
+		for entry in result["definitions"]:
+			if entry is SkirmishDefinitionResource:
+				out.append(entry as SkirmishDefinitionResource)
+	elif result.get("definition", null) is SkirmishDefinitionResource:
+		out.append(result["definition"] as SkirmishDefinitionResource)
+	return out
+
+
+func _result_label(result: int, definition: SkirmishDefinitionResource) -> String:
+	var mode: String = SkirmishControlMode.normalize(definition.control_mode if definition != null else "")
+	if mode == SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU:
+		return "Player-side Win" if result == TacticsLevel.RESULT_PLAYER_WIN else "Enemy-side Win"
+	return "Player Win" if result == TacticsLevel.RESULT_PLAYER_WIN else "Player Loss"
 
 
 func _side_label(side: String) -> String:

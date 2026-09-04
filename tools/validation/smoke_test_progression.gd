@@ -1,5 +1,4 @@
 extends SceneTree
-## M8 smoke: EXP rewards and level transitions are deterministic.
 
 const BULBASAUR_PATH: String = "res://data/models/pokemon/generated/instances/0001_bulbasaur.tres"
 const SQUIRTLE_PATH: String = "res://data/models/pokemon/generated/instances/0007_squirtle.tres"

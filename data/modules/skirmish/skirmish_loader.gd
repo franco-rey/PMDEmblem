@@ -1,9 +1,5 @@
 class_name SkirmishLoader
 extends Node
-## Runtime assembler for SkirmishDefinitionResource battles.
-##
-## The loader is the only M4 code that knows how to turn skirmish data into a
-## live TacticsLevel: map scene, participant nodes, spawned pawns, and seed.
 
 signal skirmish_loaded(level: TacticsLevel)
 signal skirmish_ended(result: int, definition: SkirmishDefinitionResource)
@@ -32,6 +28,7 @@ func load_skirmish(definition: SkirmishDefinitionResource, battle_parent: Node =
 	level.name = "TacticsLevel"
 	level.use_speed_scheduler = true
 	level.battle_seed = definition.seed
+	level.battle_label = definition.skirmish_id
 
 	var arena: TacticsArena = map_scene.instantiate() as TacticsArena
 	if arena == null:
@@ -166,7 +163,7 @@ func _spawn_anchor_order(anchor_name: String) -> int:
 func _spawn_team(team: Array[PokemonInstanceResource], parent: Node3D, anchors: Array[Node3D], spawn_order: Array[int], level: TacticsLevel) -> void:
 	for i in range(team.size()):
 		var instance: PokemonInstanceResource = team[i]
-		if instance != null and instance.move_slots.size() < PokemonInstanceResource.MAX_MOVE_SLOTS:
+		if instance != null and instance.move_slots.size() < PokemonInstanceResource.MAX_MOVE_SLOTS and not instance.loadout_locked:
 			instance = SkirmishMoveLoadout.clone_with_loadout(instance, instance.team, instance.control_type, level.battle_seed, parent.name, i)
 		var pawn: TacticsPawn = _pawn_scene.instantiate() as TacticsPawn
 		pawn.name = "Pawn" if i == 0 else "Pawn%d" % (i + 1)
@@ -183,15 +180,6 @@ func _spawn_team(team: Array[PokemonInstanceResource], parent: Node3D, anchors: 
 		pawn.transform = parent_transform.affine_inverse() * anchor_transform
 
 
-## Resolves the per-side anchor index list used by `_spawn_team`.
-##
-## Manual / authored skirmishes omit the metadata key and get the default
-## sequential `[0, 1, ..., team_size - 1]` mapping, preserving M4 behavior.
-##
-## The custom builder (M4 R1) writes a pre-shuffled `Array[int]` index list
-## into `generation_metadata["player_spawn_order"]` /
-## `["enemy_spawn_order"]`. Each index must be unique and reference an
-## existing sorted anchor.
 func _resolve_spawn_order(definition: SkirmishDefinitionResource, metadata_key: String, team_size: int, anchor_count: int) -> Array[int]:
 	var out: Array[int] = []
 	if team_size <= 0:

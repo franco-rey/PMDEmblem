@@ -1,5 +1,4 @@
 extends SceneTree
-## M8 smoke: level-based starter evolution is executable.
 
 const BULBASAUR_PATH: String = "res://data/models/pokemon/generated/instances/0001_bulbasaur.tres"
 

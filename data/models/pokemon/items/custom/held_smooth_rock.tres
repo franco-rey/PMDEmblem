@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PokemonItemResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_item_resource.gd" id="1_custom"]
+
+[resource]
+script = ExtResource("1_custom")
+item_id = "held_smooth_rock"
+name = "Smooth Rock"
+description = "Sandstorms set by the holder last longer."
+category = "held"
+use_kind = 2
+price = 0
+sort_category = 1
+sprite_key = ""
+icon_path = ""
+icon_index = -1
+item_states = Array[String](["PMDC.Dungeon.EquipState, PMDC", "PMDC.Dungeon.HeldState, PMDC"])
+source_effect_tags = Array[String](["PMDC.Dungeon.EquipState, PMDC", "PMDC.Dungeon.HeldState, PMDC"])
+source_json_path = "custom/mainline_held"

@@ -1,6 +1,5 @@
 class_name PokemonBagResource
 extends Resource
-## Deterministic item bag keyed by item id. M10 can serialize this directly.
 
 @export var item_counts: Dictionary = {}
 

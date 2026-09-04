@@ -1,5 +1,4 @@
 extends SceneTree
-## M7 smoke: current seven + first-nine have explicit mechanics readiness.
 
 var failures: int = 0
 

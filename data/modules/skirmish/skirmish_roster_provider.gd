@@ -1,9 +1,5 @@
 class_name SkirmishRosterProvider
 extends RefCounted
-## Data-driven roster listing for skirmish setup screens.
-##
-## External sprite repositories are import sources only. Runtime callers only
-## receive `res://` paths owned by this project.
 
 const PORTRAIT_ROOT: String = "res://assets/textures/pokemon/portraits/"
 const FALLBACK_ICON_PATH: String = "res://assets/textures/ui/icons/icon.png"

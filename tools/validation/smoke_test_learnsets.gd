@@ -1,5 +1,4 @@
 extends SceneTree
-## M8 smoke: level-up moves produce replacement requests and choices.
 
 const BULBASAUR_PATH: String = "res://data/models/pokemon/generated/instances/0001_bulbasaur.tres"
 

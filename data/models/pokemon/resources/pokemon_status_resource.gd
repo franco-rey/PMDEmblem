@@ -1,6 +1,5 @@
 class_name PokemonStatusResource
 extends Resource
-## Generated PMD status/in-battle modifier metadata.
 
 @export var status_id: String = ""
 @export var display_name: String = ""

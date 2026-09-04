@@ -1,6 +1,5 @@
 class_name PokemonItemResource
 extends Resource
-## PMDO item definition imported into a project-owned runtime resource.
 
 enum UseKind {
 	NONE = 0,

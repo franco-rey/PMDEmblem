@@ -1,5 +1,4 @@
 extends SceneTree
-## M8 smoke: natures, permanent modifiers, and held passives share stat path.
 
 const BULBASAUR_PATH: String = "res://data/models/pokemon/generated/instances/0001_bulbasaur.tres"
 

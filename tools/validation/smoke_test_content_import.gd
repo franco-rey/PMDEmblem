@@ -1,8 +1,4 @@
 extends SceneTree
-## Headless smoke test for Pre-M6 batch import readiness.
-##
-## Recipe:
-##   godot --headless --path . --script tools/validation/smoke_test_content_import.gd
 
 const MANIFEST_PATH: String = "res://data/models/pokemon/generated/manifests/pokemon_import_manifest.json"
 const REPORT_JSON_PATH: String = "res://data/models/pokemon/import_reports/pokemon_import_report.json"

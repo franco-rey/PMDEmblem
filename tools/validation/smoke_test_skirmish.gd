@@ -1,7 +1,4 @@
 extends SceneTree
-## Headless smoke test for M4 manual skirmishes.
-##
-##   godot --headless --path <project> --script tools/validation/smoke_test_skirmish.gd -- --skirmish=single_1v1
 
 const MANUAL_IDS: Array[String] = [
 	"demo_3v3",

@@ -1,6 +1,5 @@
 class_name PokemonEvolutionService
 extends RefCounted
-## Evolution lookup, eligibility, and application service.
 
 const GENERATED_SPECIES_DIR: String = "res://data/models/pokemon/generated/species"
 

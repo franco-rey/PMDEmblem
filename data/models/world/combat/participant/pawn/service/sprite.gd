@@ -1,37 +1,18 @@
 class_name TacticsPawnSprite
 extends Sprite3D
-## Handles the visual representation and animation of a pawn in the tactics game.
-##
-## Multi-state, multi-direction sprite animator. Each sprite state (idle/walk
-## /hurt/sleep/hop) is a separate sheet shipped under
-## `assets/textures/actor/pokemon/<dex>_<slug>/`. Sheets follow the standard
-## SpriteCollab layout: hframes = frames-per-direction, vframes = 8 facings
-## arranged in PMD order (Down, DownRight, Right, UpRight, Up, UpLeft, Left,
-## DownLeft). Some rest/faint sheets are single-direction, while others keep
-## the same 8-direction layout as battle animations.
-##
-## Per-state cell width/height come from the species' `AnimData.xml` sidecar
-## (referenced via `PokemonSpriteSetResource.anim_data_path`); falling back
-## to texture-aspect heuristics keeps the legacy 2-row sheets renderable.
-## Frame timing is advanced in `_process`; the displayed cell is chosen each
-## frame in `rotate_sprite` by bucketing the camera-relative pawn facing into
-## one of 8 directions (or row 0 for single-direction sheets).
 
-## Animation state names
 const ANIM_IDLE: String = "idle"
 const ANIM_WALK: String = "walk"
 const ANIM_HURT: String = "hurt"
 const ANIM_SLEEP: String = "sleep"
 const ANIM_HOP: String = "hop"
+const ANIM_FAINT: String = "faint"
 
-## Mapping from our internal lowercase state to the AnimData.xml `<Name>` field.
 const ANIMDATA_NAME_CANDIDATES: Dictionary = {
 	ANIM_IDLE: ["Idle"],
 	ANIM_WALK: ["Walk"],
 	ANIM_HURT: ["Hurt"],
-	# The packager may source the faint/rest pose from Laying, EventSleep, or
-	# Sleep depending on source coverage. Pick by actual sheet dimensions below.
-	ANIM_SLEEP: ["Laying", "EventSleep", "Sleep"],
+	ANIM_SLEEP: ["Sleep", "Laying", "EventSleep"],
 	ANIM_HOP: ["Hop"],
 	"attack": ["Attack"],
 	"physical_attack": ["Attack"],
@@ -43,11 +24,9 @@ const ANIMDATA_NAME_CANDIDATES: Dictionary = {
 	"debuff": ["Cringe", "Hurt"],
 	"heal": ["Charge", "Appeal"],
 	"miss": ["Idle"],
-	"faint": ["Laying", "EventSleep", "Sleep"],
+	"faint": ["Faint", "Laying", "EventSleep", "Sleep"],
 }
 
-## Seconds per displayed frame for each animation state. Tuned for legibility,
-## not perfectly faithful to AnimData.xml's per-frame tick durations.
 const FRAME_DURATION: Dictionary = {
 	ANIM_IDLE: 0.18,
 	ANIM_WALK: 0.10,
@@ -56,8 +35,7 @@ const FRAME_DURATION: Dictionary = {
 	ANIM_HOP:  0.07,
 }
 
-## Default cell dims used when no AnimData is available (e.g., legacy 2-row
-## placeholder sheets). The renderer treats height/2 as the cell side then.
+const HOLD_LAST_FRAME_STATES: Array[String] = [ANIM_FAINT]
 const SPRITE_ROW_COUNT_FALLBACK: int = 2
 const DEFAULT_CHARACTER_CENTER_Y: float = 0.602
 const DEFAULT_FRAME_CELL_PX: float = 128.0
@@ -68,58 +46,52 @@ const DEFAULT_VISIBLE_FOOT_Y: float = (
 	- (DEFAULT_FRAME_CELL_PX * DEFAULT_PIXEL_SIZE * 0.5)
 	+ (DEFAULT_FRAME_BOTTOM_PADDING_PX * DEFAULT_PIXEL_SIZE)
 )
-
-## Sprite-row indices for the 8 facings, in the order the user confirmed:
-## Down, DownRight, Right, UpRight, Up, UpLeft, Left, DownLeft. Index 0 is
-## "pawn faces the camera"; index advances clockwise from above as the pawn
-## rotates away. Sheets with vframes == 1 (Sleep) ignore this and always use
-## row 0.
+const SOURCE_TICKS_PER_SECOND: float = 60.0
+const SOURCE_SHADOW_GROUND_PX: int = 4
 const DIRECTION_COUNT: int = 8
+const GROUNDING_LEGACY: String = "legacy_padding"
+const GROUNDING_SOURCE: String = "source_shadow"
+const ANCHOR_POINTS: Array[String] = ["center", "head", "left_hand", "right_hand", "shadow"]
 
-## Animation state machine playback controller (kept for compatibility with the
-## existing AnimationTree that drives the JUMP Y-arc).
 var animator: AnimationNodeStateMachinePlayback = null
 
-## Loaded textures per anim state, indexed by ANIM_* constants. Missing states
-## fall back to ANIM_IDLE in [code]_apply_state_texture[/code].
 var state_textures: Dictionary = {}
-## Frame count per state (hframes of the loaded texture).
+var state_texture_paths: Dictionary = {}
 var state_frame_counts: Dictionary = {}
-## Number of vertical rows per state. 8 for typical SpriteCollab sheets, 1 for
-## Sleep (single-direction). Used to decide whether `rotate_sprite` selects a
-## direction row or always uses row 0.
+var state_column_counts: Dictionary = {}
 var state_row_counts: Dictionary = {}
-## Per-state cell width in source pixels.
 var state_cell_widths: Dictionary = {}
-## Per-state cell height in source pixels.
 var state_cell_heights: Dictionary = {}
-## Lowest transparent padding per state, in source pixels.
 var state_bottom_paddings: Dictionary = {}
-## Per-state frame duration derived from imported timing when available.
 var state_frame_durations: Dictionary = {}
+var state_timings: Dictionary = {}
+var state_source_names: Dictionary = {}
+var state_phase_frames: Dictionary = {}
+var source_name_to_state: Dictionary = {}
 
-## Currently active anim state.
+var anim_data: Dictionary = {}
+var anchors: Dictionary = {}
+var anchors_path: String = ""
+var shadow_size: int = 0
+var grounding_mode: String = GROUNDING_LEGACY
+var ground_shadow_px: int = SOURCE_SHADOW_GROUND_PX
+var sprite_set_ref: PokemonSpriteSetResource = null
+
 var current_state: String = ANIM_IDLE
-## Current frame within current_state (0..state_frame_counts[current_state]-1).
 var curr_frame: int = 0
-## Time accumulator since the last frame advance.
 var frame_timer: float = 0.0
+var state_elapsed: float = 0.0
+var one_shot: bool = false
+var one_shot_finished: bool = false
+var facing_row: int = 0
+var lunge_offset: Vector3 = Vector3.ZERO
+var pose_frozen: bool = false
+var base_local_position: Vector3 = Vector3(0.0, DEFAULT_CHARACTER_CENTER_Y, 0.0)
 
-## Reference to the AnimationTree node
 @onready var animation_tree: AnimationTree = $AnimationTree
-## Reference to the Label3D node displaying the pawn's name
 @onready var character_ui_name_label: Label3D = $CharacterUI/NameLabel
 
 
-## Sets up the pawn sprite with the given stats and expertise.
-##
-## Pulls the full `PokemonSpriteSetResource` (including the AnimData.xml
-## sidecar) from `stats.pokemon_instance` when available so per-state cell
-## sizing follows the species' actual sheet layout. Legacy non-Pokemon stats
-## fall back to filename-convention loading off `stats.sprite`.
-##
-## @param stats: The Stats resource containing pawn data
-## @param expertise: The pawn's expertise (class or type)
 func setup(stats: Stats, expertise: String) -> void:
 	var playback: AnimationNodeStateMachinePlayback = animation_tree["parameters/playback"]
 	if playback is AnimationNodeStateMachinePlayback:
@@ -131,10 +103,15 @@ func setup(stats: Stats, expertise: String) -> void:
 	animator.start("IDLE")
 	animation_tree.active = true
 	texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	base_local_position = position
 
 	var sprite_set: PokemonSpriteSetResource = _resolve_sprite_set(stats)
+	sprite_set_ref = sprite_set
 	_apply_world_pixel_size(sprite_set)
-	var anim_data: Dictionary = SpriteAnimData.parse(sprite_set.anim_data_path) if sprite_set != null else {}
+	var anim_root: Dictionary = SpriteAnimData.parse_root(sprite_set.anim_data_path) if sprite_set != null else {"shadow_size": 0, "anims": {}}
+	anim_data = anim_root.get("anims", {})
+	shadow_size = sprite_set.shadow_size if sprite_set != null and sprite_set.shadow_size > 0 else int(anim_root.get("shadow_size", 0))
+	_load_anchors(sprite_set)
 	_load_state_textures(stats.sprite, sprite_set, anim_data)
 	_apply_state_texture(ANIM_IDLE)
 	character_ui_name_label.text = stats.override_name if stats.override_name else expertise
@@ -155,12 +132,39 @@ func _apply_world_pixel_size(sprite_set: PokemonSpriteSetResource) -> void:
 		pixel_size = sprite_set.world_pixel_size
 
 
-## Loads per-state textures. Prefers the explicit per-state paths in the
-## sprite-set resource when supplied; otherwise derives sidecar paths from
-## the idle PNG filename. Cell dims come from AnimData where available so
-## non-square cells (typical of SpriteCollab) are sliced correctly.
-func _load_state_textures(base_sprite_path: String, sprite_set: PokemonSpriteSetResource, anim_data: Dictionary) -> void:
+func _load_anchors(sprite_set: PokemonSpriteSetResource) -> void:
+	anchors = {}
+	anchors_path = ""
+	grounding_mode = GROUNDING_LEGACY
+	ground_shadow_px = SOURCE_SHADOW_GROUND_PX
+	if sprite_set == null or sprite_set.anchors_path.is_empty():
+		return
+	if not FileAccess.file_exists(sprite_set.anchors_path):
+		return
+	var file: FileAccess = FileAccess.open(sprite_set.anchors_path, FileAccess.READ)
+	if file == null:
+		return
+	var parsed: Variant = JSON.parse_string(file.get_as_text())
+	file.close()
+	if not (parsed is Dictionary):
+		return
+	var dict: Dictionary = parsed
+	var states: Variant = dict.get("states", {})
+	if not (states is Dictionary) or (states as Dictionary).is_empty():
+		return
+	anchors = states
+	anchors_path = sprite_set.anchors_path
+	if shadow_size <= 0:
+		shadow_size = int(dict.get("shadow_size", 0))
+	grounding_mode = GROUNDING_SOURCE
+	var idle_shadow: Variant = anchor_point_px("Idle", 0, 0, "shadow")
+	if idle_shadow is Vector2i:
+		ground_shadow_px = (idle_shadow as Vector2i).y
+
+
+func _load_state_textures(base_sprite_path: String, sprite_set: PokemonSpriteSetResource, anim_data_map: Dictionary) -> void:
 	var entries: Dictionary = _resolve_state_entries(base_sprite_path, sprite_set)
+	source_name_to_state = {}
 
 	for state: String in entries.keys():
 		var metadata: Dictionary = entries[state]
@@ -171,6 +175,7 @@ func _load_state_textures(base_sprite_path: String, sprite_set: PokemonSpriteSet
 		if tex == null:
 			continue
 		state_textures[state] = tex
+		state_texture_paths[state] = path
 
 		var cell_w: int = 0
 		var cell_h: int = 0
@@ -179,40 +184,100 @@ func _load_state_textures(base_sprite_path: String, sprite_set: PokemonSpriteSet
 			cell_w = cell_size.x
 			cell_h = cell_size.y
 		else:
-			var entry: SpriteAnimData.AnimEntry = _select_anim_data_entry(state, tex, anim_data)
+			var entry: SpriteAnimData.AnimEntry = _select_anim_data_entry(state, tex, anim_data_map)
 			if entry != null:
 				cell_w = entry.frame_width
 				cell_h = entry.frame_height
 		if cell_w <= 0 or cell_h <= 0:
-			# Fallback: assume the legacy 2-row, square-cell layout.
 			cell_h = int(tex.get_height() / SPRITE_ROW_COUNT_FALLBACK)
 			cell_w = cell_h
 
-		var hframes_local: int = maxi(1, int(tex.get_width() / max(1, cell_w)))
-		var vframes_local: int = maxi(1, int(tex.get_height() / max(1, cell_h)))
+		var columns_local: int = maxi(1, int(tex.get_width() / max(1, cell_w)))
+		var rows_local: int = maxi(1, int(tex.get_height() / max(1, cell_h)))
+		var frames_local: int = columns_local
 		var imported_frame_count: int = int(metadata.get("frame_count", 0))
 		if imported_frame_count > 0:
-			hframes_local = mini(hframes_local, imported_frame_count)
-		var imported_directions: int = int(metadata.get("directions", 0))
-		if imported_directions > 0:
-			vframes_local = mini(vframes_local, imported_directions)
-		state_frame_counts[state] = hframes_local
-		state_row_counts[state] = vframes_local
+			frames_local = mini(columns_local, imported_frame_count)
+		state_frame_counts[state] = frames_local
+		state_column_counts[state] = columns_local
+		state_row_counts[state] = rows_local
 		state_cell_widths[state] = cell_w
 		state_cell_heights[state] = cell_h
-		state_bottom_paddings[state] = _find_lowest_bottom_padding(tex, cell_w, cell_h, hframes_local, vframes_local)
-		state_frame_durations[state] = _duration_from_timing(metadata.get("timing", []), state)
+		if grounding_mode != GROUNDING_SOURCE:
+			state_bottom_paddings[state] = _find_lowest_bottom_padding(tex, cell_w, cell_h, columns_local, rows_local)
+		var timing: Array[int] = _timing_for_state(state, metadata, frames_local)
+		state_timings[state] = timing
+		state_frame_durations[state] = _duration_from_timing(timing, state)
+		var source_name: String = String(metadata.get("source_name", ""))
+		if source_name.is_empty():
+			var xml_entry: SpriteAnimData.AnimEntry = _select_anim_data_entry(state, tex, anim_data_map)
+			source_name = xml_entry.name if xml_entry != null else ""
+		state_source_names[state] = source_name
+		if not source_name.is_empty():
+			var key: String = source_name.to_lower()
+			if not source_name_to_state.has(key) or not metadata.has("alias_of"):
+				source_name_to_state[key] = state
+		state_phase_frames[state] = _phase_frames_for_state(state, metadata, source_name, frames_local)
 
 
-func _select_anim_data_entry(state: String, tex: Texture2D, anim_data: Dictionary) -> SpriteAnimData.AnimEntry:
+func _timing_for_state(state: String, metadata: Dictionary, frames_local: int) -> Array[int]:
+	var out: Array[int] = []
+	var raw: Variant = metadata.get("timing", [])
+	if raw is Array:
+		for tick in (raw as Array):
+			out.append(maxi(1, int(tick)))
+	if out.is_empty():
+		var source_name: String = String(metadata.get("source_name", ""))
+		var entry: SpriteAnimData.AnimEntry = anim_data.get(source_name, null) if not source_name.is_empty() else null
+		if entry == null:
+			for candidate in ANIMDATA_NAME_CANDIDATES.get(state, []):
+				if anim_data.has(String(candidate)):
+					entry = anim_data[String(candidate)]
+					break
+		if entry != null:
+			for tick in entry.durations:
+				out.append(maxi(1, int(tick)))
+	if out.size() > frames_local and frames_local > 0:
+		out.resize(frames_local)
+	return out
+
+
+func _phase_frames_for_state(state: String, metadata: Dictionary, source_name: String, frames_local: int) -> Dictionary:
+	var absent: int = PokemonSpriteSetResource.ABSENT_FRAME
+	var rush: int = absent
+	var hit: int = absent
+	var ret: int = absent
+	var schema_two: bool = sprite_set_ref != null and sprite_set_ref.animation_schema_version >= 2
+	var xml_entry: SpriteAnimData.AnimEntry = anim_data.get(source_name, null) if not source_name.is_empty() else null
+	if xml_entry != null:
+		var resolved: SpriteAnimData.AnimEntry = SpriteAnimData.resolve_alias(anim_data, source_name)
+		if resolved != null:
+			xml_entry = resolved
+		rush = xml_entry.rush_frame
+		hit = xml_entry.hit_frame
+		ret = xml_entry.return_frame
+	elif schema_two:
+		rush = int(metadata.get("rush_frame", absent))
+		hit = int(metadata.get("hit_frame", absent))
+		ret = int(metadata.get("return_frame", absent))
+	if state == ANIM_HURT and rush == absent and hit == absent and ret == absent:
+		pass
+	return {
+		"rush": rush if rush < frames_local else absent,
+		"hit": hit if hit < frames_local else absent,
+		"return": ret if ret < frames_local else absent,
+	}
+
+
+func _select_anim_data_entry(state: String, tex: Texture2D, anim_data_map: Dictionary) -> SpriteAnimData.AnimEntry:
 	var candidates: Array = ANIMDATA_NAME_CANDIDATES.get(state, [])
 	var best: SpriteAnimData.AnimEntry = null
 	var best_score: int = -999999
 	for index: int in range(candidates.size()):
 		var anim_name: String = String(candidates[index])
-		if not anim_data.has(anim_name):
+		if not anim_data_map.has(anim_name):
 			continue
-		var entry: SpriteAnimData.AnimEntry = anim_data[anim_name]
+		var entry: SpriteAnimData.AnimEntry = anim_data_map[anim_name]
 		if entry == null or entry.frame_width <= 0 or entry.frame_height <= 0:
 			continue
 		if tex.get_width() % entry.frame_width != 0 or tex.get_height() % entry.frame_height != 0:
@@ -255,7 +320,6 @@ func _resolve_state_entries(base_sprite_path: String, sprite_set: PokemonSpriteS
 				entries[key] = {"path": String(minimal[key])}
 		_normalize_rest_faint_entry(entries)
 		return entries
-	# Legacy non-Pokemon fallback - derive sidecars from base path filename.
 	var base_no_ext: String = base_sprite_path.get_basename()
 	var ext: String = "." + base_sprite_path.get_extension()
 	return {
@@ -307,37 +371,36 @@ func _duration_from_timing(timing: Variant, state: String) -> float:
 		var total: int = 0
 		for tick in (timing as Array):
 			total += int(tick)
-		return clampf(float(total) / float((timing as Array).size()) / 60.0, 0.04, 0.6)
+		return clampf(float(total) / float((timing as Array).size()) / SOURCE_TICKS_PER_SECOND, 0.02, 0.6)
 	return float(FRAME_DURATION.get(state, 0.15))
 
 
-## Switches the displayed texture and updates hframes/vframes to match. Reset
-## frame index and timer so the new animation starts at frame 0.
 func _apply_state_texture(state: String) -> void:
 	if not state_textures.has(state):
 		state = ANIM_IDLE
 	if not state_textures.has(state):
-		return # No textures at all loaded — leave Sprite3D blank.
+		return
 	var tex: Texture2D = state_textures[state]
 	var rows_local: int = maxi(1, int(state_row_counts.get(state, 1)))
 	var frames_local: int = maxi(1, int(state_frame_counts.get(state, 1)))
+	var columns_local: int = maxi(frames_local, int(state_column_counts.get(state, frames_local)))
 	texture = tex
 	vframes = rows_local
-	hframes = frames_local
+	hframes = columns_local
 	_apply_grounding_offset(state)
 	current_state = state
 	curr_frame = 0
 	frame_timer = 0.0
+	state_elapsed = 0.0
+	one_shot_finished = false
 	frame = 0
-	# 8-direction sheets encode left/right as distinct rows, so the legacy
-	# flip_h trick is no longer needed (and would mirror the wrong row when on).
 	flip_h = false
 
 
-## Keeps the visible feet on the same world baseline used by the original
-## 128x128 default pawn frames, even when replacement sheets use larger cells.
-## Uses the per-state cell HEIGHT - SpriteCollab cells are taller than wide.
 func _apply_grounding_offset(state: String) -> void:
+	if grounding_mode == GROUNDING_SOURCE:
+		offset.y = float(ground_shadow_px) - (DEFAULT_CHARACTER_CENTER_Y / pixel_size)
+		return
 	var cell_h: float = float(state_cell_heights.get(state, DEFAULT_FRAME_CELL_PX))
 	var bottom_padding: float = float(state_bottom_paddings.get(state, DEFAULT_FRAME_BOTTOM_PADDING_PX))
 	var current_visible_foot_y: float = (
@@ -348,8 +411,6 @@ func _apply_grounding_offset(state: String) -> void:
 	offset.y = (DEFAULT_VISIBLE_FOOT_Y - current_visible_foot_y) / pixel_size
 
 
-## Returns the smallest bottom padding among all rows and frames. Using the
-## lowest opaque pixel prevents tall action frames from sinking into the tile.
 func _find_lowest_bottom_padding(tex: Texture2D, cell_w: int, cell_h: int, hframes_count: int, vframes_count: int) -> int:
 	var image: Image = tex.get_image()
 	if not image:
@@ -380,37 +441,241 @@ func _find_frame_bottom_padding(image: Image, frame_x: int, frame_y: int, cell_w
 	return -1
 
 
-## Sets the current animation state. Called by the pawn service every frame.
-## No-op if already in [param new_state]; switches texture otherwise.
 func set_anim_state(new_state: String) -> void:
-	if new_state == current_state:
+	if new_state == current_state and not one_shot:
 		return
+	one_shot = HOLD_LAST_FRAME_STATES.has(new_state)
 	_apply_state_texture(new_state)
+
+
+func freeze_pose(state: String) -> void:
+	if not state_textures.has(state):
+		return
+	one_shot = true
+	_apply_state_texture(state)
+	var phases: Variant = state_phase_frames.get(state, {})
+	var frame_count: int = int(state_frame_counts.get(state, 1))
+	var peak: int = int((phases as Dictionary).get("hit", frame_count / 2)) if phases is Dictionary else frame_count / 2
+	curr_frame = clampi(peak, 0, maxi(0, frame_count - 1))
+	frame_timer = 0.0
+	pose_frozen = true
+
+
+func unfreeze_pose() -> void:
+	if not pose_frozen:
+		return
+	pose_frozen = false
+	one_shot = false
+	one_shot_finished = false
+	set_anim_state(ANIM_IDLE)
+
+
+func play_action(state: String) -> float:
+	if not state_textures.has(state):
+		return 0.0
+	one_shot = true
+	_apply_state_texture(state)
+	return state_total_seconds(state)
+
+
+func is_one_shot_finished() -> bool:
+	return one_shot and one_shot_finished
 
 
 func can_play_state(state: String) -> bool:
 	return state_textures.has(state)
 
 
-## Advances curr_frame on a per-state timer. Called from [code]_process[/code]
-## so animation continues independently of physics ticks.
+func has_source_state(source_name: String) -> bool:
+	return not resolve_source_state(source_name).is_empty()
+
+
+func resolve_source_state(source_action_name: String) -> Dictionary:
+	if source_action_name.is_empty():
+		return {}
+	var catalog: ActorActionCatalog = ActorActionCatalog.shared()
+	var chain: Array[String] = catalog.fallback_chain(source_action_name)
+	for candidate in chain:
+		var state: String = _state_for_source_name(candidate)
+		if not state.is_empty():
+			return {
+				"state_key": state,
+				"source_name": candidate,
+				"requested": source_action_name,
+				"tier": "exact" if candidate == source_action_name else "source_fallback",
+				"dash": catalog.is_dash(candidate),
+			}
+	return {}
+
+
+func _state_for_source_name(source_name: String) -> String:
+	var key: String = source_name.to_lower()
+	if source_name_to_state.has(key):
+		return String(source_name_to_state[key])
+	if anim_data.has(source_name):
+		var resolved: SpriteAnimData.AnimEntry = SpriteAnimData.resolve_alias(anim_data, source_name)
+		if resolved != null and resolved.name != source_name:
+			var target_key: String = resolved.name.to_lower()
+			if source_name_to_state.has(target_key):
+				return String(source_name_to_state[target_key])
+	return ""
+
+
+func state_timing(state: String) -> Array[int]:
+	var out: Array[int] = []
+	var raw: Variant = state_timings.get(state, [])
+	if raw is Array:
+		for tick in (raw as Array):
+			out.append(int(tick))
+	return out
+
+
+func state_total_seconds(state: String) -> float:
+	var timing: Array[int] = state_timing(state)
+	if timing.is_empty():
+		return float(state_frame_durations.get(state, FRAME_DURATION.get(state, 0.15))) * float(state_frame_counts.get(state, 1))
+	var total: int = 0
+	for tick in timing:
+		total += tick
+	return float(total) / SOURCE_TICKS_PER_SECOND
+
+
+func state_frame_end_seconds(state: String, frame_index: int) -> float:
+	var timing: Array[int] = state_timing(state)
+	if timing.is_empty():
+		var dur: float = float(state_frame_durations.get(state, FRAME_DURATION.get(state, 0.15)))
+		return dur * float(frame_index + 1)
+	var total: int = 0
+	for i in range(mini(frame_index + 1, timing.size())):
+		total += timing[i]
+	return float(total) / SOURCE_TICKS_PER_SECOND
+
+
+func state_phase_seconds(state: String) -> Dictionary:
+	var phases: Dictionary = state_phase_frames.get(state, {})
+	var absent: int = PokemonSpriteSetResource.ABSENT_FRAME
+	var rush: int = int(phases.get("rush", absent))
+	var hit: int = int(phases.get("hit", absent))
+	var ret: int = int(phases.get("return", absent))
+	var total: float = state_total_seconds(state)
+	return {
+		"rush": state_frame_end_seconds(state, rush) if rush > absent else 0.0,
+		"hit": state_frame_end_seconds(state, hit) if hit > absent else total,
+		"return": state_frame_end_seconds(state, ret) if ret > absent else total,
+		"total": total,
+		"rush_frame": rush,
+		"hit_frame": hit,
+		"return_frame": ret,
+	}
+
+
+func anchor_point_px(source_name: String, row: int, frame_index: int, point: String) -> Variant:
+	if anchors.is_empty():
+		return null
+	var state_anchor: Variant = anchors.get(source_name, null)
+	if not (state_anchor is Dictionary):
+		return null
+	var dirs: Variant = (state_anchor as Dictionary).get("dirs", [])
+	if not (dirs is Array) or (dirs as Array).is_empty():
+		return null
+	var row_index: int = clampi(row, 0, (dirs as Array).size() - 1)
+	var frames: Variant = (dirs as Array)[row_index]
+	if not (frames is Array) or (frames as Array).is_empty():
+		return null
+	var packed: Variant = (frames as Array)[clampi(frame_index, 0, (frames as Array).size() - 1)]
+	if not (packed is Array) or (packed as Array).size() < 10:
+		return null
+	var point_index: int = ANCHOR_POINTS.find(point)
+	if point_index < 0:
+		return null
+	var x: Variant = (packed as Array)[point_index * 2]
+	var y: Variant = (packed as Array)[point_index * 2 + 1]
+	if x == null or y == null:
+		return null
+	return Vector2i(int(x), int(y))
+
+
+func action_point_world(point: String) -> Vector3:
+	var origin: Vector3 = global_position + Vector3(0.0, offset.y * pixel_size, 0.0)
+	var source_name: String = String(state_source_names.get(current_state, ""))
+	var anchor: Variant = anchor_point_px(source_name, facing_row, curr_frame, point)
+	if anchor is Vector2i:
+		var px: Vector2i = anchor
+		var camera: Camera3D = get_viewport().get_camera_3d() if is_inside_tree() else null
+		var right: Vector3 = Vector3.RIGHT
+		if camera != null:
+			right = camera.global_basis.x
+			right.y = 0.0
+			right = right.normalized() if right.length() > 0.0001 else Vector3.RIGHT
+		return origin + right * (float(px.x) * pixel_size) + Vector3.UP * (-float(px.y) * pixel_size)
+	return origin
+
+
+func set_lunge_offset(offset_world: Vector3) -> void:
+	lunge_offset = offset_world
+	position = base_local_position + lunge_offset
+
+
+func clear_lunge_offset() -> void:
+	set_lunge_offset(Vector3.ZERO)
+
+
+func debug_animation_snapshot() -> Dictionary:
+	var tex: Texture2D = texture
+	return {
+		"state": current_state,
+		"source_name": String(state_source_names.get(current_state, "")),
+		"texture_path": String(state_texture_paths.get(current_state, tex.resource_path if tex != null else "")),
+		"texture_width": tex.get_width() if tex != null else 0,
+		"texture_height": tex.get_height() if tex != null else 0,
+		"cell_width": int(state_cell_widths.get(current_state, 0)),
+		"cell_height": int(state_cell_heights.get(current_state, 0)),
+		"hframes": hframes,
+		"vframes": vframes,
+		"frame": frame,
+		"current_frame": curr_frame,
+		"facing_row": facing_row,
+		"one_shot": one_shot,
+		"one_shot_finished": one_shot_finished,
+		"grounding_mode": grounding_mode,
+		"offset_y": offset.y,
+		"timing": state_timing(current_state),
+	}
+
+
 func _process(delta: float) -> void:
-	var n: int = state_frame_counts.get(current_state, 1)
-	if current_state == ANIM_SLEEP or n <= 1:
+	if pose_frozen:
+		return
+	var n: int = int(state_frame_counts.get(current_state, 1))
+	if n <= 1:
 		curr_frame = 0
 		return
-	var dur: float = state_frame_durations.get(current_state, FRAME_DURATION.get(current_state, 0.15))
+	state_elapsed += delta
+	var timing: Array[int] = state_timing(current_state)
 	frame_timer += delta
-	while frame_timer >= dur:
+	var guard: int = 0
+	while guard < 64:
+		guard += 1
+		var dur: float = _frame_duration(current_state, curr_frame, timing)
+		if frame_timer < dur:
+			break
 		frame_timer -= dur
-		curr_frame = (curr_frame + 1) % n
+		if curr_frame + 1 >= n:
+			if one_shot:
+				one_shot_finished = true
+				frame_timer = 0.0
+				break
+			curr_frame = 0
+		else:
+			curr_frame += 1
 
 
-## Starts the appropriate animation on the AnimationTree (still drives the
-## existing JUMP Y-position arc; sprite frames are now state-driven separately).
-##
-## @param move_direction: The direction the pawn is moving in
-## @param is_jumping: Whether the pawn is currently jumping
+func _frame_duration(state: String, frame_index: int, timing: Array[int]) -> float:
+	if not timing.is_empty() and frame_index < timing.size():
+		return maxf(0.001, float(timing[frame_index]) / SOURCE_TICKS_PER_SECOND)
+	return float(state_frame_durations.get(state, FRAME_DURATION.get(state, 0.15)))
+
+
 func start_animator(move_direction: Vector3, is_jumping: bool) -> void:
 	if move_direction == Vector3.ZERO:
 		animator.travel("IDLE")
@@ -418,35 +683,22 @@ func start_animator(move_direction: Vector3, is_jumping: bool) -> void:
 		animator.travel("JUMP")
 
 
-## Selects the sprite cell for this frame.
-##
-## For 8-direction sheets, picks the row based on the camera-relative pawn
-## facing (bucketing into the standard PMD order Down, DownRight, Right, ...).
-## For single-direction sheets (vframes == 1, e.g. Sleep), always renders
-## row 0. Never enters a dead zone: side-on camera views still advance frames
-## continuously, which was the freeze bug in the 2-row implementation.
-##
-## @param _global_basis: The global basis of the pawn
 func rotate_sprite(_global_basis: Basis) -> void:
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	if camera == null:
 		return
 	var n: int = state_frame_counts.get(current_state, 1)
 	var rows: int = int(state_row_counts.get(current_state, 1))
+	facing_row = _direction_row(_global_basis, camera, DIRECTION_COUNT)
 	if rows <= 1:
-		# Single-direction sheets: just animate the column.
 		frame = curr_frame
 		return
 
-	var row: int = _direction_row(_global_basis, camera, rows)
-	frame = row * n + curr_frame
+	var columns: int = maxi(n, int(state_column_counts.get(current_state, n)))
+	var row: int = facing_row if rows == DIRECTION_COUNT else _direction_row(_global_basis, camera, rows)
+	frame = row * columns + mini(curr_frame, columns - 1)
 
 
-## Computes which of [param rows] facings the camera should see, given the
-## pawn's `global_basis` and the active camera. Buckets the horizontal angle
-## between the pawn's facing direction and the camera-to-pawn direction, mapping to
-## the PMD row order: 0 = Down (faces camera), advancing counter-clockwise from
-## above to DownRight, Right, UpRight, Up (back), UpLeft, Left, DownLeft.
 func _direction_row(pawn_basis: Basis, camera: Camera3D, rows: int) -> int:
 	var to_cam_xz: Vector3 = -camera.global_basis.z
 	to_cam_xz.y = 0.0
@@ -457,12 +709,8 @@ func _direction_row(pawn_basis: Basis, camera: Camera3D, rows: int) -> int:
 	to_cam_xz = to_cam_xz.normalized()
 	pawn_facing_xz = pawn_facing_xz.normalized()
 
-	# This codebase has historically treated +basis.z as the pawn's facing
-	# direction; keep sprite rows aligned with movement and authored spawns.
-	# `to_cam_xz` is camera_forward; its negation is the "to camera" direction.
 	var to_camera: Vector3 = -to_cam_xz
 	var cos_theta: float = pawn_facing_xz.dot(to_camera)
-	# Signed by world up so positive follows SpriteCollab's row handedness.
 	var cross_y: float = to_camera.cross(pawn_facing_xz).y
 	var angle_ccw: float = atan2(cross_y, cos_theta)
 	if angle_ccw < 0.0:
@@ -471,10 +719,6 @@ func _direction_row(pawn_basis: Basis, camera: Camera3D, rows: int) -> int:
 	return int(round(angle_ccw / bucket_size)) % rows
 
 
-## Adjusts the pawn's position to the center of its current tile
-##
-## @param pawn: The TacticsPawn to adjust
-## @return: Whether the adjustment was successful
 func adjust_to_center(pawn: TacticsPawn) -> bool:
 	if pawn.get_tile() and not pawn.res.is_moving:
 		pawn.global_position = pawn.get_tile().global_position

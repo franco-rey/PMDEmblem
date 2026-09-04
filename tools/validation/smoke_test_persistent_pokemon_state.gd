@@ -1,5 +1,4 @@
 extends SceneTree
-## M8 smoke: HP/PP/XP/level/moves round-trip through Resource save/load.
 
 const BULBASAUR_PATH: String = "res://data/models/pokemon/generated/instances/0001_bulbasaur.tres"
 const SAVE_PATH: String = "user://m8_persistent_pokemon_state.tres"

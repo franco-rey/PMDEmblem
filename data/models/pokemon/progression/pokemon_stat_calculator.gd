@@ -1,6 +1,5 @@
 class_name PokemonStatCalculator
 extends RefCounted
-## Shared M8 stat calculation path for spawned stats, items, and progression.
 
 const MIN_LEVEL: int = 1
 const MAX_LEVEL: int = 100

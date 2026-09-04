@@ -1,5 +1,4 @@
 extends SceneTree
-## M6 smoke: skirmish entrants receive four learnset moves and selected slots log.
 
 const CHARMANDER_PATH: String = "res://data/models/pokemon/generated/instances/0004_charmander.tres"
 const MAGMORTAR_PATH: String = "res://data/models/pokemon/overrides/instances/0467_magmortar.tres"
@@ -37,6 +36,7 @@ func _init() -> void:
 	_check_controls_resource_bridge()
 	_check_controls_scene_move_picker()
 	_check_self_target_move_auto_confirm()
+	_check_current_pawn_skip_turn()
 	_check_preview_markers()
 	_check_example_loadout_coverage()
 
@@ -264,6 +264,26 @@ func _check_self_target_move_auto_confirm() -> void:
 	level.free()
 
 
+func _check_current_pawn_skip_turn() -> void:
+	var player := TacticsPlayer.new()
+	var opponent := TacticsOpponent.new()
+	var player_pawn: FakePawn = _fake_pawn_from_path(CHARMANDER_PATH, "SkipPlayer", Vector3.ZERO)
+	var opponent_pawn: FakePawn = _fake_pawn_from_path(MAGMORTAR_PATH, "SkipOpponent", Vector3(1, 0, 0))
+	player.add_child(player_pawn)
+	opponent.add_child(opponent_pawn)
+
+	var participant := TacticsParticipantResource.new()
+	participant.curr_pawn = opponent_pawn
+	participant.stage = participant.STAGE_SHOW_ACTIONS
+	var turn_service := TacticsParticipantTurnService.new(participant, null, null)
+	turn_service.skip_turn(player)
+	_assert_true(not opponent_pawn.can_act(), "skip turn ends current pawn even outside player parent")
+	_assert_true(player_pawn.can_act(), "skip turn leaves fallback parent untouched when current pawn exists")
+	_assert_true(participant.stage == participant.STAGE_SELECT_PAWN, "skip turn returns to pawn selection")
+	player.free()
+	opponent.free()
+
+
 func _check_preview_markers() -> void:
 	var arena_node := TacticsArena.new()
 	arena_node.serv = TacticsArenaService.new(TacticsArenaResource.new())
@@ -278,6 +298,12 @@ func _check_preview_markers() -> void:
 	var south := _fake_tile("South", Vector3(0, 0, -1))
 	for tile in [center, east, west, north, south]:
 		tiles.add_child(tile)
+
+	center.hover = true
+	center.reachable = true
+	center.attackable = true
+	arena_node.reset_all_tile_markers()
+	_assert_true(not center.hover and not center.reachable and not center.attackable, "tile marker reset clears stale hover/reachable/attackable state")
 
 	var attacker: FakePawn = _fake_pawn_from_path(CHARMANDER_PATH, "PreviewAttacker", Vector3.ZERO)
 	var enemy: FakePawn = _fake_pawn_from_path(MAGMORTAR_PATH, "PreviewEnemy", Vector3(1, 0, 0))

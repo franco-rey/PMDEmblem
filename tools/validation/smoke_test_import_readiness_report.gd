@@ -1,5 +1,4 @@
 extends SceneTree
-## M7 smoke: current-roster readiness report is deterministic and complete.
 
 var failures: int = 0
 

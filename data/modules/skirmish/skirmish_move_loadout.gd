@@ -1,6 +1,5 @@
 class_name SkirmishMoveLoadout
 extends RefCounted
-## Deterministic transient four-move loadouts for skirmish entrants.
 
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
 const MAX_MOVE_SLOTS: int = PokemonInstanceResource.MAX_MOVE_SLOTS
@@ -41,11 +40,13 @@ static func clone_for_side(template: PokemonInstanceResource, team: int, control
 	instance.held_item = template.held_item
 	instance.runtime_modifiers = template.runtime_modifiers.duplicate(true)
 	instance.temporary_statuses = template.temporary_statuses.duplicate()
+	instance.ability_override = template.ability_override
+	instance.loadout_locked = template.loadout_locked
 	return instance
 
 
 static func assign_loadout(instance: PokemonInstanceResource, seed: int, side_key: String, slot_index: int) -> void:
-	if instance == null:
+	if instance == null or instance.loadout_locked:
 		return
 	var pool: Array[PokemonMoveResource] = move_pool_for_instance(instance)
 	if pool.is_empty():
@@ -55,12 +56,17 @@ static func assign_loadout(instance: PokemonInstanceResource, seed: int, side_ke
 	var rng := RandomNumberGenerator.new()
 	rng.seed = _salt_seed(seed, side_key, slot_index, instance)
 	var selected: Array[PokemonMoveResource] = _choose_unique(pool, rng, MAX_MOVE_SLOTS)
+	selected = _ensure_resolving_attack(selected, pool, rng)
 	if selected.is_empty():
 		return
 	instance.move_slots = selected
 	instance.pp_state = []
 	for move in instance.move_slots:
 		instance.pp_state.append(move.pp if move != null else 0)
+
+
+static func has_resolving_attack(moves: Array[PokemonMoveResource]) -> bool:
+	return _has_resolving_attack(moves)
 
 
 static func move_pool_for_instance(instance: PokemonInstanceResource) -> Array[PokemonMoveResource]:
@@ -93,6 +99,66 @@ static func _template_pool(instance: PokemonInstanceResource) -> Array[PokemonMo
 		seen[move.move_id] = true
 		out.append(move)
 	return out
+
+
+static func _ensure_resolving_attack(
+		selected: Array[PokemonMoveResource],
+		pool: Array[PokemonMoveResource],
+		rng: RandomNumberGenerator
+) -> Array[PokemonMoveResource]:
+	if _has_resolving_attack(selected):
+		return selected
+	var candidates: Array[PokemonMoveResource] = []
+	for move in pool:
+		if _is_resolving_attack(move) and not _has_move_id(selected, move.move_id):
+			candidates.append(move)
+	if candidates.is_empty():
+		return selected
+	candidates.sort_custom(_is_move_less_than)
+	var replacement: PokemonMoveResource = candidates[int(rng.randi_range(0, candidates.size() - 1))]
+	if selected.size() < MAX_MOVE_SLOTS:
+		selected.append(replacement)
+		return selected
+	var replaceable_slots: Array[int] = []
+	for i in range(selected.size()):
+		if not _is_resolving_attack(selected[i]):
+			replaceable_slots.append(i)
+	if replaceable_slots.is_empty():
+		return selected
+	var replace_index: int = replaceable_slots[int(rng.randi_range(0, replaceable_slots.size() - 1))]
+	selected[replace_index] = replacement
+	return selected
+
+
+static func _has_resolving_attack(moves: Array[PokemonMoveResource]) -> bool:
+	for move in moves:
+		if _is_resolving_attack(move):
+			return true
+	return false
+
+
+static func _is_resolving_attack(move: PokemonMoveResource) -> bool:
+	if move == null or move.pp <= 0 or not move.can_target_foes():
+		return false
+	if move.effect_records.is_empty():
+		return move.is_damaging() and move.base_power > 0
+	for record in move.effect_records:
+		var record_target: String = String(record.get("target", "hit_target"))
+		if record_target == "self" or record_target == "field":
+			continue
+		var family: String = String(record.get("family", ""))
+		if family == "damage" and move.is_damaging():
+			return true
+		if ["fixed_damage", "level_damage", "percent_damage", "hp_to_1"].has(family):
+			return true
+	return false
+
+
+static func _has_move_id(moves: Array[PokemonMoveResource], move_id: String) -> bool:
+	for move in moves:
+		if move != null and move.move_id == move_id:
+			return true
+	return false
 
 
 static func _choose_unique(pool: Array[PokemonMoveResource], rng: RandomNumberGenerator, limit: int) -> Array[PokemonMoveResource]:
@@ -128,3 +194,30 @@ static func _salt_seed(seed: int, side_key: String, slot_index: int, instance: P
 		h = int(((h * 131) ^ species_id.unicode_at(i)) & 0x7FFFFFFF)
 	h = int((h ^ (slot_index + 1) * 0x45D9F3B) & 0x7FFFFFFF)
 	return maxi(1, h)
+
+
+static func apply_explicit_loadout(instance: PokemonInstanceResource, move_ids: Array) -> String:
+	if instance == null:
+		return "missing instance"
+	var slots: Array[PokemonMoveResource] = []
+	var pp: Array[int] = []
+	for raw in move_ids:
+		var move_id: String = String(raw).strip_edges()
+		if move_id.is_empty():
+			continue
+		var move: PokemonMoveResource = _load_move(move_id)
+		if move == null:
+			return "Unknown move %s" % move_id
+		if _has_move_id(slots, move_id):
+			continue
+		slots.append(move)
+		pp.append(move.pp)
+		if slots.size() >= MAX_MOVE_SLOTS:
+			break
+	if slots.is_empty():
+		return "Choose at least one move"
+	instance.move_slots = slots
+	instance.pp_state = pp
+	instance.loadout_locked = true
+	return ""
+

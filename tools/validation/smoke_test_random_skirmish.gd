@@ -1,11 +1,4 @@
 extends SceneTree
-## Headless smoke test for the M5 skirmish-mode engine.
-##
-## Validates the canonical RandomSkirmishGenerator and the compatibility
-## facade on CustomSkirmishBuilder.
-##
-## Recipe:
-##   godot --headless --path . --script tools/validation/smoke_test_random_skirmish.gd
 
 const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/test_arena.tres"
 const RandomSkirmishGenerator = preload("res://data/modules/skirmish/random_skirmish_generator.gd")
@@ -18,10 +11,12 @@ var failures: int = 0
 
 func _init() -> void:
 	_check_generator_directly()
+	_check_regression_seed_702_has_resolving_enemy_moves()
 	_check_fixed_seed_is_deterministic()
 	_check_different_seeds_vary()
 	_check_explicit_player_vs_random_enemy()
 	_check_build_random_compatibility()
+	_check_control_modes()
 	_check_invalid_inputs_rejected()
 
 	if failures > 0:
@@ -67,8 +62,19 @@ func _check_generator_directly() -> void:
 		_assert_true(not enemy.recruited, "generated enemy is not recruited")
 		_assert_true(enemy.level >= 40 and enemy.level <= 50, "tier 4 enemy level is 40-50")
 		_assert_true(not enemy.move_slots.is_empty(), "generated enemy has at least one move")
+		_assert_true(SkirmishMoveLoadout.has_resolving_attack(enemy.move_slots), "generated enemy has a resolving attack")
 		_assert_true(enemy.pp_state.size() == enemy.move_slots.size(), "generated enemy pp_state matches moves")
 	_assert_true(_loader_accepts(definition), "direct generated definition is loader-ready after spawn orders")
+
+
+func _check_regression_seed_702_has_resolving_enemy_moves() -> void:
+	var result: Dictionary = CustomSkirmishBuilder.build_random(2, TEST_ARENA_MAP_PATH, "702")
+	_assert_true(result.get("ok", false), "C-004 seed 702 random 2v2 builds")
+	if not result.get("ok", false):
+		return
+	var definition: SkirmishDefinitionResource = result["definition"]
+	for enemy in definition.enemy_team:
+		_assert_true(SkirmishMoveLoadout.has_resolving_attack(enemy.move_slots), "C-004 seed 702 enemy has a resolving attack")
 
 
 func _check_fixed_seed_is_deterministic() -> void:
@@ -129,6 +135,25 @@ func _check_build_random_compatibility() -> void:
 		_assert_true(definition.enemy_team.size() == team_size, "enemy team has %d members" % team_size)
 		_assert_true(String(definition.generation_metadata.get("source", "")) == "random_generator", "metadata marked as random_generator for %dv%d" % [team_size, team_size])
 		_assert_true(String(definition.generation_metadata.get("facade_source", "")) == "build_random", "compatibility metadata marks build_random facade")
+
+
+func _check_control_modes() -> void:
+	var expectations: Dictionary = {
+		SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU: [PokemonInstanceResource.ControlType.PLAYER, PokemonInstanceResource.ControlType.AI],
+		SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_PLAYER: [PokemonInstanceResource.ControlType.PLAYER, PokemonInstanceResource.ControlType.PLAYER],
+		SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU: [PokemonInstanceResource.ControlType.AI, PokemonInstanceResource.ControlType.AI],
+	}
+	for mode in expectations.keys():
+		var result: Dictionary = CustomSkirmishBuilder.build_random(3, TEST_ARENA_MAP_PATH, FIXED_SEED_TEXT, String(mode))
+		_assert_true(result.get("ok", false), "build_random supports control mode %s" % mode)
+		if not result.get("ok", false):
+			continue
+		var definition: SkirmishDefinitionResource = result["definition"]
+		var expected: Array = expectations[mode]
+		_assert_true(definition.control_mode == String(mode), "definition records control mode %s" % mode)
+		_assert_true(String(definition.generation_metadata.get("control_mode", "")) == String(mode), "metadata records control mode %s" % mode)
+		_assert_true(_all_controlled_by(definition.player_team, int(expected[0])), "player team control for %s" % mode)
+		_assert_true(_all_controlled_by(definition.enemy_team, int(expected[1])), "enemy team control for %s" % mode)
 
 
 func _check_invalid_inputs_rejected() -> void:
@@ -257,6 +282,13 @@ func _is_unique(values: Array) -> bool:
 		if seen.has(value):
 			return false
 		seen[value] = true
+	return true
+
+
+func _all_controlled_by(team: Array[PokemonInstanceResource], control_type: int) -> bool:
+	for instance in team:
+		if instance == null or instance.control_type != control_type:
+			return false
 	return true
 
 

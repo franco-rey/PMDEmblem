@@ -1,6 +1,5 @@
 class_name TacticsPawnCombatService
 extends RefCounted
-## Service class for managing combat actions of pawns in the tactics game
 
 const TYPE_CHART_PATH: String = "res://data/models/pokemon/generated/types/type_chart.tres"
 
@@ -13,20 +12,17 @@ func _init() -> void:
 	_fallback_rng.seed = 0
 
 
-## Executes an attack from one pawn to another
-##
-## @param pawn: The attacking TacticsPawn
-## @param target_pawn: The TacticsPawn being attacked
-## @param delta: Time elapsed since the last frame
-## @return: Whether the attack was completed
 func attack_target_pawn(pawn: TacticsPawn, target_pawn: TacticsPawn, delta: float) -> bool:
 	if pawn == null or target_pawn == null or not pawn.is_alive() or not target_pawn.is_alive():
+		if pawn != null and pawn.res.presentation_locked:
+			if not _presentation_finished(pawn, delta):
+				return false
+			pawn.res.wait_delay = 0.0
+			pawn.res.presentation_locked = false
 		return true
 
-	# Make the attacking pawn face the target
 	pawn.serv.movement.look_at_direction(pawn, target_pawn.global_position - pawn.global_position)
-	
-	# Check if the pawn can attack and enough time has passed for the attack animation
+
 	if pawn.res.can_attack and pawn.res.wait_delay > TacticsPawnResource.MIN_TIME_FOR_ATTACK / 4.0:
 		var move_index: int = _selected_move_index(pawn, target_pawn)
 		var move: PokemonMoveResource = _selected_move_for(pawn, move_index)
@@ -45,19 +41,63 @@ func attack_target_pawn(pawn: TacticsPawn, target_pawn: TacticsPawn, delta: floa
 			pawn.res.use_legacy_attack_fallback = false
 			action_resolver.execute(pawn, target_pawn, move_index, _battle_level(pawn))
 			pawn.res.set_attacking(false)
+			pawn.res.presentation_locked = true
+			pawn.res.presentation_wait = 0.0
 
-		# Print debug information if debug mode is enabled
 		if DebugLog.debug_enabled:
 			print_rich("[color=pink]Attacked ", target_pawn, ".[/color]")
-	
-	# If the minimum time for attack hasn't passed, increment the wait delay
+
 	if pawn.res.wait_delay < TacticsPawnResource.MIN_TIME_FOR_ATTACK:
 		pawn.res.wait_delay += delta
 		return false
-	
-	# Reset the wait delay and return true to indicate the attack is complete
+
+	if pawn.res.presentation_locked and not _presentation_finished(pawn, delta):
+		return false
+
 	pawn.res.wait_delay = 0.0
+	pawn.res.presentation_locked = false
 	return true
+
+
+func perform_intent(pawn: TacticsPawn, intent: BattleActionIntent, delta: float) -> bool:
+	if pawn == null or intent == null or not pawn.is_alive():
+		return true
+	if intent.kind == BattleActionIntent.KIND_MOVE:
+		return attack_target_pawn(pawn, intent.target, delta)
+	if pawn.res.can_attack and not pawn.res.intent_executed and pawn.res.wait_delay > TacticsPawnResource.MIN_TIME_FOR_ATTACK / 4.0:
+		if intent.direction != Vector3i.ZERO:
+			pawn.serv.movement.look_at_direction_8(pawn, Vector3(float(intent.direction.x), 0.0, float(intent.direction.z)))
+		elif intent.target != null and intent.target != pawn:
+			pawn.serv.movement.look_at_direction_8(pawn, intent.target.global_position - pawn.global_position)
+		var result: Dictionary = action_resolver.execute_intent(intent, _battle_level(pawn))
+		pawn.res.intent_executed = true
+		_log_event(pawn, {"kind": "item_action_executed", "attacker": pawn, "item_id": intent.item_id, "action": intent.kind, "ok": bool(result.get("ok", false)), "reason": String(result.get("reason", ""))})
+		pawn.res.set_attacking(false)
+		pawn.res.presentation_locked = true
+		pawn.res.presentation_wait = 0.0
+
+	if pawn.res.wait_delay < TacticsPawnResource.MIN_TIME_FOR_ATTACK:
+		pawn.res.wait_delay += delta
+		return false
+
+	if pawn.res.presentation_locked and not _presentation_finished(pawn, delta):
+		return false
+
+	pawn.res.wait_delay = 0.0
+	pawn.res.presentation_locked = false
+	pawn.res.intent_executed = false
+	return true
+
+
+func _presentation_finished(pawn: TacticsPawn, delta: float) -> bool:
+	var battle_level: TacticsLevel = _battle_level(pawn)
+	if battle_level == null or battle_level.presentation_runner == null:
+		return true
+	pawn.res.presentation_wait += delta
+	if pawn.res.presentation_wait > TacticsPawnResource.PRESENTATION_TIMEOUT:
+		battle_level.presentation_runner.cancel_all("attack_wait_timeout")
+		return true
+	return not battle_level.presentation_runner.is_busy()
 
 
 func _resolve_pokemon_attack(pawn: TacticsPawn, target_pawn: TacticsPawn, move: PokemonMoveResource, move_index: int) -> void:
@@ -103,6 +143,7 @@ func _resolve_pokemon_attack(pawn: TacticsPawn, target_pawn: TacticsPawn, move: 
 		"amount": result.damage,
 		"multiplier": result.effectiveness,
 		"stab": result.stab,
+		"critical": result.is_critical,
 	})
 
 	if was_active and not target_pawn.stats.is_active():

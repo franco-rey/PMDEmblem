@@ -1,5 +1,4 @@
 extends SceneTree
-## 0.12.1 smoke: pre-v0.13 skirmish mechanics/import readiness.
 
 const BULBASAUR_PATH: String = "res://data/models/pokemon/generated/instances/0001_bulbasaur.tres"
 const CHARMANDER_PATH: String = "res://data/models/pokemon/generated/instances/0004_charmander.tres"

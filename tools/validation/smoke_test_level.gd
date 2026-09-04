@@ -1,11 +1,4 @@
 extends SceneTree
-## Headless smoke test: load and instantiate `test_level.tscn`, run a handful
-## of physics frames, and confirm every spawned `Stats` node received its
-## Pokemon-derived values. Intended for the M1 acceptance check, runs via:
-##
-##   godot --headless --path <project> --script tools/validation/smoke_test_level.gd
-##
-## Exits 0 on success, 1 on any failure. Prints a short per-pawn report.
 
 const SCENE_PATH: String = "res://assets/maps/level/test_level.tscn"
 const FRAMES_TO_RUN: int = 6
@@ -25,7 +18,6 @@ func _init() -> void:
 		return
 
 	root.add_child(level)
-	# Let _ready propagate through the tree, then iterate a few physics frames.
 	for i in range(FRAMES_TO_RUN):
 		await physics_frame
 

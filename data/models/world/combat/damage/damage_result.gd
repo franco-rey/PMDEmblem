@@ -1,6 +1,5 @@
 class_name DamageResult
 extends RefCounted
-## Immutable-ish result object returned by DamageResolver.
 
 var hit: bool = false
 var damage: int = 0

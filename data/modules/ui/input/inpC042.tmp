@@ -3,12 +3,6 @@
 [sub_resource type="GDScript" id="GDScript_yv7xp"]
 script/source = "class_name MouseClickCapture
 extends Node3D
-## 
-
-#region: --- Methods ---
-## Calculates where the mouse pointer actually is on the game canvas
-## by casting a ray (from the camera through the mouse pointer)
-## until it collides with an object, that it returns.
 func project_mouse_position(collision_mask: int, is_joystick: bool) -> Object:
 	var _ray_length = 1_000_000
 	var _camera = get_viewport().get_camera_3d()
@@ -19,7 +13,6 @@ func project_mouse_position(collision_mask: int, is_joystick: bool) -> Object:
 
 	var ray_query = PhysicsRayQueryParameters3D.create(from, to, collision_mask, [])
 	return get_world_3d().direct_space_state.intersect_ray(ray_query).get(\"collider\")
-#endregion
 "
 
 [node name="InputCapture" type="Node3D"]

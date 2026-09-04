@@ -1,7 +1,4 @@
 extends SceneTree
-## Headless smoke test for M2 combat resolution.
-##
-##   godot --headless --path <project> --script tools/validation/smoke_test_combat.gd
 
 const TYPE_CHART_PATH: String = "res://data/models/pokemon/generated/types/type_chart.tres"
 const LUCARIO_PATH: String = "res://data/models/pokemon/overrides/instances/0448_lucario.tres"
@@ -48,12 +45,12 @@ func _stats_from_instance(path: String) -> Stats:
 
 
 func _check_type_chart(type_chart: TypeChartResource) -> void:
-	_assert_close(type_chart.get_effectiveness("fire", "steel"), 1.5, "fire > steel is super-effective")
+	_assert_close(type_chart.get_effectiveness("fire", "steel"), 2.0, "fire > steel is super-effective")
 	_assert_close(type_chart.get_effectiveness("fighting", "fire"), 1.0, "fighting > fire is neutral")
 	_assert_close(type_chart.get_effectiveness("fighting", "poison"), 0.5, "fighting > poison is resisted")
 	_assert_close(type_chart.get_effectiveness("normal", "ghost"), 0.0, "normal > ghost is immune")
 	_assert_close(type_chart.get_effectiveness_dual("fire", "water", "rock"), 0.25, "fire > water/rock double-resist")
-	_assert_close(type_chart.get_effectiveness_dual("fighting", "rock", "steel"), 2.25, "fighting > rock/steel double-super")
+	_assert_close(type_chart.get_effectiveness_dual("fighting", "rock", "steel"), 4.0, "fighting > rock/steel double-super")
 
 
 func _check_accuracy() -> void:
@@ -87,7 +84,7 @@ func _check_damage_round(lucario: Stats, magmortar: Stats, type_chart: TypeChart
 	_assert_true(result.hit, "Aura Sphere hit")
 	_assert_true(result.stab, "Aura Sphere gets Lucario STAB")
 	_assert_close(result.effectiveness, 1.0, "Fighting > Fire is neutral")
-	_assert_true(result.damage == 58, "Aura Sphere damage is deterministic 58")
+	_assert_true(result.damage == 46, "Aura Sphere damage is deterministic 46")
 	lucario.consume_pp(0)
 	_assert_true(lucario.current_pp[0] == 7, "Aura Sphere PP decremented 8 -> 7")
 	magmortar.apply_to_curr_health(-result.damage)
@@ -96,8 +93,8 @@ func _check_damage_round(lucario: Stats, magmortar: Stats, type_chart: TypeChart
 	var reply: DamageResult = resolver.resolve(magmortar, lucario, flamethrower, type_chart, rng)
 	_assert_true(reply.hit, "Flamethrower hit")
 	_assert_true(reply.stab, "Flamethrower gets Magmortar STAB")
-	_assert_close(reply.effectiveness, 1.5, "Fire > Fighting/Steel is single-super")
-	_assert_true(reply.damage == 128, "Flamethrower damage is deterministic 128")
+	_assert_close(reply.effectiveness, 2.0, "Fire > Fighting/Steel is single-super")
+	_assert_true(reply.damage == 127, "Flamethrower damage is deterministic 127 (got %d)" % reply.damage)
 	magmortar.consume_pp(0)
 	_assert_true(magmortar.current_pp[0] == 7, "Flamethrower PP decremented 8 -> 7")
 
@@ -148,7 +145,7 @@ func _check_scene_attack_flow() -> void:
 			break
 
 	_assert_true(lucario.stats.current_pp[0] == 7, "scene attack consumed Lucario PP")
-	_assert_true(magmortar.stats.curr_health == 117, "scene attack applied resolver damage")
+	_assert_true(magmortar.stats.curr_health == 89, "scene attack applied resolver damage")
 	_assert_true(_log_has(level.battle_log, "move_used"), "scene attack logged move_used")
 	_assert_true(_log_has(level.battle_log, "damage_dealt"), "scene attack logged damage_dealt")
 	_assert_true(_log_has(level.battle_log, "pp_decremented"), "scene attack logged pp_decremented")
