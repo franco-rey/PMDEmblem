@@ -27,6 +27,7 @@ const SECTIONS: Array = [
 		["Battle speed, 0.5x to 20x", ["battle_speed_1", "battle_speed_2", "battle_speed_3", "battle_speed_4", "battle_speed_5", "battle_speed_6"], []],
 	]],
 	["Interface", [
+		["Hide or show the interface", ["toggle_interface"], []],
 		["Inspect a unit", [], ["Hover", "Click to lock", "x to unlock"]],
 		["Shrink or grow a dock", [], ["- and + on the dock header"]],
 	]],

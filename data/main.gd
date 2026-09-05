@@ -87,6 +87,8 @@ var skirmish_loader: SkirmishLoader
 var pause_menu: PauseMenu = null
 var results_screen: BattleResultsScreen = null
 var speed_bar: SpectatorSpeedBar = null
+var interface_visible: bool = true
+var _controls_enabled: bool = true
 var menu_graphics_panel: GraphicsSettingsPanel = null
 var menu_controls_panel: ControlsPanel = null
 var controls_button: Button = null
@@ -129,6 +131,7 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	_poll_speed_keys()
+	_poll_interface_toggle()
 	_sync_turn_speed()
 	UiScale.apply(get_tree().root)
 	var backdrop: Control = $UI.get_node_or_null("Backdrop") as Control
@@ -281,6 +284,23 @@ func _poll_speed_keys() -> void:
 			return
 
 
+func _poll_interface_toggle() -> void:
+	if level_instance == null or not is_instance_valid(level_instance) or level_instance.battle_finished:
+		return
+	if Input.is_action_just_pressed("toggle_interface"):
+		set_interface_visible(not interface_visible)
+
+
+func set_interface_visible(value: bool) -> void:
+	interface_visible = value
+	if tactics_controls != null:
+		tactics_controls.visible = _controls_enabled and interface_visible
+	if level_instance != null and is_instance_valid(level_instance):
+		level_instance.set_interface_visible(interface_visible)
+	if speed_bar != null and not interface_visible:
+		speed_bar.visible = false
+
+
 func _sync_turn_speed() -> void:
 	if level_instance == null or not is_instance_valid(level_instance) or level_instance.battle_finished or speed_bar == null:
 		return
@@ -297,8 +317,9 @@ func _sync_turn_speed() -> void:
 	var wanted: float = GameSettings.cpu_speed
 	if not is_equal_approx(Engine.time_scale, wanted):
 		_set_battle_speed(wanted)
-	if speed_bar.visible != cpu_turn:
-		speed_bar.visible = cpu_turn
+	var show_bar: bool = cpu_turn and interface_visible
+	if speed_bar.visible != show_bar:
+		speed_bar.visible = show_bar
 		speed_bar.highlight(GameSettings.cpu_speed)
 
 
@@ -452,6 +473,7 @@ func _launch_definition(definition: SkirmishDefinitionResource, return_to_lobby_
 	if skirmish_lobby != null:
 		skirmish_lobby.visible = false
 	var human: bool = _definition_has_human_control(definition)
+	interface_visible = true
 	_set_tactics_controls_enabled(human)
 	var camera_node: TacticsCamera = find_child("TacticsCamera", true, false) as TacticsCamera
 	if camera_node != null and camera_node.res != null:
@@ -598,7 +620,8 @@ func _style_main_menu() -> void:
 
 
 func _set_tactics_controls_enabled(enabled: bool) -> void:
+	_controls_enabled = enabled
 	if tactics_controls == null:
 		return
-	tactics_controls.visible = enabled
+	tactics_controls.visible = enabled and interface_visible
 	tactics_controls.process_mode = Node.PROCESS_MODE_INHERIT if enabled else Node.PROCESS_MODE_DISABLED

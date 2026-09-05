@@ -40,6 +40,8 @@ var max_turns: int = MAX_TURNS
 var cinematic: bool = false
 var fast_turns: int = 0
 var code_override: String = ""
+var plan_path: String = ""
+var spin: bool = false
 var max_seconds: float = 0.0
 var start_frame: int = 0
 var shot_index: int = 0
@@ -56,7 +58,25 @@ func _init() -> void:
 	call_deferred("_run")
 
 
+var _settings_snapshot: String = ""
+
+
+func _snapshot_settings() -> void:
+	if FileAccess.file_exists(GameSettings.SETTINGS_PATH):
+		_settings_snapshot = FileAccess.get_file_as_string(GameSettings.SETTINGS_PATH)
+
+
+func _restore_settings() -> void:
+	if _settings_snapshot.is_empty():
+		return
+	var file := FileAccess.open(GameSettings.SETTINGS_PATH, FileAccess.WRITE)
+	if file != null:
+		file.store_string(_settings_snapshot)
+		file.close()
+
+
 func _run() -> void:
+	_snapshot_settings()
 	DisplayServer.window_set_size(Vector2i(1920, 1080))
 	root.content_scale_size = Vector2i(0, 0)
 	UiScale.override_factor = UiScale.compute(Vector2(1920, 1080))
@@ -71,6 +91,10 @@ func _run() -> void:
 			max_seconds = float(String(arg).substr(10))
 		elif String(arg).begins_with("--fast-turns="):
 			fast_turns = int(String(arg).substr(13))
+		elif String(arg).begins_with("--plan="):
+			plan_path = String(arg).substr(7)
+		elif String(arg).begins_with("--spin="):
+			spin = String(arg).substr(7) == "1"
 		elif String(arg).begins_with("--code="):
 			code_override = String(arg).substr(7)
 	driver = DRIVER.new(self)
@@ -81,9 +105,11 @@ func _run() -> void:
 		return
 	level = driver.level
 	level.battle_ended.connect(_on_battle_ended)
+	_skip_intro()
 	_index_pawns()
-	for slug in PLAN:
-		queues[slug] = (PLAN[slug] as Array).duplicate(true)
+	var plan: Dictionary = _load_plan()
+	for slug in plan:
+		queues[slug] = (plan[slug] as Array).duplicate(true)
 	if fast_turns > 0:
 		level.presentation_runner.immediate_mode = true
 		while turns_taken < fast_turns and _battle_alive():
@@ -94,23 +120,36 @@ func _run() -> void:
 			await _take_turn(fast_pawn)
 		level.presentation_runner.immediate_mode = false
 		print("showcase: fast phase ended after %d turns at %.2f s" % [turns_taken, float(Engine.get_physics_frames()) / 60.0])
+	if cinematic:
+		GameSettings.battle_flair = true
+		GameSettings.window_mode = "windowed"
+		GameSettings.resolution = Vector2i(1920, 1080)
+		UiScale.override_factor = 0.0
+		GameSettings.ui_scale = 1.0
+		GameSettings.apply(root)
+		await physics_frame
+		await physics_frame
+		Input.warp_mouse(Vector2(2.0, 2.0))
 	start_frame = Engine.get_physics_frames()
+	print("showcase: recording starts at frame %d (%.2f s)" % [start_frame, float(start_frame) / 60.0])
+	print("showcase: window=%s root=%s scale=%.2f hud=%s override=%.2f" % [str(DisplayServer.window_get_size()), str(root.size), root.content_scale_factor, str(level.hud.layout_size()), UiScale.override_factor])
 	if cinematic:
 		base_yaw = level.camera.y_rot
 		level.camera.target_fov = 40.0
 		_enter_shot(0)
 		_cinematic_tick(0.0)
 		_camera_loop()
-	await _hold(START_HOLD * (2 if cinematic else 1))
+	await _hold(START_HOLD * (1 if spin else (2 if cinematic else 1)))
 	while turns_taken < max_turns and _battle_alive() and not _out_of_time():
 		var pawn: TacticsPawn = await _next_active()
 		if pawn == null:
 			break
 		turns_taken += 1
 		await _take_turn(pawn)
-		await _hold(TURN_HOLD * (3 if cinematic else 1))
+		await _hold(TURN_HOLD * (2 if spin else (3 if cinematic else 1)))
 	print("showcase: seed %d, %d turns taken, %s" % [seed_value, turns_taken, result_line if not result_line.is_empty() else "no result"])
 	await _hold(END_HOLD)
+	_restore_settings()
 	quit(0)
 
 
@@ -153,7 +192,21 @@ func _camera_loop() -> void:
 
 
 func _shots() -> Array:
+	if spin:
+		return [[0.0, -30.0, 9.0, -34, 42.0, false], [5.0, 60.0, -14.0, -26, 26.0, false], [10.0, -20.0, 7.0, -40, 36.0, false], [14.5, 0.0, 12.0, -80, 44.0, true], [19.0, 40.0, -9.0, -24, 22.0, false], [24.0, -50.0, 16.0, -30, 34.0, false], [28.0, 25.0, -6.0, -20, 20.0, false]]
 	return [[0.0, -25.0, 5.0, -36, 44.0, false], [7.0, 20.0, -4.0, -24, 22.0, false], [13.0, 0.0, 8.0, -80, 40.0, true], [20.0, -40.0, 6.0, -30, 30.0, false], [26.0, 35.0, -5.0, -22, 20.0, false]]
+
+
+func _load_plan() -> Dictionary:
+	if plan_path.is_empty():
+		return PLAN
+	var text: String = FileAccess.get_file_as_string(plan_path)
+	var parsed: Variant = JSON.parse_string(text)
+	if parsed is Dictionary:
+		print("showcase: plan %s with %d units" % [plan_path, (parsed as Dictionary).size()])
+		return parsed
+	push_error("showcase: could not read plan %s" % plan_path)
+	return PLAN
 
 
 func _shot_index_at(elapsed: float) -> int:
@@ -210,14 +263,21 @@ func _battle_alive() -> bool:
 	return is_instance_valid(level) and not level.battle_finished
 
 
+func _skip_intro() -> void:
+	if level != null and is_instance_valid(level) and level.banner != null and level.banner.intro_active:
+		level.banner.finish_intro()
+
+
 func _hold(frames: int) -> void:
 	for i in range(frames):
+		_skip_intro()
 		await physics_frame
 
 
 func _next_active() -> TacticsPawn:
 	var frames: int = 0
 	while frames < 1800 and _battle_alive():
+		_skip_intro()
 		var active: BattleUnit = level.scheduler.get_active_unit()
 		if active != null and active.pawn != null and is_instance_valid(active.pawn) and not level.is_presentation_busy():
 			return active.pawn
@@ -262,6 +322,10 @@ func _take_turn(pawn: TacticsPawn) -> void:
 		if outcome == "done":
 			queue.remove_at(index)
 			acted = true
+		elif outcome == "moved":
+			queue.remove_at(index)
+			if not _battle_alive() or not is_instance_valid(pawn):
+				break
 		elif outcome == "drop":
 			queue.remove_at(index)
 		else:
@@ -278,6 +342,15 @@ func _take_turn(pawn: TacticsPawn) -> void:
 
 func _execute_intent(pawn: TacticsPawn, intent: Array) -> String:
 	var kind: String = String(intent[0])
+	if kind == "wait":
+		return "done"
+	if kind == "move":
+		var label: String = String(intent[1])
+		if not pawn.res.can_move:
+			return "drop"
+		print("showcase: %s moves to %s" % [_slug_of(pawn), label])
+		await driver._move(pawn, label)
+		return "moved"
 	if kind == "self" or kind == "self_low":
 		var slot: int = _slot_for(pawn, String(intent[1]))
 		if slot < 0:

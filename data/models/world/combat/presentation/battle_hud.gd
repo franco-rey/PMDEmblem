@@ -159,6 +159,7 @@ func _build_queue_bar() -> void:
 	_queue_strip.add_theme_stylebox_override("panel", strip_style)
 	_queue_strip.custom_minimum_size = Vector2(0, TILE_HOLDER_HEIGHT + strip_style.get_margin(SIDE_TOP) + strip_style.get_margin(SIDE_BOTTOM))
 	_queue_strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_queue_strip.visible = false
 	_queue_column.add_child(_queue_strip)
 	var inner := MarginContainer.new()
 	inner.name = "Inner"
@@ -919,7 +920,7 @@ func rebuild_queue() -> void:
 		_queue_row.add_child(_make_tile(pawns[i], i == 0))
 	_round_label.text = "Turn %d" % maxi(1, round_index)
 	_round_label.visible = pawns.size() > 0
-	(_queue_row.get_parent() as Control).visible = pawns.size() > 0
+	_queue_strip.visible = pawns.size() > 0
 	_refresh_tiles(true)
 
 

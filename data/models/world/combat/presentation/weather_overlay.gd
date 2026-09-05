@@ -59,9 +59,9 @@ func set_weather(next_id: String) -> void:
 			_tint.color = Color(0.22, 0.17, 0.06, 1.0) if weather_id == "sunny" else Color(0.34, 0.16, 0.04, 1.0)
 			_tint.visible = true
 		"sandstorm":
-			_tint.color = Color(0.76, 0.62, 0.32, 0.22)
+			_tint.color = Color(0.76, 0.62, 0.32, 0.11)
 			_tint.visible = true
-			_sheet_overlay = _start_sheet(SANDSTORM_SHEET, Vector2(-420.0, 30.0), Color(1.0, 0.92, 0.7, 0.55))
+			_sheet_overlay = _start_sheet(SANDSTORM_SHEET, Vector2(-420.0, 30.0), Color(1.0, 0.92, 0.7, 0.28))
 		"delta_stream":
 			_sheet_overlay = _start_sheet(CLOUDS_SHEET, Vector2(-160.0, 0.0), Color(1.0, 1.0, 1.0, 0.35))
 

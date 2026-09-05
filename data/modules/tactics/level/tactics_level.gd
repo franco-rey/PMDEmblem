@@ -54,6 +54,7 @@ var banner: BattleBanner = null
 var terrain_overlay: TerrainOverlay = null
 var stats_tracker: BattleStatsTracker = BattleStatsTracker.new()
 var intro_pending: bool = false
+var interface_visible: bool = true
 var round_index: int = 0
 var battle_finished: bool = false
 var scheduler: BattleScheduler = null
@@ -94,6 +95,13 @@ func _ready() -> void:
 		scheduler.turn_completed.connect(_on_turn_completed)
 		scheduler.round_building.connect(_on_round_building)
 		scheduler.round_started.connect(_on_round_started)
+
+func set_interface_visible(value: bool) -> void:
+	interface_visible = value
+	for layer in [hud, message_log, banner]:
+		if layer != null and is_instance_valid(layer):
+			layer.visible = value
+
 
 func _physics_process(delta: float) -> void:
 	if battle_finished:
