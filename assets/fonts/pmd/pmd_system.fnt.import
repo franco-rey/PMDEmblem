@@ -14,4 +14,4 @@ dest_files=["res://.godot/imported/pmd_system.fnt-a64710f01ebdce10b8f8fff35cff54
 
 fallbacks=[]
 compress=true
-scaling_mode=2
+scaling_mode=1

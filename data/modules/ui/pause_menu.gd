@@ -49,13 +49,13 @@ func _ready() -> void:
 	var title := Label.new()
 	title.text = "Paused"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	PmdStyle.apply_title(title, 44)
+	PmdStyle.apply_heading(title, 36)
 	column.add_child(title)
 	_add_button(column, "Resume", "ResumeButton", close)
 	_add_button(column, "Restart Skirmish", "RestartButton", func() -> void: _leave(restart_requested))
 	_add_button(column, "Return to Lobby", "LobbyButton", func() -> void: _leave(lobby_requested))
 	_add_button(column, "Main Menu", "MainMenuButton", func() -> void: _leave(main_menu_requested))
-	_add_button(column, "Graphics", "GraphicsButton", _show_graphics)
+	_add_button(column, "Options", "GraphicsButton", _show_graphics)
 	_add_button(column, "Quit Game", "QuitButton", func() -> void: _leave(quit_requested))
 	_graphics = GraphicsSettingsPanel.new()
 	_graphics.visible = false

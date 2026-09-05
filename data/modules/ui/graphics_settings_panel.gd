@@ -10,6 +10,9 @@ var mode_picker: OptionButton = null
 var resolution_picker: OptionButton = null
 var scale_picker: OptionButton = null
 var vsync_toggle: CheckButton = null
+var camera_track_toggle: CheckButton = null
+var cpu_report_toggle: CheckButton = null
+var cpu_speed_picker: OptionButton = null
 var close_button: Button = null
 var status_label: Label = null
 
@@ -26,8 +29,8 @@ func _ready() -> void:
 	column.add_theme_constant_override("separation", 12)
 	margin.add_child(column)
 	var title := Label.new()
-	title.text = "Graphics"
-	PmdStyle.apply_title(title, 40)
+	title.text = "Options"
+	PmdStyle.apply_heading(title, 36)
 	column.add_child(title)
 	mode_picker = _picker(column, "Window mode")
 	for mode in GameSettings.WINDOW_MODES:
@@ -48,6 +51,11 @@ func _ready() -> void:
 	vsync_toggle = CheckButton.new()
 	vsync_toggle.name = "VsyncToggle"
 	vsync_row.add_child(vsync_toggle)
+	camera_track_toggle = _toggle(column, "Camera Track", "CameraTrackToggle")
+	cpu_report_toggle = _toggle(column, "Show Battle Report after CPU Battles", "CpuReportToggle")
+	cpu_speed_picker = _picker(column, "CPU battle speed")
+	for value in GameSettings.CPU_SPEEDS:
+		cpu_speed_picker.add_item(GameSettings.cpu_speed_label(value))
 	status_label = Label.new()
 	status_label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
 	status_label.text = "Changes apply immediately and are saved."
@@ -61,6 +69,9 @@ func _ready() -> void:
 	resolution_picker.item_selected.connect(_on_resolution_selected)
 	scale_picker.item_selected.connect(_on_scale_selected)
 	vsync_toggle.toggled.connect(_on_vsync_toggled)
+	camera_track_toggle.toggled.connect(_on_camera_track_toggled)
+	cpu_report_toggle.toggled.connect(_on_cpu_report_toggled)
+	cpu_speed_picker.item_selected.connect(_on_cpu_speed_selected)
 	close_button.pressed.connect(func() -> void: closed.emit())
 	refresh()
 
@@ -70,6 +81,9 @@ func refresh() -> void:
 	resolution_picker.select(maxi(0, GameSettings.RESOLUTIONS.find(GameSettings.resolution)))
 	scale_picker.select(maxi(0, GameSettings.UI_SCALES.find(GameSettings.ui_scale)))
 	vsync_toggle.set_pressed_no_signal(GameSettings.vsync)
+	camera_track_toggle.set_pressed_no_signal(GameSettings.camera_track)
+	cpu_report_toggle.set_pressed_no_signal(GameSettings.cpu_battle_report)
+	cpu_speed_picker.select(maxi(0, GameSettings.CPU_SPEEDS.find(GameSettings.cpu_speed)))
 	resolution_picker.disabled = GameSettings.window_mode != "windowed"
 
 
@@ -91,6 +105,35 @@ func _picker(column: VBoxContainer, caption: String) -> OptionButton:
 	picker.custom_minimum_size = Vector2(280, ROW_HEIGHT)
 	row.add_child(picker)
 	return picker
+
+
+func _toggle(column: VBoxContainer, caption: String, node_name: String) -> CheckButton:
+	var row := HBoxContainer.new()
+	row.custom_minimum_size.y = ROW_HEIGHT
+	column.add_child(row)
+	var label := Label.new()
+	label.text = caption
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(label)
+	var toggle := CheckButton.new()
+	toggle.name = node_name
+	row.add_child(toggle)
+	return toggle
+
+
+func _on_camera_track_toggled(pressed: bool) -> void:
+	GameSettings.camera_track = pressed
+	_apply_and_save()
+
+
+func _on_cpu_report_toggled(pressed: bool) -> void:
+	GameSettings.cpu_battle_report = pressed
+	_apply_and_save()
+
+
+func _on_cpu_speed_selected(index: int) -> void:
+	GameSettings.cpu_speed = GameSettings.CPU_SPEEDS[clampi(index, 0, GameSettings.CPU_SPEEDS.size() - 1)]
+	_apply_and_save()
 
 
 func _apply_and_save() -> void:

@@ -7,7 +7,7 @@ const FADE_SECONDS: float = 0.4
 const START_HEIGHT: float = 1.45
 const PIXEL_SIZE: float = 0.006
 const BASE_FONT_SIZE: int = 60
-const BIG_FONT_SIZE: int = 76
+const BIG_FONT_SIZE: int = 72
 
 var level: TacticsLevel = null
 var spawned_total: int = 0

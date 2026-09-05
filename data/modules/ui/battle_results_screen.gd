@@ -4,6 +4,7 @@ extends CanvasLayer
 signal play_again_requested
 signal lobby_requested
 signal main_menu_requested
+signal next_requested
 
 const LAYER_INDEX: int = 25
 const PORTRAIT_SIZE: float = 64.0
@@ -46,7 +47,7 @@ func _ready() -> void:
 	_title = Label.new()
 	_title.name = "ResultTitle"
 	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	PmdStyle.apply_title(_title, 64)
+	PmdStyle.apply_heading(_title, 60)
 	column.add_child(_title)
 	_subtitle = Label.new()
 	_subtitle.name = "ResultSubtitle"
@@ -63,11 +64,21 @@ func _ready() -> void:
 	_add_button(buttons, "Play Again", "PlayAgainButton", play_again_requested)
 	_add_button(buttons, "Lobby", "LobbyButton", lobby_requested)
 	_add_button(buttons, "Main Menu", "MainMenuButton", main_menu_requested)
+	_add_button(buttons, "Next Battle", "NextButton", next_requested)
 	visible = false
 
 
-func show_result(result: int, definition: SkirmishDefinitionResource, level: TacticsLevel) -> void:
+func show_result(result: int, definition: SkirmishDefinitionResource, level: TacticsLevel, next_label: String = "") -> void:
 	result_code = result
+	var viewport_width: float = _center.size.x if _center != null else 0.0
+	if viewport_width > 0.0:
+		_panel.custom_minimum_size.x = minf(PANEL_WIDTH, viewport_width - 40.0)
+	var series: bool = not next_label.is_empty()
+	for node_name in ["PlayAgainButton", "LobbyButton", "MainMenuButton"]:
+		(_buttons[node_name] as Button).visible = not series
+	var next_button: Button = _buttons["NextButton"]
+	next_button.visible = series
+	next_button.text = next_label
 	var human_player: bool = definition == null or definition.control_mode != SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU
 	match result:
 		1:
@@ -89,9 +100,9 @@ func show_result(result: int, definition: SkirmishDefinitionResource, level: Tac
 		_columns.add_child(_side_column("Player", level.player, PmdStyle.TEAM_PLAYER, level))
 		_columns.add_child(_side_column("Enemy", level.opponent, PmdStyle.TEAM_ENEMY, level))
 	visible = true
-	var play_again: Button = _buttons.get("PlayAgainButton", null)
-	if play_again != null:
-		play_again.grab_focus()
+	var focus_target: Button = _buttons["NextButton"] if series else _buttons.get("PlayAgainButton", null)
+	if focus_target != null:
+		focus_target.grab_focus()
 
 
 func hide_results() -> void:
@@ -116,7 +127,7 @@ func _side_column(caption: String, parent: Node, color: Color, level: TacticsLev
 	header.add_theme_color_override("font_color", color)
 	column.add_child(header)
 	var grid := GridContainer.new()
-	grid.columns = 2
+	grid.columns = 2 if _panel.custom_minimum_size.x >= PANEL_WIDTH else 1
 	grid.add_theme_constant_override("h_separation", 10)
 	grid.add_theme_constant_override("v_separation", 6)
 	column.add_child(grid)

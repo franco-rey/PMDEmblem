@@ -14,6 +14,9 @@ var _scroll: ScrollContainer = null
 var _lines: VBoxContainer = null
 var _count_label: Label = null
 var _entries: Array[Dictionary] = []
+var _toggle: Button = null
+var _header: HBoxContainer = null
+var minimized: bool = false
 
 
 func _init() -> void:
@@ -37,22 +40,28 @@ func _ready() -> void:
 	column.add_theme_constant_override("separation", 4)
 	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_dock.add_child(column)
-	var header := HBoxContainer.new()
-	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(header)
+	_header = HBoxContainer.new()
+	_header.name = "LogHeader"
+	_header.add_theme_constant_override("separation", 8)
+	_header.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(_header)
 	var title := Label.new()
 	title.name = "LogTitle"
 	title.text = "Battle Log"
-	PmdStyle.apply_title(title, 24)
+	PmdStyle.apply_heading(title, 24)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	header.add_child(title)
+	_header.add_child(title)
 	_count_label = Label.new()
 	_count_label.name = "LogCount"
 	_count_label.add_theme_font_size_override("font_size", 24)
 	_count_label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
 	_count_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	header.add_child(_count_label)
+	_header.add_child(_count_label)
+	_toggle = PmdStyle.dock_toggle_button(false)
+	_toggle.pressed.connect(func() -> void: set_minimized(not minimized))
+	_header.add_child(_toggle)
+	TacticsConfig.register_hover_control(_toggle)
 	_scroll = ScrollContainer.new()
 	_scroll.name = "LogScroll"
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -65,6 +74,37 @@ func _ready() -> void:
 	_lines.add_theme_constant_override("separation", 0)
 	_lines.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_scroll.add_child(_lines)
+
+
+func set_minimized(value: bool) -> void:
+	minimized = value
+	_scroll.visible = not value
+	_toggle.text = "+" if value else "-"
+	_dock.offset_top = -header_dock_height() - 16 if value else -DOCK_SIZE.y - 16
+
+
+func header_dock_height() -> float:
+	var style: StyleBox = _dock.get_theme_stylebox("panel")
+	var margins: float = style.get_margin(SIDE_TOP) + style.get_margin(SIDE_BOTTOM) if style != null else 0.0
+	return maxf(_header.size.y, 30.0) + margins
+
+
+func dock_top() -> float:
+	return _dock.offset_top
+
+
+func _update_dock_width() -> void:
+	if _dock == null:
+		return
+	var dock_width: float = dock_width_for(_dock.get_parent_area_size().x)
+	if not is_equal_approx(_dock.offset_right, 16.0 + dock_width):
+		_dock.offset_right = 16.0 + dock_width
+
+
+static func dock_width_for(width: float) -> float:
+	if width <= 0.0:
+		return DOCK_SIZE.x
+	return clampf(width - 460.0, 320.0, DOCK_SIZE.x)
 
 
 func setup(battle_log: BattleLog) -> void:
@@ -119,6 +159,7 @@ func recent(count: int = 5) -> Array[String]:
 
 
 func _process(delta: float) -> void:
+	_update_dock_width()
 	for entry in _entries:
 		var age: float = float(entry["age"]) + delta
 		entry["age"] = age

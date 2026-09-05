@@ -53,6 +53,9 @@ var _queue_column: VBoxContainer = null
 var _status_dock: PanelContainer = null
 var _status_rows: VBoxContainer = null
 var _status_signature: String = ""
+var _status_toggle: Button = null
+var _status_header: HBoxContainer = null
+var status_minimized: bool = false
 var _scheduler_connected: bool = false
 
 
@@ -291,19 +294,50 @@ func _build_status_dock() -> void:
 	column.add_theme_constant_override("separation", 2)
 	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_status_dock.add_child(column)
+	_status_header = HBoxContainer.new()
+	_status_header.name = "StatusHeader"
+	_status_header.add_theme_constant_override("separation", 8)
+	_status_header.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(_status_header)
 	var title := Label.new()
 	title.name = "StatusTitle"
 	title.text = "Status"
-	title.add_theme_font_size_override("font_size", 22)
-	title.add_theme_color_override("font_color", PmdStyle.TEXT_GOLD)
+	PmdStyle.apply_heading(title, 24)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(title)
+	_status_header.add_child(title)
+	_status_toggle = PmdStyle.dock_toggle_button(false)
+	_status_toggle.pressed.connect(func() -> void: set_status_minimized(not status_minimized))
+	_status_header.add_child(_status_toggle)
+	TacticsConfig.register_hover_control(_status_toggle)
 	_status_rows = VBoxContainer.new()
 	_status_rows.name = "StatusRows"
 	_status_rows.add_theme_constant_override("separation", 2)
 	_status_rows.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(_status_rows)
 	_refresh_status_dock(true)
+
+
+func set_status_minimized(value: bool) -> void:
+	status_minimized = value
+	_status_rows.visible = not value
+	_status_toggle.text = "+" if value else "-"
+	_place_status_dock()
+
+
+func _place_status_dock() -> void:
+	if _status_dock == null:
+		return
+	var log_top: float = -BattleMessageLog.DOCK_SIZE.y - 16.0
+	if level != null and level.message_log != null:
+		log_top = level.message_log.dock_top()
+	var style: StyleBox = _status_dock.get_theme_stylebox("panel")
+	var margins: float = style.get_margin(SIDE_TOP) + style.get_margin(SIDE_BOTTOM) if style != null else 0.0
+	var height: float = STATUS_DOCK_HEIGHT if not status_minimized else maxf(_status_header.size.y, 30.0) + margins
+	var bottom: float = log_top - 8.0
+	if not is_equal_approx(_status_dock.offset_bottom, bottom) or not is_equal_approx(_status_dock.offset_top, bottom - height):
+		_status_dock.offset_bottom = bottom
+		_status_dock.offset_top = bottom - height
 
 
 func status_dock_lines() -> Array[String]:
@@ -370,7 +404,7 @@ func _refresh_status_dock(force: bool = false) -> void:
 		var empty := Label.new()
 		empty.name = "StatusText"
 		empty.text = "No status effects"
-		empty.add_theme_font_size_override("font_size", 22)
+		empty.add_theme_font_size_override("font_size", 24)
 		empty.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
 		empty.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_status_rows.add_child(empty)
@@ -389,7 +423,7 @@ func _refresh_status_dock(force: bool = false) -> void:
 		var label := Label.new()
 		label.name = "StatusText"
 		label.text = String(entry["text"])
-		label.add_theme_font_size_override("font_size", 22)
+		label.add_theme_font_size_override("font_size", 24)
 		label.add_theme_color_override("font_color", entry.get("color", PmdStyle.TEXT))
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		row.add_child(label)
@@ -615,6 +649,8 @@ func _refresh_target_panel() -> void:
 	var stage: int = res.stage
 	var target: TacticsPawn = res.attackable_pawn
 	var targeting: bool = stage in [res.STAGE_DISPLAY_TARGETS, res.STAGE_SELECT_ATTACK_TARGET, res.STAGE_ATTACK, res.STAGE_SELECT_THROW_TARGET, res.STAGE_ITEM_ACTION]
+	if not targeting and _is_cpu_turn(res.curr_pawn) and stage in [res.STAGE_SELECT_LOCATION, res.STAGE_MOVE_PAWN]:
+		targeting = true
 	if not targeting or target == null or not is_instance_valid(target) or target.stats == null or target == res.curr_pawn:
 		_target_panel.visible = false
 		_target_pawn = null
@@ -631,6 +667,12 @@ func _refresh_target_panel() -> void:
 	_target_meta.text = _meta_text(target.stats)
 	_target_hint.text = _effectiveness_hint(res.curr_pawn, target)
 	_fill_status_icons(_target_statuses, target.stats)
+
+
+func _is_cpu_turn(pawn: TacticsPawn) -> bool:
+	if pawn == null or not is_instance_valid(pawn) or pawn.stats == null or pawn.stats.pokemon_instance == null:
+		return false
+	return pawn.stats.pokemon_instance.control_type != PokemonInstanceResource.ControlType.PLAYER
 
 
 func _effectiveness_hint(attacker: TacticsPawn, target: TacticsPawn) -> String:
@@ -749,9 +791,25 @@ func _process(_delta: float) -> void:
 	_refresh_target_panel()
 	_sync_panel_heights()
 	_refresh_status_dock()
+	_place_status_dock()
 
 
 func _sync_panel_heights() -> void:
+	_apply_layout(_root.size)
 	var chip_top: float = _queue_column.offset_top + _queue_strip.size.y + 8.0
 	if not is_equal_approx(_weather_chip.offset_top, chip_top):
 		_weather_chip.offset_top = chip_top
+
+
+func stacked_layout_for(width: float) -> bool:
+	var needed: float = 16.0 + PANEL_WIDTH + 8.0 + maxf(_queue_strip.size.x, 400.0) + 8.0 + PANEL_WIDTH + 16.0
+	return width > 0.0 and width < needed
+
+
+func _apply_layout(size: Vector2) -> void:
+	var top: float = 16.0 + PANEL_HEIGHT + 8.0 if stacked_layout_for(size.x) else 16.0
+	if not is_equal_approx(_queue_column.offset_top, top):
+		_queue_column.offset_top = top
+	var dock_width: float = BattleMessageLog.dock_width_for(size.x)
+	if not is_equal_approx(_status_dock.offset_right, 16.0 + dock_width):
+		_status_dock.offset_right = 16.0 + dock_width

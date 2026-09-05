@@ -20,7 +20,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	serv.process(delta, self)
+	serv.process(delta / maxf(Engine.time_scale, 0.001), self)
 
 
 func _unhandled_input(event: InputEvent) -> void:

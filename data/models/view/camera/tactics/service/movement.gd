@@ -41,11 +41,14 @@ func move_camera(h: float, v: float, joystick: bool, delta: float, camera: Tacti
 			camera.global_position = clamped_position
 			camera.velocity = Vector3.ZERO
 		else:
-			camera.move_and_slide()
+			_slide(camera)
 
 
 func focus_on_target(camera: TacticsCamera) -> void:
 	if not res.target or res.target == null:
+		return
+	if not GameSettings.camera_track:
+		res.target = null
 		return
 
 	var from: Vector3 = camera.global_position
@@ -63,7 +66,7 @@ func focus_on_target(camera: TacticsCamera) -> void:
 
 	camera.set_velocity(vel)
 	camera.set_up_direction(Vector3.UP)
-	camera.move_and_slide()
+	_slide(camera)
 
 	camera.velocity = camera.velocity
 
@@ -75,4 +78,15 @@ func stabilize_camera(delta: float, camera: TacticsCamera) -> void:
 	res.target_velocity = Vector3.ZERO
 	camera.velocity = camera.velocity.lerp(Vector3.ZERO, (res.smoothing * FAST_SMOOTHING) * delta)
 	if camera.velocity.length() > MIN_THRESHOLD:
+		_slide(camera)
+
+
+static func _slide(camera: TacticsCamera) -> void:
+	var scale: float = maxf(Engine.time_scale, 0.001)
+	if is_equal_approx(scale, 1.0):
 		camera.move_and_slide()
+		return
+	camera.velocity /= scale
+	camera.move_and_slide()
+	camera.velocity *= scale
+

@@ -71,10 +71,45 @@ func _run() -> void:
 	_assert_true(results.visible and results._title.text == "Victory!" and results._columns.get_child_count() == 2, "results screen shows the outcome with both sides listed")
 	results.show_result(2, definition, level)
 	_assert_true(results._title.text == "Defeat", "results screen reports a defeat")
+	results.show_result(1, definition, level, "Next Battle (2/3)")
+	_assert_true((results._buttons["NextButton"] as Button).visible and (results._buttons["NextButton"] as Button).text == "Next Battle (2/3)" and not (results._buttons["PlayAgainButton"] as Button).visible and results.next_requested.is_connected(main._on_results_next), "series results offer only Next Battle and main handles it")
 	results.hide_results()
+	var log_dock: BattleMessageLog = level.message_log
+	var open_top: float = log_dock.dock_top()
+	log_dock.set_minimized(true)
+	await process_frame
+	_assert_true(not log_dock._scroll.visible and log_dock.dock_top() > open_top and log_dock._toggle.text == "+", "battle log minimizes to its header (%.0f -> %.0f)" % [open_top, log_dock.dock_top()])
+	var hud: BattleHud = level.hud
+	hud.set_status_minimized(true)
+	await process_frame
+	await process_frame
+	_assert_true(not hud._status_rows.visible and hud._status_toggle.text == "+" and is_equal_approx(hud._status_dock.offset_bottom, log_dock.dock_top() - 8.0), "status dock minimizes and follows the log's top edge")
+	log_dock.set_minimized(false)
+	hud.set_status_minimized(false)
+	_assert_true(TacticsConfig.hover_controls.size() >= 2 and TacticsConfig.hover_controls_contain(log_dock._toggle.get_global_rect().get_center()), "dock toggles register for the click-through guard")
+	_assert_true(is_equal_approx(UiScale.compute(Vector2(1920, 1080), 2.0), 1.0) and is_equal_approx(UiScale.compute(Vector2(2560, 1440), 1.0), 1.5), "UI scale snaps to half steps")
+	_assert_true(is_equal_approx(UiScale.compute(Vector2(1080, 1920), 1.0), 1.0) and is_equal_approx(UiScale.compute(Vector2(1080, 1080), 1.0), 1.0), "portrait and square windows scale by width so the layout fits")
+	_assert_true(not hud.stacked_layout_for(1920.0) and hud.stacked_layout_for(1080.0), "the HUD stacks the queue under the panels when the top row cannot fit")
+	hud._apply_layout(Vector2(1080.0, 1920.0))
+	_assert_true(hud._queue_column.offset_top > BattleHud.PANEL_HEIGHT and is_equal_approx(hud._status_dock.offset_right, 16.0 + BattleMessageLog.dock_width_for(1080.0)), "stacked layout moves the queue box down and narrows the docks")
+	hud._apply_layout(Vector2(1920.0, 1080.0))
+	_assert_true(is_equal_approx(hud._queue_column.offset_top, 16.0), "wide layout restores the top row")
+	var camera_node: TacticsCamera = main.find_child("TacticsCamera", true, false)
+	_assert_true(camera_node != null and not camera_node.res.spectator, "human match keeps the camera following actions")
 	main._on_return_to_lobby_requested()
 	await process_frame
 	_assert_true(main.level_instance == null and main.skirmish_lobby.visible, "returning to the lobby unloads the level and opens the lobby")
+	main.queue_free()
+	await process_frame
+	await process_frame
+	var bots = DRIVER.new(self)
+	var bots_ok: bool = await bots._launch("match seed=3 mode=bots team=2")
+	_assert_true(bots_ok, "bot match launches")
+	if bots_ok:
+		var bots_camera: TacticsCamera = bots.main.find_child("TacticsCamera", true, false)
+		_assert_true(bots_camera != null and bots_camera.res.spectator, "bot match frees the camera for spectating")
+		_assert_true(bool(bots.main._can_open_pause_menu()), "pause menu opens during a bot match")
+		bots_camera.res.spectator = false
 	_finish()
 
 

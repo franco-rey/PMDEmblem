@@ -31,6 +31,7 @@ var target_fov: float = 50.0
 @export_category("Panning")
 @export var boundary_radius: float = 10.0
 var edge_pan_enabled: bool = false
+var spectator: bool = false
 var boundary_center: Vector3 = Vector3.ZERO
 @export_range(1, 50) var border_pan_px_threshold: float = 1.0
 @export_range(0.01, 1.0) var mouse_pan_speed: float = 0.5

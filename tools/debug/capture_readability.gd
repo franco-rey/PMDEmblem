@@ -5,6 +5,7 @@ const OUTPUT_DIR: String = "res://logs/debug/readability_captures"
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 
 var captured: Array[String] = []
+var label_prefix: String = ""
 
 
 func _init() -> void:
@@ -12,9 +13,12 @@ func _init() -> void:
 
 
 func _run() -> void:
-	DisplayServer.window_set_size(Vector2i(1920, 1080))
+	var size_arg: PackedStringArray = _arg("size").split("x", false)
+	var window_size: Vector2i = Vector2i(int(size_arg[0]), int(size_arg[1])) if size_arg.size() == 2 else Vector2i(1920, 1080)
+	DisplayServer.window_set_size(window_size)
 	root.content_scale_size = Vector2i(0, 0)
-	UiScale.override_factor = UiScale.compute(Vector2(1920, 1080))
+	UiScale.override_factor = UiScale.compute(Vector2(window_size))
+	label_prefix = _arg("label")
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUTPUT_DIR))
 	var driver = DRIVER.new(self)
 	var ok: bool = await driver._launch("match seed=12 mode=pvp map=chessboard p=0006_charizard@50:flamethrower,slash,fly,dig:blaze|0025_pikachu@50:thunderbolt,quick_attack:static e=0009_blastoise@50:hydro_pump,tackle:torrent|0003_venusaur@50:razor_leaf,tackle:overgrow")
@@ -24,6 +28,11 @@ func _run() -> void:
 		return
 	var level: TacticsLevel = driver.level
 	var main: Node = driver.main
+	DisplayServer.window_set_size(window_size)
+	UiScale.override_factor = UiScale.compute(Vector2(window_size))
+	for i in range(6):
+		await process_frame
+	print("readability: viewport %s scale %.2f" % [str(root.get_viewport().get_visible_rect().size), UiScale.override_factor])
 	var cam: TacticsCamera = main.find_child("TacticsCamera", true, false)
 	if cam != null:
 		cam.res.target_fov = 30.0
@@ -104,6 +113,15 @@ func _run() -> void:
 	while wait_frames < 600 and level.is_presentation_busy():
 		await process_frame
 		wait_frames += 1
+	level.message_log.set_minimized(true)
+	level.hud.set_status_minimized(true)
+	for i in range(6):
+		await process_frame
+	await _snap("read_08_docks_minimized")
+	level.message_log.set_minimized(false)
+	level.hud.set_status_minimized(false)
+	for i in range(4):
+		await process_frame
 	var pause: PauseMenu = main.get_node("PauseMenu")
 	pause.open()
 	for i in range(4):
@@ -133,7 +151,7 @@ func _snap(label: String) -> void:
 	var image: Image = root.get_viewport().get_texture().get_image()
 	if image == null:
 		return
-	var path: String = "%s/%s.png" % [OUTPUT_DIR, label]
+	var path: String = "%s/%s%s.png" % [OUTPUT_DIR, label_prefix, label]
 	image.save_png(ProjectSettings.globalize_path(path))
 	captured.append(path)
 
@@ -147,3 +165,11 @@ func _warp_to(camera_node: Camera3D, world: Vector3) -> void:
 	if camera_node == null:
 		return
 	Input.warp_mouse(camera_node.unproject_position(world))
+
+
+func _arg(name: String) -> String:
+	for arg in OS.get_cmdline_user_args():
+		var text: String = String(arg)
+		if text.begins_with("--%s=" % name):
+			return text.substr(name.length() + 3)
+	return ""

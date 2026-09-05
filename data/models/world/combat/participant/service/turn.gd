@@ -40,6 +40,10 @@ func handle_human_turn(delta: float, actor_parent: Node3D, target_parent: Node3D
 func handle_ai_turn(delta: float, actor_parent: Node3D, target_parent: Node3D, participant: TacticsParticipant) -> void:
 	res.targets = target_parent
 	controls.set_actions_menu_visibility(false, null)
+	if camera.spectator:
+		camera.target = null
+		controls.move_camera(delta)
+		controls.camera_rotation_inputs(delta)
 	if res.stage > 4:
 		res.stage = 0
 		DebugLog.debug_nospam("turn_stage", res.stage)

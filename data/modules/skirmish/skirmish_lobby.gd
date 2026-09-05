@@ -1265,7 +1265,7 @@ func _type_badge(type_id: String, category: int) -> Control:
 	var type_label := Label.new()
 	type_label.text = PmdStyle.type_abbreviation(type_id)
 	type_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	type_label.add_theme_font_size_override("font_size", 14)
+	type_label.add_theme_font_size_override("font_size", 12)
 	type_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(type_label)
 	var category_label := Label.new()

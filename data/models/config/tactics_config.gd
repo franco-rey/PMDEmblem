@@ -37,6 +37,26 @@ static var ui_elem: Array[String] = [
 	"%Actions", "%MovePicker", "%ItemPicker",
 ]
 
+static var hover_controls: Array[Control] = []
+
+
+static func register_hover_control(control: Control) -> void:
+	if control != null and not hover_controls.has(control):
+		hover_controls.append(control)
+
+
+static func hover_controls_contain(point: Vector2) -> bool:
+	var keep: Array[Control] = []
+	var hit: bool = false
+	for control in hover_controls:
+		if control == null or not is_instance_valid(control):
+			continue
+		keep.append(control)
+		if control.is_visible_in_tree() and control.get_global_rect().has_point(point):
+			hit = true
+	hover_controls = keep
+	return hit
+
 
 static func create_material(color_hex: Variant, texture: Texture2D = null, shaded_mode: BaseMaterial3D.ShadingMode = BaseMaterial3D.SHADING_MODE_PER_PIXEL) -> StandardMaterial3D:
 	var material: StandardMaterial3D = StandardMaterial3D.new()

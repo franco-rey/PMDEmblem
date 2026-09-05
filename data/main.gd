@@ -143,6 +143,7 @@ func _setup_menus() -> void:
 	results_screen.play_again_requested.connect(_on_results_play_again)
 	results_screen.lobby_requested.connect(_on_results_lobby)
 	results_screen.main_menu_requested.connect(_on_main_menu_requested)
+	results_screen.next_requested.connect(_on_results_next)
 	add_child(results_screen)
 	var menu := $UI/MapSelector/SkirmishMenu as VBoxContainer
 	if menu != null:
@@ -228,6 +229,14 @@ func _on_results_play_again() -> void:
 	_finish_ended_level()
 	if _relaunch.is_valid():
 		_relaunch.call()
+
+
+func _on_results_next() -> void:
+	_finish_ended_level()
+	if not skirmish_queue.is_empty() and skirmish_queue_index < skirmish_queue.size():
+		_launch_next_queued_skirmish()
+	else:
+		_on_main_menu_requested()
 
 
 func _on_results_lobby() -> void:
@@ -351,7 +360,11 @@ func _launch_definition(definition: SkirmishDefinitionResource, return_to_lobby_
 	$UI/MapSelector.visible = false
 	if skirmish_lobby != null:
 		skirmish_lobby.visible = false
-	_set_tactics_controls_enabled(_definition_has_human_control(definition))
+	var human: bool = _definition_has_human_control(definition)
+	_set_tactics_controls_enabled(human)
+	var camera_node: TacticsCamera = find_child("TacticsCamera", true, false) as TacticsCamera
+	if camera_node != null and camera_node.res != null:
+		camera_node.res.spectator = not human
 
 
 func _launch_series(definitions: Array[SkirmishDefinitionResource], code: String) -> void:
@@ -427,6 +440,11 @@ func _on_skirmish_ended(result: int, definition: SkirmishDefinitionResource) -> 
 		pause_menu.close()
 	var ended_level: TacticsLevel = level_instance
 	if not skirmish_queue.is_empty() and skirmish_queue_index < skirmish_queue.size():
+		if results_screen != null and ended_level != null and is_instance_valid(ended_level) and DisplayServer.get_name() != "headless":
+			_ended_definition = definition
+			_ended_result = result
+			results_screen.show_result(result, definition, ended_level, "Next Battle (%d/%d)" % [skirmish_queue_index + 1, skirmish_queue.size()])
+			return
 		if skirmish_loader != null:
 			skirmish_loader.unload_current()
 		level_instance = null

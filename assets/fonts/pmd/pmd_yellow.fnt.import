@@ -14,4 +14,4 @@ dest_files=["res://.godot/imported/pmd_yellow.fnt-fc9ee792202778e6d72d1c3140aa54
 
 fallbacks=[]
 compress=true
-scaling_mode=2
+scaling_mode=1

@@ -183,6 +183,23 @@ static func build_theme(base: Theme) -> Theme:
 	return theme
 
 
+static func apply_heading(label: Label, size: int = 24, color: Color = TEXT_GOLD) -> void:
+	label.add_theme_font_override("font", TEXT_FONT)
+	label.add_theme_font_size_override("font_size", size)
+	label.add_theme_color_override("font_color", color)
+
+
+static func dock_toggle_button(minimized: bool) -> Button:
+	var button := Button.new()
+	button.name = "MinimizeButton"
+	button.text = "+" if minimized else "-"
+	button.focus_mode = Control.FOCUS_NONE
+	button.mouse_filter = Control.MOUSE_FILTER_STOP
+	button.custom_minimum_size = Vector2(36, 30)
+	button.add_theme_font_size_override("font_size", 24)
+	return button
+
+
 static func apply_title(label: Label, size: int = 48, color: Color = TEXT_GOLD) -> void:
 	label.add_theme_font_override("font", BANNER_FONT)
 	label.add_theme_font_size_override("font_size", size)
