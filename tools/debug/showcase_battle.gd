@@ -32,12 +32,14 @@ var pawns_by_slug: Dictionary = {}
 var queues: Dictionary = {}
 var attempts: Dictionary = {}
 var ai: MinimumViableAI = MinimumViableAI.new()
+var damage_calculator: DamageResolver = DamageResolver.new()
 var turns_taken: int = 0
 var status_uses: Dictionary = {}
 var seed_value: int = 42
 var max_turns: int = MAX_TURNS
 var cinematic: bool = false
 var fast_turns: int = 0
+var code_override: String = ""
 var max_seconds: float = 0.0
 var start_frame: int = 0
 var shot_index: int = 0
@@ -69,8 +71,10 @@ func _run() -> void:
 			max_seconds = float(String(arg).substr(10))
 		elif String(arg).begins_with("--fast-turns="):
 			fast_turns = int(String(arg).substr(13))
+		elif String(arg).begins_with("--code="):
+			code_override = String(arg).substr(7)
 	driver = DRIVER.new(self)
-	var ok: bool = await driver._launch(CODE_TEMPLATE % seed_value)
+	var ok: bool = await driver._launch(code_override if not code_override.is_empty() else CODE_TEMPLATE % seed_value)
 	if not ok:
 		print("showcase: launch failed")
 		quit(1)
@@ -149,7 +153,7 @@ func _camera_loop() -> void:
 
 
 func _shots() -> Array:
-	return [[0.0, -20.0, 6.0, -34, 40.0, false], [9.0, 30.0, -4.0, -26, 26.0, false], [17.0, 0.0, 9.0, -80, 38.0, true], [24.0, -45.0, 5.0, -30, 30.0, false]]
+	return [[0.0, -25.0, 5.0, -36, 44.0, false], [7.0, 20.0, -4.0, -24, 22.0, false], [13.0, 0.0, 8.0, -80, 40.0, true], [20.0, -40.0, 6.0, -30, 30.0, false], [26.0, 35.0, -5.0, -22, 20.0, false]]
 
 
 func _shot_index_at(elapsed: float) -> int:
@@ -279,7 +283,7 @@ func _execute_intent(pawn: TacticsPawn, intent: Array) -> String:
 		if slot < 0:
 			return "drop"
 		print("showcase: %s uses %s" % [_slug_of(pawn), String(intent[1])])
-		await driver._attack(pawn, slot, pawn)
+		await _perform_attack(pawn, slot, pawn)
 		return "done"
 	if kind == "any":
 		var any_slot: int = _slot_for(pawn, String(intent[1]))
@@ -298,7 +302,7 @@ func _execute_intent(pawn: TacticsPawn, intent: Array) -> String:
 		if options.is_empty():
 			return "retry"
 		print("showcase: %s uses %s on %s" % [_slug_of(pawn), any_move.move_id, _slug_of(options[0])])
-		await driver._attack(pawn, any_slot, options[0])
+		await _perform_attack(pawn, any_slot, options[0])
 		return "done"
 	var target: TacticsPawn = pawns_by_slug.get(String(intent[intent.size() - 1]), null)
 	if target == null or not is_instance_valid(target) or not target.is_alive():
@@ -355,9 +359,55 @@ func _run_item_intent(pawn: TacticsPawn, intent: BattleActionIntent, target: Tac
 		await physics_frame
 
 
+func _controls() -> TacticsControls:
+	return driver.main.get_node_or_null("TacticsControls") as TacticsControls
+
+
+func _show_actions(pawn: TacticsPawn) -> void:
+	var participant: TacticsParticipantResource = level.participant.res
+	participant.curr_pawn = pawn
+	participant.stage = participant.STAGE_SHOW_ACTIONS
+	var controls: TacticsControls = _controls()
+	if controls != null:
+		controls.set_actions_menu_visibility(true, pawn)
+	await _hold(18)
+
+
+func _perform_attack(pawn: TacticsPawn, slot: int, target: TacticsPawn) -> void:
+	var controls: TacticsControls = _controls()
+	if not cinematic or controls == null:
+		await driver._attack(pawn, slot, target)
+		return
+	var participant: TacticsParticipantResource = level.participant.res
+	await _show_actions(pawn)
+	controls.get_act("Attack").pressed.emit()
+	await _hold(40)
+	var slot_button: Button = controls.get_node_or_null("HBox/MovePicker/MoveSlot%d" % slot) as Button
+	if slot_button != null and participant.stage == participant.STAGE_SELECT_MOVE:
+		slot_button.pressed.emit()
+		await _hold(30)
+	if participant.stage == participant.STAGE_ATTACK:
+		await _wait_attack_end(pawn)
+		return
+	await driver._attack(pawn, slot, target)
+
+
+func _wait_attack_end(pawn: TacticsPawn) -> void:
+	var participant: TacticsParticipantResource = level.participant.res
+	var frames: int = 0
+	while frames < 900 and _battle_alive() and is_instance_valid(pawn) and (participant.stage == participant.STAGE_ATTACK or level.is_presentation_busy() or pawn.res.presentation_locked):
+		await physics_frame
+		frames += 1
+	for i in range(3):
+		await physics_frame
+
+
 func _approach(pawn: TacticsPawn, target: TacticsPawn) -> void:
 	if not pawn.res.can_move:
 		return
+	if cinematic and _controls() != null:
+		await _show_actions(pawn)
+		_controls().get_act("Move").pressed.emit()
 	var arena: TacticsArena = level.arena
 	var all_units: Array[TacticsPawn] = _all_units()
 	arena.reset_all_tile_markers()
@@ -368,6 +418,8 @@ func _approach(pawn: TacticsPawn, target: TacticsPawn) -> void:
 		tile = _closest_reachable_tile(pawn, target, all_units)
 	if tile == null or tile == pawn.get_tile():
 		return
+	if cinematic:
+		await _hold(30)
 	await driver._move(pawn, level.notation.tile_label(Targeting._tile_key(tile)))
 
 
@@ -415,18 +467,36 @@ func _nearest_foe(pawn: TacticsPawn) -> TacticsPawn:
 	return best
 
 
+func _expected_damage(pawn: TacticsPawn, move: PokemonMoveResource, target: TacticsPawn) -> int:
+	var chart: TypeChartResource = level.get_type_chart()
+	var type_a: String = target.stats.types[0] if target.stats.types.size() > 0 else "none"
+	var type_b: String = target.stats.types[1] if target.stats.types.size() > 1 else "none"
+	var effectiveness: float = chart.get_effectiveness_dual(move.type, type_a, type_b) if chart != null else 1.0
+	if effectiveness <= 0.0:
+		return 0
+	var stab: bool = pawn.stats.types.has(move.type)
+	return damage_calculator.calculate_damage(pawn.stats, target.stats, move, effectiveness, stab, 1.0, null, {}, true)
+
+
 func _best_damaging(pawn: TacticsPawn) -> Dictionary:
 	var best: Dictionary = {}
 	var best_score: float = 0.0
-	var chart: TypeChartResource = level.get_type_chart()
 	for i in range(pawn.stats.move_slots.size()):
 		var move: PokemonMoveResource = pawn.stats.move_slots[i]
 		if move == null or not move.is_damaging() or not pawn.stats.has_pp(i):
 			continue
 		for target in _foe_targets(pawn, move):
-			var score: float = ai._score_move(pawn, move, target, chart, _foes_of(pawn))
 			if target.stats.curr_health <= 0:
 				continue
+			var damage: int = _expected_damage(pawn, move, target)
+			if damage <= 0:
+				continue
+			var accuracy: float = float(move.accuracy) / 100.0 if move.accuracy > 0 else 1.0
+			var fraction: float = float(mini(damage, target.stats.curr_health)) / float(maxi(1, target.stats.max_health))
+			var score: float = fraction * accuracy
+			if damage >= target.stats.curr_health:
+				score += 1.0 * accuracy
+			score += 0.05 * (1.0 - float(target.stats.curr_health) / float(maxi(1, target.stats.max_health)))
 			if score > best_score:
 				best_score = score
 				best = {"slot": i, "target": target, "move": move}
@@ -446,7 +516,7 @@ func _fallback(pawn: TacticsPawn) -> bool:
 	if not pick.is_empty():
 		print("showcase: %s uses %s on %s" % [_slug_of(pawn), (pick["move"] as PokemonMoveResource).move_id, _slug_of(pick["target"])])
 		_punch_in()
-		await driver._attack(pawn, int(pick["slot"]), pick["target"])
+		await _perform_attack(pawn, int(pick["slot"]), pick["target"])
 		if cinematic:
 			await _hold(TURN_HOLD * 2)
 		return true
@@ -460,7 +530,7 @@ func _fallback(pawn: TacticsPawn) -> bool:
 			continue
 		status_uses[key] = int(status_uses.get(key, 0)) + 1
 		print("showcase: %s sets up with %s" % [slug, move.move_id])
-		await driver._attack(pawn, i, pawn)
+		await _perform_attack(pawn, i, pawn)
 		return true
 	print("showcase: %s advances" % slug)
 	return false

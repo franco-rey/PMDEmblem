@@ -33,6 +33,8 @@ const CHOOSER_ITEM: String = "item"
 const CHOOSER_MOVES: String = "moves"
 const CHOOSER_ABILITY: String = "ability"
 const TRAY_HEIGHT: float = 112.0
+const SLOT_COLUMNS: int = 8
+const COMPACT_SLOT_HEIGHT: float = 50.0
 const CONTROL_HEIGHT: float = 42.0
 const GRID_GAP: float = 8.0
 const LAYOUT_MARGIN_X: float = 20.0
@@ -86,8 +88,8 @@ var _last_launch_state: Dictionary = {}
 
 var player_tray: PanelContainer
 var enemy_tray: PanelContainer
-var player_slots: HBoxContainer
-var enemy_slots: HBoxContainer
+var player_slots: GridContainer
+var enemy_slots: GridContainer
 var setup_panel: PanelContainer
 var details_panel: PanelContainer
 var roster_grid: GridContainer
@@ -100,7 +102,8 @@ var control_mode_picker: OptionButton
 var seed_input: LineEdit
 var difficulty_spin: SpinBox
 var random_enemy_check: CheckBox
-var enemy_size_spin: SpinBox
+var enemy_size_spin: HSlider
+var player_size_slider: HSlider
 var status_label: Label
 var target_label: Label
 var details_label: Label
@@ -385,10 +388,12 @@ func _create_team_tray(node_name: String, title: String, side: String) -> PanelC
 	clear_button.pressed.connect(_clear_side.bind(side))
 	header.add_child(clear_button)
 
-	var slots := HBoxContainer.new()
+	var slots := GridContainer.new()
 	slots.name = "%sSlots" % side.capitalize()
+	slots.columns = SLOT_COLUMNS
 	slots.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	slots.add_theme_constant_override("separation", 8)
+	slots.add_theme_constant_override("h_separation", 8)
+	slots.add_theme_constant_override("v_separation", 6)
 	column.add_child(slots)
 
 	if side == SIDE_PLAYER:
@@ -435,6 +440,7 @@ func _create_setup_panel() -> PanelContainer:
 
 	map_picker = OptionButton.new()
 	map_picker.name = "MapPicker"
+	map_picker.item_selected.connect(_on_map_changed)
 	column.add_child(_labeled_control("Map", map_picker))
 
 	control_mode_picker = OptionButton.new()
@@ -466,13 +472,10 @@ func _create_setup_panel() -> PanelContainer:
 	random_enemy_check.toggled.connect(_on_random_enemy_toggled)
 	column.add_child(random_enemy_check)
 
-	enemy_size_spin = SpinBox.new()
-	enemy_size_spin.name = "EnemySizeSpin"
-	enemy_size_spin.min_value = CustomSkirmishBuilder.MIN_TEAM_SIZE
-	enemy_size_spin.max_value = CustomSkirmishBuilder.MAX_TEAM_SIZE
-	enemy_size_spin.step = 1
-	enemy_size_spin.value = 3
-	column.add_child(_labeled_control("Enemy Size", enemy_size_spin))
+	player_size_slider = _team_size_slider("PlayerSizeSlider", 3)
+	column.add_child(_labeled_control("Your Team", _slider_row(player_size_slider, "PlayerSizeValue")))
+	enemy_size_spin = _team_size_slider("EnemySizeSlider", 3)
+	column.add_child(_labeled_control("Enemy Team", _slider_row(enemy_size_spin, "EnemySizeValue")))
 
 	launch_button = Button.new()
 	launch_button.name = "LaunchButton"
@@ -904,6 +907,9 @@ func _load_data() -> void:
 		var map: MapDefinitionResource = load(path) as MapDefinitionResource
 		var label: String = map.display_name if map != null and not map.display_name.is_empty() else path.get_file().get_basename().capitalize()
 		map_picker.add_item(label)
+	var default_index: int = map_paths.find(SkirmishCode.DEFAULT_MAP_PATH)
+	if default_index >= 0:
+		map_picker.select(default_index)
 
 	type_filter.clear()
 	type_filter.add_item("All Types")
@@ -1336,13 +1342,97 @@ func _refresh_team_trays() -> void:
 	enemy_tray.add_theme_stylebox_override("panel", _style_box(ACTIVE_COLOR if active_side == SIDE_ENEMY else PANEL_COLOR, BORDER_COLOR if active_side == SIDE_ENEMY else MUTED_BORDER_COLOR, 2 if active_side == SIDE_ENEMY else 1))
 
 
-func _populate_slots(container: HBoxContainer, team: Array[String], side: String) -> void:
+func _team_size_slider(node_name: String, value: int) -> HSlider:
+	var slider := HSlider.new()
+	slider.name = node_name
+	slider.min_value = CustomSkirmishBuilder.MIN_TEAM_SIZE
+	slider.max_value = CustomSkirmishBuilder.MAX_TEAM_SIZE
+	slider.step = 1
+	slider.value = value
+	slider.custom_minimum_size = Vector2(120, CONTROL_HEIGHT)
+	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	return slider
+
+
+func _slider_row(slider: HSlider, value_name: String) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(slider)
+	var value := Label.new()
+	value.name = value_name
+	value.text = str(int(slider.value))
+	value.custom_minimum_size.x = 40
+	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	row.add_child(value)
+	slider.value_changed.connect(func(v: float) -> void:
+		value.text = str(int(v))
+		_refresh_details()
+		_refresh_launch_state())
+	return row
+
+
+func _sync_size_slider(side: String) -> void:
+	var slider: HSlider = player_size_slider if side == SIDE_PLAYER else enemy_size_spin
+	var team: Array[String] = player_team_paths if side == SIDE_PLAYER else enemy_team_paths
+	if slider == null or team.is_empty():
+		return
+	slider.set_value_no_signal(float(team.size()))
+	var row: Node = slider.get_parent()
+	if row != null:
+		var value_label: Label = row.get_node_or_null("PlayerSizeValue" if side == SIDE_PLAYER else "EnemySizeValue")
+		if value_label != null:
+			value_label.text = str(team.size())
+
+
+func team_size_for(side: String) -> int:
+	var slider: HSlider = player_size_slider if side == SIDE_PLAYER else enemy_size_spin
+	return int(slider.value) if slider != null else CustomSkirmishBuilder.MIN_TEAM_SIZE
+
+
+func _map_max_team_size() -> int:
+	if map_paths.is_empty() or map_picker == null:
+		return CustomSkirmishBuilder.MAX_TEAM_SIZE
+	return CustomSkirmishBuilder.max_team_size_for(map_paths[clampi(map_picker.selected, 0, map_paths.size() - 1)])
+
+
+func _on_map_changed(_index: int) -> void:
+	var cap: int = _map_max_team_size()
+	for slider in [enemy_size_spin, player_size_slider]:
+		if slider != null:
+			slider.max_value = cap
+			slider.value = minf(slider.value, float(cap))
+	while player_team_paths.size() > cap:
+		player_team_paths.pop_back()
+	while enemy_team_paths.size() > cap:
+		enemy_team_paths.pop_back()
+	_sync_item_slots(SIDE_PLAYER)
+	_sync_item_slots(SIDE_ENEMY)
+	selected_player_index = mini(selected_player_index, player_team_paths.size() - 1)
+	selected_enemy_index = mini(selected_enemy_index, enemy_team_paths.size() - 1)
+	_refresh_team_trays()
+	_refresh_details()
+	_refresh_slot_section()
+	_refresh_launch_state()
+
+
+func _populate_slots(container: GridContainer, team: Array[String], side: String) -> void:
 	for child in container.get_children():
 		container.remove_child(child)
 		child.queue_free()
-	for i in range(CustomSkirmishBuilder.MAX_TEAM_SIZE):
+	var cap: int = _map_max_team_size()
+	var rows: int = int(ceil(float(cap) / float(SLOT_COLUMNS)))
+	var slot_height: float = SLOT_SIZE.y if rows <= 1 else COMPACT_SLOT_HEIGHT
+	var tray: PanelContainer = player_tray if side == SIDE_PLAYER else enemy_tray
+	if tray != null:
+		tray.custom_minimum_size.y = TRAY_HEIGHT - SLOT_SIZE.y + slot_height * float(rows) + 4.0 * float(rows - 1)
+	container.add_theme_constant_override("v_separation", 4)
+	for i in range(cap):
 		var path: String = team[i] if i < team.size() else ""
-		container.add_child(_create_slot_button(path, i, side))
+		var button: Button = _create_slot_button(path, i, side)
+		button.custom_minimum_size = Vector2(SLOT_SIZE.x, slot_height)
+		container.add_child(button)
 
 
 func _create_slot_button(path: String, index: int, side: String) -> Button:
@@ -1421,10 +1511,10 @@ func _refresh_details() -> void:
 	details_label.text = "Mode: %s\nPlayer %d/%d: %s\nEnemy %d/%d: %s" % [
 		SkirmishControlMode.label(_selected_control_mode()),
 		player_team_paths.size(),
-		CustomSkirmishBuilder.MAX_TEAM_SIZE,
+		_map_max_team_size(),
 		player_names,
 		enemy_team_paths.size(),
-		CustomSkirmishBuilder.MAX_TEAM_SIZE,
+		_map_max_team_size(),
 		enemy_names,
 	]
 
@@ -1490,11 +1580,12 @@ func _add_to_active_team(path: String) -> bool:
 		_set_status("Pick a roster Pokemon first")
 		return false
 	var team: Array[String] = player_team_paths if active_side == SIDE_PLAYER else enemy_team_paths
-	if team.size() >= CustomSkirmishBuilder.MAX_TEAM_SIZE:
-		_set_status("%s team is at the %d-Pokemon cap" % [_side_label(active_side), CustomSkirmishBuilder.MAX_TEAM_SIZE])
+	if team.size() >= _map_max_team_size():
+		_set_status("%s team is at the %d-Pokemon cap" % [_side_label(active_side), _map_max_team_size()])
 		return false
 	team.append(path)
 	_sync_item_slots(active_side)
+	_sync_size_slider(active_side)
 	if active_side == SIDE_PLAYER:
 		selected_player_index = team.size() - 1
 	else:
@@ -1550,6 +1641,7 @@ func _remove_selected_from_side(side: String) -> void:
 	_refresh_details()
 	_refresh_slot_section()
 	_refresh_launch_state()
+	_sync_size_slider(side)
 
 
 func _clear_side(side: String) -> void:
@@ -1674,6 +1766,7 @@ func _build_launch_result(store_state: bool) -> Dictionary:
 		"map_path": map_path,
 		"seed_text": seed_input.text,
 		"enemy_team_size": int(enemy_size_spin.value),
+		"player_team_size": int(player_size_slider.value),
 		"difficulty_tier": int(difficulty_spin.value),
 		"control_mode": _selected_control_mode(),
 	}
@@ -1714,9 +1807,12 @@ func _build_from_state(state: Dictionary) -> Dictionary:
 		return {"ok": false, "error": String(legacy["error"])}
 	var resolved_seed_text: String = String(legacy.get("seed_text", ""))
 	var control_mode: String = String(legacy.get("control_mode", SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU))
+	var fill_seed: int = CustomSkirmishBuilder.resolve_seed(resolved_seed_text)
+	var player_paths: Array[String] = CustomSkirmishBuilder.fill_random_paths(_string_array(state.get("player_paths", [])), int(state.get("player_team_size", 0)), fill_seed ^ 0x51A7)
+	var enemy_paths: Array[String] = CustomSkirmishBuilder.fill_random_paths(_string_array(state.get("enemy_paths", [])), int(state.get("enemy_team_size", 0)), fill_seed ^ 0x3E2D)
 	if bool(state.get("random_enemy", false)):
 		return CustomSkirmishBuilder.build_with_random_enemy(
-			_string_array(state.get("player_paths", [])),
+			player_paths,
 			String(state.get("map_path", "")),
 			resolved_seed_text,
 			int(state.get("enemy_team_size", 1)),
@@ -1726,8 +1822,8 @@ func _build_from_state(state: Dictionary) -> Dictionary:
 			control_mode
 		)
 	return CustomSkirmishBuilder.build(
-		_string_array(state.get("player_paths", [])),
-		_string_array(state.get("enemy_paths", [])),
+		player_paths,
+		enemy_paths,
 		String(state.get("map_path", "")),
 		resolved_seed_text,
 		control_mode,

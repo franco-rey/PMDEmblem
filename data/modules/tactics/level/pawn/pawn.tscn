@@ -94,7 +94,7 @@ states/JUMP/node = SubResource("10")
 states/JUMP/position = Vector2(512, 133.312)
 transitions = ["IDLE", "JUMP", SubResource("11"), "JUMP", "IDLE", SubResource("12"), "IDLE", "DAMAGE", SubResource("19"), "DAMAGE", "IDLE", SubResource("20")]
 
-[node name="Pawn" type="CharacterBody3D"]
+[node name="Pkmn" type="CharacterBody3D"]
 collision_layer = 2
 collision_mask = 0
 script = ExtResource("1")
@@ -130,7 +130,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.602, 0)
 visible = false
 
 [node name="NameLabel" type="Label3D" parent="Character/CharacterUI"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.62, 0)
+offset = Vector2(0, 68)
 billboard = 1
 outline_modulate = Color(0, 0, 0, 0)
 text = "PawnName"
@@ -139,7 +140,8 @@ font_size = 48
 outline_size = 0
 
 [node name="HealthLabel" type="Label3D" parent="Character/CharacterUI"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.62, 0)
+offset = Vector2(0, 32)
 billboard = 1
 text = "100/100"
 font = ExtResource("pmd_font")

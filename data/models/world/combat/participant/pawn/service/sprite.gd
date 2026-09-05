@@ -36,6 +36,7 @@ const FRAME_DURATION: Dictionary = {
 }
 
 const HOLD_LAST_FRAME_STATES: Array[String] = [ANIM_FAINT]
+const SHADOW_WIDTHS: Dictionary = {0: 20.0, 1: 22.0, 2: 30.0, 3: 40.0}
 const SPRITE_ROW_COUNT_FALLBACK: int = 2
 const DEFAULT_CHARACTER_CENTER_Y: float = 0.602
 const DEFAULT_FRAME_CELL_PX: float = 128.0
@@ -115,7 +116,49 @@ func setup(stats: Stats, expertise: String) -> void:
 	_load_anchors(sprite_set)
 	_load_state_textures(stats.sprite, sprite_set, anim_data)
 	_apply_state_texture(ANIM_IDLE)
+	_ensure_ground_shadow()
 	character_ui_name_label.text = stats.override_name if stats.override_name else expertise
+
+
+static var _shadow_texture: ImageTexture = null
+
+
+static func _ground_shadow_texture() -> ImageTexture:
+	if _shadow_texture != null:
+		return _shadow_texture
+	var size: int = 64
+	var image: Image = Image.create(size, size, false, Image.FORMAT_RGBA8)
+	var center: float = float(size) / 2.0
+	for y in range(size):
+		for x in range(size):
+			var dx: float = (float(x) + 0.5 - center) / center
+			var dy: float = (float(y) + 0.5 - center) / center
+			var r: float = sqrt(dx * dx + dy * dy)
+			var alpha: float = clampf(1.0 - r, 0.0, 1.0)
+			alpha = clampf(alpha * 1.6, 0.0, 1.0)
+			image.set_pixel(x, y, Color(0.0, 0.0, 0.0, alpha))
+	_shadow_texture = ImageTexture.create_from_image(image)
+	return _shadow_texture
+
+
+func _ensure_ground_shadow() -> void:
+	var pawn: Node3D = get_parent() as Node3D
+	if pawn == null or pawn.get_node_or_null("Shadow") != null:
+		return
+	var shadow := Sprite3D.new()
+	shadow.name = "Shadow"
+	shadow.texture = _ground_shadow_texture()
+	shadow.axis = Vector3.AXIS_Y
+	shadow.pixel_size = pixel_size
+	shadow.shaded = false
+	shadow.transparent = true
+	shadow.alpha_cut = SpriteBase3D.ALPHA_CUT_DISABLED
+	shadow.render_priority = -1
+	shadow.modulate = Color(0.0, 0.0, 0.0, 0.42)
+	var width: float = SHADOW_WIDTHS.get(clampi(shadow_size, 0, 3), 26.0)
+	shadow.scale = Vector3(width / 64.0, 1.0, width * 0.55 / 64.0)
+	shadow.position = Vector3(0.0, 0.012, 0.0)
+	pawn.add_child(shadow)
 
 
 func _resolve_sprite_set(stats: Stats) -> PokemonSpriteSetResource:
@@ -307,7 +350,7 @@ func _resolve_state_entries(base_sprite_path: String, sprite_set: PokemonSpriteS
 		var entries: Dictionary = {}
 		for key in sprite_set.animation_states.keys():
 			var raw_entry: Variant = sprite_set.animation_states[key]
-			if raw_entry is Dictionary:
+			if raw_entry is Dictionary and _state_entry_usable(raw_entry as Dictionary):
 				entries[String(key)] = (raw_entry as Dictionary).duplicate(true)
 		var minimal: Dictionary = {
 			ANIM_IDLE:  sprite_set.idle_path,
@@ -330,6 +373,11 @@ func _resolve_state_entries(base_sprite_path: String, sprite_set: PokemonSpriteS
 		ANIM_SLEEP: {"path": base_no_ext + "_sleep" + ext},
 		ANIM_HOP:   {"path": base_no_ext + "_hop"   + ext},
 	}
+
+
+func _state_entry_usable(entry: Dictionary) -> bool:
+	var cell: Vector2i = entry.get("cell_size", Vector2i.ZERO)
+	return cell.x > 0 and cell.y > 0
 
 
 func _normalize_rest_faint_entry(entries: Dictionary) -> void:

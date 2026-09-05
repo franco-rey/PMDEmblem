@@ -248,6 +248,7 @@ func _portrait_frame(px: float) -> PanelContainer:
 	var frame := PanelContainer.new()
 	frame.name = "Frame"
 	frame.custom_minimum_size = Vector2(px + 8.0, px + 8.0)
+	frame.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	frame.add_theme_stylebox_override("panel", _frame_style(PmdStyle.FRAME_SOFT))
 	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var portrait := TextureRect.new()
@@ -326,7 +327,7 @@ func rebuild_queue() -> void:
 			divider.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			_queue_row.add_child(divider)
 		_queue_row.add_child(_make_tile(pawns[i], i == 0))
-	_round_label.text = "Round %d" % maxi(1, round_index)
+	_round_label.text = "Turn %d" % maxi(1, round_index)
 	_round_label.visible = pawns.size() > 0
 	(_queue_row.get_parent() as Control).visible = pawns.size() > 0
 	_refresh_tiles(true)

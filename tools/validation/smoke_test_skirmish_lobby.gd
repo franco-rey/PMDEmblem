@@ -295,6 +295,7 @@ func _check_random_enemy_build() -> void:
 	if lobby == null:
 		return
 	lobby.set_random_enemy_enabled(true)
+	lobby.enemy_size_spin.value = 3
 	var result: Dictionary = lobby.build_current_definition()
 	_assert_true(result.get("ok", false), "random enemy lobby setup builds a definition")
 	if not result.get("ok", false):
@@ -302,7 +303,7 @@ func _check_random_enemy_build() -> void:
 	var definition: SkirmishDefinitionResource = result["definition"]
 	_assert_true(definition != null, "random enemy setup returns SkirmishDefinitionResource")
 	_assert_true(String(definition.generation_metadata.get("source", "")) == "random_generator", "random enemy setup routes through RandomSkirmishGenerator")
-	_assert_true(definition.enemy_team.size() == 3, "random enemy setup honors default enemy size control")
+	_assert_true(definition.enemy_team.size() == 3, "random enemy setup honors the enemy team slider")
 	_assert_true(_loader_accepts(definition), "random enemy lobby definition is loader-ready")
 
 

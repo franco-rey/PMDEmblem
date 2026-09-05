@@ -73,6 +73,8 @@ func _ready() -> void:
 
 	if camera.boundary_radius != camera_boundary_radius:
 		camera.boundary_radius = camera_boundary_radius
+	if not camera.edge_pan_toggled.is_connected(_on_edge_pan_toggled):
+		camera.edge_pan_toggled.connect(_on_edge_pan_toggled)
 
 	if use_speed_scheduler:
 		scheduler = BattleScheduler.new()
@@ -292,6 +294,11 @@ func _start_scheduler() -> void:
 	_scheduler_started = true
 	if hud != null:
 		hud.rebuild_queue()
+
+
+func _on_edge_pan_toggled(enabled: bool) -> void:
+	if message_log != null:
+		message_log.add_message("Mouse edge panning %s (O to toggle)." % ("on" if enabled else "off"))
 
 
 func current_terrain() -> String:

@@ -44,7 +44,7 @@ func process(delta: float, camera: TacticsCamera) -> void:
 			"camera_left", "camera_right", "camera_forward", "camera_backwards")
 	if pan.is_pressing_wasd(input_dir):
 		pan.wasd_pan(delta, camera, input_dir)
-	elif pan.is_cursor_near_edge(camera) and not controls.is_joystick:
+	elif res.edge_pan_enabled and pan.is_cursor_near_edge(camera) and not controls.is_joystick:
 		pan.edge_pan(delta, camera)
 	else:
 		res.panning_timer = 0.0
@@ -58,6 +58,10 @@ func process(delta: float, camera: TacticsCamera) -> void:
 
 
 func handle_input(event: InputEvent) -> void:
+	if event.is_action_pressed("toggle_edge_pan"):
+		res.edge_pan_enabled = not res.edge_pan_enabled
+		res.edge_pan_toggled.emit(res.edge_pan_enabled)
+		return
 	if event is InputEventMouseMotion:
 		if res.in_free_look:
 			res.twist_input = -event.relative.x * (FL_ROT_SPEED_DIVIDER * res.rot_speed)

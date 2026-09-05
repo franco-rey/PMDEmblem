@@ -8,6 +8,7 @@ const RandomSkirmishGenerator = preload("res://data/modules/skirmish/random_skir
 const SkirmishControlMode = preload("res://data/modules/skirmish/skirmish_control_mode.gd")
 const MIN_TEAM_SIZE: int = 1
 const MAX_TEAM_SIZE: int = 8
+const ABSOLUTE_MAX_TEAM_SIZE: int = 16
 const ANCHOR_POOL_SIZE: int = 8
 const ROSTER_SLUGS: Array[String] = [
 	"0475_gallade",
@@ -47,6 +48,28 @@ static func battle_ready_roster_paths() -> Array[String]:
 	var out: Array[String] = []
 	for path in roster_paths():
 		if _is_battle_ready_path(path):
+			out.append(path)
+	return out
+
+
+static func max_team_size_for(map_path: String) -> int:
+	if map_path.is_empty() or not ResourceLoader.exists(map_path):
+		return MAX_TEAM_SIZE
+	var map: MapDefinitionResource = load(map_path) as MapDefinitionResource
+	if map == null or map.max_team_size <= 0:
+		return MAX_TEAM_SIZE
+	return clampi(map.max_team_size, MIN_TEAM_SIZE, ABSOLUTE_MAX_TEAM_SIZE)
+
+
+static func fill_random_paths(paths: Array[String], target_size: int, seed: int) -> Array[String]:
+	var out: Array[String] = paths.duplicate()
+	if out.size() >= target_size:
+		return out
+	var extra: Array[String] = random_roster_paths(target_size, seed)
+	for path in extra:
+		if out.size() >= target_size:
+			break
+		if not out.has(path):
 			out.append(path)
 	return out
 
@@ -97,10 +120,11 @@ static func build(
 	enemy_item_ids: Array[String] = [],
 	slot_specs: Dictionary = {}
 ) -> Dictionary:
-	if player_paths.size() < MIN_TEAM_SIZE or player_paths.size() > MAX_TEAM_SIZE:
-		return {"ok": false, "error": "Player team must be %d-%d Pokemon" % [MIN_TEAM_SIZE, MAX_TEAM_SIZE]}
-	if enemy_paths.size() < MIN_TEAM_SIZE or enemy_paths.size() > MAX_TEAM_SIZE:
-		return {"ok": false, "error": "Enemy team must be %d-%d Pokemon" % [MIN_TEAM_SIZE, MAX_TEAM_SIZE]}
+	var cap: int = max_team_size_for(map_path)
+	if player_paths.size() < MIN_TEAM_SIZE or player_paths.size() > cap:
+		return {"ok": false, "error": "Player team must be %d-%d Pokemon" % [MIN_TEAM_SIZE, cap]}
+	if enemy_paths.size() < MIN_TEAM_SIZE or enemy_paths.size() > cap:
+		return {"ok": false, "error": "Enemy team must be %d-%d Pokemon" % [MIN_TEAM_SIZE, cap]}
 	if map_path.is_empty():
 		return {"ok": false, "error": "Select a map"}
 	if not seed_text.strip_edges().is_empty() and not seed_text.strip_edges().is_valid_int():
@@ -118,8 +142,8 @@ static func build(
 	if anchor_counts.get("enemy", 0) < enemy_paths.size():
 		return {"ok": false, "error": "Map has %d enemy anchors; need %d" % [anchor_counts.get("enemy", 0), enemy_paths.size()]}
 
-	var player_pool: int = mini(anchor_counts.get("player", 0), ANCHOR_POOL_SIZE)
-	var enemy_pool: int = mini(anchor_counts.get("enemy", 0), ANCHOR_POOL_SIZE)
+	var player_pool: int = mini(anchor_counts.get("player", 0), maxi(ANCHOR_POOL_SIZE, max_team_size_for(map_path)))
+	var enemy_pool: int = mini(anchor_counts.get("enemy", 0), maxi(ANCHOR_POOL_SIZE, max_team_size_for(map_path)))
 	if player_pool < player_paths.size() or enemy_pool < enemy_paths.size():
 		return {"ok": false, "error": "Map needs %d anchors per side for an %dv%d setup" % [ANCHOR_POOL_SIZE, player_paths.size(), enemy_paths.size()]}
 
@@ -294,8 +318,9 @@ static func build_random(
 	seed_text: String = "",
 	control_mode: String = SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU
 ) -> Dictionary:
-	if team_size < MIN_TEAM_SIZE or team_size > MAX_TEAM_SIZE:
-		return {"ok": false, "error": "Team size must be %d-%d" % [MIN_TEAM_SIZE, MAX_TEAM_SIZE]}
+	var cap: int = max_team_size_for(map_path)
+	if team_size < MIN_TEAM_SIZE or team_size > cap:
+		return {"ok": false, "error": "Team size must be %d-%d" % [MIN_TEAM_SIZE, cap]}
 	if not seed_text.strip_edges().is_empty() and not seed_text.strip_edges().is_valid_int():
 		return {"ok": false, "error": "Seed must be an integer or empty"}
 	var seed: int = resolve_seed(seed_text)
@@ -333,11 +358,12 @@ static func build_with_random_enemy(
 	reward_profile: String = "",
 	control_mode: String = SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU
 ) -> Dictionary:
-	if player_paths.size() < MIN_TEAM_SIZE or player_paths.size() > MAX_TEAM_SIZE:
-		return {"ok": false, "error": "Player team must be %d-%d Pokemon" % [MIN_TEAM_SIZE, MAX_TEAM_SIZE]}
+	var cap: int = max_team_size_for(map_path)
+	if player_paths.size() < MIN_TEAM_SIZE or player_paths.size() > cap:
+		return {"ok": false, "error": "Player team must be %d-%d Pokemon" % [MIN_TEAM_SIZE, cap]}
 	var resolved_enemy_size: int = enemy_team_size if enemy_team_size > 0 else player_paths.size()
-	if resolved_enemy_size < MIN_TEAM_SIZE or resolved_enemy_size > MAX_TEAM_SIZE:
-		return {"ok": false, "error": "Enemy team size must be %d-%d" % [MIN_TEAM_SIZE, MAX_TEAM_SIZE]}
+	if resolved_enemy_size < MIN_TEAM_SIZE or resolved_enemy_size > cap:
+		return {"ok": false, "error": "Enemy team size must be %d-%d" % [MIN_TEAM_SIZE, cap]}
 	if map_path.is_empty():
 		return {"ok": false, "error": "Select a map"}
 	if not seed_text.strip_edges().is_empty() and not seed_text.strip_edges().is_valid_int():
@@ -366,6 +392,7 @@ static func build_with_random_enemy(
 		return {"ok": false, "error": "No roster Pokemon available"}
 
 	var inputs := RandomSkirmishGenerator.GeneratorInputs.new()
+	inputs.max_team_size = max_team_size_for(map_path)
 	inputs.seed = seed
 	inputs.biome = biome
 	inputs.difficulty_tier = difficulty_tier
@@ -380,9 +407,9 @@ static func build_with_random_enemy(
 	if definition == null:
 		return {"ok": false, "error": "Random skirmish generation failed"}
 
-	var player_pool: int = mini(anchor_counts.get("player", 0), ANCHOR_POOL_SIZE)
-	var enemy_pool: int = mini(anchor_counts.get("enemy", 0), ANCHOR_POOL_SIZE)
-	if not RandomSkirmishGenerator.attach_spawn_orders(definition, player_pool, enemy_pool, ANCHOR_POOL_SIZE):
+	var player_pool: int = mini(anchor_counts.get("player", 0), maxi(ANCHOR_POOL_SIZE, max_team_size_for(map_path)))
+	var enemy_pool: int = mini(anchor_counts.get("enemy", 0), maxi(ANCHOR_POOL_SIZE, max_team_size_for(map_path)))
+	if not RandomSkirmishGenerator.attach_spawn_orders(definition, player_pool, enemy_pool, maxi(ANCHOR_POOL_SIZE, max_team_size_for(map_path))):
 		return {"ok": false, "error": "Could not assign spawn anchors for generated skirmish"}
 
 	var meta: Dictionary = definition.generation_metadata.duplicate(true)

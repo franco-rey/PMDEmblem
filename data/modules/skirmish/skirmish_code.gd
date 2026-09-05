@@ -231,8 +231,8 @@ static func _apply_key_value(raw: Dictionary, key: String, value: String) -> Dic
 			if not value.is_valid_int():
 				return {"ok": false, "error": "team must be 1-8"}
 			var team_size: int = int(value)
-			if team_size < CustomSkirmishBuilder.MIN_TEAM_SIZE or team_size > CustomSkirmishBuilder.MAX_TEAM_SIZE:
-				return {"ok": false, "error": "team must be 1-8"}
+			if team_size < CustomSkirmishBuilder.MIN_TEAM_SIZE or team_size > CustomSkirmishBuilder.ABSOLUTE_MAX_TEAM_SIZE:
+				return {"ok": false, "error": "team must be 1-%d" % CustomSkirmishBuilder.ABSOLUTE_MAX_TEAM_SIZE}
 			raw["team"] = team_size
 		"matches":
 			if not value.is_valid_int():
@@ -375,9 +375,9 @@ static func _team_size(match_data: Dictionary, fallback_state: Dictionary) -> in
 	if match_data.get("team", null) != null:
 		return int(match_data["team"])
 	if fallback_state.has("team_size"):
-		return clampi(int(fallback_state["team_size"]), CustomSkirmishBuilder.MIN_TEAM_SIZE, CustomSkirmishBuilder.MAX_TEAM_SIZE)
+		return clampi(int(fallback_state["team_size"]), CustomSkirmishBuilder.MIN_TEAM_SIZE, CustomSkirmishBuilder.ABSOLUTE_MAX_TEAM_SIZE)
 	if fallback_state.has("enemy_team_size"):
-		return clampi(int(fallback_state["enemy_team_size"]), CustomSkirmishBuilder.MIN_TEAM_SIZE, CustomSkirmishBuilder.MAX_TEAM_SIZE)
+		return clampi(int(fallback_state["enemy_team_size"]), CustomSkirmishBuilder.MIN_TEAM_SIZE, CustomSkirmishBuilder.ABSOLUTE_MAX_TEAM_SIZE)
 	return 3
 
 
