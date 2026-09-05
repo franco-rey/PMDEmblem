@@ -53,6 +53,8 @@ var orbit_arc: float = 80.0
 var top_down: bool = false
 var result_line: String = ""
 var director: bool = false
+var human: bool = false
+var human_step: int = 0
 var speed_setting: float = 0.0
 var center_marker: Node3D = null
 var director_turn: int = 0
@@ -103,6 +105,8 @@ func _run() -> void:
 			spin = String(arg).substr(7) == "1"
 		elif String(arg).begins_with("--director="):
 			director = String(arg).substr(11) == "1"
+		elif String(arg).begins_with("--human="):
+			human = String(arg).substr(8) == "1"
 		elif String(arg).begins_with("--speed="):
 			speed_setting = float(String(arg).substr(8))
 		elif String(arg).begins_with("--code="):
@@ -132,6 +136,8 @@ func _run() -> void:
 		print("showcase: fast phase ended after %d turns at %.2f s" % [turns_taken, float(Engine.get_physics_frames()) / 60.0])
 	if cinematic:
 		GameSettings.battle_flair = true
+		if human:
+			GameSettings.camera_track = true
 		if director:
 			GameSettings.camera_track = true
 			center_marker = Node3D.new()
@@ -147,7 +153,7 @@ func _run() -> void:
 		GameSettings.apply(root)
 		await physics_frame
 		await physics_frame
-		Input.warp_mouse(Vector2(2.0, 2.0))
+		Input.warp_mouse(Vector2(160.0, float(root.size.y) - 60.0))
 	start_frame = Engine.get_physics_frames()
 	print("showcase: recording starts at frame %d (%.2f s)" % [start_frame, float(start_frame) / 60.0])
 	print("showcase: window=%s root=%s scale=%.2f hud=%s override=%.2f" % [str(DisplayServer.window_get_size()), str(root.size), root.content_scale_factor, str(level.hud.layout_size()), UiScale.override_factor])
@@ -156,6 +162,8 @@ func _run() -> void:
 		level.camera.target_fov = 40.0
 		if director:
 			_director_cut("wide", null, null)
+		elif human:
+			pass
 		else:
 			_enter_shot(0)
 			_cinematic_tick(0.0)
@@ -272,6 +280,8 @@ func _camera_loop() -> void:
 			return
 		if director:
 			_director_tick(1.0 / 60.0)
+			continue
+		if human:
 			continue
 		var elapsed: float = float(Engine.get_physics_frames() - start_frame) / 60.0
 		var index: int = _shot_index_at(elapsed)
@@ -403,6 +413,9 @@ func _take_turn(pawn: TacticsPawn) -> void:
 	var acted: bool = false
 	if director:
 		_director_turn_start(pawn)
+	if human:
+		await _human_turn_start()
+		await _hold(24)
 	var queue: Array = queues.get(slug, [])
 	var index: int = 0
 	while index < queue.size() and not acted:
@@ -442,7 +455,14 @@ func _execute_intent(pawn: TacticsPawn, intent: Array) -> String:
 		if not pawn.res.can_move:
 			return "drop"
 		print("showcase: %s moves to %s" % [_slug_of(pawn), label])
-		await driver._move(pawn, label)
+		if human and human_step % 3 != 0:
+			await _human_leave_top_down()
+			await _hold(12)
+		var tile: TacticsTile = driver._tile_for_label(label) if human else null
+		if tile != null:
+			await _human_move(pawn, tile)
+		else:
+			await driver._move(pawn, label)
 		return "moved"
 	if kind == "self" or kind == "self_low":
 		var slot: int = _slot_for(pawn, String(intent[1]))
@@ -491,7 +511,7 @@ func _execute_intent(pawn: TacticsPawn, intent: Array) -> String:
 		if not Targeting.legal_targets_for_move(pawn, move, _all_units()).has(target):
 			return "retry"
 	print("showcase: %s uses %s on %s" % [_slug_of(pawn), move.move_id, _slug_of(target)])
-	await driver._attack(pawn, slot, target)
+	await _perform_attack(pawn, slot, target)
 	return "done"
 
 
@@ -539,9 +559,111 @@ func _show_actions(pawn: TacticsPawn) -> void:
 	await _hold(18)
 
 
+const HUMAN_KEYS: Array = [[KEY_P, KEY_MINUS], [KEY_P, KEY_EQUAL], [KEY_E], [KEY_MINUS], [KEY_P], [KEY_P, KEY_Q, KEY_EQUAL]]
+
+
+func _press(code: Key) -> void:
+	for pressed in [true, false]:
+		var event := InputEventKey.new()
+		event.keycode = code
+		event.physical_keycode = code
+		event.pressed = pressed
+		Input.parse_input_event(event)
+		await physics_frame
+
+
+func _human_top_down() -> bool:
+	return level.camera.perspective == TacticsCameraResource.PERSPECTIVE_TOP_DOWN
+
+
+func _human_turn_start() -> void:
+	human_step += 1
+	for code in HUMAN_KEYS[human_step % HUMAN_KEYS.size()]:
+		await _press(code)
+		await _hold(4)
+
+
+func _human_leave_top_down() -> void:
+	if _human_top_down():
+		await _press(KEY_P)
+
+
+func _human_click(pos: Vector2, hover_frames: int) -> void:
+	Input.warp_mouse(pos)
+	await _hold(hover_frames)
+	for pressed in [true, false]:
+		var event := InputEventMouseButton.new()
+		event.button_index = MOUSE_BUTTON_LEFT
+		event.pressed = pressed
+		event.position = pos
+		event.global_position = pos
+		Input.parse_input_event(event)
+		await physics_frame
+	await physics_frame
+
+
+func _human_click_control(control: Control, hover_frames: int) -> bool:
+	if control == null or not control.is_visible_in_tree():
+		return false
+	await _human_click(control.get_global_rect().get_center(), hover_frames)
+	return true
+
+
+func _human_world_point(world: Vector3) -> Vector2:
+	return level.get_viewport().get_camera_3d().unproject_position(world + Vector3(0.0, 0.35, 0.0))
+
+
+func _human_click_world(world: Vector3, hover_frames: int) -> void:
+	Input.warp_mouse(_human_world_point(world))
+	await _hold(maxi(hover_frames - 8, 4))
+	await _human_click(_human_world_point(world), 8)
+
+
+func _human_move(pawn: TacticsPawn, tile: TacticsTile) -> void:
+	var participant: TacticsParticipantResource = level.participant.res
+	await _show_actions(pawn)
+	await _human_click_control(_controls().get_act("Move"), 16)
+	await _hold(18)
+	await _human_click_world(tile.global_position, 26)
+	var frames: int = 0
+	while frames < 40 and participant.stage != participant.STAGE_MOVE_PAWN and not pawn.res.is_moving:
+		await physics_frame
+		frames += 1
+	if participant.stage != participant.STAGE_MOVE_PAWN and not pawn.res.is_moving:
+		await driver._move(pawn, level.notation.tile_label(Targeting._tile_key(tile)))
+		return
+	frames = 0
+	while frames < 900 and _battle_alive() and is_instance_valid(pawn) and (participant.stage == participant.STAGE_MOVE_PAWN or pawn.res.is_moving or not pawn.res.pathfinding_tilestack.is_empty()):
+		await physics_frame
+		frames += 1
+
+
+func _human_attack(pawn: TacticsPawn, slot: int, target: TacticsPawn) -> void:
+	var participant: TacticsParticipantResource = level.participant.res
+	await _show_actions(pawn)
+	await _human_click_control(_controls().get_act("Attack"), 16)
+	await _hold(36)
+	await _human_click_control(_controls().get_node_or_null("HBox/MovePicker/MoveSlot%d" % slot) as Button, 20)
+	await _hold(14)
+	await _human_click_world(target.global_position, 30)
+	var frames: int = 0
+	while frames < 30 and participant.stage != participant.STAGE_ATTACK:
+		await physics_frame
+		frames += 1
+	if participant.stage == participant.STAGE_ATTACK:
+		await _wait_attack_end(pawn)
+		return
+	await driver._attack(pawn, slot, target)
+
+
 func _perform_attack(pawn: TacticsPawn, slot: int, target: TacticsPawn) -> void:
 	if director and director_shot != "top":
 		_director_cut("medium", pawn, target)
+	if human:
+		await _human_leave_top_down()
+		await _hold(12)
+		await _human_attack(pawn, slot, target)
+		return
 	var controls: TacticsControls = _controls()
 	if not cinematic or controls == null:
 		await driver._attack(pawn, slot, target)
@@ -573,7 +695,7 @@ func _wait_attack_end(pawn: TacticsPawn) -> void:
 func _approach(pawn: TacticsPawn, target: TacticsPawn) -> void:
 	if not pawn.res.can_move:
 		return
-	if cinematic and _controls() != null:
+	if cinematic and not human and _controls() != null:
 		await _show_actions(pawn)
 		_controls().get_act("Move").pressed.emit()
 	var arena: TacticsArena = level.arena
@@ -585,6 +707,9 @@ func _approach(pawn: TacticsPawn, target: TacticsPawn) -> void:
 	if tile == null:
 		tile = _closest_reachable_tile(pawn, target, all_units)
 	if tile == null or tile == pawn.get_tile():
+		return
+	if human:
+		await _human_move(pawn, tile)
 		return
 	if cinematic:
 		await _hold(30)
@@ -709,6 +834,11 @@ func _end_turn(pawn: TacticsPawn) -> void:
 		return
 	var active: BattleUnit = level.scheduler.get_active_unit()
 	if active != null and active.pawn == pawn:
+		if human and pawn.can_act():
+			await _show_actions(pawn)
+			if await _human_click_control(_controls().get_act("Wait"), 16):
+				await driver._wait_turn_change(pawn)
+				return
 		pawn.end_pawn_turn()
 		level.participant.res.stage = level.participant.res.STAGE_SELECT_PAWN
 		await driver._wait_turn_change(pawn)

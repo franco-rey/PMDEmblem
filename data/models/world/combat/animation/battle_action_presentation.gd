@@ -209,6 +209,9 @@ static func _enqueue_fx(runner: BattlePresentationRunner, fx: Variant, assets: D
 	var delay_frames: int = int(dict.get("delay", 0))
 	if delay_frames > 0:
 		runner.enqueue({"kind": BattlePresentationRunner.KIND_WAIT, "seconds": float(delay_frames) / 60.0})
+	var sound_name: String = String(dict.get("sound", ""))
+	if not sound_name.is_empty() and sound_name != "-":
+		runner.enqueue({"kind": BattlePresentationRunner.KIND_SOUND, "sound": sound_name, "label": label + ":sound"})
 	var emitter: Variant = dict.get("emitter", null)
 	if emitter is Dictionary:
 		_enqueue_emitter(runner, emitter, assets, origin, dest, direction, attach, range_tiles, duration, label)

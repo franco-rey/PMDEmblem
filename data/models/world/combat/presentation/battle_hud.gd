@@ -684,7 +684,7 @@ func _pin_allowed(pawn: TacticsPawn) -> bool:
 	var res: TacticsParticipantResource = level.participant.res
 	if pawn == res.curr_pawn:
 		return false
-	return res.stage in [res.STAGE_SELECT_PAWN, res.STAGE_SHOW_ACTIONS, res.STAGE_MOVE_PAWN, res.STAGE_ATTACK, res.STAGE_ITEM_ACTION] or _is_cpu_turn(res.curr_pawn)
+	return res.stage in [res.STAGE_SELECT_PAWN, res.STAGE_SHOW_ACTIONS] or _is_cpu_turn(res.curr_pawn)
 
 
 func _targeting_stage() -> bool:

@@ -3,6 +3,8 @@ extends RefCounted
 
 const SETTINGS_PATH: String = "user://settings.cfg"
 const SECTION: String = "graphics"
+const AUDIO_SECTION: String = "audio"
+const AUDIO_BUSES: Dictionary = {"master": "Master", "sfx": "SFX", "music": "Music"}
 const WINDOW_MODES: Array[String] = ["windowed", "fullscreen", "borderless"]
 const RESOLUTIONS: Array[Vector2i] = [Vector2i(1280, 720), Vector2i(1600, 900), Vector2i(1920, 1080), Vector2i(2560, 1440), Vector2i(3840, 2160)]
 const UI_SCALES: Array[float] = [0.0, 1.0, 2.0, 3.0]
@@ -17,6 +19,9 @@ static var cpu_battle_report: bool = true
 static var cpu_speed: float = 0.5
 static var battle_flair: bool = true
 static var danger_zone: bool = false
+static var master_volume: float = 1.0
+static var sfx_volume: float = 0.8
+static var music_volume: float = 0.6
 static var loaded: bool = false
 
 
@@ -34,6 +39,9 @@ static func load_settings() -> void:
 		cpu_speed = float(config.get_value(SECTION, "cpu_speed", cpu_speed))
 		battle_flair = bool(config.get_value(SECTION, "battle_flair", battle_flair))
 		danger_zone = bool(config.get_value(SECTION, "danger_zone", danger_zone))
+		master_volume = clampf(float(config.get_value(AUDIO_SECTION, "master_volume", master_volume)), 0.0, 1.0)
+		sfx_volume = clampf(float(config.get_value(AUDIO_SECTION, "sfx_volume", sfx_volume)), 0.0, 1.0)
+		music_volume = clampf(float(config.get_value(AUDIO_SECTION, "music_volume", music_volume)), 0.0, 1.0)
 	if not WINDOW_MODES.has(window_mode):
 		window_mode = "windowed"
 	if not UI_SCALES.has(ui_scale):
@@ -54,11 +62,15 @@ static func save_settings() -> bool:
 	config.set_value(SECTION, "cpu_speed", cpu_speed)
 	config.set_value(SECTION, "battle_flair", battle_flair)
 	config.set_value(SECTION, "danger_zone", danger_zone)
+	config.set_value(AUDIO_SECTION, "master_volume", master_volume)
+	config.set_value(AUDIO_SECTION, "sfx_volume", sfx_volume)
+	config.set_value(AUDIO_SECTION, "music_volume", music_volume)
 	return config.save(SETTINGS_PATH) == OK
 
 
 static func apply(window: Window) -> void:
 	UiScale.override_factor = ui_scale
+	apply_audio()
 	if window == null or DisplayServer.get_name() == "headless":
 		return
 	var window_id: int = window.get_window_id()
@@ -83,6 +95,21 @@ static func apply(window: Window) -> void:
 				DisplayServer.window_set_position(usable.position + (usable.size - target) / 2, window_id)
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if vsync else DisplayServer.VSYNC_DISABLED, window_id)
 	UiScale.apply(window)
+
+
+static func apply_audio() -> void:
+	var volumes: Dictionary = {"master": master_volume, "sfx": sfx_volume, "music": music_volume}
+	for key in AUDIO_BUSES:
+		var index: int = AudioServer.get_bus_index(String(AUDIO_BUSES[key]))
+		if index < 0:
+			continue
+		var linear: float = clampf(float(volumes[key]), 0.0, 1.0)
+		AudioServer.set_bus_volume_db(index, linear_to_db(maxf(linear, 0.0001)))
+		AudioServer.set_bus_mute(index, linear <= 0.0001)
+
+
+static func volume_label(value: float) -> String:
+	return "%d%%" % int(round(clampf(value, 0.0, 1.0) * 100.0))
 
 
 static func fitted_resolution(wanted: Vector2i, usable: Vector2i) -> Vector2i:

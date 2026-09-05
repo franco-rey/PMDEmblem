@@ -78,6 +78,7 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventKey and (event as InputEventKey).echo:
 		return
 	if is_open:
+		SoundPlayer.cue("ui.cancel")
 		if _graphics.visible:
 			_hide_graphics()
 		elif _controls.visible:
@@ -87,6 +88,7 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 	if can_open.is_valid() and bool(can_open.call()):
+		SoundPlayer.cue("ui.pause_open")
 		open()
 		get_viewport().set_input_as_handled()
 

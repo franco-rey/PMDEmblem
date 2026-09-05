@@ -62,3 +62,8 @@ assets/visuals/raw_asset/TileDtef/*
 !assets/visuals/raw_asset/font/
 assets/visuals/raw_asset/font/*
 !assets/visuals/raw_asset/font/.gdignore
+assets/audio/pmdo/*
+!assets/audio/pmdo/.gdignore
+assets/audio/cries/*
+!assets/audio/cries/.gdignore
+data/models/audio/generated/

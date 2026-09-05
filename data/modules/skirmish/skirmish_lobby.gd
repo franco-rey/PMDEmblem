@@ -1368,6 +1368,7 @@ func _create_roster_cell(entry: Dictionary) -> Button:
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
 	button.flat = true
 	button.tooltip_text = String(entry.get("label", ""))
+	button.add_to_group(UiSoundHook.OPT_OUT_GROUP)
 	button.pressed.connect(_on_roster_pressed.bind(String(entry.get("path", ""))))
 
 	var texture_rect := TextureRect.new()
@@ -1494,6 +1495,7 @@ func _create_slot_button(path: String, index: int, side: String) -> Button:
 	button.button_pressed = _selected_index_for(side) == index and not path.is_empty()
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
 	button.tooltip_text = "Slot %d" % (index + 1)
+	button.add_to_group(UiSoundHook.OPT_OUT_GROUP)
 	button.pressed.connect(_on_team_slot_pressed.bind(side, index))
 
 	var content := Control.new()
@@ -1621,6 +1623,7 @@ func _on_roster_pressed(path: String) -> void:
 	var cell: Node = roster_grid.find_child("Roster_%s" % slug, false, false) if roster_grid != null else null
 	if cell != null:
 		_flash_portrait(cell.get_node_or_null("Portrait") as TextureRect, slug)
+	SoundPlayer.cry(slug)
 	_show_selected(path)
 	_add_to_active_team(path)
 
@@ -1667,6 +1670,7 @@ func _on_team_slot_pressed(side: String, index: int) -> void:
 	var slot: Node = tray.find_child("%sSlot%d" % [side.capitalize(), index + 1], true, false) if tray != null else null
 	if slot != null:
 		_flash_portrait(slot.get_node_or_null("Portrait") as TextureRect, PortraitLibrary.slug_for_path(team[index]))
+	SoundPlayer.cry(PortraitLibrary.slug_for_path(team[index]))
 	_show_selected(team[index])
 	_refresh_team_trays()
 	_refresh_slot_section()
