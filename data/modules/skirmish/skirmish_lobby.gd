@@ -1161,7 +1161,7 @@ func chooser_entries() -> Array[Dictionary]:
 		CHOOSER_MOVES:
 			var instance: PokemonInstanceResource = load(path) as PokemonInstanceResource
 			for move in SkirmishMoveLoadout.move_pool_for_instance(instance):
-				out.append({"id": move.move_id, "label": move.display_name(), "detail": "%s %s  Pow %d" % [move.type.capitalize(), _category_label(move), move.base_power], "icon_path": ""})
+				out.append({"id": move.move_id, "label": move.display_name(), "detail": "%s %s  Pow %d" % [move.type.capitalize(), _category_label(move), move.base_power], "icon_path": "", "type": move.type, "category": move.category})
 		CHOOSER_ABILITY:
 			var instance: PokemonInstanceResource = load(path) as PokemonInstanceResource
 			for ability_id in CustomSkirmishBuilder.available_ability_ids(instance):
@@ -1214,6 +1214,10 @@ func _create_chooser_row(entry: Dictionary) -> Button:
 
 	var icon_path: String = String(entry.get("icon_path", ""))
 	var text_left: float = 0.0
+	var type_id: String = String(entry.get("type", ""))
+	if icon_path.is_empty() and not type_id.is_empty():
+		content.add_child(_type_badge(type_id, int(entry.get("category", PokemonMoveResource.CATEGORY_STATUS))))
+		text_left = CHOOSER_ICON_SIZE.x + 8.0
 	if not icon_path.is_empty() and ResourceLoader.exists(icon_path):
 		var icon := TextureRect.new()
 		icon.texture = load(icon_path) as Texture2D
@@ -1241,6 +1245,43 @@ func _create_chooser_row(entry: Dictionary) -> Button:
 	label.text = String(entry.get("label", "")) + ("\n" + detail if not detail.is_empty() else "")
 	content.add_child(label)
 	return button
+
+
+func _type_badge(type_id: String, category: int) -> Control:
+	var badge := PanelContainer.new()
+	badge.name = "TypeBadge"
+	badge.anchor_top = 0.5
+	badge.anchor_bottom = 0.5
+	badge.offset_left = 0
+	badge.offset_top = -CHOOSER_ICON_SIZE.y * 0.5
+	badge.offset_right = CHOOSER_ICON_SIZE.x
+	badge.offset_bottom = CHOOSER_ICON_SIZE.y * 0.5
+	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	badge.add_theme_stylebox_override("panel", PmdStyle.window(PmdStyle.type_color(type_id), PmdStyle.FRAME, 2, 8))
+	var column := VBoxContainer.new()
+	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_theme_constant_override("separation", 0)
+	badge.add_child(column)
+	var type_label := Label.new()
+	type_label.text = PmdStyle.type_abbreviation(type_id)
+	type_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	type_label.add_theme_font_size_override("font_size", 14)
+	type_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(type_label)
+	var category_label := Label.new()
+	match category:
+		PokemonMoveResource.CATEGORY_PHYSICAL:
+			category_label.text = "PHY"
+		PokemonMoveResource.CATEGORY_SPECIAL:
+			category_label.text = "SPE"
+		_:
+			category_label.text = "STA"
+	category_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	category_label.add_theme_font_size_override("font_size", 12)
+	category_label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
+	category_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(category_label)
+	return badge
 
 
 func _on_chooser_row_pressed(id: String) -> void:

@@ -239,13 +239,6 @@ func _replace_signal_connections(signal_ref: Signal, callable: Callable) -> void
 		signal_ref.connect(callable)
 
 
-func update_controller_hints(ctrl: TacticsControls) -> void:
-	if controls.is_joystick:
-		ctrl.get_node("%ControllerHints").texture = ctrl.layout_xbox
-	else:
-		ctrl.get_node("%ControllerHints").texture = ctrl.layout_pc
-
-
 func set_actions_menu_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls) -> void:
 	var picker: VBoxContainer = ensure_move_picker(ctrl)
 	if v and picker != null:

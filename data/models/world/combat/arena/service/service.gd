@@ -17,6 +17,8 @@ func setup(arena: TacticsArena) -> void:
 		res.connect("called_reset_all_tile_markers", arena.reset_all_tile_markers)
 		res.connect("called_get_pathfinding_tilestack", arena.get_pathfinding_tilestack)
 		res.connect("called_mark_hover_tile", arena.mark_hover_tile)
+		res.connect("called_mark_path_preview", arena.mark_path_preview)
+		res.connect("called_mark_committed", arena.mark_committed)
 
 
 func reset_all_tile_markers(arena: TacticsArena) -> void:
@@ -107,6 +109,28 @@ func mark_hover_tile(arena: TacticsArena, tile: TacticsTile) -> void:
 
 	if tile:
 		tile.hover = true
+
+
+func mark_path_preview(arena: TacticsArena, tile: TacticsTile) -> void:
+	for _t: TacticsTile in arena.get_node("Tiles").get_children():
+		_t.path = false
+	if tile == null or not tile.reachable:
+		return
+	var cursor: TacticsTile = tile.pf_root
+	var guard: int = 0
+	while cursor != null and guard < 256:
+		if cursor.pf_root == null:
+			break
+		cursor.path = true
+		cursor = cursor.pf_root
+		guard += 1
+
+
+func mark_committed(arena: TacticsArena, tile: TacticsTile) -> void:
+	for _t: TacticsTile in arena.get_node("Tiles").get_children():
+		_t.committed = false
+	if tile != null:
+		tile.committed = true
 
 
 func mark_reachable_tiles(arena: TacticsArena, root: TacticsTile, distance: float) -> void:

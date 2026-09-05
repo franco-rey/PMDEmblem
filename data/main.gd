@@ -82,6 +82,14 @@ const MENU_FONT_SIZE: int = 36
 
 var level_instance: TacticsLevel
 var skirmish_loader: SkirmishLoader
+var pause_menu: PauseMenu = null
+var results_screen: BattleResultsScreen = null
+var menu_graphics_panel: GraphicsSettingsPanel = null
+var options_button: Button = null
+var quit_button: Button = null
+var _relaunch: Callable = Callable()
+var _ended_definition: SkirmishDefinitionResource = null
+var _ended_result: int = 0
 var skirmish_queue: Array[SkirmishDefinitionResource] = []
 var skirmish_queue_index: int = 0
 var skirmish_queue_code: String = ""
@@ -94,9 +102,12 @@ var skirmish_queue_code: String = ""
 @onready var tactics_controls: Control = $TacticsControls
 
 func _ready() -> void:
+	GameSettings.load_settings()
+	GameSettings.apply(get_tree().root)
 	UiScale.watch(get_tree().root)
 	BattleNotation.clear_output_dir()
 	_style_main_menu()
+	_setup_menus()
 	_set_tactics_controls_enabled(false)
 	skirmish_loader = SkirmishLoader.new()
 	add_child(skirmish_loader)
@@ -118,6 +129,124 @@ func _process(_delta: float) -> void:
 
 func _on_launch_button_pressed() -> void:
 	load_selected_skirmish()
+
+
+func _setup_menus() -> void:
+	pause_menu = PauseMenu.new()
+	pause_menu.can_open = _can_open_pause_menu
+	pause_menu.restart_requested.connect(_on_restart_requested)
+	pause_menu.lobby_requested.connect(_on_return_to_lobby_requested)
+	pause_menu.main_menu_requested.connect(_on_main_menu_requested)
+	pause_menu.quit_requested.connect(_on_quit_requested)
+	add_child(pause_menu)
+	results_screen = BattleResultsScreen.new()
+	results_screen.play_again_requested.connect(_on_results_play_again)
+	results_screen.lobby_requested.connect(_on_results_lobby)
+	results_screen.main_menu_requested.connect(_on_main_menu_requested)
+	add_child(results_screen)
+	var menu := $UI/MapSelector/SkirmishMenu as VBoxContainer
+	if menu != null:
+		options_button = Button.new()
+		options_button.name = "OptionsButton"
+		options_button.text = "Options"
+		options_button.custom_minimum_size = MENU_CONTROL_SIZE
+		options_button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
+		options_button.pressed.connect(_on_options_pressed)
+		menu.add_child(options_button)
+		quit_button = Button.new()
+		quit_button.name = "QuitButton"
+		quit_button.text = "Quit"
+		quit_button.custom_minimum_size = MENU_CONTROL_SIZE
+		quit_button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
+		quit_button.pressed.connect(_on_quit_requested)
+		menu.add_child(quit_button)
+	var overlay := CenterContainer.new()
+	overlay.name = "OptionsOverlay"
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	overlay.visible = false
+	$UI.add_child(overlay)
+	menu_graphics_panel = GraphicsSettingsPanel.new()
+	menu_graphics_panel.closed.connect(func() -> void:
+		overlay.visible = false
+		$UI/MapSelector.visible = true
+		if options_button != null:
+			options_button.grab_focus())
+	overlay.add_child(menu_graphics_panel)
+
+
+func _can_open_pause_menu() -> bool:
+	if level_instance == null or not is_instance_valid(level_instance) or level_instance.battle_finished:
+		return false
+	if results_screen != null and results_screen.visible:
+		return false
+	if skirmish_lobby != null and skirmish_lobby.visible:
+		return false
+	if tactics_controls == null or not tactics_controls.visible:
+		return true
+	var stage: int = level_instance.participant.res.stage if level_instance.participant != null and level_instance.participant.res != null else 0
+	return stage <= TacticsParticipantResource.STAGE_SHOW_ACTIONS
+
+
+func _on_options_pressed() -> void:
+	var overlay: Control = $UI.get_node_or_null("OptionsOverlay") as Control
+	if overlay == null:
+		return
+	$UI/MapSelector.visible = false
+	overlay.visible = true
+	menu_graphics_panel.refresh()
+	menu_graphics_panel.focus_first()
+
+
+func _on_restart_requested() -> void:
+	if _relaunch.is_valid():
+		_relaunch.call()
+
+
+func _on_return_to_lobby_requested() -> void:
+	unload_level()
+	_set_tactics_controls_enabled(false)
+	$UI/MapSelector.visible = false
+	if skirmish_lobby != null:
+		skirmish_lobby.open()
+
+
+func _on_main_menu_requested() -> void:
+	unload_level()
+	_set_tactics_controls_enabled(false)
+	if skirmish_lobby != null:
+		skirmish_lobby.visible = false
+	$UI/MapSelector.visible = true
+	launch_button.grab_focus()
+
+
+func _on_quit_requested() -> void:
+	get_tree().quit()
+
+
+func _on_results_play_again() -> void:
+	_finish_ended_level()
+	if _relaunch.is_valid():
+		_relaunch.call()
+
+
+func _on_results_lobby() -> void:
+	var ended_level: TacticsLevel = level_instance
+	var definition: SkirmishDefinitionResource = _ended_definition
+	var result: int = _ended_result
+	if skirmish_lobby != null and ended_level != null:
+		skirmish_lobby.show_battle_summary(result, definition, ended_level)
+	_finish_ended_level()
+	$UI/MapSelector.visible = false
+
+
+func _finish_ended_level() -> void:
+	if skirmish_loader != null and level_instance == skirmish_loader.current_level:
+		skirmish_loader.unload_current()
+	elif is_instance_valid(level_instance):
+		level_instance.queue_free()
+	level_instance = null
+	_ended_definition = null
 
 
 func _on_custom_toggle_pressed() -> void:
@@ -161,6 +290,7 @@ func load_selected_skirmish() -> void:
 	var definition: SkirmishDefinitionResource = _resolve_skirmish_definition(entry)
 	if definition == null:
 		return
+	_relaunch = load_selected_skirmish
 	_launch_definition(definition, false)
 
 
@@ -276,6 +406,7 @@ func _on_lobby_launch_requested(definition: SkirmishDefinitionResource, seed: in
 	skirmish_queue.clear()
 	skirmish_queue_index = 0
 	skirmish_queue_code = ""
+	_relaunch = skirmish_lobby._on_play_again_pressed
 	_launch_definition(definition, true)
 
 
@@ -292,20 +423,30 @@ func _on_lobby_close_requested() -> void:
 
 func _on_skirmish_ended(result: int, definition: SkirmishDefinitionResource) -> void:
 	_set_tactics_controls_enabled(false)
+	if pause_menu != null and pause_menu.is_open:
+		pause_menu.close()
 	var ended_level: TacticsLevel = level_instance
-	if skirmish_loader != null:
-		skirmish_loader.unload_current()
-	level_instance = null
 	if not skirmish_queue.is_empty() and skirmish_queue_index < skirmish_queue.size():
+		if skirmish_loader != null:
+			skirmish_loader.unload_current()
+		level_instance = null
 		await get_tree().create_timer(0.75).timeout
 		_launch_next_queued_skirmish()
 		return
-	if skirmish_lobby != null:
-		skirmish_lobby.show_battle_summary(result, definition, ended_level)
-	$UI/MapSelector.visible = false
 	skirmish_queue.clear()
 	skirmish_queue_index = 0
 	skirmish_queue_code = ""
+	$UI/MapSelector.visible = false
+	if results_screen != null and ended_level != null and is_instance_valid(ended_level) and DisplayServer.get_name() != "headless":
+		_ended_definition = definition
+		_ended_result = result
+		results_screen.show_result(result, definition, ended_level)
+		return
+	if skirmish_loader != null:
+		skirmish_loader.unload_current()
+	level_instance = null
+	if skirmish_lobby != null:
+		skirmish_lobby.show_battle_summary(result, definition, ended_level)
 
 
 func _style_main_menu() -> void:

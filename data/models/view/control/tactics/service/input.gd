@@ -49,13 +49,6 @@ func is_mouse_hovering_ui_elem(
 						var move_button: Button = action as Button
 						if move_button.get_global_rect().has_point(ctrl.get_viewport().get_mouse_position()):
 							return true
-				"%Hints":
-					for hint: Node in elem.get_children():
-						if not (hint is TextureRect):
-							continue
-						var hint_texture: TextureRect = hint as TextureRect
-						if hint_texture.get_global_rect().has_point(ctrl.get_viewport().get_mouse_position()):
-							return true
 	return false
 
 
@@ -69,6 +62,4 @@ func _ui_elem(ctrl: TacticsControls, path: String) -> Control:
 		node = ctrl.get_node_or_null("HBox/ItemPicker")
 	if node == null and path == "%Actions":
 		node = ctrl.get_node_or_null("HBox/Actions")
-	if node == null and path == "%Hints":
-		node = ctrl.get_node_or_null("Hints")
 	return node as Control

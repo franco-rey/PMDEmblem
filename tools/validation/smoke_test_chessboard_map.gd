@@ -61,7 +61,7 @@ func _run() -> void:
 	_assert_true(facing_ok == 32, "every Pokemon starts facing the opposing team (%d of 32)" % facing_ok)
 	var terrain: Node = level.arena.get_node_or_null("Terrain")
 	_assert_true(terrain != null and terrain.get_child_count() == 65, "visible board has 64 squares on a slab")
-	var hud_label: Label = level.hud.get_node("HudRoot/QueueColumn/RoundLabel")
+	var hud_label: Label = level.hud.get_node("HudRoot/QueueColumn/QueueStrip/Inner/RoundLabel")
 	_assert_true(hud_label.text.begins_with("Turn "), "HUD counts turns (%s)" % hud_label.text)
 	_finish()
 

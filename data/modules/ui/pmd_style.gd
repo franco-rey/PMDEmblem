@@ -19,6 +19,26 @@ const HP_MID: Color = Color(0.96, 0.78, 0.22, 1.0)
 const HP_LOW: Color = Color(0.92, 0.26, 0.22, 1.0)
 const HP_BACK: Color = Color(0.06, 0.07, 0.12, 1.0)
 const SHADOW: Color = Color(0.0, 0.0, 0.0, 0.55)
+const TYPE_COLORS: Dictionary = {
+	"normal": Color(0.66, 0.65, 0.48),
+	"fire": Color(0.93, 0.50, 0.19),
+	"water": Color(0.39, 0.56, 0.94),
+	"electric": Color(0.97, 0.82, 0.17),
+	"grass": Color(0.48, 0.78, 0.30),
+	"ice": Color(0.59, 0.85, 0.84),
+	"fighting": Color(0.76, 0.18, 0.16),
+	"poison": Color(0.64, 0.24, 0.63),
+	"ground": Color(0.89, 0.75, 0.40),
+	"flying": Color(0.66, 0.56, 0.95),
+	"psychic": Color(0.98, 0.33, 0.53),
+	"bug": Color(0.65, 0.73, 0.10),
+	"rock": Color(0.72, 0.63, 0.22),
+	"ghost": Color(0.45, 0.34, 0.59),
+	"dragon": Color(0.44, 0.21, 0.99),
+	"dark": Color(0.44, 0.34, 0.27),
+	"steel": Color(0.72, 0.72, 0.81),
+	"fairy": Color(0.93, 0.60, 0.68),
+}
 
 
 static func window(fill: Color = NAVY, frame: Color = FRAME, width: int = 3, radius: int = 6) -> StyleBoxFlat:
@@ -96,6 +116,15 @@ static func field(state: String) -> StyleBoxFlat:
 	style.content_margin_top = 4
 	style.content_margin_bottom = 4
 	return style
+
+
+static func type_color(type_id: String) -> Color:
+	return TYPE_COLORS.get(type_id.to_lower(), Color(0.55, 0.55, 0.6))
+
+
+static func type_abbreviation(type_id: String) -> String:
+	var text: String = type_id.strip_edges().to_upper()
+	return text.substr(0, 3) if text.length() >= 3 else text
 
 
 static func hp_color(fraction: float) -> Color:

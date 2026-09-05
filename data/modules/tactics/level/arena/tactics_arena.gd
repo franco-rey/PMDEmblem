@@ -38,6 +38,14 @@ func mark_hover_tile(tile: TacticsTile) -> void:
 	serv.mark_hover_tile(self, tile)
 
 
+func mark_path_preview(tile: TacticsTile) -> void:
+	serv.mark_path_preview(self, tile)
+
+
+func mark_committed(tile: TacticsTile) -> void:
+	serv.mark_committed(self, tile)
+
+
 func mark_reachable_tiles(root: TacticsTile, distance: float) -> void:
 	serv.mark_reachable_tiles(self, root, distance)
 

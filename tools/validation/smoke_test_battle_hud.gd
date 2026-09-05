@@ -24,7 +24,7 @@ func _run() -> void:
 	var queue: Array[TacticsPawn] = hud.queue_pawns()
 	_assert_true(queue.size() == 4 and queue[0] == active.pawn, "queue lists all four units with the active unit first (%d)" % queue.size())
 	await process_frame
-	var strip: HBoxContainer = hud.get_node("HudRoot/QueueColumn/QueueStrip/QueueRow")
+	var strip: HBoxContainer = hud.get_node("HudRoot/QueueColumn/QueueStrip/Inner/QueueRow")
 	_assert_true(strip.get_child_count() >= 4, "queue strip shows a tile per unit (%d children)" % strip.get_child_count())
 	var first_tile: Control = strip.get_child(0)
 	var portrait: TextureRect = first_tile.find_child("Portrait", true, false)
@@ -63,6 +63,13 @@ func _run() -> void:
 	_assert_true(lines != null and lines.get_child_count() == mini(level.message_log.history.size(), BattleMessageLog.MAX_VISIBLE), "dock shows one label per message (%d)" % (lines.get_child_count() if lines != null else -1))
 	hud._on_event({"kind": "weather_started", "condition_id": "rain", "rounds": 5})
 	var lobby_scene: PackedScene = load("res://data/modules/skirmish/skirmish_lobby.tscn") if ResourceLoader.exists("res://data/modules/skirmish/skirmish_lobby.tscn") else null
+	var active_panel_node: PanelContainer = hud.get_node("HudRoot/ActivePanel")
+	var target_panel_node: PanelContainer = hud.get_node("HudRoot/TargetPanel")
+	var strip_node: PanelContainer = hud.get_node("HudRoot/QueueColumn/QueueStrip")
+	_assert_true(is_equal_approx(active_panel_node.custom_minimum_size.x, target_panel_node.custom_minimum_size.x) and (hud.get_node("HudRoot/TargetPanel").find_child("Portrait", true, false) as Control).custom_minimum_size == (active_panel_node.find_child("Portrait", true, false) as Control).custom_minimum_size and target_panel_node.anchor_left == 1.0 and target_panel_node.offset_top == active_panel_node.offset_top, "target panel mirrors the active panel at the top right")
+	_assert_true(strip_node.get_node_or_null("Inner/RoundLabel") != null and is_equal_approx(strip_node.size.y, strip_node.custom_minimum_size.y) and strip_node.size.y <= active_panel_node.size.y + 1.0, "turn counter sits inside the queue box, the box keeps a fixed height and stays shorter than the panels (%.0f vs %.0f)" % [strip_node.size.y, active_panel_node.size.y])
+	var dock_node: PanelContainer = hud.get_node("HudRoot/StatusDock")
+	_assert_true(dock_node != null and dock_node.offset_bottom < 0.0 and hud.status_dock_lines().size() >= 1, "status dock sits above the battle log and lists effects (%s)" % str(hud.status_dock_lines()))
 	_assert_true(hud.get_node("HudRoot/WeatherChip").visible and (hud.get_node("HudRoot/WeatherChip/WeatherLabel") as Label).text == "Rain (5)", "weather chip shows the condition and rounds")
 	target.stats.curr_health = 0
 	hud._on_event({"kind": "unit_fainted", "unit": target})

@@ -6,6 +6,8 @@ var tile_raycast: Resource = load("res://data/modules/tactics/level/arena/tile/r
 var reachable: bool = false
 var attackable: bool = false
 var hover: bool = false
+var path: bool = false
+var committed: bool = false
 
 var pf_root: TacticsTile
 var pf_distance: float
@@ -15,14 +17,19 @@ var reachable_mat: StandardMaterial3D = TacticsConfig.mat_color.reachable
 var hover_reachable_mat: StandardMaterial3D = TacticsConfig.mat_color.reachable_hover
 var attackable_mat: StandardMaterial3D = TacticsConfig.mat_color.attackable
 var hover_attackable_mat: StandardMaterial3D = TacticsConfig.mat_color.hover_attackable
+var path_mat: StandardMaterial3D = TacticsConfig.mat_color.path
+var committed_mat: StandardMaterial3D = TacticsConfig.mat_color.committed
 
 func _process(_delta: float) -> void:
 	var tile: MeshInstance3D = get_node_or_null("Tile") as MeshInstance3D
 	if not tile:
 		return
 
-	tile.visible = attackable or reachable or hover
+	tile.visible = attackable or reachable or hover or path or committed
 
+	if committed:
+		tile.material_override = committed_mat
+		return
 	match hover:
 		true:
 			if reachable:
@@ -32,7 +39,9 @@ func _process(_delta: float) -> void:
 			else:
 				tile.material_override = hover_mat
 		false:
-			if reachable:
+			if path:
+				tile.material_override = path_mat
+			elif reachable:
 				tile.material_override = reachable_mat
 			elif attackable:
 				tile.material_override = attackable_mat
@@ -55,6 +64,8 @@ func reset_markers() -> void:
 	reachable = false
 	attackable = false
 	hover = false
+	path = false
+	committed = false
 
 
 func configure_tile() -> void:

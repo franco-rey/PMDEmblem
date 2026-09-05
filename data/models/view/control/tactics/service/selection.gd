@@ -53,11 +53,13 @@ func _select_hovered_tile(ctrl: TacticsControls) -> TacticsTile:
 func select_new_location(ctrl: TacticsControls) -> void:
 	var tile: TacticsTile = input_service.get_3d_canvas_mouse_position(1, ctrl)
 	arena.mark_hover_tile(tile)
+	arena.mark_path_preview(tile)
 	if Input.is_action_just_pressed("ui_accept") and tile and tile.reachable:
 		var active_pawn: TacticsPawn = participant.curr_pawn if participant.curr_pawn != null else ctrl.curr_pawn
 		if active_pawn == null:
 			return
 		active_pawn.res.pathfinding_tilestack = arena.get_pathfinding_tilestack(tile)
+		arena.mark_committed(tile)
 		t_cam.target = tile
 		participant.stage = 4
 
@@ -86,6 +88,7 @@ func select_pawn_to_attack(ctrl: TacticsControls) -> void:
 	if Input.is_action_just_pressed("ui_accept") and tile and tile.attackable and participant.attackable_pawn:
 		if move != null:
 			_log_move_selected(participant.curr_pawn, move, move_index)
+		arena.mark_committed(tile)
 		t_cam.target = participant.attackable_pawn
 		participant.stage = 7
 

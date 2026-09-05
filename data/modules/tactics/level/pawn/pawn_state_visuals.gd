@@ -7,16 +7,23 @@ const VANISH_ALPHA: float = 0.25
 const MARKER_LIFETIME: float = 3600.0
 const MARKERS: Dictionary = {"underground": ["dig", "Dig"], "underwater": ["dive", "Dive"]}
 const STATES: Array[String] = ["airborne", "underground", "underwater", "vanished"]
+const FAINT_HOLD_SECONDS: float = 1.4
+const FAINT_FADE_SECONDS: float = 0.7
 
 var pawn: TacticsPawn = null
 var state: String = ""
+var faint_seconds: float = 0.0
 var _marker: Node3D = null
 var _tween: Tween = null
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if pawn == null or pawn.stats == null:
 		return
+	if pawn.stats.is_active():
+		faint_seconds = 0.0
+	else:
+		faint_seconds += delta
 	var next: String = ""
 	if pawn.stats.is_active():
 		for candidate in STATES:
@@ -49,6 +56,12 @@ func _apply(next: String) -> void:
 		_tween = create_tween()
 		_tween.tween_method(sprite.set_lift, sprite.lift_world, target_lift, LIFT_SECONDS).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	state = next
+
+
+func faint_alpha() -> float:
+	if pawn == null or pawn.stats == null or pawn.stats.is_active():
+		return 1.0
+	return clampf(1.0 - (faint_seconds - FAINT_HOLD_SECONDS) / FAINT_FADE_SECONDS, 0.0, 1.0)
 
 
 func _spawn_marker(next: String) -> Node3D:

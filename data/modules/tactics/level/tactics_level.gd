@@ -27,6 +27,11 @@ const SCREEN_CONDITIONS: Array[String] = ["light_screen", "reflect", "safeguard"
 @export var ui_control: TacticsControlsResource = load("res://data/models/view/control/tactics/control.tres")
 @export var use_speed_scheduler: bool = true
 @export var battle_seed: int = 0
+const SKY_TOP_COLOR: Color = Color(0.30, 0.56, 0.95)
+const SKY_HORIZON_COLOR: Color = Color(0.80, 0.88, 0.98)
+const GROUND_BOTTOM_COLOR: Color = Color(0.22, 0.28, 0.40)
+const GROUND_HORIZON_COLOR: Color = Color(0.62, 0.70, 0.84)
+const AMBIENT_COLOR: Color = Color(0.72, 0.74, 0.80)
 var participant: TacticsParticipant
 var player: TacticsPlayer = null
 var opponent: TacticsOpponent
@@ -44,6 +49,7 @@ var notation: BattleNotation = BattleNotation.new()
 var notation_context: Dictionary = {}
 var battle_label: String = ""
 var weather_overlay: WeatherOverlay = null
+var floating_text: BattleFloatingText = null
 var battle_finished: bool = false
 var scheduler: BattleScheduler = null
 var battle_units: Array[BattleUnit] = []
@@ -115,6 +121,34 @@ func _setup_presentation() -> void:
 	weather_overlay = WeatherOverlay.new()
 	add_child(weather_overlay)
 	weather_changed.connect(weather_overlay.set_weather)
+	floating_text = BattleFloatingText.new()
+	floating_text.name = "BattleFloatingText"
+	add_child(floating_text)
+	floating_text.setup(self)
+	_ensure_sky()
+
+
+func _ensure_sky() -> void:
+	if find_children("*", "WorldEnvironment", true, false).size() > 0:
+		return
+	var sky_material := ProceduralSkyMaterial.new()
+	sky_material.sky_top_color = SKY_TOP_COLOR
+	sky_material.sky_horizon_color = SKY_HORIZON_COLOR
+	sky_material.ground_bottom_color = GROUND_BOTTOM_COLOR
+	sky_material.ground_horizon_color = GROUND_HORIZON_COLOR
+	sky_material.sun_angle_max = 20.0
+	var sky := Sky.new()
+	sky.sky_material = sky_material
+	var environment := Environment.new()
+	environment.background_mode = Environment.BG_SKY
+	environment.sky = sky
+	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	environment.ambient_light_color = AMBIENT_COLOR
+	environment.ambient_light_energy = 1.0
+	var world_environment := WorldEnvironment.new()
+	world_environment.name = "SkyEnvironment"
+	world_environment.environment = environment
+	add_child(world_environment)
 
 
 func is_presentation_busy() -> bool:

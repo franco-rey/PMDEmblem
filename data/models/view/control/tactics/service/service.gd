@@ -48,9 +48,8 @@ func setup(ctrl: TacticsControls) -> void:
 		push_error("TacticsControls needs an ArenaResource from /data/models/world/combat/arena/")
 
 
-func physics_process(_delta: float, ctrl: TacticsControls) -> void:
+func physics_process(_delta: float, _ctrl: TacticsControls) -> void:
 	input_service.update_mouse_mode()
-	ui_service.update_controller_hints(ctrl)
 
 
 func handle_input(event: InputEvent) -> void:

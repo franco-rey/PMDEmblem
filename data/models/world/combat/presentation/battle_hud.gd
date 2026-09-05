@@ -1,8 +1,15 @@
 class_name BattleHud
 extends CanvasLayer
 
-const QUEUE_TILE: float = 60.0
-const ACTIVE_TILE: float = 76.0
+const QUEUE_TILE: float = 64.0
+const ACTIVE_TILE: float = 80.0
+const PANEL_WIDTH: float = 440.0
+const PANEL_HEIGHT: float = 196.0
+const ARROW_PX: float = 20.0
+const TILE_HP_PX: float = 6.0
+const TILE_HOLDER_HEIGHT: float = ACTIVE_TILE + 8.0 + 1.0 + TILE_HP_PX + 1.0 + ARROW_PX
+const PORTRAIT_PX: float = 96.0
+const STATUS_DOCK_HEIGHT: float = 104.0
 const QUEUE_LENGTH: int = 8
 const MOOD_SECONDS: float = 1.6
 const LOW_HP_FRACTION: float = 0.25
@@ -38,7 +45,14 @@ var _target_frame: PanelContainer = null
 var _target_name: Label = null
 var _target_hp: PmdHpBar = null
 var _target_hint: Label = null
+var _target_meta: Label = null
+var _target_statuses: HBoxContainer = null
 var _target_pawn: TacticsPawn = null
+var _queue_strip: PanelContainer = null
+var _queue_column: VBoxContainer = null
+var _status_dock: PanelContainer = null
+var _status_rows: VBoxContainer = null
+var _status_signature: String = ""
 var _scheduler_connected: bool = false
 
 
@@ -84,38 +98,47 @@ func _build() -> void:
 	_build_active_panel()
 	_build_target_panel()
 	_build_weather_chip()
+	_build_status_dock()
 
 
 func _build_queue_bar() -> void:
-	var column := VBoxContainer.new()
-	column.name = "QueueColumn"
-	column.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	column.anchor_left = 0.5
-	column.anchor_right = 0.5
-	column.offset_top = 10
-	column.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	column.alignment = BoxContainer.ALIGNMENT_BEGIN
-	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_theme_constant_override("separation", 2)
-	_root.add_child(column)
+	_queue_column = VBoxContainer.new()
+	_queue_column.name = "QueueColumn"
+	_queue_column.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_queue_column.anchor_left = 0.5
+	_queue_column.anchor_right = 0.5
+	_queue_column.offset_top = 16
+	_queue_column.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_queue_column.alignment = BoxContainer.ALIGNMENT_BEGIN
+	_queue_column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_queue_column.add_theme_constant_override("separation", 6)
+	_root.add_child(_queue_column)
+	_queue_strip = PanelContainer.new()
+	_queue_strip.name = "QueueStrip"
+	var strip_style: StyleBoxFlat = PmdStyle.window()
+	_queue_strip.add_theme_stylebox_override("panel", strip_style)
+	_queue_strip.custom_minimum_size = Vector2(0, TILE_HOLDER_HEIGHT + strip_style.get_margin(SIDE_TOP) + strip_style.get_margin(SIDE_BOTTOM))
+	_queue_strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_queue_column.add_child(_queue_strip)
+	var inner := MarginContainer.new()
+	inner.name = "Inner"
+	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_queue_strip.add_child(inner)
+	_queue_row = HBoxContainer.new()
+	_queue_row.name = "QueueRow"
+	_queue_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	_queue_row.add_theme_constant_override("separation", 6)
+	_queue_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	inner.add_child(_queue_row)
 	_round_label = Label.new()
 	_round_label.name = "RoundLabel"
 	_round_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_round_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	_round_label.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	_round_label.add_theme_font_size_override("font_size", 24)
 	_round_label.add_theme_color_override("font_color", PmdStyle.TEXT_GOLD)
 	_round_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(_round_label)
-	var strip := PanelContainer.new()
-	strip.name = "QueueStrip"
-	strip.add_theme_stylebox_override("panel", PmdStyle.window(PmdStyle.NAVY_DEEP, PmdStyle.FRAME_SOFT, 2, 6))
-	strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(strip)
-	_queue_row = HBoxContainer.new()
-	_queue_row.name = "QueueRow"
-	_queue_row.alignment = BoxContainer.ALIGNMENT_BEGIN
-	_queue_row.add_theme_constant_override("separation", 6)
-	_queue_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	strip.add_child(_queue_row)
+	inner.add_child(_round_label)
 
 
 func _build_active_panel() -> void:
@@ -124,60 +147,25 @@ func _build_active_panel() -> void:
 	_active_panel.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	_active_panel.offset_left = 16
 	_active_panel.offset_top = 16
-	_active_panel.custom_minimum_size = Vector2(440, 0)
+	_active_panel.custom_minimum_size = Vector2(PANEL_WIDTH, PANEL_HEIGHT)
 	_active_panel.add_theme_stylebox_override("panel", PmdStyle.window())
 	_active_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(_active_panel)
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 10)
-	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_active_panel.add_child(row)
-	_active_frame = _portrait_frame(96.0)
-	_active_portrait = _active_frame.get_node("Portrait") as TextureRect
-	row.add_child(_active_frame)
-	var column := VBoxContainer.new()
-	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	column.add_theme_constant_override("separation", 2)
-	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(column)
-	_active_name = Label.new()
+	var parts: Dictionary = _build_unit_panel_content(_active_panel, false)
+	_active_frame = parts["frame"]
+	_active_portrait = parts["portrait"]
+	_active_name = parts["name"]
+	_active_hp = parts["hp"]
+	_active_meta = parts["meta"]
+	_active_item_icon = parts["item_icon"]
+	_active_detail = parts["detail"]
+	_active_statuses = parts["statuses"]
 	_active_name.name = "ActiveName"
-	_active_name.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(_active_name)
-	_active_hp = PmdHpBar.new()
 	_active_hp.name = "ActiveHp"
-	_active_hp.custom_minimum_size = Vector2(300, 22)
-	column.add_child(_active_hp)
-	_active_meta = Label.new()
 	_active_meta.name = "ActiveMeta"
-	_active_meta.add_theme_font_size_override("font_size", 24)
-	_active_meta.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
-	_active_meta.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(_active_meta)
-	var detail_row := HBoxContainer.new()
-	detail_row.add_theme_constant_override("separation", 6)
-	detail_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(detail_row)
-	_active_item_icon = TextureRect.new()
 	_active_item_icon.name = "ActiveItemIcon"
-	_active_item_icon.custom_minimum_size = Vector2(28, 28)
-	_active_item_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_active_item_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	_active_item_icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_active_item_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_active_item_icon.visible = false
-	detail_row.add_child(_active_item_icon)
-	_active_detail = Label.new()
 	_active_detail.name = "ActiveDetail"
-	_active_detail.add_theme_font_size_override("font_size", 24)
-	_active_detail.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
-	_active_detail.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	detail_row.add_child(_active_detail)
-	_active_statuses = HBoxContainer.new()
 	_active_statuses.name = "ActiveStatuses"
-	_active_statuses.add_theme_constant_override("separation", 4)
-	_active_statuses.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(_active_statuses)
 	_active_panel.visible = false
 
 
@@ -186,53 +174,96 @@ func _build_target_panel() -> void:
 	_target_panel.name = "TargetPanel"
 	_target_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
 	_target_panel.offset_right = -16
-	_target_panel.offset_top = 76
+	_target_panel.offset_top = 16
 	_target_panel.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	_target_panel.custom_minimum_size = Vector2(400, 0)
+	_target_panel.custom_minimum_size = Vector2(PANEL_WIDTH, PANEL_HEIGHT)
 	_target_panel.add_theme_stylebox_override("panel", PmdStyle.window(PmdStyle.NAVY, PmdStyle.CURSOR, 3, 6))
 	_target_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(_target_panel)
+	var parts: Dictionary = _build_unit_panel_content(_target_panel, true)
+	_target_frame = parts["frame"]
+	_target_portrait = parts["portrait"]
+	_target_name = parts["name"]
+	_target_hp = parts["hp"]
+	_target_meta = parts["meta"]
+	_target_hint = parts["detail"]
+	_target_statuses = parts["statuses"]
+	(parts["item_icon"] as TextureRect).visible = false
+	_target_name.name = "TargetName"
+	_target_hp.name = "TargetHp"
+	_target_meta.name = "TargetMeta"
+	_target_hint.name = "TargetHint"
+	_target_statuses.name = "TargetStatuses"
+	_target_panel.visible = false
+
+
+func _build_unit_panel_content(panel: PanelContainer, mirrored: bool) -> Dictionary:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 10)
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_target_panel.add_child(row)
+	panel.add_child(row)
+	var frame: PanelContainer = _portrait_frame(PORTRAIT_PX)
+	var portrait: TextureRect = frame.get_node("Portrait") as TextureRect
 	var column := VBoxContainer.new()
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_theme_constant_override("separation", 2)
 	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(column)
-	var heading := Label.new()
-	heading.text = "Target"
-	heading.add_theme_font_size_override("font_size", 24)
-	heading.add_theme_color_override("font_color", PmdStyle.CURSOR)
-	heading.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(heading)
-	_target_name = Label.new()
-	_target_name.name = "TargetName"
-	_target_name.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(_target_name)
-	_target_hp = PmdHpBar.new()
-	_target_hp.name = "TargetHp"
-	_target_hp.custom_minimum_size = Vector2(240, 22)
-	column.add_child(_target_hp)
-	_target_hint = Label.new()
-	_target_hint.name = "TargetHint"
-	_target_hint.add_theme_font_size_override("font_size", 24)
-	_target_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(_target_hint)
-	_target_frame = _portrait_frame(80.0)
-	_target_portrait = _target_frame.get_node("Portrait") as TextureRect
-	row.add_child(_target_frame)
-	_target_panel.visible = false
+	if mirrored:
+		row.add_child(column)
+		row.add_child(frame)
+	else:
+		row.add_child(frame)
+		row.add_child(column)
+	var align: int = HORIZONTAL_ALIGNMENT_RIGHT if mirrored else HORIZONTAL_ALIGNMENT_LEFT
+	var name_label := Label.new()
+	name_label.horizontal_alignment = align
+	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(name_label)
+	var hp := PmdHpBar.new()
+	hp.custom_minimum_size = Vector2(300, 22)
+	hp.size_flags_horizontal = Control.SIZE_SHRINK_END if mirrored else Control.SIZE_FILL
+	column.add_child(hp)
+	var meta := Label.new()
+	meta.horizontal_alignment = align
+	meta.add_theme_font_size_override("font_size", 24)
+	meta.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
+	meta.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(meta)
+	var detail_row := HBoxContainer.new()
+	detail_row.alignment = BoxContainer.ALIGNMENT_END if mirrored else BoxContainer.ALIGNMENT_BEGIN
+	detail_row.add_theme_constant_override("separation", 6)
+	detail_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(detail_row)
+	var item_icon := TextureRect.new()
+	item_icon.custom_minimum_size = Vector2(28, 28)
+	item_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	item_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	item_icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	item_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	item_icon.visible = false
+	detail_row.add_child(item_icon)
+	var detail := Label.new()
+	detail.horizontal_alignment = align
+	detail.add_theme_font_size_override("font_size", 24)
+	detail.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
+	detail.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	detail_row.add_child(detail)
+	var statuses := HBoxContainer.new()
+	statuses.alignment = BoxContainer.ALIGNMENT_END if mirrored else BoxContainer.ALIGNMENT_BEGIN
+	statuses.add_theme_constant_override("separation", 4)
+	statuses.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(statuses)
+	return {"frame": frame, "portrait": portrait, "name": name_label, "hp": hp, "meta": meta, "item_icon": item_icon, "detail": detail, "statuses": statuses}
 
 
 func _build_weather_chip() -> void:
 	_weather_chip = PanelContainer.new()
 	_weather_chip.name = "WeatherChip"
-	_weather_chip.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	_weather_chip.offset_right = -16
-	_weather_chip.offset_top = 16
-	_weather_chip.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	_weather_chip.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_weather_chip.anchor_left = 0.5
+	_weather_chip.anchor_right = 0.5
+	_weather_chip.offset_top = 160
+	_weather_chip.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	_weather_chip.add_theme_stylebox_override("panel", PmdStyle.chip(PmdStyle.NAVY_DEEP, PmdStyle.FRAME))
 	_weather_chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(_weather_chip)
@@ -242,6 +273,127 @@ func _build_weather_chip() -> void:
 	_weather_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_weather_chip.add_child(_weather_label)
 	_weather_chip.visible = false
+
+
+func _build_status_dock() -> void:
+	_status_dock = PanelContainer.new()
+	_status_dock.name = "StatusDock"
+	_status_dock.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	_status_dock.offset_left = 16
+	_status_dock.offset_right = 16 + BattleMessageLog.DOCK_SIZE.x
+	_status_dock.offset_bottom = -BattleMessageLog.DOCK_SIZE.y - 24
+	_status_dock.offset_top = _status_dock.offset_bottom - STATUS_DOCK_HEIGHT
+	_status_dock.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_status_dock.add_theme_stylebox_override("panel", PmdStyle.window(PmdStyle.NAVY_DEEP, PmdStyle.FRAME_SOFT, 2, 6))
+	_status_dock.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_root.add_child(_status_dock)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 2)
+	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_status_dock.add_child(column)
+	var title := Label.new()
+	title.name = "StatusTitle"
+	title.text = "Status"
+	title.add_theme_font_size_override("font_size", 22)
+	title.add_theme_color_override("font_color", PmdStyle.TEXT_GOLD)
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(title)
+	_status_rows = VBoxContainer.new()
+	_status_rows.name = "StatusRows"
+	_status_rows.add_theme_constant_override("separation", 2)
+	_status_rows.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(_status_rows)
+	_refresh_status_dock(true)
+
+
+func status_dock_lines() -> Array[String]:
+	var out: Array[String] = []
+	if _status_rows == null:
+		return out
+	for child in _status_rows.get_children():
+		var label: Label = child.find_child("StatusText", true, false) as Label if child is Control and not (child is Label) else child as Label
+		if label != null:
+			out.append(label.text)
+	return out
+
+
+func _status_entries() -> Array[Dictionary]:
+	var entries: Array[Dictionary] = []
+	if level == null:
+		return entries
+	var weather: String = level.effective_weather()
+	if not weather.is_empty():
+		var rounds: int = 0
+		var stored: Variant = level.battle_conditions.get(weather, null)
+		if stored is Dictionary:
+			rounds = int((stored as Dictionary).get("counter", 0))
+		entries.append({"icon": "", "text": "%s%s" % [BattleWeatherService.label(weather), " (%d)" % rounds if rounds > 0 else ""], "color": PmdStyle.TEXT})
+	for key in level.battle_conditions.keys():
+		var condition: String = String(key)
+		if condition == weather or BattleWeatherService.is_weather(condition):
+			continue
+		var stored: Variant = level.battle_conditions[key]
+		var rounds: int = int((stored as Dictionary).get("counter", 0)) if stored is Dictionary else 0
+		entries.append({"icon": "", "text": "%s%s" % [condition.capitalize(), " (%d)" % rounds if rounds > 0 else ""], "color": PmdStyle.TEXT_DIM})
+	var pawn: TacticsPawn = _active_pawn
+	if pawn != null and is_instance_valid(pawn) and pawn.stats != null and pawn.is_alive():
+		for status_id in pawn.stats.battle_statuses.keys():
+			var id: String = String(status_id)
+			if StatusBadgeRow.HIDDEN.has(id):
+				continue
+			var payload: Variant = pawn.stats.battle_statuses[status_id]
+			var turns: int = 0
+			if payload is Dictionary:
+				for turn_key in ["turns", "turns_left", "counter", "duration"]:
+					if (payload as Dictionary).has(turn_key):
+						turns = int((payload as Dictionary)[turn_key])
+						break
+			entries.append({"icon": id, "text": "%s: %s%s" % [level.notation.unit_name(pawn), BattleMessageCatalog._status_label(id), " (%d)" % turns if turns > 0 else ""], "color": PmdStyle.TEXT})
+	return entries
+
+
+func _refresh_status_dock(force: bool = false) -> void:
+	if _status_rows == null:
+		return
+	var entries: Array[Dictionary] = _status_entries()
+	var parts: PackedStringArray = []
+	for entry in entries:
+		parts.append(String(entry["text"]))
+	var signature: String = "|".join(parts)
+	if signature == _status_signature and not force:
+		return
+	_status_signature = signature
+	for child in _status_rows.get_children():
+		_status_rows.remove_child(child)
+		child.queue_free()
+	if entries.is_empty():
+		var empty := Label.new()
+		empty.name = "StatusText"
+		empty.text = "No status effects"
+		empty.add_theme_font_size_override("font_size", 22)
+		empty.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
+		empty.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_status_rows.add_child(empty)
+		return
+	for entry in entries.slice(0, 3):
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 6)
+		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var icon_id: String = String(entry.get("icon", ""))
+		if not icon_id.is_empty() and StatusBadgeRow.EMOTICONS.has(icon_id):
+			var icon := EmoticonIcon.new()
+			if icon.set_status(icon_id, 24.0):
+				row.add_child(icon)
+			else:
+				icon.free()
+		var label := Label.new()
+		label.name = "StatusText"
+		label.text = String(entry["text"])
+		label.add_theme_font_size_override("font_size", 22)
+		label.add_theme_color_override("font_color", entry.get("color", PmdStyle.TEXT))
+		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		row.add_child(label)
+		_status_rows.add_child(row)
 
 
 func _portrait_frame(px: float) -> PanelContainer:
@@ -338,11 +490,12 @@ func _make_tile(pawn: TacticsPawn, active: bool) -> Control:
 	var holder := VBoxContainer.new()
 	holder.name = "Tile_%s" % pawn.name
 	holder.alignment = BoxContainer.ALIGNMENT_END
+	holder.custom_minimum_size = Vector2(0, TILE_HOLDER_HEIGHT)
 	holder.add_theme_constant_override("separation", 1)
 	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if active:
 		var arrow := EmoticonIcon.new()
-		arrow.set_sheet(ARROW_SHEET, 20.0)
+		arrow.set_sheet(ARROW_SHEET, ARROW_PX)
 		arrow.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		holder.add_child(arrow)
 	var frame := _portrait_frame(px)
@@ -351,7 +504,7 @@ func _make_tile(pawn: TacticsPawn, active: bool) -> Control:
 	holder.add_child(frame)
 	var hp := PmdHpBar.new()
 	hp.show_text = false
-	hp.custom_minimum_size = Vector2(px + 8.0, 6)
+	hp.custom_minimum_size = Vector2(px + 8.0, TILE_HP_PX)
 	hp.set_values(pawn.stats.curr_health, pawn.stats.max_health)
 	holder.add_child(hp)
 	_tiles[pawn] = {"node": holder, "portrait": frame.get_node("Portrait"), "hp": hp, "expression": "", "team": team}
@@ -415,16 +568,7 @@ func refresh_active_panel() -> void:
 	_active_name.text = "%s  Lv %d" % [level.notation.unit_name(pawn), stats.level]
 	_active_name.add_theme_color_override("font_color", PmdStyle.team_color(team))
 	_active_hp.set_values(stats.curr_health, stats.max_health)
-	var types: Array[String] = []
-	for type_id in stats.types:
-		types.append(String(type_id).capitalize())
-	var ability: String = ""
-	var natural: Array[String] = BattleIntrinsicService.natural_slugs_static(stats)
-	if stats.pokemon_instance != null and not String(stats.pokemon_instance.ability_override).is_empty():
-		ability = String(stats.pokemon_instance.ability_override)
-	elif not natural.is_empty():
-		ability = natural[0]
-	_active_meta.text = "%s  |  %s" % [" / ".join(types), ability.capitalize()]
+	_active_meta.text = _meta_text(stats)
 	var item: PokemonItemResource = PokemonItemService.held_item_for(stats)
 	if item != null:
 		_active_detail.text = item.display_name()
@@ -435,13 +579,31 @@ func refresh_active_panel() -> void:
 	else:
 		_active_detail.text = "No held item"
 		_active_item_icon.visible = false
-	for child in _active_statuses.get_children():
+	_fill_status_icons(_active_statuses, stats)
+
+
+func _meta_text(stats: Stats) -> String:
+	var types: Array[String] = []
+	for type_id in stats.types:
+		types.append(String(type_id).capitalize())
+	var ability: String = ""
+	var natural: Array[String] = BattleIntrinsicService.natural_slugs_static(stats)
+	if stats.pokemon_instance != null and not String(stats.pokemon_instance.ability_override).is_empty():
+		ability = String(stats.pokemon_instance.ability_override)
+	elif not natural.is_empty():
+		ability = natural[0]
+	return "%s  |  %s" % [" / ".join(types), ability.capitalize()]
+
+
+func _fill_status_icons(container: HBoxContainer, stats: Stats) -> void:
+	for child in container.get_children():
+		container.remove_child(child)
 		child.queue_free()
 	for status_id in stats.battle_statuses:
 		if StatusBadgeRow.EMOTICONS.has(String(status_id)):
 			var icon := EmoticonIcon.new()
 			if icon.set_status(String(status_id), 28.0):
-				_active_statuses.add_child(icon)
+				container.add_child(icon)
 			else:
 				icon.free()
 
@@ -466,7 +628,9 @@ func _refresh_target_panel() -> void:
 	_target_name.text = "%s  Lv %d" % [level.notation.unit_name(target), target.stats.level]
 	_target_name.add_theme_color_override("font_color", PmdStyle.team_color(team))
 	_target_hp.set_values(target.stats.curr_health, target.stats.max_health)
+	_target_meta.text = _meta_text(target.stats)
 	_target_hint.text = _effectiveness_hint(res.curr_pawn, target)
+	_fill_status_icons(_target_statuses, target.stats)
 
 
 func _effectiveness_hint(attacker: TacticsPawn, target: TacticsPawn) -> String:
@@ -494,7 +658,26 @@ func _effectiveness_hint(attacker: TacticsPawn, target: TacticsPawn) -> String:
 		verdict = "Not very effective"
 		color = PmdStyle.HP_LOW
 	_target_hint.add_theme_color_override("font_color", color)
-	return "%s: %s" % [move.display_name(), verdict]
+	var estimate: String = _damage_estimate(attacker, target, move, multiplier)
+	if estimate.is_empty():
+		return "%s: %s" % [move.display_name(), verdict]
+	return "%s: %s\n%s" % [move.display_name(), verdict, estimate]
+
+
+func _damage_estimate(attacker: TacticsPawn, target: TacticsPawn, move: PokemonMoveResource, multiplier: float) -> String:
+	if multiplier <= 0.0 or target.stats == null or attacker.stats == null:
+		return ""
+	var stab: bool = attacker.stats.types.has(move.type)
+	var resolver := DamageResolver.new()
+	var full: int = resolver.calculate_damage(attacker.stats, target.stats, move, multiplier, stab, 1.0, null, {}, true)
+	if full <= 0:
+		return ""
+	var low: int = maxi(1, int(floor(float(full) * 0.85)))
+	var max_hp: int = maxi(1, target.stats.max_health)
+	var low_pct: int = int(round(100.0 * float(low) / float(max_hp)))
+	var high_pct: int = int(round(100.0 * float(full) / float(max_hp)))
+	var suffix: String = "  KO range" if low >= target.stats.curr_health else ("  may KO" if full >= target.stats.curr_health else "")
+	return "%d-%d dmg (%d-%d%%)%s" % [low, full, low_pct, high_pct, suffix]
 
 
 func _move_is_damaging(move_id: String) -> bool:
@@ -564,3 +747,11 @@ func _process(_delta: float) -> void:
 		_active_hp.set_values(_active_pawn.stats.curr_health, _active_pawn.stats.max_health)
 		_active_portrait.texture = PortraitLibrary.texture_for(PortraitLibrary.slug_for_pawn(_active_pawn), expression_for(_active_pawn))
 	_refresh_target_panel()
+	_sync_panel_heights()
+	_refresh_status_dock()
+
+
+func _sync_panel_heights() -> void:
+	var chip_top: float = _queue_column.offset_top + _queue_strip.size.y + 8.0
+	if not is_equal_approx(_weather_chip.offset_top, chip_top):
+		_weather_chip.offset_top = chip_top

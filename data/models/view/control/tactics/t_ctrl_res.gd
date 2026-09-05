@@ -18,7 +18,6 @@ const PREVIEW_MOVEMENT: String = "movement"
 const PREVIEW_MOVE_SLOT: String = "move_slot"
 
 @export var is_joystick: bool
-@export var input_hints_folded: bool
 var preview_mode: String = PREVIEW_NONE
 var preview_move_slot_index: int = -1
 

@@ -7,6 +7,8 @@ static var color: Dictionary = {
 	"blue_bolt": "0aa9ffBF",
 	"rosso_corsa": "d10000BF",
 	"coral_red": "ff4242BF",
+	"path_cyan": "e6fbffF2",
+	"commit_gold": "ffd54aD8",
 }
 
 static var mat_color: Dictionary = {
@@ -15,6 +17,8 @@ static var mat_color: Dictionary = {
 	"reachable_hover": create_material(str(color.blue_bolt)),
 	"attackable": create_material(str(color.rosso_corsa)),
 	"hover_attackable": create_material(str(color.coral_red)),
+	"path": create_material(str(color.path_cyan)),
+	"committed": create_material(str(color.commit_gold)),
 }
 
 static var pawn: Dictionary = {
@@ -30,7 +34,7 @@ static var view: Dictionary = {
 }
 
 static var ui_elem: Array[String] = [
-	"%Actions", "%MovePicker", "%ItemPicker", "%Hints",
+	"%Actions", "%MovePicker", "%ItemPicker",
 ]
 
 
