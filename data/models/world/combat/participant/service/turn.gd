@@ -18,8 +18,7 @@ func handle_human_turn(delta: float, actor_parent: Node3D, target_parent: Node3D
 		camera.target = actor_parent.get_children().front()
 		res.turn_just_started = false
 
-	controls.move_camera(delta)
-	controls.camera_rotation_inputs(delta)
+	controls.lock_horizontal_pan = res.stage in [res.STAGE_DISPLAY_TARGETS, res.STAGE_SELECT_ATTACK_TARGET, res.STAGE_SELECT_THROW_TARGET]
 	controls.set_actions_menu_visibility(res.stage in [res.STAGE_SHOW_ACTIONS, res.STAGE_SHOW_MOVEMENTS, res.STAGE_SELECT_LOCATION, res.STAGE_DISPLAY_TARGETS, res.STAGE_SELECT_ATTACK_TARGET], res.curr_pawn)
 
 	match res.stage:
@@ -40,6 +39,9 @@ func handle_human_turn(delta: float, actor_parent: Node3D, target_parent: Node3D
 func handle_ai_turn(delta: float, actor_parent: Node3D, target_parent: Node3D, participant: TacticsParticipant) -> void:
 	res.targets = target_parent
 	controls.set_actions_menu_visibility(false, null)
+	controls.lock_horizontal_pan = false
+	if camera.spectator:
+		camera.target = null
 	if res.stage > 4:
 		res.stage = 0
 		DebugLog.debug_nospam("turn_stage", res.stage)

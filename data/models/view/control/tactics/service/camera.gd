@@ -8,8 +8,8 @@ func _init(_t_cam: TacticsCameraResource) -> void:
 	t_cam = _t_cam
 
 
-func move_camera(delta: float, is_joystick: bool) -> void:
-	var h: float = -Input.get_action_strength("camera_left") + Input.get_action_strength("camera_right")
+func move_camera(delta: float, is_joystick: bool, lock_horizontal: bool = false) -> void:
+	var h: float = 0.0 if lock_horizontal else -Input.get_action_strength("camera_left") + Input.get_action_strength("camera_right")
 	var v: float = Input.get_action_strength("camera_forward") - Input.get_action_strength("camera_backwards")
 
 	t_cam.move_camera(h, v, is_joystick, delta)
@@ -28,12 +28,19 @@ func handle_rotation_inputs(delta: float) -> void:
 			t_cam.toggle_perspective()
 			t_cam.rotate_camera(delta, 0)
 		return
-	if Input.is_action_just_pressed("camera_rotate_left"):
+	if Input.is_action_just_pressed("camera_orbit_left"):
+		t_cam.toggle_orbit(-1)
+	elif Input.is_action_just_pressed("camera_orbit_right"):
+		t_cam.toggle_orbit(1)
+	elif Input.is_action_just_pressed("camera_rotate_left"):
 		if not t_cam.in_free_look:
+			t_cam.orbit_direction = 0
 			t_cam.rotate_camera(delta, -ROTATE_STEP_DEGREES)
 	elif Input.is_action_just_pressed("camera_rotate_right"):
 		if not t_cam.in_free_look:
+			t_cam.orbit_direction = 0
 			t_cam.rotate_camera(delta, ROTATE_STEP_DEGREES)
 	elif Input.is_action_just_pressed("camera_free_look"):
-		if not t_cam.is_rotating:
-			t_cam.in_free_look = true
+		t_cam.is_rotating = false
+		t_cam.orbit_direction = 0
+		t_cam.in_free_look = true

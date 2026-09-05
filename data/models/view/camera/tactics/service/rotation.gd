@@ -5,6 +5,7 @@ const DELTA_SMOOTHING: int = 10
 const MAX_VERT_ROT: int = 20
 const MIN_VERT_ROT: int = -45
 const FREE_LOOK_ROT_FACTOR: int = 2
+const ROTATION_DONE_RADIANS: float = 0.002
 
 var res: TacticsCameraResource
 var controls: TacticsControlsResource
@@ -24,6 +25,13 @@ func free_look(delta: float, t_pivot: Node3D, p_pivot: Node3D) -> void:
 	reset_twist_pitch_inputs()
 
 
+func orbit(delta: float, t_pivot: Node3D) -> void:
+	if res.orbit_direction == 0:
+		return
+	t_pivot.rotate_y(deg_to_rad(res.ORBIT_SPEED_DEGREES * float(res.orbit_direction)) * delta)
+	res.y_rot = int(round(fposmod(t_pivot.rotation_degrees.y, 360.0)))
+
+
 func rotate_camera(delta: float, t_pivot: Node3D, p_pivot: Node3D) -> void:
 	var curr_quat_t: Quaternion = Quaternion.from_euler(t_pivot.rotation)
 	var curr_quat_p: Quaternion = Quaternion.from_euler(p_pivot.rotation)
@@ -32,13 +40,16 @@ func rotate_camera(delta: float, t_pivot: Node3D, p_pivot: Node3D) -> void:
 	var target_quat_t: Quaternion = Quaternion.from_euler(destination_t)
 	var target_quat_p: Quaternion = Quaternion.from_euler(destination_p)
 
-	var new_quat_t: Quaternion = curr_quat_t.slerp(target_quat_t, (res.rot_speed * DELTA_SMOOTHING) * delta)
-	var new_quat_p: Quaternion = curr_quat_p.slerp(target_quat_p, (res.rot_speed * DELTA_SMOOTHING) * delta)
+	var weight: float = clampf((res.rot_speed * DELTA_SMOOTHING) * delta, 0.0, 1.0)
+	var new_quat_t: Quaternion = curr_quat_t.slerp(target_quat_t, weight)
+	var new_quat_p: Quaternion = curr_quat_p.slerp(target_quat_p, weight)
 
 	t_pivot.rotation = new_quat_t.get_euler()
 	p_pivot.rotation = new_quat_p.get_euler()
 
-	if is_equal_approx(t_pivot.rotation.y, deg_to_rad(res.y_rot)):
+	if new_quat_t.angle_to(target_quat_t) <= ROTATION_DONE_RADIANS and new_quat_p.angle_to(target_quat_p) <= ROTATION_DONE_RADIANS:
+		t_pivot.rotation = destination_t
+		p_pivot.rotation = destination_p
 		res.is_rotating = false
 
 

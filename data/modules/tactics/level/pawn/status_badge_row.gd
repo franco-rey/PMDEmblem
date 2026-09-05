@@ -85,7 +85,8 @@ const ICON_DIR: String = "res://assets/visuals/raw_asset/Icon/"
 const ICON_FPS: float = 8.0
 const HIDDEN: Array[String] = ["counter", "mirror_coat", "metal_burst", "roosting", "electrified", "sure_shot", "exposed", "miracle_eye", "defense_curl", "minimized", "enraged", "powder", "magic_coat", "full_paralysis"]
 const SPACING: float = 0.34
-const FONT_SIZE: int = 30
+const FONT_SIZE: int = 36
+const PMD_FONT: FontFile = preload("res://assets/fonts/pmd/pmd_text.fnt")
 
 var pawn: TacticsPawn = null
 var _signature: String = ""
@@ -160,6 +161,7 @@ func _rebuild(ids: Array[String]) -> void:
 		var label := Label3D.new()
 		label.text = String(entry[0])
 		label.modulate = entry[1]
+		label.font = PMD_FONT
 		label.font_size = FONT_SIZE
 		label.outline_size = 8
 		label.outline_modulate = Color(0.05, 0.05, 0.05, 0.9)

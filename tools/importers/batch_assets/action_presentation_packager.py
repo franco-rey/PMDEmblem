@@ -371,7 +371,8 @@ def normalize_node(node: Any, action_names: dict[int, str]) -> Any:
 def _attach_assets(entry: dict[str, Any], resolver: AssetResolver) -> None:
     keys: set[str] = set()
     beam_keys: set[str] = set()
-    _collect_anim_keys(entry, keys, beam_keys, False)
+    overlay_keys: set[str] = set()
+    _collect_anim_keys(entry, keys, beam_keys, overlay_keys, False, False)
     assets: dict[str, Any] = dict(entry.get("assets", {}))
     missing: list[str] = list(entry.get("missing_assets", []))
     for key in sorted(keys):
@@ -380,6 +381,14 @@ def _attach_assets(entry: dict[str, Any], resolver: AssetResolver) -> None:
             missing.append(f"particle:{key}")
         else:
             assets[f"particle:{key}"] = resolved
+    for key in sorted(overlay_keys):
+        resolved = resolver.resolve("BG", key)
+        if resolved is None:
+            resolved = resolver.resolve("Particle", key)
+        if resolved is None:
+            missing.append(f"bg:{key}")
+        else:
+            assets[f"bg:{key}"] = resolved
     for key in sorted(beam_keys):
         resolved = resolver.resolve("Beam", key)
         if resolved is None:
@@ -394,21 +403,28 @@ def _attach_assets(entry: dict[str, Any], resolver: AssetResolver) -> None:
         entry["missing_assets"] = sorted(set(missing))
 
 
-def _collect_anim_keys(node: Any, keys: set[str], beam_keys: set[str], in_beam: bool) -> None:
+def _collect_anim_keys(node: Any, keys: set[str], beam_keys: set[str], overlay_keys: set[str], in_beam: bool, in_overlay: bool) -> None:
     if isinstance(node, dict):
         node_type = str(node.get("type", ""))
         next_in_beam = in_beam or node_type in ("WaveMotionAction", "BeamSweepHitbox", "ColumnAnim", "BeamAnimData")
+        next_in_overlay = in_overlay or node_type == "FiniteOverlayEmitter"
         if "index" in node and "frame_time" in node and isinstance(node.get("index"), str):
             index = str(node["index"])
             if index:
-                (beam_keys if next_in_beam else keys).add(index)
+                if next_in_overlay:
+                    overlay_keys.add(index)
+                elif next_in_beam:
+                    beam_keys.add(index)
+                else:
+                    keys.add(index)
         for key, value in node.items():
             if key in ("assets", "missing_assets"):
                 continue
-            _collect_anim_keys(value, keys, beam_keys, next_in_beam and key not in ("emitter", "tile_emitter", "hit_fx", "explosion", "intro_fx", "action_fx", "pre_actions"))
+            nested_fx = key in ("emitter", "tile_emitter", "hit_fx", "explosion", "intro_fx", "action_fx", "pre_actions")
+            _collect_anim_keys(value, keys, beam_keys, overlay_keys, next_in_beam and not nested_fx, next_in_overlay and not nested_fx)
     elif isinstance(node, list):
         for item in node:
-            _collect_anim_keys(item, keys, beam_keys, in_beam)
+            _collect_anim_keys(item, keys, beam_keys, overlay_keys, in_beam, in_overlay)
 
 
 def _skills_for_dex_range(sources: Any, dex_min: int, dex_max: int, max_level: int) -> set[str]:

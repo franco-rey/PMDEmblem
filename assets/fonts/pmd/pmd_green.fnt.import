@@ -1,0 +1,17 @@
+[remap]
+
+importer="font_data_bmfont"
+type="FontFile"
+uid="uid://cvnc1p24tes0j"
+path="res://.godot/imported/pmd_green.fnt-a040612bbb6511db13a8082007326348.fontdata"
+
+[deps]
+
+source_file="res://assets/fonts/pmd/pmd_green.fnt"
+dest_files=["res://.godot/imported/pmd_green.fnt-a040612bbb6511db13a8082007326348.fontdata"]
+
+[params]
+
+fallbacks=[]
+compress=true
+scaling_mode=1

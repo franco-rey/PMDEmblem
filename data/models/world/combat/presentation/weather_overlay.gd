@@ -3,12 +3,16 @@ extends CanvasLayer
 
 const RAIN_SHEET: String = "res://assets/visuals/raw_asset/Particle/Rain.None.png"
 const HAIL_SHEET: String = "res://assets/visuals/raw_asset/Particle/Hail.None.png"
+const SANDSTORM_SHEET: String = "res://assets/visuals/raw_asset/BG/Sandstorm.1.png"
+const CLOUDS_SHEET: String = "res://assets/visuals/raw_asset/BG/Clouds_Overhead.1.png"
+const PERSISTENT_SECONDS: float = 1.0e9
 const PIXEL_SCALE: float = 3.0
 const SOURCE_SCREEN_AREA: float = 256.0 * 192.0
 
 var weather_id: String = ""
 var _field: WeatherField = null
 var _tint: ColorRect = null
+var _sheet_overlay: Control = null
 
 
 func _init() -> void:
@@ -35,22 +39,47 @@ func set_weather(next_id: String) -> void:
 	_tint.material = null
 	_field.visible = false
 	_field.stop()
+	if _sheet_overlay != null and is_instance_valid(_sheet_overlay):
+		_sheet_overlay.queue_free()
+	_sheet_overlay = null
 	match weather_id:
-		"rain":
+		"rain", "primordial_sea":
 			_field.start(load(RAIN_SHEET) as Texture2D, 5, 1, 360.0, 120.0, 2, 3)
 			_field.visible = true
+			if weather_id == "primordial_sea":
+				_tint.color = Color(0.10, 0.18, 0.40, 0.22)
+				_tint.visible = true
 		"hail":
 			_field.start(load(HAIL_SHEET) as Texture2D, 4, 2, 240.0, 120.0, 2, 5)
 			_field.visible = true
-		"sunny":
+		"sunny", "desolate_land":
 			var material := CanvasItemMaterial.new()
 			material.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 			_tint.material = material
-			_tint.color = Color(0.22, 0.17, 0.06, 1.0)
+			_tint.color = Color(0.22, 0.17, 0.06, 1.0) if weather_id == "sunny" else Color(0.34, 0.16, 0.04, 1.0)
 			_tint.visible = true
 		"sandstorm":
-			_tint.color = Color(0.76, 0.62, 0.32, 0.28)
+			_tint.color = Color(0.76, 0.62, 0.32, 0.11)
 			_tint.visible = true
+			_sheet_overlay = _start_sheet(SANDSTORM_SHEET, Vector2(-420.0, 30.0), Color(1.0, 0.92, 0.7, 0.28))
+		"delta_stream":
+			_sheet_overlay = _start_sheet(CLOUDS_SHEET, Vector2(-160.0, 0.0), Color(1.0, 1.0, 1.0, 0.35))
+
+
+func _start_sheet(path: String, movement: Vector2, tint: Color) -> Control:
+	var texture: Texture2D = load(path) as Texture2D
+	if texture == null:
+		return null
+	var overlay := BattleVFXPlayer.ScreenOverlay.new()
+	overlay.name = "WeatherSheet"
+	overlay.sheet = texture
+	overlay.cell = Vector2(texture.get_size())
+	overlay.frames = 1
+	overlay.movement = movement
+	overlay.tint = tint
+	overlay.total = PERSISTENT_SECONDS
+	add_child(overlay)
+	return overlay
 
 
 class WeatherField:

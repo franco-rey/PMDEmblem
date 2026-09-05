@@ -1,0 +1,7 @@
+[gd_resource type="Theme" load_steps=2 format=3]
+
+[ext_resource type="FontFile" path="res://assets/fonts/pmd/pmd_text.fnt" id="1_pmdtext"]
+
+[resource]
+default_font = ExtResource("1_pmdtext")
+default_font_size = 36

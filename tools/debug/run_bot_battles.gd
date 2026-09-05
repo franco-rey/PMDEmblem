@@ -163,6 +163,14 @@ func _battle(seed: int, team_size: int, round_cap: int, with_items: bool, with_a
 	out["faints"] = faints
 	out["moves_used"] = moves_used
 	out["notation"] = level.notation.output_path()
+	var keep_dir: String = "%s/transcripts" % OUTPUT_DIR
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(keep_dir))
+	var keep_path: String = "%s/%s" % [keep_dir, String(out["notation"]).get_file()]
+	var keep_file := FileAccess.open(keep_path, FileAccess.WRITE)
+	if keep_file != null:
+		keep_file.store_string(level.notation.text())
+		keep_file.close()
+		out["transcript"] = keep_path
 	out["final_hp"] = _final_hp(level)
 	loader.unload_current()
 	loader.queue_free()

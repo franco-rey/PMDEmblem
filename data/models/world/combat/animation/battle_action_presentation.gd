@@ -83,17 +83,42 @@ static func enqueue_move_start(runner: BattlePresentationRunner, attacker: Tacti
 			var emitter: Variant = hitbox.get("emitter", null)
 			if emitter is Dictionary:
 				summary["emitters"] = int(summary["emitters"]) + _enqueue_emitter(runner, emitter, assets, landing, landing, direction, null, range_tiles, 0.0, label + ":emitter")
+			var tile_emitter: Variant = hitbox.get("tile_emitter", null)
+			if tile_emitter is Dictionary:
+				if hitbox_type == "ThrowAction":
+					summary["emitters"] = int(summary["emitters"]) + _enqueue_emitter(runner, tile_emitter, assets, landing, landing, direction, null, 0, 0.0, label + ":tile", clampf((landing - origin).length() / speed, 0.0, 1.5))
+				else:
+					summary["emitters"] = int(summary["emitters"]) + _enqueue_path_emitters(runner, tile_emitter, assets, origin, landing, direction, speed, label + ":tile")
 		"WaveMotionAction":
 			runner.enqueue({"kind": BattlePresentationRunner.KIND_WAIT_UNTIL_HIT})
 			var anim: Dictionary = hitbox.get("anim", {}) if hitbox.get("anim", null) is Dictionary else {}
-			var beam_asset: Dictionary = _asset(assets, String(anim.get("index", "")))
+			var anim_index: String = String(anim.get("index", ""))
+			var beam_asset: Dictionary = _asset(assets, anim_index)
 			var landing: Vector3 = _projectile_landing(attacker, declared_target, targets, direction, range_tiles, false)
 			var speed: float = maxf(float(hitbox.get("speed", DEFAULT_PROJECTILE_SPEED)), 0.5)
 			var seconds: float = clampf((landing - origin).length() / speed + 0.35, 0.3, 2.0)
-			runner.enqueue({"kind": BattlePresentationRunner.KIND_CALLBACK, "callable": Callable(BattleActionPresentation, "_play_beam").bind(runner, beam_asset, origin, landing, direction, int(anim.get("frame_time", 3)), seconds, label)})
+			if not anim_index.is_empty():
+				runner.enqueue({"kind": BattlePresentationRunner.KIND_CALLBACK, "callable": Callable(BattleActionPresentation, "_play_beam").bind(runner, beam_asset, origin, landing, direction, int(anim.get("frame_time", 3)), seconds, label)})
+			for key in ["emitter", "tile_emitter"]:
+				var wave_emitter: Variant = hitbox.get(key, null)
+				if wave_emitter is Dictionary:
+					summary["emitters"] = int(summary["emitters"]) + _enqueue_path_emitters(runner, wave_emitter, assets, origin, landing, direction, speed, label + ":" + key)
 			runner.enqueue({"kind": BattlePresentationRunner.KIND_WAIT, "seconds": clampf((landing - origin).length() / speed, 0.05, 1.5)})
 		"DashAction":
 			runner.enqueue({"kind": BattlePresentationRunner.KIND_WAIT_UNTIL_RUSH})
+			var dash_anim: Dictionary = hitbox.get("anim", {}) if hitbox.get("anim", null) is Dictionary else {}
+			if not String(dash_anim.get("index", "")).is_empty():
+				var attached: Dictionary = {
+					"type": "AttachAreaEmitter",
+					"anims": [{"type": "StaticAnim", "anim": dash_anim, "cycles": 0, "total_time": 27}],
+					"particles_per_burst": 1,
+					"burst_time": 60,
+					"range": 0,
+					"layer": 2,
+					"loc_height": 8,
+					"add_height": 0,
+				}
+				summary["emitters"] = int(summary["emitters"]) + _enqueue_emitter(runner, attached, assets, origin, target_pos, direction, attacker, 0, 0.45, label + ":dash_anim")
 			var emitter: Variant = hitbox.get("emitter", null)
 			if emitter is Dictionary:
 				summary["emitters"] = int(summary["emitters"]) + _enqueue_emitter(runner, emitter, assets, origin, target_pos, direction, attacker, range_tiles, 0.4, label + ":dash")
@@ -132,6 +157,8 @@ static func enqueue_move_start(runner: BattlePresentationRunner, attacker: Tacti
 	if not explosion.is_empty():
 		var explosion_range: int = int(explosion.get("range", 0))
 		var explosion_center: Vector3 = target_pos if hitbox_type in ["ProjectileAction", "ThrowAction", "OffsetAction", "AttackAction", "DashAction", "WaveMotionAction"] else origin
+		for fx in explosion.get("intro_fx", []):
+			_enqueue_fx(runner, fx, assets, explosion_center, target_pos, direction, null, explosion_range, 0.0, label + ":explosion_intro")
 		for key in ["emitter", "tile_emitter"]:
 			var emitter: Variant = explosion.get(key, null)
 			if emitter is Dictionary:
@@ -185,9 +212,12 @@ static func _enqueue_fx(runner: BattlePresentationRunner, fx: Variant, assets: D
 	var emitter: Variant = dict.get("emitter", null)
 	if emitter is Dictionary:
 		_enqueue_emitter(runner, emitter, assets, origin, dest, direction, attach, range_tiles, duration, label)
+	var movement: Variant = dict.get("screen_movement", null)
+	if movement is Dictionary and float((movement as Dictionary).get("max_shake", 0)) > 0.0:
+		runner.enqueue({"kind": BattlePresentationRunner.KIND_VFX, "shake": movement, "label": label + ":shake"})
 
 
-static func _enqueue_emitter(runner: BattlePresentationRunner, emitter: Dictionary, assets: Dictionary, origin: Vector3, dest: Vector3, direction: Vector3, attach: Node3D, range_tiles: int, duration: float, label: String) -> int:
+static func _enqueue_emitter(runner: BattlePresentationRunner, emitter: Dictionary, assets: Dictionary, origin: Vector3, dest: Vector3, direction: Vector3, attach: Node3D, range_tiles: int, duration: float, label: String, delay: float = 0.0) -> int:
 	var type_name: String = String(emitter.get("type", ""))
 	if type_name.is_empty() or type_name.begins_with("Empty"):
 		return 0
@@ -201,9 +231,22 @@ static func _enqueue_emitter(runner: BattlePresentationRunner, emitter: Dictiona
 		"attach": attach,
 		"range_tiles": range_tiles,
 		"duration": duration,
+		"delay": delay,
 		"label": label,
 	})
 	return 1
+
+
+static func _enqueue_path_emitters(runner: BattlePresentationRunner, emitter: Dictionary, assets: Dictionary, origin: Vector3, landing: Vector3, direction: Vector3, speed: float, label: String) -> int:
+	var flat: Vector3 = _flat(direction)
+	var steps: int = clampi(int(round((landing - origin).length())), 1, 8)
+	if flat.length() < 0.001:
+		return _enqueue_emitter(runner, emitter, assets, landing, landing, direction, null, 0, 0.0, label)
+	var count: int = 0
+	for step in range(1, steps + 1):
+		var pos: Vector3 = origin + flat * float(step)
+		count += _enqueue_emitter(runner, emitter, assets, pos, pos, direction, null, 0, 0.0, label, clampf(float(step) / maxf(speed, 0.5), 0.0, 1.5))
+	return count
 
 
 static func _play_beam(runner: BattlePresentationRunner, asset: Dictionary, from: Vector3, to: Vector3, direction: Vector3, frame_time: int, seconds: float, label: String) -> void:

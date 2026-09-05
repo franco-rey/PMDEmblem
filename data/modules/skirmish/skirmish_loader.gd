@@ -29,6 +29,11 @@ func load_skirmish(definition: SkirmishDefinitionResource, battle_parent: Node =
 	level.use_speed_scheduler = true
 	level.battle_seed = definition.seed
 	level.battle_label = definition.skirmish_id
+	level.notation_context = {
+		"map": definition.map.map_id if definition.map != null else "",
+		"mode": SkirmishControlMode.normalize(definition.control_mode),
+		"code": SkirmishCode.encode_definition(definition),
+	}
 
 	var arena: TacticsArena = map_scene.instantiate() as TacticsArena
 	if arena == null:
@@ -79,6 +84,7 @@ func load_skirmish(definition: SkirmishDefinitionResource, battle_parent: Node =
 		return null
 	_spawn_team(definition.player_team, player, player_anchors, player_order, level)
 	_spawn_team(definition.enemy_team, opponent, enemy_anchors, enemy_order, level)
+	_face_opposing_teams(player, opponent, level)
 	_assign_owner(level, level)
 
 	current_definition = definition
@@ -166,7 +172,7 @@ func _spawn_team(team: Array[PokemonInstanceResource], parent: Node3D, anchors: 
 		if instance != null and instance.move_slots.size() < PokemonInstanceResource.MAX_MOVE_SLOTS and not instance.loadout_locked:
 			instance = SkirmishMoveLoadout.clone_with_loadout(instance, instance.team, instance.control_type, level.battle_seed, parent.name, i)
 		var pawn: TacticsPawn = _pawn_scene.instantiate() as TacticsPawn
-		pawn.name = "Pawn" if i == 0 else "Pawn%d" % (i + 1)
+		pawn.name = "Pkmn" if i == 0 else "Pkmn%d" % (i + 1)
 
 		var expertise: Expertise = _expertise_scene.instantiate() as Expertise
 		expertise.name = "Expertise"
@@ -178,6 +184,28 @@ func _spawn_team(team: Array[PokemonInstanceResource], parent: Node3D, anchors: 
 		var anchor_transform: Transform3D = _local_transform_to(anchor, level)
 		var parent_transform: Transform3D = _local_transform_to(parent, level)
 		pawn.transform = parent_transform.affine_inverse() * anchor_transform
+
+
+func _face_opposing_teams(player: Node3D, opponent: Node3D, level: TacticsLevel) -> void:
+	var movement := TacticsPawnMovementService.new()
+	var player_center: Vector3 = _team_center(player, level)
+	var enemy_center: Vector3 = _team_center(opponent, level)
+	for pawn in player.get_children():
+		if pawn is TacticsPawn:
+			movement.look_at_direction_8(pawn, enemy_center - _local_transform_to(pawn, level).origin)
+	for pawn in opponent.get_children():
+		if pawn is TacticsPawn:
+			movement.look_at_direction_8(pawn, player_center - _local_transform_to(pawn, level).origin)
+
+
+func _team_center(parent: Node3D, level: TacticsLevel) -> Vector3:
+	var total: Vector3 = Vector3.ZERO
+	var count: int = 0
+	for pawn in parent.get_children():
+		if pawn is TacticsPawn:
+			total += _local_transform_to(pawn, level).origin
+			count += 1
+	return total / float(maxi(1, count))
 
 
 func _resolve_spawn_order(definition: SkirmishDefinitionResource, metadata_key: String, team_size: int, anchor_count: int) -> Array[int]:

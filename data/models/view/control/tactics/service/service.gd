@@ -48,9 +48,8 @@ func setup(ctrl: TacticsControls) -> void:
 		push_error("TacticsControls needs an ArenaResource from /data/models/world/combat/arena/")
 
 
-func physics_process(_delta: float, ctrl: TacticsControls) -> void:
+func physics_process(_delta: float, _ctrl: TacticsControls) -> void:
 	input_service.update_mouse_mode()
-	ui_service.update_controller_hints(ctrl)
 
 
 func handle_input(event: InputEvent) -> void:
@@ -62,7 +61,7 @@ func handle_input(event: InputEvent) -> void:
 
 
 func move_camera(delta: float) -> void:
-	camera_service.move_camera(delta, controls.is_joystick)
+	camera_service.move_camera(delta, controls.is_joystick, controls.lock_horizontal_pan)
 
 
 func camera_rotation_inputs(delta: float) -> void:

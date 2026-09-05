@@ -6,5 +6,6 @@ extends Resource
 @export var scene_path: String = ""
 @export var biome: String = ""
 @export var recommended_team_size: int = 1
+@export var max_team_size: int = 8
 @export var recommended_elevation: String = ""
 @export var default_seed: int = 0

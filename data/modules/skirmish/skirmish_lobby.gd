@@ -10,9 +10,16 @@ const SIDE_ENEMY: String = "enemy"
 const RosterProvider = preload("res://data/modules/skirmish/skirmish_roster_provider.gd")
 const SkirmishCode = preload("res://data/modules/skirmish/skirmish_code.gd")
 const SkirmishControlMode = preload("res://data/modules/skirmish/skirmish_control_mode.gd")
-const FONT_SIZE: int = 20
-const SMALL_FONT_SIZE: int = 18
-const TITLE_FONT_SIZE: int = 24
+const FONT_SIZE: int = 36
+const SMALL_FONT_SIZE: int = 36
+const TITLE_FONT_SIZE: int = 48
+const COMPACT_FONT_SIZE: int = 24
+const COMPACT_TITLE_FONT_SIZE: int = 24
+const PORTRAIT_FLASH_SECONDS: float = 0.9
+const SELECTED_PORTRAIT_PX: float = 96.0
+const LARGE_FONT_LAYOUT_WIDTH: float = 1700.0
+const TITLE_FONT_GROUP: String = "lobby_title_font"
+const BODY_FONT_GROUP: String = "lobby_body_font"
 const CELL_SIZE: Vector2 = Vector2(108, 108)
 const ROSTER_COLUMNS: int = 10
 const ROSTER_MIN_CELL: float = 40.0
@@ -26,6 +33,8 @@ const CHOOSER_ITEM: String = "item"
 const CHOOSER_MOVES: String = "moves"
 const CHOOSER_ABILITY: String = "ability"
 const TRAY_HEIGHT: float = 112.0
+const SLOT_COLUMNS: int = 8
+const COMPACT_SLOT_HEIGHT: float = 50.0
 const CONTROL_HEIGHT: float = 42.0
 const GRID_GAP: float = 8.0
 const LAYOUT_MARGIN_X: float = 20.0
@@ -45,6 +54,15 @@ const ACTIVE_COLOR: Color = Color(0.22, 0.31, 0.28, 1.0)
 const BORDER_COLOR: Color = Color(0.62, 0.75, 0.70, 0.95)
 const MUTED_BORDER_COLOR: Color = Color(0.28, 0.35, 0.33, 0.95)
 
+var body_font_size: int = FONT_SIZE
+var title_font_size: int = TITLE_FONT_SIZE
+var selected_portrait: TextureRect = null
+var selected_portrait_frame: PanelContainer = null
+var selected_name_label: Label = null
+var selected_types_label: Label = null
+var selected_path: String = ""
+var selected_expression: String = PortraitLibrary.NORMAL
+var _flash_serial: int = 0
 var roster_entries: Array[Dictionary] = []
 var map_paths: Array[String] = []
 var player_team_paths: Array[String] = []
@@ -70,8 +88,8 @@ var _last_launch_state: Dictionary = {}
 
 var player_tray: PanelContainer
 var enemy_tray: PanelContainer
-var player_slots: HBoxContainer
-var enemy_slots: HBoxContainer
+var player_slots: GridContainer
+var enemy_slots: GridContainer
 var setup_panel: PanelContainer
 var details_panel: PanelContainer
 var roster_grid: GridContainer
@@ -84,7 +102,8 @@ var control_mode_picker: OptionButton
 var seed_input: LineEdit
 var difficulty_spin: SpinBox
 var random_enemy_check: CheckBox
-var enemy_size_spin: SpinBox
+var enemy_size_spin: HSlider
+var player_size_slider: HSlider
 var status_label: Label
 var target_label: Label
 var details_label: Label
@@ -259,13 +278,18 @@ func show_battle_summary(result: int, definition: SkirmishDefinitionResource, le
 func _build_ui() -> void:
 	_built = true
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	body_font_size = _font_step_for_width(_layout_width())
+	title_font_size = TITLE_FONT_SIZE if body_font_size == FONT_SIZE else COMPACT_TITLE_FONT_SIZE
 	theme = _make_lobby_theme()
 
 	var background := ColorRect.new()
 	background.name = "Background"
-	background.color = Color(0.11, 0.12, 0.12, 0.98)
+	background.color = Color(0.02, 0.03, 0.08, 0.35)
 	background.set_anchors_preset(Control.PRESET_FULL_RECT)
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var backdrop := PmdBackdrop.new()
+	backdrop.name = "Backdrop"
+	add_child(backdrop)
 	add_child(background)
 
 	var margin := MarginContainer.new()
@@ -330,7 +354,7 @@ func _create_team_tray(node_name: String, title: String, side: String) -> PanelC
 	var label := Label.new()
 	label.name = "%sTitle" % side.capitalize()
 	label.text = title
-	label.add_theme_font_size_override("font_size", TITLE_FONT_SIZE)
+	_apply_title_font(label)
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(label)
 
@@ -364,10 +388,12 @@ func _create_team_tray(node_name: String, title: String, side: String) -> PanelC
 	clear_button.pressed.connect(_clear_side.bind(side))
 	header.add_child(clear_button)
 
-	var slots := HBoxContainer.new()
+	var slots := GridContainer.new()
 	slots.name = "%sSlots" % side.capitalize()
+	slots.columns = SLOT_COLUMNS
 	slots.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	slots.add_theme_constant_override("separation", 8)
+	slots.add_theme_constant_override("h_separation", 8)
+	slots.add_theme_constant_override("v_separation", 6)
 	column.add_child(slots)
 
 	if side == SIDE_PLAYER:
@@ -392,16 +418,24 @@ func _create_setup_panel() -> PanelContainer:
 	margin.add_theme_constant_override("margin_bottom", 10)
 	panel.add_child(margin)
 
+	var setup_scroll := ScrollContainer.new()
+	setup_scroll.name = "SetupScroll"
+	setup_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	setup_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	setup_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	margin.add_child(setup_scroll)
+
 	var column := VBoxContainer.new()
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_theme_constant_override("separation", 8)
-	margin.add_child(column)
+	setup_scroll.add_child(column)
 
 	var top_row := HBoxContainer.new()
 	column.add_child(top_row)
 
 	var title := Label.new()
 	title.text = "Skirmish"
-	title.add_theme_font_size_override("font_size", TITLE_FONT_SIZE)
+	_apply_title_font(title)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top_row.add_child(title)
 
@@ -414,6 +448,7 @@ func _create_setup_panel() -> PanelContainer:
 
 	map_picker = OptionButton.new()
 	map_picker.name = "MapPicker"
+	map_picker.item_selected.connect(_on_map_changed)
 	column.add_child(_labeled_control("Map", map_picker))
 
 	control_mode_picker = OptionButton.new()
@@ -445,13 +480,10 @@ func _create_setup_panel() -> PanelContainer:
 	random_enemy_check.toggled.connect(_on_random_enemy_toggled)
 	column.add_child(random_enemy_check)
 
-	enemy_size_spin = SpinBox.new()
-	enemy_size_spin.name = "EnemySizeSpin"
-	enemy_size_spin.min_value = CustomSkirmishBuilder.MIN_TEAM_SIZE
-	enemy_size_spin.max_value = CustomSkirmishBuilder.MAX_TEAM_SIZE
-	enemy_size_spin.step = 1
-	enemy_size_spin.value = 3
-	column.add_child(_labeled_control("Enemy Size", enemy_size_spin))
+	player_size_slider = _team_size_slider("PlayerSizeSlider", 3)
+	column.add_child(_labeled_control("Your Team", _slider_row(player_size_slider, "PlayerSizeValue")))
+	enemy_size_spin = _team_size_slider("EnemySizeSlider", 3)
+	column.add_child(_labeled_control("Enemy Team", _slider_row(enemy_size_spin, "EnemySizeValue")))
 
 	launch_button = Button.new()
 	launch_button.name = "LaunchButton"
@@ -601,9 +633,10 @@ func _create_details_panel() -> PanelContainer:
 
 	target_label = Label.new()
 	target_label.name = "TargetLabel"
-	target_label.add_theme_font_size_override("font_size", TITLE_FONT_SIZE)
+	_apply_title_font(target_label)
 	target_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(target_label)
+	column.add_child(_create_selected_box())
 
 	details_label = Label.new()
 	details_label.name = "DetailsLabel"
@@ -613,7 +646,7 @@ func _create_details_panel() -> PanelContainer:
 	slot_title_label = Label.new()
 	slot_title_label.name = "SlotTitleLabel"
 	slot_title_label.text = "Pokemon setup"
-	slot_title_label.add_theme_font_size_override("font_size", TITLE_FONT_SIZE)
+	_apply_title_font(slot_title_label)
 	slot_title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(slot_title_label)
 
@@ -684,10 +717,86 @@ func _create_details_panel() -> PanelContainer:
 	return panel
 
 
+func _create_selected_box() -> HBoxContainer:
+	var box := HBoxContainer.new()
+	box.name = "SelectedBox"
+	box.add_theme_constant_override("separation", 10)
+	selected_portrait_frame = PanelContainer.new()
+	selected_portrait_frame.name = "SelectedPortraitFrame"
+	selected_portrait_frame.custom_minimum_size = Vector2(SELECTED_PORTRAIT_PX + 8.0, SELECTED_PORTRAIT_PX + 8.0)
+	selected_portrait_frame.add_theme_stylebox_override("panel", PmdStyle.window(Color(0.02, 0.03, 0.08, 1.0), PmdStyle.FRAME_SOFT, 2, 4))
+	box.add_child(selected_portrait_frame)
+	selected_portrait = TextureRect.new()
+	selected_portrait.name = "SelectedPortrait"
+	selected_portrait.custom_minimum_size = Vector2(SELECTED_PORTRAIT_PX, SELECTED_PORTRAIT_PX)
+	selected_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	selected_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	selected_portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	selected_portrait_frame.add_child(selected_portrait)
+	var column := VBoxContainer.new()
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	column.add_theme_constant_override("separation", 2)
+	box.add_child(column)
+	selected_name_label = Label.new()
+	selected_name_label.name = "SelectedName"
+	selected_name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_apply_body_font(selected_name_label)
+	column.add_child(selected_name_label)
+	selected_types_label = Label.new()
+	selected_types_label.name = "SelectedTypes"
+	selected_types_label.add_theme_font_size_override("font_size", 24)
+	selected_types_label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
+	column.add_child(selected_types_label)
+	box.visible = false
+	return box
+
+
+func _show_selected(path: String, expression: String = "Happy") -> void:
+	selected_path = path
+	var box: Control = selected_portrait_frame.get_parent() as Control
+	if path.is_empty():
+		box.visible = false
+		return
+	var entry: Dictionary = _entry_for_path(path)
+	var slug: String = String(entry.get("slug", PortraitLibrary.slug_for_path(path)))
+	box.visible = true
+	selected_name_label.text = String(entry.get("label", slug.capitalize()))
+	var types: Array = entry.get("types", [])
+	var names: Array[String] = []
+	for type_id in types:
+		names.append(String(type_id).capitalize())
+	selected_types_label.text = " / ".join(names)
+	_set_selected_expression(slug, expression)
+	if expression != PortraitLibrary.NORMAL:
+		_flash_serial += 1
+		var serial: int = _flash_serial
+		get_tree().create_timer(PORTRAIT_FLASH_SECONDS * 1.4).timeout.connect(func() -> void:
+			if serial == _flash_serial and is_instance_valid(selected_portrait) and selected_path == path:
+				_set_selected_expression(slug, PortraitLibrary.NORMAL))
+
+
+func _set_selected_expression(slug: String, expression: String) -> void:
+	selected_expression = expression
+	selected_portrait.texture = PortraitLibrary.texture_for(slug, expression)
+
+
+func _flash_portrait(texture_rect: TextureRect, slug: String, expression: String = "Happy") -> void:
+	if texture_rect == null or not is_instance_valid(texture_rect):
+		return
+	var happy: Texture2D = PortraitLibrary.texture_for(slug, expression)
+	var normal: Texture2D = texture_rect.texture
+	if happy == null or happy == normal:
+		return
+	texture_rect.texture = happy
+	get_tree().create_timer(PORTRAIT_FLASH_SECONDS).timeout.connect(func() -> void:
+		if is_instance_valid(texture_rect) and texture_rect.texture == happy:
+			texture_rect.texture = normal)
+
+
 func _section_header(text: String) -> Label:
 	var label := Label.new()
 	label.text = text
-	label.add_theme_font_size_override("font_size", SMALL_FONT_SIZE)
+	_apply_body_font(label)
 	label.modulate = Color(1, 1, 1, 0.7)
 	return label
 
@@ -695,7 +804,7 @@ func _section_header(text: String) -> Label:
 func _section_value(node_name: String) -> Label:
 	var label := Label.new()
 	label.name = node_name
-	label.add_theme_font_size_override("font_size", SMALL_FONT_SIZE)
+	_apply_body_font(label)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	return label
 
@@ -737,7 +846,7 @@ func _create_chooser_panel() -> PanelContainer:
 
 	chooser_title = Label.new()
 	chooser_title.name = "ChooserTitle"
-	chooser_title.add_theme_font_size_override("font_size", TITLE_FONT_SIZE)
+	_apply_title_font(chooser_title)
 	chooser_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(chooser_title)
 
@@ -783,7 +892,7 @@ func _labeled_control(label_text: String, control: Control) -> HBoxContainer:
 	var label := Label.new()
 	label.text = label_text
 	label.custom_minimum_size.x = 92
-	label.add_theme_font_size_override("font_size", SMALL_FONT_SIZE)
+	_apply_body_font(label)
 	box.add_child(label)
 	control.custom_minimum_size.y = maxf(control.custom_minimum_size.y, CONTROL_HEIGHT)
 	control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -806,6 +915,9 @@ func _load_data() -> void:
 		var map: MapDefinitionResource = load(path) as MapDefinitionResource
 		var label: String = map.display_name if map != null and not map.display_name.is_empty() else path.get_file().get_basename().capitalize()
 		map_picker.add_item(label)
+	var default_index: int = map_paths.find(SkirmishCode.DEFAULT_MAP_PATH)
+	if default_index >= 0:
+		map_picker.select(default_index)
 
 	type_filter.clear()
 	type_filter.add_item("All Types")
@@ -1049,14 +1161,14 @@ func chooser_entries() -> Array[Dictionary]:
 		CHOOSER_MOVES:
 			var instance: PokemonInstanceResource = load(path) as PokemonInstanceResource
 			for move in SkirmishMoveLoadout.move_pool_for_instance(instance):
-				out.append({"id": move.move_id, "label": move.display_name(), "detail": "%s %s  Pow %d" % [move.type.capitalize(), _category_label(move), move.base_power], "icon_path": ""})
+				out.append({"id": move.move_id, "label": move.display_name(), "detail": "%s %s  Pow %d" % [move.type.capitalize(), _category_label(move), move.base_power], "icon_path": "", "type": move.type, "category": move.category, "description": BattleText.move_summary(move)})
 		CHOOSER_ABILITY:
 			var instance: PokemonInstanceResource = load(path) as PokemonInstanceResource
 			for ability_id in CustomSkirmishBuilder.available_ability_ids(instance):
-				out.append({"id": ability_id, "label": _ability_label(ability_id), "detail": "", "icon_path": ""})
+				out.append({"id": ability_id, "label": _ability_label(ability_id), "detail": "", "icon_path": "", "description": BattleText.ability_description(ability_id)})
 		_:
 			for entry in BattleItemCatalog.entries():
-				out.append({"id": String(entry["item_id"]), "label": String(entry["label"]), "detail": String(entry["category"]).capitalize(), "icon_path": String(entry.get("icon_path", ""))})
+				out.append({"id": String(entry["item_id"]), "label": String(entry["label"]), "detail": String(entry["category"]).capitalize(), "icon_path": String(entry.get("icon_path", "")), "description": BattleText.item_description(String(entry["item_id"]))})
 	return out
 
 
@@ -1089,7 +1201,8 @@ func _create_chooser_row(entry: Dictionary) -> Button:
 	button.toggle_mode = chooser_mode == CHOOSER_MOVES
 	button.button_pressed = chooser_selection.has(id) if not id.is_empty() else chooser_selection.is_empty()
 	button.pressed.connect(_on_chooser_row_pressed.bind(id))
-	button.tooltip_text = String(entry.get("label", ""))
+	var description: String = String(entry.get("description", ""))
+	button.tooltip_text = String(entry.get("label", "")) + ("\n" + description if not description.is_empty() else "")
 
 	var content := Control.new()
 	content.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -1102,6 +1215,10 @@ func _create_chooser_row(entry: Dictionary) -> Button:
 
 	var icon_path: String = String(entry.get("icon_path", ""))
 	var text_left: float = 0.0
+	var type_id: String = String(entry.get("type", ""))
+	if icon_path.is_empty() and not type_id.is_empty():
+		content.add_child(_type_badge(type_id, int(entry.get("category", PokemonMoveResource.CATEGORY_STATUS))))
+		text_left = CHOOSER_ICON_SIZE.x + 8.0
 	if not icon_path.is_empty() and ResourceLoader.exists(icon_path):
 		var icon := TextureRect.new()
 		icon.texture = load(icon_path) as Texture2D
@@ -1129,6 +1246,43 @@ func _create_chooser_row(entry: Dictionary) -> Button:
 	label.text = String(entry.get("label", "")) + ("\n" + detail if not detail.is_empty() else "")
 	content.add_child(label)
 	return button
+
+
+func _type_badge(type_id: String, category: int) -> Control:
+	var badge := PanelContainer.new()
+	badge.name = "TypeBadge"
+	badge.anchor_top = 0.5
+	badge.anchor_bottom = 0.5
+	badge.offset_left = 0
+	badge.offset_top = -CHOOSER_ICON_SIZE.y * 0.5
+	badge.offset_right = CHOOSER_ICON_SIZE.x
+	badge.offset_bottom = CHOOSER_ICON_SIZE.y * 0.5
+	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	badge.add_theme_stylebox_override("panel", PmdStyle.window(PmdStyle.type_color(type_id), PmdStyle.FRAME, 2, 8))
+	var column := VBoxContainer.new()
+	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_theme_constant_override("separation", 0)
+	badge.add_child(column)
+	var type_label := Label.new()
+	type_label.text = PmdStyle.type_abbreviation(type_id)
+	type_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	type_label.add_theme_font_size_override("font_size", 12)
+	type_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(type_label)
+	var category_label := Label.new()
+	match category:
+		PokemonMoveResource.CATEGORY_PHYSICAL:
+			category_label.text = "PHY"
+		PokemonMoveResource.CATEGORY_SPECIAL:
+			category_label.text = "SPE"
+		_:
+			category_label.text = "STA"
+	category_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	category_label.add_theme_font_size_override("font_size", 12)
+	category_label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
+	category_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(category_label)
+	return badge
 
 
 func _on_chooser_row_pressed(id: String) -> void:
@@ -1238,13 +1392,97 @@ func _refresh_team_trays() -> void:
 	enemy_tray.add_theme_stylebox_override("panel", _style_box(ACTIVE_COLOR if active_side == SIDE_ENEMY else PANEL_COLOR, BORDER_COLOR if active_side == SIDE_ENEMY else MUTED_BORDER_COLOR, 2 if active_side == SIDE_ENEMY else 1))
 
 
-func _populate_slots(container: HBoxContainer, team: Array[String], side: String) -> void:
+func _team_size_slider(node_name: String, value: int) -> HSlider:
+	var slider := HSlider.new()
+	slider.name = node_name
+	slider.min_value = CustomSkirmishBuilder.MIN_TEAM_SIZE
+	slider.max_value = CustomSkirmishBuilder.MAX_TEAM_SIZE
+	slider.step = 1
+	slider.value = value
+	slider.custom_minimum_size = Vector2(120, CONTROL_HEIGHT)
+	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	return slider
+
+
+func _slider_row(slider: HSlider, value_name: String) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(slider)
+	var value := Label.new()
+	value.name = value_name
+	value.text = str(int(slider.value))
+	value.custom_minimum_size.x = 40
+	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	row.add_child(value)
+	slider.value_changed.connect(func(v: float) -> void:
+		value.text = str(int(v))
+		_refresh_details()
+		_refresh_launch_state())
+	return row
+
+
+func _sync_size_slider(side: String) -> void:
+	var slider: HSlider = player_size_slider if side == SIDE_PLAYER else enemy_size_spin
+	var team: Array[String] = player_team_paths if side == SIDE_PLAYER else enemy_team_paths
+	if slider == null or team.is_empty():
+		return
+	slider.set_value_no_signal(float(team.size()))
+	var row: Node = slider.get_parent()
+	if row != null:
+		var value_label: Label = row.get_node_or_null("PlayerSizeValue" if side == SIDE_PLAYER else "EnemySizeValue")
+		if value_label != null:
+			value_label.text = str(team.size())
+
+
+func team_size_for(side: String) -> int:
+	var slider: HSlider = player_size_slider if side == SIDE_PLAYER else enemy_size_spin
+	return int(slider.value) if slider != null else CustomSkirmishBuilder.MIN_TEAM_SIZE
+
+
+func _map_max_team_size() -> int:
+	if map_paths.is_empty() or map_picker == null:
+		return CustomSkirmishBuilder.MAX_TEAM_SIZE
+	return CustomSkirmishBuilder.max_team_size_for(map_paths[clampi(map_picker.selected, 0, map_paths.size() - 1)])
+
+
+func _on_map_changed(_index: int) -> void:
+	var cap: int = _map_max_team_size()
+	for slider in [enemy_size_spin, player_size_slider]:
+		if slider != null:
+			slider.max_value = cap
+			slider.value = minf(slider.value, float(cap))
+	while player_team_paths.size() > cap:
+		player_team_paths.pop_back()
+	while enemy_team_paths.size() > cap:
+		enemy_team_paths.pop_back()
+	_sync_item_slots(SIDE_PLAYER)
+	_sync_item_slots(SIDE_ENEMY)
+	selected_player_index = mini(selected_player_index, player_team_paths.size() - 1)
+	selected_enemy_index = mini(selected_enemy_index, enemy_team_paths.size() - 1)
+	_refresh_team_trays()
+	_refresh_details()
+	_refresh_slot_section()
+	_refresh_launch_state()
+
+
+func _populate_slots(container: GridContainer, team: Array[String], side: String) -> void:
 	for child in container.get_children():
 		container.remove_child(child)
 		child.queue_free()
-	for i in range(CustomSkirmishBuilder.MAX_TEAM_SIZE):
+	var cap: int = _map_max_team_size()
+	var rows: int = int(ceil(float(cap) / float(SLOT_COLUMNS)))
+	var slot_height: float = SLOT_SIZE.y if rows <= 1 else COMPACT_SLOT_HEIGHT
+	var tray: PanelContainer = player_tray if side == SIDE_PLAYER else enemy_tray
+	if tray != null:
+		tray.custom_minimum_size.y = TRAY_HEIGHT - SLOT_SIZE.y + slot_height * float(rows) + 4.0 * float(rows - 1)
+	container.add_theme_constant_override("v_separation", 4)
+	for i in range(cap):
 		var path: String = team[i] if i < team.size() else ""
-		container.add_child(_create_slot_button(path, i, side))
+		var button: Button = _create_slot_button(path, i, side)
+		button.custom_minimum_size = Vector2(SLOT_SIZE.x, slot_height)
+		container.add_child(button)
 
 
 func _create_slot_button(path: String, index: int, side: String) -> Button:
@@ -1292,7 +1530,7 @@ func _create_slot_button(path: String, index: int, side: String) -> Button:
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.clip_text = true
 	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	label.add_theme_font_size_override("font_size", SMALL_FONT_SIZE)
+	_apply_body_font(label)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	content.add_child(label)
 
@@ -1323,10 +1561,10 @@ func _refresh_details() -> void:
 	details_label.text = "Mode: %s\nPlayer %d/%d: %s\nEnemy %d/%d: %s" % [
 		SkirmishControlMode.label(_selected_control_mode()),
 		player_team_paths.size(),
-		CustomSkirmishBuilder.MAX_TEAM_SIZE,
+		_map_max_team_size(),
 		player_names,
 		enemy_team_paths.size(),
-		CustomSkirmishBuilder.MAX_TEAM_SIZE,
+		_map_max_team_size(),
 		enemy_names,
 	]
 
@@ -1379,6 +1617,11 @@ func _set_active_side(side: String) -> void:
 
 
 func _on_roster_pressed(path: String) -> void:
+	var slug: String = PortraitLibrary.slug_for_path(path)
+	var cell: Node = roster_grid.find_child("Roster_%s" % slug, false, false) if roster_grid != null else null
+	if cell != null:
+		_flash_portrait(cell.get_node_or_null("Portrait") as TextureRect, slug)
+	_show_selected(path)
 	_add_to_active_team(path)
 
 
@@ -1387,11 +1630,12 @@ func _add_to_active_team(path: String) -> bool:
 		_set_status("Pick a roster Pokemon first")
 		return false
 	var team: Array[String] = player_team_paths if active_side == SIDE_PLAYER else enemy_team_paths
-	if team.size() >= CustomSkirmishBuilder.MAX_TEAM_SIZE:
-		_set_status("%s team is at the %d-Pokemon cap" % [_side_label(active_side), CustomSkirmishBuilder.MAX_TEAM_SIZE])
+	if team.size() >= _map_max_team_size():
+		_set_status("%s team is at the %d-Pokemon cap" % [_side_label(active_side), _map_max_team_size()])
 		return false
 	team.append(path)
 	_sync_item_slots(active_side)
+	_sync_size_slider(active_side)
 	if active_side == SIDE_PLAYER:
 		selected_player_index = team.size() - 1
 	else:
@@ -1419,6 +1663,11 @@ func _on_team_slot_pressed(side: String, index: int) -> void:
 		selected_player_index = index
 	else:
 		selected_enemy_index = index
+	var tray: Node = player_tray if side == SIDE_PLAYER else enemy_tray
+	var slot: Node = tray.find_child("%sSlot%d" % [side.capitalize(), index + 1], true, false) if tray != null else null
+	if slot != null:
+		_flash_portrait(slot.get_node_or_null("Portrait") as TextureRect, PortraitLibrary.slug_for_path(team[index]))
+	_show_selected(team[index])
 	_refresh_team_trays()
 	_refresh_slot_section()
 
@@ -1442,6 +1691,7 @@ func _remove_selected_from_side(side: String) -> void:
 	_refresh_details()
 	_refresh_slot_section()
 	_refresh_launch_state()
+	_sync_size_slider(side)
 
 
 func _clear_side(side: String) -> void:
@@ -1566,6 +1816,7 @@ func _build_launch_result(store_state: bool) -> Dictionary:
 		"map_path": map_path,
 		"seed_text": seed_input.text,
 		"enemy_team_size": int(enemy_size_spin.value),
+		"player_team_size": int(player_size_slider.value),
 		"difficulty_tier": int(difficulty_spin.value),
 		"control_mode": _selected_control_mode(),
 	}
@@ -1606,9 +1857,12 @@ func _build_from_state(state: Dictionary) -> Dictionary:
 		return {"ok": false, "error": String(legacy["error"])}
 	var resolved_seed_text: String = String(legacy.get("seed_text", ""))
 	var control_mode: String = String(legacy.get("control_mode", SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU))
+	var fill_seed: int = CustomSkirmishBuilder.resolve_seed(resolved_seed_text)
+	var player_paths: Array[String] = CustomSkirmishBuilder.fill_random_paths(_string_array(state.get("player_paths", [])), int(state.get("player_team_size", 0)), fill_seed ^ 0x51A7)
+	var enemy_paths: Array[String] = CustomSkirmishBuilder.fill_random_paths(_string_array(state.get("enemy_paths", [])), int(state.get("enemy_team_size", 0)), fill_seed ^ 0x3E2D)
 	if bool(state.get("random_enemy", false)):
 		return CustomSkirmishBuilder.build_with_random_enemy(
-			_string_array(state.get("player_paths", [])),
+			player_paths,
 			String(state.get("map_path", "")),
 			resolved_seed_text,
 			int(state.get("enemy_team_size", 1)),
@@ -1618,8 +1872,8 @@ func _build_from_state(state: Dictionary) -> Dictionary:
 			control_mode
 		)
 	return CustomSkirmishBuilder.build(
-		_string_array(state.get("player_paths", [])),
-		_string_array(state.get("enemy_paths", [])),
+		player_paths,
+		enemy_paths,
 		String(state.get("map_path", "")),
 		resolved_seed_text,
 		control_mode,
@@ -1682,6 +1936,8 @@ func _queue_update_grid_columns() -> void:
 
 
 func _apply_responsive_layout() -> void:
+	if is_inside_tree():
+		_apply_font_step()
 	var compact: bool = _uses_compact_layout()
 	if setup_panel != null:
 		setup_panel.custom_minimum_size.x = SETUP_PANEL_COMPACT_WIDTH if compact else SETUP_PANEL_WIDTH
@@ -1816,23 +2072,50 @@ func _set_status(text: String) -> void:
 
 
 func _style_box(color: Color, border: Color, border_width: int) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = color
-	style.border_color = border
-	style.set_border_width_all(border_width)
-	style.set_corner_radius_all(6)
+	var fill: Color = PmdStyle.NAVY_LIGHT if color == ACTIVE_COLOR else (PmdStyle.NAVY_DEEP if border_width == 0 else PmdStyle.NAVY)
+	var frame: Color = PmdStyle.CURSOR if border == BORDER_COLOR else PmdStyle.FRAME_SOFT
+	var style: StyleBoxFlat = PmdStyle.window(fill, frame, maxi(border_width, 1), 6)
+	style.shadow_size = 3 if border_width > 0 else 0
 	return style
 
 
 func _make_lobby_theme() -> Theme:
 	var lobby_theme := Theme.new()
-	lobby_theme.set_font_size("font_size", "Button", FONT_SIZE)
-	lobby_theme.set_font_size("font_size", "CheckBox", FONT_SIZE)
-	lobby_theme.set_font_size("font_size", "Label", FONT_SIZE)
-	lobby_theme.set_font_size("font_size", "LineEdit", FONT_SIZE)
-	lobby_theme.set_font_size("font_size", "OptionButton", FONT_SIZE)
-	lobby_theme.set_font_size("font_size", "SpinBox", FONT_SIZE)
+	for type_name in ["Button", "CheckBox", "Label", "LineEdit", "OptionButton", "SpinBox"]:
+		lobby_theme.set_font_size("font_size", type_name, body_font_size)
 	return lobby_theme
+
+
+func _font_step_for_width(width: float) -> int:
+	return FONT_SIZE if width >= LARGE_FONT_LAYOUT_WIDTH else COMPACT_FONT_SIZE
+
+
+func _apply_font_step() -> void:
+	var body: int = _font_step_for_width(_layout_width())
+	var title: int = TITLE_FONT_SIZE if body == FONT_SIZE else COMPACT_TITLE_FONT_SIZE
+	if body == body_font_size and title == title_font_size and theme != null:
+		return
+	body_font_size = body
+	title_font_size = title
+	theme = _make_lobby_theme()
+	for node in get_tree().get_nodes_in_group(TITLE_FONT_GROUP):
+		if node is Control:
+			(node as Control).add_theme_font_size_override("font_size", title_font_size)
+	for node in get_tree().get_nodes_in_group(BODY_FONT_GROUP):
+		if node is Control:
+			(node as Control).add_theme_font_size_override("font_size", body_font_size)
+
+
+func _apply_title_font(control: Control) -> void:
+	control.add_theme_font_override("font", PmdStyle.BANNER_FONT)
+	control.add_theme_font_size_override("font_size", title_font_size)
+	control.add_theme_color_override("font_color", PmdStyle.TEXT_GOLD)
+	control.add_to_group(TITLE_FONT_GROUP, true)
+
+
+func _apply_body_font(control: Control) -> void:
+	control.add_theme_font_size_override("font_size", body_font_size)
+	control.add_to_group(BODY_FONT_GROUP, true)
 
 
 func _turn_count(level: TacticsLevel) -> int:

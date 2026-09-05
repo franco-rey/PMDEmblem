@@ -16,6 +16,8 @@ func update_mouse_mode() -> void:
 
 func handle_input(event: InputEvent) -> void:
 	controls.is_joystick = event is InputEventJoypadButton or event is InputEventJoypadMotion
+	if event is InputEventMouseMotion and (event as InputEventMouseMotion).relative.length_squared() > 16.0:
+		controls.keyboard_mode = false
 
 
 func get_3d_canvas_mouse_position(collision_mask: int, ctrl: TacticsControls) -> Object:
@@ -31,6 +33,10 @@ func get_3d_canvas_mouse_position(collision_mask: int, ctrl: TacticsControls) ->
 
 func is_mouse_hovering_ui_elem(
 		ctrl: TacticsControls, elm: Array[String] = TacticsConfig.ui_elem) -> bool:
+	if ctrl == null or not ctrl.is_inside_tree() or ctrl.get_viewport() == null:
+		return false
+	if TacticsConfig.hover_controls_contain(ctrl.get_viewport().get_mouse_position()):
+		return true
 	for e: String in elm:
 		var elem: Control = _ui_elem(ctrl, e)
 		if elem != null and elem.visible:
@@ -49,13 +55,6 @@ func is_mouse_hovering_ui_elem(
 						var move_button: Button = action as Button
 						if move_button.get_global_rect().has_point(ctrl.get_viewport().get_mouse_position()):
 							return true
-				"%Hints":
-					for hint: Node in elem.get_children():
-						if not (hint is TextureRect):
-							continue
-						var hint_texture: TextureRect = hint as TextureRect
-						if hint_texture.get_global_rect().has_point(ctrl.get_viewport().get_mouse_position()):
-							return true
 	return false
 
 
@@ -69,6 +68,4 @@ func _ui_elem(ctrl: TacticsControls, path: String) -> Control:
 		node = ctrl.get_node_or_null("HBox/ItemPicker")
 	if node == null and path == "%Actions":
 		node = ctrl.get_node_or_null("HBox/Actions")
-	if node == null and path == "%Hints":
-		node = ctrl.get_node_or_null("Hints")
 	return node as Control

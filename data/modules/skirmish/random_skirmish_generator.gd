@@ -31,6 +31,7 @@ class GeneratorInputs:
 	var map_pool: Array[MapDefinitionResource] = []
 	var roster_templates: Array[PokemonInstanceResource] = []
 	var reward_profile: String = DEFAULT_REWARD_PROFILE
+	var max_team_size: int = MAX_TEAM_SIZE
 
 
 static func generate(inputs: GeneratorInputs) -> SkirmishDefinitionResource:
@@ -57,8 +58,9 @@ static func generate(inputs: GeneratorInputs) -> SkirmishDefinitionResource:
 		return null
 
 	var enemy_size: int = _resolve_enemy_size(inputs, tier, map, rng)
-	if enemy_size < MIN_TEAM_SIZE or enemy_size > MAX_TEAM_SIZE:
-		push_error("RandomSkirmishGenerator: enemy team size %d outside %d-%d" % [enemy_size, MIN_TEAM_SIZE, MAX_TEAM_SIZE])
+	var cap: int = maxi(MIN_TEAM_SIZE, inputs.max_team_size)
+	if enemy_size < MIN_TEAM_SIZE or enemy_size > cap:
+		push_error("RandomSkirmishGenerator: enemy team size %d outside %d-%d" % [enemy_size, MIN_TEAM_SIZE, cap])
 		return null
 
 	var enemy_team: Array[PokemonInstanceResource] = _build_enemy_team(inputs.roster_templates, enemy_size, tier, rng)
@@ -142,7 +144,7 @@ static func _is_map_less_than(a: MapDefinitionResource, b: MapDefinitionResource
 
 static func _resolve_enemy_size(inputs: GeneratorInputs, tier: Dictionary, map: MapDefinitionResource, rng: RandomNumberGenerator) -> int:
 	if inputs.enemy_team_size > 0:
-		return clampi(inputs.enemy_team_size, MIN_TEAM_SIZE, MAX_TEAM_SIZE)
+		return clampi(inputs.enemy_team_size, MIN_TEAM_SIZE, maxi(MIN_TEAM_SIZE, inputs.max_team_size))
 	var min_size: int = int(tier["min_team_size"])
 	var max_size: int = int(tier["max_team_size"])
 	var recommended: int = clampi(map.recommended_team_size, min_size, max_size)

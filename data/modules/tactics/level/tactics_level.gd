@@ -27,6 +27,11 @@ const SCREEN_CONDITIONS: Array[String] = ["light_screen", "reflect", "safeguard"
 @export var ui_control: TacticsControlsResource = load("res://data/models/view/control/tactics/control.tres")
 @export var use_speed_scheduler: bool = true
 @export var battle_seed: int = 0
+const SKY_TOP_COLOR: Color = Color(0.30, 0.56, 0.95)
+const SKY_HORIZON_COLOR: Color = Color(0.80, 0.88, 0.98)
+const GROUND_BOTTOM_COLOR: Color = Color(0.22, 0.28, 0.40)
+const GROUND_HORIZON_COLOR: Color = Color(0.62, 0.70, 0.84)
+const AMBIENT_COLOR: Color = Color(0.72, 0.74, 0.80)
 var participant: TacticsParticipant
 var player: TacticsPlayer = null
 var opponent: TacticsOpponent
@@ -39,9 +44,18 @@ var intrinsic_service: BattleIntrinsicService = BattleIntrinsicService.new()
 var state_ops: BattleStateOps = null
 var battle_conditions: Dictionary = {}
 var message_log: BattleMessageLog = null
+var hud: BattleHud = null
 var notation: BattleNotation = BattleNotation.new()
+var notation_context: Dictionary = {}
 var battle_label: String = ""
 var weather_overlay: WeatherOverlay = null
+var floating_text: BattleFloatingText = null
+var banner: BattleBanner = null
+var terrain_overlay: TerrainOverlay = null
+var stats_tracker: BattleStatsTracker = BattleStatsTracker.new()
+var intro_pending: bool = false
+var interface_visible: bool = true
+var round_index: int = 0
 var battle_finished: bool = false
 var scheduler: BattleScheduler = null
 var battle_units: Array[BattleUnit] = []
@@ -72,6 +86,8 @@ func _ready() -> void:
 
 	if camera.boundary_radius != camera_boundary_radius:
 		camera.boundary_radius = camera_boundary_radius
+	if not camera.edge_pan_toggled.is_connected(_on_edge_pan_toggled):
+		camera.edge_pan_toggled.connect(_on_edge_pan_toggled)
 
 	if use_speed_scheduler:
 		scheduler = BattleScheduler.new()
@@ -80,9 +96,19 @@ func _ready() -> void:
 		scheduler.round_building.connect(_on_round_building)
 		scheduler.round_started.connect(_on_round_started)
 
+func set_interface_visible(value: bool) -> void:
+	interface_visible = value
+	for layer in [hud, message_log, banner]:
+		if layer != null and is_instance_valid(layer):
+			layer.visible = value
+
+
 func _physics_process(delta: float) -> void:
 	if battle_finished:
 		return
+	if ui_control != null:
+		ui_control.move_camera(delta)
+		ui_control.camera_rotation_inputs(delta)
 	if use_speed_scheduler:
 		_run_scheduler_loop(delta)
 	else:
@@ -105,13 +131,122 @@ func _setup_presentation() -> void:
 	message_log = BattleMessageLog.new()
 	message_log.setup(battle_log)
 	add_child(message_log)
+	hud = BattleHud.new()
+	add_child(hud)
+	hud.setup(self)
 	weather_overlay = WeatherOverlay.new()
 	add_child(weather_overlay)
 	weather_changed.connect(weather_overlay.set_weather)
+	floating_text = BattleFloatingText.new()
+	floating_text.name = "BattleFloatingText"
+	add_child(floating_text)
+	floating_text.setup(self)
+	banner = BattleBanner.new()
+	add_child(banner)
+	banner.setup(self)
+	terrain_overlay = TerrainOverlay.new()
+	add_child(terrain_overlay)
+	terrain_overlay.setup(self)
+	stats_tracker.setup(battle_log)
+	_ensure_sky()
+
+
+func _ensure_sky() -> void:
+	if find_children("*", "WorldEnvironment", true, false).size() > 0:
+		return
+	var sky_material := ProceduralSkyMaterial.new()
+	sky_material.sky_top_color = SKY_TOP_COLOR
+	sky_material.sky_horizon_color = SKY_HORIZON_COLOR
+	sky_material.ground_bottom_color = GROUND_BOTTOM_COLOR
+	sky_material.ground_horizon_color = GROUND_HORIZON_COLOR
+	sky_material.sun_angle_max = 20.0
+	var sky := Sky.new()
+	sky.sky_material = sky_material
+	var environment := Environment.new()
+	environment.background_mode = Environment.BG_SKY
+	environment.sky = sky
+	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	environment.ambient_light_color = AMBIENT_COLOR
+	environment.ambient_light_energy = 1.0
+	var world_environment := WorldEnvironment.new()
+	world_environment.name = "SkyEnvironment"
+	world_environment.environment = environment
+	add_child(world_environment)
 
 
 func is_presentation_busy() -> bool:
 	return presentation_runner != null and presentation_runner.is_busy()
+
+
+func charging_payload(pawn: TacticsPawn) -> Dictionary:
+	if pawn == null or pawn.stats == null:
+		return {}
+	var payload: Variant = pawn.stats.battle_statuses.get("charging", null)
+	return payload if payload is Dictionary else {}
+
+
+func charging_slot(pawn: TacticsPawn) -> int:
+	var move_id: String = String(charging_payload(pawn).get("move_id", ""))
+	if move_id.is_empty():
+		return -1
+	for i in range(pawn.stats.move_slots.size()):
+		var move: PokemonMoveResource = pawn.stats.move_slots[i]
+		if move != null and move.move_id == move_id:
+			return i
+	return -1
+
+
+func charging_release_target(pawn: TacticsPawn) -> TacticsPawn:
+	var slot: int = charging_slot(pawn)
+	if slot < 0:
+		return null
+	var move: PokemonMoveResource = pawn.stats.move_slots[slot]
+	var legal: Array[TacticsPawn] = Targeting.legal_targets_for_move(pawn, move, units_on_map())
+	var declared: Variant = charging_payload(pawn).get("target_unit", null)
+	if declared is TacticsPawn and is_instance_valid(declared) and legal.has(declared):
+		return declared
+	var best: TacticsPawn = null
+	var best_distance: float = INF
+	for candidate in legal:
+		var distance: float = candidate.global_position.distance_squared_to(pawn.global_position)
+		if distance < best_distance:
+			best_distance = distance
+			best = candidate
+	return best
+
+
+func release_charge(pawn: TacticsPawn) -> bool:
+	var slot: int = charging_slot(pawn)
+	if slot < 0:
+		return false
+	var target: TacticsPawn = charging_release_target(pawn)
+	if target == null:
+		cancel_charge(pawn, "no_target")
+		return false
+	var p_res: TacticsParticipantResource = participant.res
+	pawn.res.can_attack = true
+	pawn.res.can_move = false
+	pawn.res.selected_move_index = slot
+	p_res.curr_pawn = pawn
+	p_res.attackable_pawn = target
+	p_res.pending_intent = null
+	p_res.throw_options = []
+	p_res.display_opponent_stats = true
+	p_res.stage = p_res.STAGE_ATTACK
+	battle_log.append({"kind": "charge_released", "attacker": pawn, "move_id": pawn.stats.move_slots[slot].move_id, "target": target})
+	return true
+
+
+func cancel_charge(pawn: TacticsPawn, reason: String) -> void:
+	var move_id: String = String(charging_payload(pawn).get("move_id", ""))
+	if move_id.is_empty():
+		return
+	var ops: BattleStateOps = _ops()
+	ops.remove_status(pawn, "charging", {"source": reason})
+	for status_id in BattleMoveSpecials.INVULNERABLE_STATUSES:
+		if pawn.stats.battle_statuses.has(status_id):
+			ops.remove_status(pawn, status_id, {"source": reason})
+	battle_log.append({"kind": "move_rejected", "attacker": pawn, "move_id": move_id, "reason": "charge_%s" % reason})
 
 
 func land_item(item_id: String, key: Vector3i, world_position: Vector3, source: String = "", defer_visual: bool = false) -> void:
@@ -221,7 +356,7 @@ func _handle_turn(delta: float) -> void:
 
 func _run_scheduler_loop(delta: float) -> void:
 	if not _scheduler_started:
-		if not (participant.is_configured(player) and participant.is_configured(opponent)):
+		if intro_pending or not (participant.is_configured(player) and participant.is_configured(opponent)):
 			return
 		_start_scheduler()
 		return
@@ -286,6 +421,13 @@ func _start_scheduler() -> void:
 	intrinsic_service.log_battle_start(battle_units, battle_log, self)
 	scheduler.start_battle(battle_units, int(battle_rng.seed))
 	_scheduler_started = true
+	if hud != null:
+		hud.rebuild_queue()
+
+
+func _on_edge_pan_toggled(enabled: bool) -> void:
+	if message_log != null:
+		message_log.add_message("Mouse edge panning %s (O to toggle)." % ("on" if enabled else "off"))
 
 
 func current_terrain() -> String:
@@ -667,6 +809,9 @@ func _on_round_building() -> void:
 
 
 func _on_round_started() -> void:
+	round_index += 1
+	if banner != null:
+		banner.show_turn(round_index)
 	for unit in battle_units:
 		if unit.pawn != null:
 			unit.pawn.res.has_acted_this_round = false

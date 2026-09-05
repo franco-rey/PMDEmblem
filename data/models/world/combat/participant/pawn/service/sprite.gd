@@ -36,6 +36,7 @@ const FRAME_DURATION: Dictionary = {
 }
 
 const HOLD_LAST_FRAME_STATES: Array[String] = [ANIM_FAINT]
+const SHADOW_WIDTHS: Dictionary = {0: 20.0, 1: 22.0, 2: 30.0, 3: 40.0}
 const SPRITE_ROW_COUNT_FALLBACK: int = 2
 const DEFAULT_CHARACTER_CENTER_Y: float = 0.602
 const DEFAULT_FRAME_CELL_PX: float = 128.0
@@ -63,6 +64,7 @@ var state_row_counts: Dictionary = {}
 var state_cell_widths: Dictionary = {}
 var state_cell_heights: Dictionary = {}
 var state_bottom_paddings: Dictionary = {}
+var state_foot_drops: Dictionary = {}
 var state_frame_durations: Dictionary = {}
 var state_timings: Dictionary = {}
 var state_source_names: Dictionary = {}
@@ -85,6 +87,7 @@ var one_shot: bool = false
 var one_shot_finished: bool = false
 var facing_row: int = 0
 var lunge_offset: Vector3 = Vector3.ZERO
+var lift_world: float = 0.0
 var pose_frozen: bool = false
 var base_local_position: Vector3 = Vector3(0.0, DEFAULT_CHARACTER_CENTER_Y, 0.0)
 
@@ -114,7 +117,50 @@ func setup(stats: Stats, expertise: String) -> void:
 	_load_anchors(sprite_set)
 	_load_state_textures(stats.sprite, sprite_set, anim_data)
 	_apply_state_texture(ANIM_IDLE)
+	_ensure_ground_shadow()
 	character_ui_name_label.text = stats.override_name if stats.override_name else expertise
+
+
+static var _shadow_texture: ImageTexture = null
+
+
+static func _ground_shadow_texture() -> ImageTexture:
+	if _shadow_texture != null:
+		return _shadow_texture
+	var size: int = 64
+	var image: Image = Image.create(size, size, false, Image.FORMAT_RGBA8)
+	var center: float = float(size) / 2.0
+	for y in range(size):
+		for x in range(size):
+			var dx: float = (float(x) + 0.5 - center) / center
+			var dy: float = (float(y) + 0.5 - center) / center
+			var r: float = sqrt(dx * dx + dy * dy)
+			var alpha: float = clampf(1.0 - r, 0.0, 1.0)
+			alpha = clampf(alpha * 1.6, 0.0, 1.0)
+			image.set_pixel(x, y, Color(0.0, 0.0, 0.0, alpha))
+	_shadow_texture = ImageTexture.create_from_image(image)
+	return _shadow_texture
+
+
+func _ensure_ground_shadow() -> void:
+	var pawn: Node3D = get_parent() as Node3D
+	if pawn == null or pawn.get_node_or_null("Shadow") != null:
+		return
+	var shadow := Sprite3D.new()
+	shadow.name = "Shadow"
+	shadow.texture = _ground_shadow_texture()
+	shadow.axis = Vector3.AXIS_Y
+	shadow.pixel_size = pixel_size
+	shadow.shaded = false
+	shadow.transparent = true
+	shadow.alpha_cut = SpriteBase3D.ALPHA_CUT_DISABLED
+	shadow.render_priority = -1
+	shadow.layers = 2
+	shadow.modulate = Color(0.0, 0.0, 0.0, 0.42)
+	var width: float = SHADOW_WIDTHS.get(clampi(shadow_size, 0, 3), 26.0)
+	shadow.scale = Vector3(width / 64.0, 1.0, width * 0.55 / 64.0)
+	shadow.position = Vector3(0.0, 0.012, 0.0)
+	pawn.add_child(shadow)
 
 
 func _resolve_sprite_set(stats: Stats) -> PokemonSpriteSetResource:
@@ -306,7 +352,7 @@ func _resolve_state_entries(base_sprite_path: String, sprite_set: PokemonSpriteS
 		var entries: Dictionary = {}
 		for key in sprite_set.animation_states.keys():
 			var raw_entry: Variant = sprite_set.animation_states[key]
-			if raw_entry is Dictionary:
+			if raw_entry is Dictionary and _state_entry_usable(raw_entry as Dictionary):
 				entries[String(key)] = (raw_entry as Dictionary).duplicate(true)
 		var minimal: Dictionary = {
 			ANIM_IDLE:  sprite_set.idle_path,
@@ -329,6 +375,11 @@ func _resolve_state_entries(base_sprite_path: String, sprite_set: PokemonSpriteS
 		ANIM_SLEEP: {"path": base_no_ext + "_sleep" + ext},
 		ANIM_HOP:   {"path": base_no_ext + "_hop"   + ext},
 	}
+
+
+func _state_entry_usable(entry: Dictionary) -> bool:
+	var cell: Vector2i = entry.get("cell_size", Vector2i.ZERO)
+	return cell.x > 0 and cell.y > 0
 
 
 func _normalize_rest_faint_entry(entries: Dictionary) -> void:
@@ -398,9 +449,12 @@ func _apply_state_texture(state: String) -> void:
 
 
 func _apply_grounding_offset(state: String) -> void:
+	offset.y = _grounding_offset_px(state) + lift_world / pixel_size
+
+
+func _grounding_offset_px(state: String) -> float:
 	if grounding_mode == GROUNDING_SOURCE:
-		offset.y = float(ground_shadow_px) - (DEFAULT_CHARACTER_CENTER_Y / pixel_size)
-		return
+		return float(ground_shadow_px + maxi(0, foot_drop_px(state))) - (DEFAULT_CHARACTER_CENTER_Y / pixel_size)
 	var cell_h: float = float(state_cell_heights.get(state, DEFAULT_FRAME_CELL_PX))
 	var bottom_padding: float = float(state_bottom_paddings.get(state, DEFAULT_FRAME_BOTTOM_PADDING_PX))
 	var current_visible_foot_y: float = (
@@ -408,7 +462,29 @@ func _apply_grounding_offset(state: String) -> void:
 		- (cell_h * pixel_size * 0.5)
 		+ (bottom_padding * pixel_size)
 	)
-	offset.y = (DEFAULT_VISIBLE_FOOT_Y - current_visible_foot_y) / pixel_size
+	return (DEFAULT_VISIBLE_FOOT_Y - current_visible_foot_y) / pixel_size
+
+
+func set_lift(height: float) -> void:
+	lift_world = height
+	_apply_grounding_offset(current_state)
+
+
+func foot_drop_px(state: String) -> int:
+	if state_foot_drops.has(state):
+		return int(state_foot_drops[state])
+	var tex: Texture2D = state_textures.get(state, null)
+	var cell_w: int = int(state_cell_widths.get(state, 0))
+	var cell_h: int = int(state_cell_heights.get(state, 0))
+	if tex == null or cell_w <= 0 or cell_h <= 0:
+		return 0
+	var columns: int = int(state_column_counts.get(state, state_frame_counts.get(state, 1)))
+	var rows: int = int(state_row_counts.get(state, 1))
+	var padding: int = _find_lowest_bottom_padding(tex, cell_w, cell_h, columns, rows)
+	var lowest_from_center: int = (cell_h - padding - 1) - int(cell_h / 2)
+	var drop: int = lowest_from_center - ground_shadow_px
+	state_foot_drops[state] = drop
+	return drop
 
 
 func _find_lowest_bottom_padding(tex: Texture2D, cell_w: int, cell_h: int, hframes_count: int, vframes_count: int) -> int:

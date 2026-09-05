@@ -28,6 +28,17 @@ func _run() -> void:
 	await process_frame
 	var lobby: SkirmishLobby = main.get_node("UI/SkirmishLobby")
 	lobby.activate_player_team()
+	var map_arg: String = _arg("map")
+	if not map_arg.is_empty():
+		for i in range(lobby.map_picker.item_count):
+			if lobby.map_picker.get_item_text(i).to_lower().contains(map_arg.to_lower()):
+				lobby.map_picker.select(i)
+				lobby._on_map_changed(i)
+				break
+	var teams_arg: String = _arg("teams")
+	if teams_arg.is_valid_int():
+		lobby.player_size_slider.value = int(teams_arg)
+		lobby.enemy_size_spin.value = int(teams_arg)
 	var entries: Array[Dictionary] = lobby.get_roster_entries()
 	var idx: Dictionary = {}
 	for i in range(entries.size()):
@@ -49,6 +60,11 @@ func _run() -> void:
 		var portrait: TextureRect = first_cell.find_child("Portrait", true, false) as TextureRect
 		print("lobby: cell size %s portrait size %s tooltip '%s'" % [first_cell.size, portrait.size, first_cell.tooltip_text])
 	await _snap("lobby_00_scaled_grid")
+	if teams_arg.is_valid_int():
+		lobby.activate_enemy_team()
+		await process_frame
+		await process_frame
+		await _snap("lobby_00b_full_trays")
 	lobby._open_chooser(SkirmishLobby.CHOOSER_ITEM)
 	for i in range(3):
 		await process_frame

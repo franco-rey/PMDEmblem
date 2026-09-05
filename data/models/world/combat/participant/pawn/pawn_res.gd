@@ -21,6 +21,7 @@ var is_moving: bool = false
 var move_direction: Vector3 = Vector3.ZERO
 var pathfinding_tilestack: Array[Variant] = []
 var gravity: Vector3 = Vector3.ZERO
+var waypoint_elapsed: float = 0.0
 var wait_delay: float = 0.0
 var walk_speed: int = TacticsConfig.pawn.base_walk_speed
 var hurt_remaining: float = 0.0

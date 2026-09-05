@@ -4,6 +4,7 @@ extends Resource
 signal called_move_camera
 signal called_free_look
 signal called_rotate_camera
+signal edge_pan_toggled(enabled: bool)
 
 @export_category("Movement")
 @export_range(1, 100) var move_speed: int
@@ -29,6 +30,8 @@ var target_fov: float = 50.0
 
 @export_category("Panning")
 @export var boundary_radius: float = 10.0
+var edge_pan_enabled: bool = false
+var spectator: bool = false
 var boundary_center: Vector3 = Vector3.ZERO
 @export_range(1, 50) var border_pan_px_threshold: float = 1.0
 @export_range(0.01, 1.0) var mouse_pan_speed: float = 0.5
@@ -42,6 +45,8 @@ var is_snapping_to_quad: bool = false:
 	set(val):
 		is_snapping_to_quad = val
 		DebugLog.debug_nospam("quad_snap", val)
+var orbit_direction: int = 0
+const ORBIT_SPEED_DEGREES: float = 20.0
 var is_rotating: bool = false:
 	set(val):
 		is_rotating = val
@@ -87,6 +92,11 @@ func toggle_perspective() -> String:
 		x_rot = isometric_pitch
 	is_rotating = true
 	return perspective
+
+
+func toggle_orbit(direction: int) -> void:
+	orbit_direction = 0 if orbit_direction == direction else direction
+	is_rotating = false
 
 
 func rotate_camera(delta: float, twist: float = 0.0) -> void:

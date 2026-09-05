@@ -1,8 +1,13 @@
 class_name TacticsPawnMovementService
 extends RefCounted
 
+const ARRIVAL_DISTANCE: float = 0.15
+const WAYPOINT_TIMEOUT: float = 6.0
+
 
 func look_at_direction(pawn: TacticsPawn, dir: Vector3) -> void:
+	if Vector3(dir.x, 0.0, dir.z).length() < 0.0001:
+		return
 	var _fixed_dir: Vector3 = dir * (Vector3(1, 0, 0) if abs(dir.x) > abs(dir.z) else Vector3(0, 0, 1))
 	var _angle: float = Vector3.FORWARD.signed_angle_to(_fixed_dir.normalized(), Vector3.UP) + PI
 	var _new_rot: Vector3 = Vector3.UP * _angle
@@ -41,19 +46,37 @@ func move_along_path(pawn: TacticsPawn, delta: float) -> void:
 		return
 
 	start_movement(pawn)
+	var target: Vector3 = pawn.res.pathfinding_tilestack.front()
+	pawn.res.waypoint_elapsed += delta
 
-	if pawn.res.move_direction.length() > 0.5:
-		perform_movement(pawn, delta)
+	if pawn.res.move_direction.length() > 0.5 and pawn.res.waypoint_elapsed <= WAYPOINT_TIMEOUT:
+		var remaining: float = pawn.global_position.distance_to(target)
+		var step: float = calculate_speed(pawn) * delta
+		if remaining > maxf(ARRIVAL_DISTANCE, step):
+			perform_movement(pawn, delta)
+			var after: Vector3 = target - pawn.global_position
+			if after.length() >= ARRIVAL_DISTANCE and after.dot(pawn.res.move_direction) > 0.0:
+				return
+	elif pawn.res.waypoint_elapsed > WAYPOINT_TIMEOUT:
+		_log_timeout(pawn, target)
 
-		var _first_tile_in_stack: Vector3 = pawn.res.pathfinding_tilestack.front()
-		if pawn.global_position.distance_to(_first_tile_in_stack) >= 0.15:
-			return
-
+	pawn.global_position = target
+	var tile_ray: RayCast3D = pawn.get_node_or_null("Tile") as RayCast3D
+	if tile_ray != null:
+		tile_ray.force_raycast_update()
 	var reached: Variant = pawn.res.pathfinding_tilestack.pop_front()
 	reset_movement_state(pawn)
 	if reached is Vector3:
 		_notify_tile_reached(pawn, reached)
 	check_movement_completion(pawn)
+
+
+func _log_timeout(pawn: TacticsPawn, target: Vector3) -> void:
+	var node: Node = pawn.get_parent()
+	while node != null and not (node is TacticsLevel):
+		node = node.get_parent()
+	if node is TacticsLevel:
+		(node as TacticsLevel).battle_log.append({"kind": "movement_timeout", "unit": pawn, "target": target, "elapsed": pawn.res.waypoint_elapsed})
 
 
 func _notify_tile_reached(pawn: TacticsPawn, position: Vector3) -> void:
@@ -108,6 +131,7 @@ func reset_movement_state(pawn: TacticsPawn) -> void:
 	pawn.res.move_direction = Vector3.ZERO
 	pawn.res.is_jumping = false
 	pawn.res.gravity = Vector3.ZERO
+	pawn.res.waypoint_elapsed = 0.0
 	pawn.res.can_move = pawn.res.pathfinding_tilestack.size() > 0
 
 

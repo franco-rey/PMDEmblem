@@ -9,8 +9,6 @@ extends Control
 var curr_pawn: TacticsPawn = null
 var serv: TacticsControlsService
 
-@onready var layout_xbox: Texture2D = load("res://assets/textures/ui/labels/controls-ui-xbox.png")
-@onready var layout_pc: Texture2D = load("res://assets/textures/ui/labels/controls-ui.png")
 @onready var mouse_click_capture: InputCapture = $MouseClickCapture
 
 func _ready() -> void:

@@ -31,14 +31,20 @@ func _run() -> void:
 	var attacker: TacticsPawn = level.player.get_child(0)
 	var defender: TacticsPawn = level.opponent.get_child(0)
 	var notation: BattleNotation = level.notation
-	_assert_true(notation.lines.size() >= 4 and notation.lines[0].begins_with("# PMDEmblem battle notation_smoke seed 31"), "notation header written (%s)" % (notation.lines[0] if not notation.lines.is_empty() else ""))
+	_assert_true(notation.lines.size() >= 4 and notation.lines[0] == "[Notation \"pmdn/1\"]" and notation.lines[1] == "[Battle \"notation_smoke\"]" and notation.lines[2] == "[Seed 31]", "notation header tags written (%s)" % (notation.lines[0] if not notation.lines.is_empty() else ""))
+	var terrain_lines: int = 0
+	for line in notation.lines:
+		if String(line).begins_with("terrain "):
+			terrain_lines += 1
+	_assert_true(terrain_lines == notation.rows, "one terrain line per row (%d rows)" % notation.rows)
 	_assert_true(notation.columns > 0 and notation.rows > 0 and notation.tile_label(notation.origin) == "A1", "grid origin labels as A1 (%dx%d)" % [notation.columns, notation.rows])
 	_assert_true(notation.tile_label(notation.origin + Vector3i(2, 0, 3)) == "C4", "tile labels use letter columns and numbered rows")
 	var setup_lines: int = 0
 	for line in notation.lines:
-		if String(line).begins_with("setup P Charmander") or String(line).begins_with("setup E Bulbasaur"):
+		if String(line).begins_with("unit P1 0004_charmander L") or String(line).begins_with("unit E1 0001_bulbasaur L"):
 			setup_lines += 1
-	_assert_true(setup_lines == 2, "both units recorded with side, level, HP and tile")
+	_assert_true(setup_lines == 2, "both units recorded as unit lines with id, species, level, HP, tile and moves")
+	_assert_true(notation.unit_id(attacker) == "P1" and notation.unit_id(defender) == "E1" and notation.pawn_for_id("E1") == defender, "unit ids resolve both ways")
 	var keys: Dictionary = Targeting.arena_tile_keys(level)
 	var attacker_key: Vector3i = Targeting._tile_key(attacker.get_tile())
 	for direction in [Vector3i(1, 0, 0), Vector3i(0, 0, 1), Vector3i(-1, 0, 0), Vector3i(0, 0, -1)]:
@@ -56,8 +62,11 @@ func _run() -> void:
 	resolver.execute(attacker, defender, 0, level)
 	level._on_turn_completed(unit)
 	var joined: String = "\n".join(notation.lines.slice(before_lines))
-	_assert_true(joined.begins_with("T") and joined.contains(" PCharmander@") and joined.contains("uses Ember"), "turn and move lines recorded (%s)" % joined.replace("\n", " | "))
-	_assert_true(joined.contains("hit EBulbasaur@") and joined.contains("HP ->"), "hit line carries the defender tile and remaining HP")
+	_assert_true(joined.begins_with("T") and joined.split("\n")[0].contains(" P1 @") and joined.contains("\n  atk 1 ember E1"), "turn header and atk line recorded (%s)" % joined.replace("\n", " | "))
+	_assert_true(joined.contains("\n  hit E1 -") and joined.contains("/%d" % defender.stats.max_health) and joined.ends_with("  end"), "hit line carries the defender id, damage and HP and the turn closes with end")
+	for line in notation.lines:
+		var parsed: Dictionary = NotationParser.parse(String(line))
+		_assert_true(String(parsed.get("kind", "")) != "", "every line parses (%s)" % String(line))
 	var start_tile: String = notation.label_for_pawn(attacker)
 	level._on_turn_started(unit)
 	var moved: bool = false
@@ -69,10 +78,10 @@ func _run() -> void:
 			break
 	level._on_turn_completed(unit)
 	var end_tile: String = notation.label_for_pawn(attacker)
-	_assert_true(moved and notation.lines[notation.lines.size() - 1] == "  move Charmander %s>%s" % [start_tile, end_tile], "movement recorded as from>to (%s)" % notation.lines[notation.lines.size() - 1])
+	_assert_true(moved and notation.lines[notation.lines.size() - 2] == "  mv %s>%s" % [start_tile, end_tile] and notation.lines[notation.lines.size() - 1] == "  end", "movement recorded as mv from>to before end (%s)" % notation.lines[notation.lines.size() - 2])
 	notation.finish(1)
 	var path: String = notation.save()
-	_assert_true(not path.is_empty() and FileAccess.file_exists(path) and FileAccess.get_file_as_string(path).contains("# battle over: player wins"), "notation saved to %s" % path)
+	_assert_true(not path.is_empty() and path.ends_with(".pmdn") and FileAccess.file_exists(path) and FileAccess.get_file_as_string(path).contains("result player turns="), "notation saved to %s" % path)
 	loader.unload_current()
 	loader.queue_free()
 	await process_frame

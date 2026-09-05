@@ -13,9 +13,10 @@ func _run() -> void:
 	var result: Dictionary = await driver.run_script(lines)
 	_assert_true(int(result.get("failures", 0)) == 0, "driver script ran without command failures (%s)" % str(result.get("log", [])))
 	var notation: String = String(result.get("notation", ""))
-	_assert_true(notation.contains("uses Rain Dance") and notation.contains("weather rain for 5 rounds"), "notation records Rain Dance and the weather line")
-	_assert_true(notation.contains("uses Water Gun") and notation.contains("hit ECharmander@") and notation.contains("weather x1.5"), "notation records the boosted Water Gun hit")
-	_assert_true(notation.contains("T1 ECharmander@") and notation.contains("T3 ECharmander@"), "enemy turns recorded in order (%s)" % notation.substr(0, 400).replace("\n", " | "))
+	_assert_true(notation.contains("  atk 1 rain_dance") and notation.contains("  wx rain start 5"), "notation records Rain Dance and the weather line")
+	_assert_true(notation.contains("  atk 2 water_gun E1") and notation.contains("  hit E1 -") and notation.contains(" wx1.5"), "notation records the boosted Water Gun hit")
+	_assert_true(notation.contains("T1 E1 @") and notation.contains("T3 E1 @"), "enemy turns recorded in order (%s)" % notation.substr(0, 400).replace("\n", " | "))
+	_assert_true(notation.contains("[Code \"match seed=7 mode=pvp") and notation.contains("[Mode pvp]"), "header carries the skirmish code and mode")
 	var level: TacticsLevel = result.get("level")
 	_assert_true(level != null and FileAccess.file_exists(level.notation.output_path()), "notation file saved")
 	if failures > 0:

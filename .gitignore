@@ -50,9 +50,6 @@ __pycache__/
 tools/importers/local_sources.json
 
 assets/visuals/raw_asset/*
-!assets/visuals/raw_asset/BG/
-assets/visuals/raw_asset/BG/*
-!assets/visuals/raw_asset/BG/.gdignore
 !assets/visuals/raw_asset/Object/
 assets/visuals/raw_asset/Object/*
 !assets/visuals/raw_asset/Object/.gdignore
