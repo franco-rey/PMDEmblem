@@ -31,6 +31,8 @@ func get_3d_canvas_mouse_position(collision_mask: int, ctrl: TacticsControls) ->
 
 func is_mouse_hovering_ui_elem(
 		ctrl: TacticsControls, elm: Array[String] = TacticsConfig.ui_elem) -> bool:
+	if ctrl == null or not ctrl.is_inside_tree() or ctrl.get_viewport() == null:
+		return false
 	if TacticsConfig.hover_controls_contain(ctrl.get_viewport().get_mouse_position()):
 		return true
 	for e: String in elm:

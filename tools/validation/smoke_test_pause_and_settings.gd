@@ -15,17 +15,29 @@ func _run() -> void:
 	var saved_resolution: Vector2i = GameSettings.resolution
 	var saved_scale: float = GameSettings.ui_scale
 	var saved_vsync: bool = GameSettings.vsync
+	var saved_track: bool = GameSettings.camera_track
+	var saved_report: bool = GameSettings.cpu_battle_report
+	var saved_speed: float = GameSettings.cpu_speed
 	GameSettings.window_mode = "borderless"
 	GameSettings.resolution = Vector2i(1600, 900)
 	GameSettings.ui_scale = 2.0
 	GameSettings.vsync = false
+	GameSettings.camera_track = false
+	GameSettings.cpu_battle_report = false
+	GameSettings.cpu_speed = 5.0
 	_assert_true(GameSettings.save_settings(), "settings save to the user config")
 	GameSettings.window_mode = "windowed"
 	GameSettings.resolution = Vector2i(1920, 1080)
 	GameSettings.ui_scale = 0.0
 	GameSettings.vsync = true
+	GameSettings.camera_track = true
+	GameSettings.cpu_battle_report = true
+	GameSettings.cpu_speed = 2.0
 	GameSettings.load_settings()
-	_assert_true(GameSettings.window_mode == "borderless" and GameSettings.resolution == Vector2i(1600, 900) and is_equal_approx(GameSettings.ui_scale, 2.0) and not GameSettings.vsync, "settings load back the saved values")
+	_assert_true(GameSettings.window_mode == "borderless" and GameSettings.resolution == Vector2i(1600, 900) and is_equal_approx(GameSettings.ui_scale, 2.0) and not GameSettings.vsync and not GameSettings.camera_track and not GameSettings.cpu_battle_report and is_equal_approx(GameSettings.cpu_speed, 5.0), "settings load back the saved values including camera track, CPU report and CPU speed")
+	GameSettings.camera_track = saved_track
+	GameSettings.cpu_battle_report = saved_report
+	GameSettings.cpu_speed = saved_speed
 	GameSettings.window_mode = saved_mode
 	GameSettings.resolution = saved_resolution
 	GameSettings.ui_scale = saved_scale
@@ -38,6 +50,7 @@ func _run() -> void:
 		_finish()
 		return
 	var main: Node = driver.main
+	var level: TacticsLevel = driver.level
 	var controls: Node = main.get_node("TacticsControls")
 	_assert_true(controls.get_node_or_null("Hints") == null and controls.get_node_or_null("Hints/ControllerHints") == null, "the template controls hint is gone")
 	var menu: VBoxContainer = main.get_node("UI/MapSelector/SkirmishMenu")
@@ -54,7 +67,26 @@ func _run() -> void:
 	_assert_true(buttons.size() == 6, "pause menu offers resume, restart, lobby, main menu, graphics and quit")
 	pause._show_graphics()
 	var panel: GraphicsSettingsPanel = pause._graphics
-	_assert_true(panel.visible and panel.mode_picker.item_count == 3 and panel.resolution_picker.item_count == 5 and panel.scale_picker.item_count == 4, "graphics panel lists window modes, resolutions and UI scales")
+	_assert_true(panel.visible and panel.mode_picker.item_count == 3 and panel.resolution_picker.item_count == 5 and panel.scale_picker.item_count == 4 and panel.camera_track_toggle != null and panel.cpu_report_toggle != null and panel.cpu_speed_picker.item_count == 5, "options panel lists window modes, resolutions, UI scales, camera track, CPU report and CPU speeds")
+	var camera_node_early: TacticsCamera = main.find_child("TacticsCamera", true, false)
+	GameSettings.camera_track = false
+	camera_node_early.res.target = level.notation.pawn_for_id("E1")
+	camera_node_early.serv.move.focus_on_target(camera_node_early)
+	_assert_true(camera_node_early.res.target == null, "camera track off drops the focus target immediately")
+	GameSettings.camera_track = saved_track
+	var cpu_res: TacticsParticipantResource = level.participant.res
+	var hud_early: BattleHud = level.hud
+	var cpu_pawn: TacticsPawn = level.notation.pawn_for_id("E1")
+	cpu_pawn.stats.pokemon_instance.control_type = PokemonInstanceResource.ControlType.AI
+	cpu_res.curr_pawn = cpu_pawn
+	cpu_res.attackable_pawn = level.notation.pawn_for_id("P1")
+	cpu_res.stage = cpu_res.STAGE_MOVE_PAWN
+	hud_early._refresh_target_panel()
+	_assert_true(hud_early._target_panel.visible and hud_early._target_pawn == level.notation.pawn_for_id("P1"), "target panel shows the CPU's target during its attack stage")
+	cpu_pawn.stats.pokemon_instance.control_type = PokemonInstanceResource.ControlType.PLAYER
+	cpu_res.attackable_pawn = null
+	cpu_res.stage = cpu_res.STAGE_SHOW_ACTIONS
+	hud_early._refresh_target_panel()
 	panel._on_scale_selected(2)
 	_assert_true(is_equal_approx(GameSettings.ui_scale, 2.0) and is_equal_approx(UiScale.override_factor, 2.0), "picking a UI scale applies it")
 	GameSettings.ui_scale = saved_scale
@@ -62,7 +94,6 @@ func _run() -> void:
 	GameSettings.save_settings()
 	pause.close()
 	_assert_true(not pause.is_open and not paused, "closing the pause menu resumes the tree")
-	var level: TacticsLevel = driver.level
 	var results: BattleResultsScreen = main.get_node("BattleResultsScreen")
 	var definition := SkirmishDefinitionResource.new()
 	definition.control_mode = SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_PLAYER
@@ -109,6 +140,15 @@ func _run() -> void:
 		var bots_camera: TacticsCamera = bots.main.find_child("TacticsCamera", true, false)
 		_assert_true(bots_camera != null and bots_camera.res.spectator, "bot match frees the camera for spectating")
 		_assert_true(bool(bots.main._can_open_pause_menu()), "pause menu opens during a bot match")
+		_assert_true(is_equal_approx(Engine.time_scale, GameSettings.cpu_speed) and bots.main.speed_bar.visible, "bot match runs at the CPU speed with the speed bar shown (%.1fx)" % Engine.time_scale)
+		bots.main.speed_bar._on_pressed(5.0)
+		_assert_true(is_equal_approx(Engine.time_scale, 5.0) and is_equal_approx(GameSettings.cpu_speed, 5.0), "speed bar changes the battle speed and saves it")
+		bots.main.speed_bar._on_pressed(saved_speed)
+		GameSettings.cpu_speed = saved_speed
+		GameSettings.save_settings()
+		bots.main._on_main_menu_requested()
+		await process_frame
+		_assert_true(is_equal_approx(Engine.time_scale, 1.0) and not bots.main.speed_bar.visible, "leaving the bot match restores real time and hides the speed bar")
 		bots_camera.res.spectator = false
 	_finish()
 

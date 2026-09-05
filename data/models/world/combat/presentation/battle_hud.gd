@@ -669,8 +669,8 @@ func _refresh_target_panel() -> void:
 	_fill_status_icons(_target_statuses, target.stats)
 
 
-func _is_cpu_turn(pawn: TacticsPawn) -> bool:
-	if pawn == null or not is_instance_valid(pawn) or pawn.stats == null or pawn.stats.pokemon_instance == null:
+func _is_cpu_turn(pawn: Variant) -> bool:
+	if pawn == null or not is_instance_valid(pawn) or not (pawn is TacticsPawn) or pawn.stats == null or pawn.stats.pokemon_instance == null:
 		return false
 	return pawn.stats.pokemon_instance.control_type != PokemonInstanceResource.ControlType.PLAYER
 

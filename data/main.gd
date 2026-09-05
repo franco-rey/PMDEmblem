@@ -84,6 +84,7 @@ var level_instance: TacticsLevel
 var skirmish_loader: SkirmishLoader
 var pause_menu: PauseMenu = null
 var results_screen: BattleResultsScreen = null
+var speed_bar: SpectatorSpeedBar = null
 var menu_graphics_panel: GraphicsSettingsPanel = null
 var options_button: Button = null
 var quit_button: Button = null
@@ -145,6 +146,9 @@ func _setup_menus() -> void:
 	results_screen.main_menu_requested.connect(_on_main_menu_requested)
 	results_screen.next_requested.connect(_on_results_next)
 	add_child(results_screen)
+	speed_bar = SpectatorSpeedBar.new()
+	speed_bar.speed_selected.connect(_on_speed_selected)
+	add_child(speed_bar)
 	var menu := $UI/MapSelector/SkirmishMenu as VBoxContainer
 	if menu != null:
 		options_button = Button.new()
@@ -222,7 +226,19 @@ func _on_main_menu_requested() -> void:
 
 
 func _on_quit_requested() -> void:
+	_set_battle_speed(1.0)
 	get_tree().quit()
+
+
+func _set_battle_speed(value: float) -> void:
+	Engine.time_scale = maxf(value, 0.1)
+
+
+func _on_speed_selected(value: float) -> void:
+	GameSettings.cpu_speed = value
+	GameSettings.save_settings()
+	if level_instance != null and is_instance_valid(level_instance) and speed_bar != null and speed_bar.visible:
+		_set_battle_speed(value)
 
 
 func _on_results_play_again() -> void:
@@ -250,6 +266,7 @@ func _on_results_lobby() -> void:
 
 
 func _finish_ended_level() -> void:
+	_set_battle_speed(1.0)
 	if skirmish_loader != null and level_instance == skirmish_loader.current_level:
 		skirmish_loader.unload_current()
 	elif is_instance_valid(level_instance):
@@ -265,6 +282,9 @@ func _on_custom_toggle_pressed() -> void:
 		skirmish_lobby.open()
 
 func unload_level() -> void:
+	_set_battle_speed(1.0)
+	if speed_bar != null:
+		speed_bar.visible = false
 	if skirmish_loader != null and level_instance == skirmish_loader.current_level:
 		skirmish_loader.unload_current()
 	elif is_instance_valid(level_instance):
@@ -365,6 +385,10 @@ func _launch_definition(definition: SkirmishDefinitionResource, return_to_lobby_
 	var camera_node: TacticsCamera = find_child("TacticsCamera", true, false) as TacticsCamera
 	if camera_node != null and camera_node.res != null:
 		camera_node.res.spectator = not human
+	_set_battle_speed(GameSettings.cpu_speed if not human else 1.0)
+	if speed_bar != null:
+		speed_bar.visible = not human
+		speed_bar.highlight(GameSettings.cpu_speed)
 
 
 func _launch_series(definitions: Array[SkirmishDefinitionResource], code: String) -> void:
@@ -436,11 +460,15 @@ func _on_lobby_close_requested() -> void:
 
 func _on_skirmish_ended(result: int, definition: SkirmishDefinitionResource) -> void:
 	_set_tactics_controls_enabled(false)
+	_set_battle_speed(1.0)
+	if speed_bar != null:
+		speed_bar.visible = false
 	if pause_menu != null and pause_menu.is_open:
 		pause_menu.close()
 	var ended_level: TacticsLevel = level_instance
+	var show_report: bool = _definition_has_human_control(definition) or GameSettings.cpu_battle_report
 	if not skirmish_queue.is_empty() and skirmish_queue_index < skirmish_queue.size():
-		if results_screen != null and ended_level != null and is_instance_valid(ended_level) and DisplayServer.get_name() != "headless":
+		if show_report and results_screen != null and ended_level != null and is_instance_valid(ended_level) and DisplayServer.get_name() != "headless":
 			_ended_definition = definition
 			_ended_result = result
 			results_screen.show_result(result, definition, ended_level, "Next Battle (%d/%d)" % [skirmish_queue_index + 1, skirmish_queue.size()])
@@ -455,7 +483,7 @@ func _on_skirmish_ended(result: int, definition: SkirmishDefinitionResource) -> 
 	skirmish_queue_index = 0
 	skirmish_queue_code = ""
 	$UI/MapSelector.visible = false
-	if results_screen != null and ended_level != null and is_instance_valid(ended_level) and DisplayServer.get_name() != "headless":
+	if show_report and results_screen != null and ended_level != null and is_instance_valid(ended_level) and DisplayServer.get_name() != "headless":
 		_ended_definition = definition
 		_ended_result = result
 		results_screen.show_result(result, definition, ended_level)
