@@ -39,6 +39,7 @@ var intrinsic_service: BattleIntrinsicService = BattleIntrinsicService.new()
 var state_ops: BattleStateOps = null
 var battle_conditions: Dictionary = {}
 var message_log: BattleMessageLog = null
+var hud: BattleHud = null
 var notation: BattleNotation = BattleNotation.new()
 var battle_label: String = ""
 var weather_overlay: WeatherOverlay = null
@@ -105,6 +106,9 @@ func _setup_presentation() -> void:
 	message_log = BattleMessageLog.new()
 	message_log.setup(battle_log)
 	add_child(message_log)
+	hud = BattleHud.new()
+	add_child(hud)
+	hud.setup(self)
 	weather_overlay = WeatherOverlay.new()
 	add_child(weather_overlay)
 	weather_changed.connect(weather_overlay.set_weather)
@@ -286,6 +290,8 @@ func _start_scheduler() -> void:
 	intrinsic_service.log_battle_start(battle_units, battle_log, self)
 	scheduler.start_battle(battle_units, int(battle_rng.seed))
 	_scheduler_started = true
+	if hud != null:
+		hud.rebuild_queue()
 
 
 func current_terrain() -> String:

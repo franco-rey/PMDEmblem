@@ -14,7 +14,9 @@ const FONT_SIZE: int = 36
 const SMALL_FONT_SIZE: int = 36
 const TITLE_FONT_SIZE: int = 48
 const COMPACT_FONT_SIZE: int = 24
-const COMPACT_TITLE_FONT_SIZE: int = 36
+const COMPACT_TITLE_FONT_SIZE: int = 24
+const PORTRAIT_FLASH_SECONDS: float = 0.9
+const SELECTED_PORTRAIT_PX: float = 96.0
 const LARGE_FONT_LAYOUT_WIDTH: float = 1700.0
 const TITLE_FONT_GROUP: String = "lobby_title_font"
 const BODY_FONT_GROUP: String = "lobby_body_font"
@@ -52,6 +54,13 @@ const MUTED_BORDER_COLOR: Color = Color(0.28, 0.35, 0.33, 0.95)
 
 var body_font_size: int = FONT_SIZE
 var title_font_size: int = TITLE_FONT_SIZE
+var selected_portrait: TextureRect = null
+var selected_portrait_frame: PanelContainer = null
+var selected_name_label: Label = null
+var selected_types_label: Label = null
+var selected_path: String = ""
+var selected_expression: String = PortraitLibrary.NORMAL
+var _flash_serial: int = 0
 var roster_entries: Array[Dictionary] = []
 var map_paths: Array[String] = []
 var player_team_paths: Array[String] = []
@@ -272,9 +281,12 @@ func _build_ui() -> void:
 
 	var background := ColorRect.new()
 	background.name = "Background"
-	background.color = Color(0.11, 0.12, 0.12, 0.98)
+	background.color = Color(0.02, 0.03, 0.08, 0.35)
 	background.set_anchors_preset(Control.PRESET_FULL_RECT)
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var backdrop := PmdBackdrop.new()
+	backdrop.name = "Backdrop"
+	add_child(backdrop)
 	add_child(background)
 
 	var margin := MarginContainer.new()
@@ -613,6 +625,7 @@ func _create_details_panel() -> PanelContainer:
 	_apply_title_font(target_label)
 	target_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(target_label)
+	column.add_child(_create_selected_box())
 
 	details_label = Label.new()
 	details_label.name = "DetailsLabel"
@@ -691,6 +704,82 @@ func _create_details_panel() -> PanelContainer:
 	item_value_label = _section_value("ItemValueLabel")
 	column.add_child(item_value_label)
 	return panel
+
+
+func _create_selected_box() -> HBoxContainer:
+	var box := HBoxContainer.new()
+	box.name = "SelectedBox"
+	box.add_theme_constant_override("separation", 10)
+	selected_portrait_frame = PanelContainer.new()
+	selected_portrait_frame.name = "SelectedPortraitFrame"
+	selected_portrait_frame.custom_minimum_size = Vector2(SELECTED_PORTRAIT_PX + 8.0, SELECTED_PORTRAIT_PX + 8.0)
+	selected_portrait_frame.add_theme_stylebox_override("panel", PmdStyle.window(Color(0.02, 0.03, 0.08, 1.0), PmdStyle.FRAME_SOFT, 2, 4))
+	box.add_child(selected_portrait_frame)
+	selected_portrait = TextureRect.new()
+	selected_portrait.name = "SelectedPortrait"
+	selected_portrait.custom_minimum_size = Vector2(SELECTED_PORTRAIT_PX, SELECTED_PORTRAIT_PX)
+	selected_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	selected_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	selected_portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	selected_portrait_frame.add_child(selected_portrait)
+	var column := VBoxContainer.new()
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	column.add_theme_constant_override("separation", 2)
+	box.add_child(column)
+	selected_name_label = Label.new()
+	selected_name_label.name = "SelectedName"
+	selected_name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_apply_body_font(selected_name_label)
+	column.add_child(selected_name_label)
+	selected_types_label = Label.new()
+	selected_types_label.name = "SelectedTypes"
+	selected_types_label.add_theme_font_size_override("font_size", 24)
+	selected_types_label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
+	column.add_child(selected_types_label)
+	box.visible = false
+	return box
+
+
+func _show_selected(path: String, expression: String = "Happy") -> void:
+	selected_path = path
+	var box: Control = selected_portrait_frame.get_parent() as Control
+	if path.is_empty():
+		box.visible = false
+		return
+	var entry: Dictionary = _entry_for_path(path)
+	var slug: String = String(entry.get("slug", PortraitLibrary.slug_for_path(path)))
+	box.visible = true
+	selected_name_label.text = String(entry.get("label", slug.capitalize()))
+	var types: Array = entry.get("types", [])
+	var names: Array[String] = []
+	for type_id in types:
+		names.append(String(type_id).capitalize())
+	selected_types_label.text = " / ".join(names)
+	_set_selected_expression(slug, expression)
+	if expression != PortraitLibrary.NORMAL:
+		_flash_serial += 1
+		var serial: int = _flash_serial
+		get_tree().create_timer(PORTRAIT_FLASH_SECONDS * 1.4).timeout.connect(func() -> void:
+			if serial == _flash_serial and is_instance_valid(selected_portrait) and selected_path == path:
+				_set_selected_expression(slug, PortraitLibrary.NORMAL))
+
+
+func _set_selected_expression(slug: String, expression: String) -> void:
+	selected_expression = expression
+	selected_portrait.texture = PortraitLibrary.texture_for(slug, expression)
+
+
+func _flash_portrait(texture_rect: TextureRect, slug: String, expression: String = "Happy") -> void:
+	if texture_rect == null or not is_instance_valid(texture_rect):
+		return
+	var happy: Texture2D = PortraitLibrary.texture_for(slug, expression)
+	var normal: Texture2D = texture_rect.texture
+	if happy == null or happy == normal:
+		return
+	texture_rect.texture = happy
+	get_tree().create_timer(PORTRAIT_FLASH_SECONDS).timeout.connect(func() -> void:
+		if is_instance_valid(texture_rect) and texture_rect.texture == happy:
+			texture_rect.texture = normal)
 
 
 func _section_header(text: String) -> Label:
@@ -1388,6 +1477,11 @@ func _set_active_side(side: String) -> void:
 
 
 func _on_roster_pressed(path: String) -> void:
+	var slug: String = PortraitLibrary.slug_for_path(path)
+	var cell: Node = roster_grid.find_child("Roster_%s" % slug, false, false) if roster_grid != null else null
+	if cell != null:
+		_flash_portrait(cell.get_node_or_null("Portrait") as TextureRect, slug)
+	_show_selected(path)
 	_add_to_active_team(path)
 
 
@@ -1428,6 +1522,11 @@ func _on_team_slot_pressed(side: String, index: int) -> void:
 		selected_player_index = index
 	else:
 		selected_enemy_index = index
+	var tray: Node = player_tray if side == SIDE_PLAYER else enemy_tray
+	var slot: Node = tray.find_child("%sSlot%d" % [side.capitalize(), index + 1], true, false) if tray != null else null
+	if slot != null:
+		_flash_portrait(slot.get_node_or_null("Portrait") as TextureRect, PortraitLibrary.slug_for_path(team[index]))
+	_show_selected(team[index])
 	_refresh_team_trays()
 	_refresh_slot_section()
 
@@ -1827,11 +1926,10 @@ func _set_status(text: String) -> void:
 
 
 func _style_box(color: Color, border: Color, border_width: int) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = color
-	style.border_color = border
-	style.set_border_width_all(border_width)
-	style.set_corner_radius_all(6)
+	var fill: Color = PmdStyle.NAVY_LIGHT if color == ACTIVE_COLOR else (PmdStyle.NAVY_DEEP if border_width == 0 else PmdStyle.NAVY)
+	var frame: Color = PmdStyle.CURSOR if border == BORDER_COLOR else PmdStyle.FRAME_SOFT
+	var style: StyleBoxFlat = PmdStyle.window(fill, frame, maxi(border_width, 1), 6)
+	style.shadow_size = 3 if border_width > 0 else 0
 	return style
 
 
@@ -1863,7 +1961,9 @@ func _apply_font_step() -> void:
 
 
 func _apply_title_font(control: Control) -> void:
+	control.add_theme_font_override("font", PmdStyle.BANNER_FONT)
 	control.add_theme_font_size_override("font_size", title_font_size)
+	control.add_theme_color_override("font_color", PmdStyle.TEXT_GOLD)
 	control.add_to_group(TITLE_FONT_GROUP, true)
 
 

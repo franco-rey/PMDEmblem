@@ -3,6 +3,8 @@ extends RefCounted
 
 
 func look_at_direction(pawn: TacticsPawn, dir: Vector3) -> void:
+	if Vector3(dir.x, 0.0, dir.z).length() < 0.0001:
+		return
 	var _fixed_dir: Vector3 = dir * (Vector3(1, 0, 0) if abs(dir.x) > abs(dir.z) else Vector3(0, 0, 1))
 	var _angle: float = Vector3.FORWARD.signed_angle_to(_fixed_dir.normalized(), Vector3.UP) + PI
 	var _new_rot: Vector3 = Vector3.UP * _angle

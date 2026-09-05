@@ -35,6 +35,18 @@ var ai: MinimumViableAI = MinimumViableAI.new()
 var turns_taken: int = 0
 var status_uses: Dictionary = {}
 var seed_value: int = 42
+var max_turns: int = MAX_TURNS
+var cinematic: bool = false
+var fast_turns: int = 0
+var max_seconds: float = 0.0
+var start_frame: int = 0
+var shot_index: int = 0
+var base_yaw: int = -45
+var orbit_phase: float = 0.0
+var orbit_dir: float = 1.0
+var orbit_speed: float = 40.0
+var orbit_arc: float = 80.0
+var top_down: bool = false
 var result_line: String = ""
 
 
@@ -49,6 +61,14 @@ func _run() -> void:
 	for arg in OS.get_cmdline_user_args():
 		if String(arg).begins_with("--seed="):
 			seed_value = int(String(arg).substr(7))
+		elif String(arg).begins_with("--turns="):
+			max_turns = int(String(arg).substr(8))
+		elif String(arg).begins_with("--cinematic="):
+			cinematic = String(arg).substr(12) == "1"
+		elif String(arg).begins_with("--seconds="):
+			max_seconds = float(String(arg).substr(10))
+		elif String(arg).begins_with("--fast-turns="):
+			fast_turns = int(String(arg).substr(13))
 	driver = DRIVER.new(self)
 	var ok: bool = await driver._launch(CODE_TEMPLATE % seed_value)
 	if not ok:
@@ -60,14 +80,31 @@ func _run() -> void:
 	_index_pawns()
 	for slug in PLAN:
 		queues[slug] = (PLAN[slug] as Array).duplicate(true)
-	await _hold(START_HOLD)
-	while turns_taken < MAX_TURNS and _battle_alive():
+	if fast_turns > 0:
+		level.presentation_runner.immediate_mode = true
+		while turns_taken < fast_turns and _battle_alive():
+			var fast_pawn: TacticsPawn = await _next_active()
+			if fast_pawn == null:
+				break
+			turns_taken += 1
+			await _take_turn(fast_pawn)
+		level.presentation_runner.immediate_mode = false
+		print("showcase: fast phase ended after %d turns at %.2f s" % [turns_taken, float(Engine.get_physics_frames()) / 60.0])
+	start_frame = Engine.get_physics_frames()
+	if cinematic:
+		base_yaw = level.camera.y_rot
+		level.camera.target_fov = 40.0
+		_enter_shot(0)
+		_cinematic_tick(0.0)
+		_camera_loop()
+	await _hold(START_HOLD * (2 if cinematic else 1))
+	while turns_taken < max_turns and _battle_alive() and not _out_of_time():
 		var pawn: TacticsPawn = await _next_active()
 		if pawn == null:
 			break
 		turns_taken += 1
 		await _take_turn(pawn)
-		await _hold(TURN_HOLD)
+		await _hold(TURN_HOLD * (3 if cinematic else 1))
 	print("showcase: seed %d, %d turns taken, %s" % [seed_value, turns_taken, result_line if not result_line.is_empty() else "no result"])
 	await _hold(END_HOLD)
 	quit(0)
@@ -87,6 +124,67 @@ func _on_battle_ended(result: int) -> void:
 			enemy_alive += 1
 			enemy_hp += pawn.stats.curr_health
 	result_line = "result=%d player_standing=%d (%d hp) enemy_standing=%d (%d hp)" % [result, player_alive, player_hp, enemy_alive, enemy_hp]
+
+
+func _out_of_time() -> bool:
+	if max_seconds <= 0.0:
+		return false
+	return float(Engine.get_physics_frames() - start_frame) / 60.0 >= max_seconds - float(END_HOLD) / 60.0
+
+
+func _next_shot() -> void:
+	pass
+
+
+func _camera_loop() -> void:
+	var previous: int = -1
+	while cinematic and _battle_alive():
+		await physics_frame
+		var elapsed: float = float(Engine.get_physics_frames() - start_frame) / 60.0
+		var index: int = _shot_index_at(elapsed)
+		if index != previous:
+			_enter_shot(index)
+			previous = index
+		_cinematic_tick(1.0 / 60.0)
+
+
+func _shots() -> Array:
+	return [[0.0, -20.0, 6.0, -34, 40.0, false], [9.0, 30.0, -4.0, -26, 26.0, false], [17.0, 0.0, 9.0, -80, 38.0, true], [24.0, -45.0, 5.0, -30, 30.0, false]]
+
+
+func _shot_index_at(elapsed: float) -> int:
+	var shots: Array = _shots()
+	var index: int = 0
+	for i in range(shots.size()):
+		if elapsed >= float(shots[i][0]):
+			index = i
+	return index
+
+
+func _enter_shot(index: int) -> void:
+	var shot: Array = _shots()[index]
+	var camera: TacticsCameraResource = level.camera
+	orbit_phase = float(shot[1])
+	orbit_speed = absf(float(shot[2]))
+	orbit_dir = signf(float(shot[2]))
+	var wants_top_down: bool = bool(shot[5])
+	if wants_top_down != top_down:
+		camera.toggle_perspective()
+		top_down = wants_top_down
+	if not top_down:
+		camera.x_rot = int(shot[3])
+	camera.target_fov = float(shot[4])
+	shot_index = index
+
+
+func _cinematic_tick(dt: float) -> void:
+	orbit_phase += orbit_dir * orbit_speed * dt
+	level.camera.y_rot = int(fmod(float(base_yaw) + 180.0 + orbit_phase + 360.0, 360.0))
+
+
+func _punch_in() -> void:
+	if cinematic:
+		level.camera.target_fov = maxf(level.camera.min_zoom, level.camera.target_fov - 3.0)
 
 
 func _index_pawns() -> void:
@@ -347,7 +445,10 @@ func _fallback(pawn: TacticsPawn) -> bool:
 		pick = _best_damaging(pawn)
 	if not pick.is_empty():
 		print("showcase: %s uses %s on %s" % [_slug_of(pawn), (pick["move"] as PokemonMoveResource).move_id, _slug_of(pick["target"])])
+		_punch_in()
 		await driver._attack(pawn, int(pick["slot"]), pick["target"])
+		if cinematic:
+			await _hold(TURN_HOLD * 2)
 		return true
 	var slug: String = _slug_of(pawn)
 	for i in range(pawn.stats.move_slots.size()):

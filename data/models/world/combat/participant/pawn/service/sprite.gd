@@ -63,6 +63,7 @@ var state_row_counts: Dictionary = {}
 var state_cell_widths: Dictionary = {}
 var state_cell_heights: Dictionary = {}
 var state_bottom_paddings: Dictionary = {}
+var state_foot_drops: Dictionary = {}
 var state_frame_durations: Dictionary = {}
 var state_timings: Dictionary = {}
 var state_source_names: Dictionary = {}
@@ -399,7 +400,7 @@ func _apply_state_texture(state: String) -> void:
 
 func _apply_grounding_offset(state: String) -> void:
 	if grounding_mode == GROUNDING_SOURCE:
-		offset.y = float(ground_shadow_px) - (DEFAULT_CHARACTER_CENTER_Y / pixel_size)
+		offset.y = float(ground_shadow_px + maxi(0, foot_drop_px(state))) - (DEFAULT_CHARACTER_CENTER_Y / pixel_size)
 		return
 	var cell_h: float = float(state_cell_heights.get(state, DEFAULT_FRAME_CELL_PX))
 	var bottom_padding: float = float(state_bottom_paddings.get(state, DEFAULT_FRAME_BOTTOM_PADDING_PX))
@@ -409,6 +410,23 @@ func _apply_grounding_offset(state: String) -> void:
 		+ (bottom_padding * pixel_size)
 	)
 	offset.y = (DEFAULT_VISIBLE_FOOT_Y - current_visible_foot_y) / pixel_size
+
+
+func foot_drop_px(state: String) -> int:
+	if state_foot_drops.has(state):
+		return int(state_foot_drops[state])
+	var tex: Texture2D = state_textures.get(state, null)
+	var cell_w: int = int(state_cell_widths.get(state, 0))
+	var cell_h: int = int(state_cell_heights.get(state, 0))
+	if tex == null or cell_w <= 0 or cell_h <= 0:
+		return 0
+	var columns: int = int(state_column_counts.get(state, state_frame_counts.get(state, 1)))
+	var rows: int = int(state_row_counts.get(state, 1))
+	var padding: int = _find_lowest_bottom_padding(tex, cell_w, cell_h, columns, rows)
+	var lowest_from_center: int = (cell_h - padding - 1) - int(cell_h / 2)
+	var drop: int = lowest_from_center - ground_shadow_px
+	state_foot_drops[state] = drop
+	return drop
 
 
 func _find_lowest_bottom_padding(tex: Texture2D, cell_w: int, cell_h: int, hframes_count: int, vframes_count: int) -> int:

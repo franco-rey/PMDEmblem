@@ -111,6 +111,9 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	UiScale.apply(get_tree().root)
+	var backdrop: Control = $UI.get_node_or_null("Backdrop") as Control
+	if backdrop != null:
+		backdrop.visible = $UI/MapSelector.visible or (skirmish_lobby != null and skirmish_lobby.visible)
 
 
 func _on_launch_button_pressed() -> void:
@@ -306,9 +309,29 @@ func _on_skirmish_ended(result: int, definition: SkirmishDefinitionResource) -> 
 
 
 func _style_main_menu() -> void:
+	get_tree().root.theme = PmdStyle.build_theme(load("res://assets/ui/pmd_theme.tres") as Theme)
+	var ui: Control = $UI as Control
+	var backdrop := PmdBackdrop.new()
+	backdrop.name = "Backdrop"
+	ui.add_child(backdrop)
+	ui.move_child(backdrop, 0)
 	var menu := $UI/MapSelector/SkirmishMenu as VBoxContainer
 	if menu != null:
-		menu.add_theme_constant_override("separation", 8)
+		menu.add_theme_constant_override("separation", 10)
+		var title := Label.new()
+		title.name = "Title"
+		title.text = "PMD Emblem"
+		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		PmdStyle.apply_title(title, 72)
+		menu.add_child(title)
+		menu.move_child(title, 0)
+		var subtitle := Label.new()
+		subtitle.name = "Subtitle"
+		subtitle.text = "Tactical skirmishes"
+		subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		subtitle.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
+		menu.add_child(subtitle)
+		menu.move_child(subtitle, 1)
 	for control in [skirmish_picker, launch_button, custom_toggle_button]:
 		control.custom_minimum_size = MENU_CONTROL_SIZE
 		control.add_theme_font_size_override("font_size", MENU_FONT_SIZE)

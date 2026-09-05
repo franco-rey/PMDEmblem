@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Pack PMDO bitmap font glyphs from RawAsset/font into BMFont atlases for Godot."""
 from __future__ import annotations
 
 import argparse
