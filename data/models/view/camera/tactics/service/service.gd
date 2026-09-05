@@ -37,6 +37,8 @@ func process(delta: float, camera: TacticsCamera) -> void:
 
 	if res.in_free_look:
 		rotate.free_look(delta, camera.t_pivot, camera.p_pivot)
+	elif res.orbit_direction != 0 and not res.is_snapping_to_quad:
+		rotate.orbit(delta, camera.t_pivot)
 	elif not res.is_snapping_to_quad:
 		rotate.rotate_camera(delta, camera.t_pivot, camera.p_pivot)
 

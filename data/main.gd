@@ -80,12 +80,16 @@ const MANUAL_SKIRMISHES: Array[Dictionary] = [
 const MENU_CONTROL_SIZE: Vector2 = Vector2(520, 72)
 const MENU_FONT_SIZE: int = 36
 
+const MIN_WINDOW_SIZE: Vector2i = Vector2i(1280, 720)
+
 var level_instance: TacticsLevel
 var skirmish_loader: SkirmishLoader
 var pause_menu: PauseMenu = null
 var results_screen: BattleResultsScreen = null
 var speed_bar: SpectatorSpeedBar = null
 var menu_graphics_panel: GraphicsSettingsPanel = null
+var menu_controls_panel: ControlsPanel = null
+var controls_button: Button = null
 var options_button: Button = null
 var quit_button: Button = null
 var _relaunch: Callable = Callable()
@@ -104,6 +108,8 @@ var skirmish_queue_code: String = ""
 
 func _ready() -> void:
 	GameSettings.load_settings()
+	if DisplayServer.get_name() != "headless":
+		DisplayServer.window_set_min_size(MIN_WINDOW_SIZE)
 	GameSettings.apply(get_tree().root)
 	UiScale.watch(get_tree().root)
 	BattleNotation.clear_output_dir()
@@ -122,6 +128,8 @@ func _ready() -> void:
 	launch_button.grab_focus()
 
 func _process(_delta: float) -> void:
+	_poll_speed_keys()
+	_sync_turn_speed()
 	UiScale.apply(get_tree().root)
 	var backdrop: Control = $UI.get_node_or_null("Backdrop") as Control
 	if backdrop != null:
@@ -158,6 +166,13 @@ func _setup_menus() -> void:
 		options_button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
 		options_button.pressed.connect(_on_options_pressed)
 		menu.add_child(options_button)
+		controls_button = Button.new()
+		controls_button.name = "ControlsButton"
+		controls_button.text = "Controls"
+		controls_button.custom_minimum_size = MENU_CONTROL_SIZE
+		controls_button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
+		controls_button.pressed.connect(_on_controls_pressed)
+		menu.add_child(controls_button)
 		quit_button = Button.new()
 		quit_button.name = "QuitButton"
 		quit_button.text = "Quit"
@@ -178,10 +193,18 @@ func _setup_menus() -> void:
 		if options_button != null:
 			options_button.grab_focus())
 	overlay.add_child(menu_graphics_panel)
+	menu_graphics_panel.controls_requested.connect(_on_controls_pressed)
+	menu_controls_panel = ControlsPanel.new()
+	menu_controls_panel.visible = false
+	menu_controls_panel.closed.connect(func() -> void:
+		menu_controls_panel.visible = false
+		menu_graphics_panel.visible = true
+		menu_graphics_panel.focus_first())
+	overlay.add_child(menu_controls_panel)
 
 
 func _can_open_pause_menu() -> bool:
-	if level_instance == null or not is_instance_valid(level_instance) or level_instance.battle_finished:
+	if level_instance == null or not is_instance_valid(level_instance) or level_instance.battle_finished or level_instance.intro_pending:
 		return false
 	if results_screen != null and results_screen.visible:
 		return false
@@ -199,8 +222,21 @@ func _on_options_pressed() -> void:
 		return
 	$UI/MapSelector.visible = false
 	overlay.visible = true
+	menu_controls_panel.visible = false
+	menu_graphics_panel.visible = true
 	menu_graphics_panel.refresh()
 	menu_graphics_panel.focus_first()
+
+
+func _on_controls_pressed() -> void:
+	var overlay: Control = $UI.get_node_or_null("OptionsOverlay") as Control
+	if overlay == null:
+		return
+	$UI/MapSelector.visible = false
+	overlay.visible = true
+	menu_graphics_panel.visible = false
+	menu_controls_panel.visible = true
+	menu_controls_panel.focus_first()
 
 
 func _on_restart_requested() -> void:
@@ -234,11 +270,46 @@ func _set_battle_speed(value: float) -> void:
 	Engine.time_scale = maxf(value, 0.1)
 
 
+func _poll_speed_keys() -> void:
+	if level_instance == null or not is_instance_valid(level_instance):
+		return
+	for i in range(GameSettings.CPU_SPEEDS.size()):
+		if Input.is_action_just_pressed("battle_speed_%d" % (i + 1)):
+			_on_speed_selected(GameSettings.CPU_SPEEDS[i])
+			if speed_bar != null:
+				speed_bar.highlight(GameSettings.CPU_SPEEDS[i])
+			return
+
+
+func _sync_turn_speed() -> void:
+	if level_instance == null or not is_instance_valid(level_instance) or level_instance.battle_finished or speed_bar == null:
+		return
+	if _ended_definition != null and results_screen != null and results_screen.visible:
+		return
+	var participant: TacticsParticipant = level_instance.participant
+	if participant == null or participant.res == null:
+		return
+	var current: TacticsPawn = participant.res.curr_pawn
+	var human_match: bool = tactics_controls != null and tactics_controls.visible
+	if not human_match:
+		return
+	var cpu_turn: bool = current != null and is_instance_valid(current) and current.stats != null and current.stats.pokemon_instance != null and current.stats.pokemon_instance.control_type != PokemonInstanceResource.ControlType.PLAYER and level_instance._scheduler_started
+	var wanted: float = GameSettings.cpu_speed
+	if not is_equal_approx(Engine.time_scale, wanted):
+		_set_battle_speed(wanted)
+	if speed_bar.visible != cpu_turn:
+		speed_bar.visible = cpu_turn
+		speed_bar.highlight(GameSettings.cpu_speed)
+
+
 func _on_speed_selected(value: float) -> void:
 	GameSettings.cpu_speed = value
 	GameSettings.save_settings()
 	if level_instance != null and is_instance_valid(level_instance) and speed_bar != null and speed_bar.visible:
 		_set_battle_speed(value)
+		speed_bar.highlight(value)
+	if level_instance != null and is_instance_valid(level_instance) and level_instance.hud != null and level_instance.banner != null:
+		level_instance.banner.show_notice("Battle speed %s" % GameSettings.cpu_speed_label(value))
 
 
 func _on_results_play_again() -> void:
@@ -385,10 +456,12 @@ func _launch_definition(definition: SkirmishDefinitionResource, return_to_lobby_
 	var camera_node: TacticsCamera = find_child("TacticsCamera", true, false) as TacticsCamera
 	if camera_node != null and camera_node.res != null:
 		camera_node.res.spectator = not human
-	_set_battle_speed(GameSettings.cpu_speed if not human else 1.0)
+	_set_battle_speed(GameSettings.cpu_speed)
 	if speed_bar != null:
 		speed_bar.visible = not human
 		speed_bar.highlight(GameSettings.cpu_speed)
+	if level_instance.banner != null and GameSettings.battle_flair and DisplayServer.get_name() != "headless":
+		level_instance.banner.show_intro(level_instance, definition)
 
 
 func _launch_series(definitions: Array[SkirmishDefinitionResource], code: String) -> void:

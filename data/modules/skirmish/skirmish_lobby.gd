@@ -1161,14 +1161,14 @@ func chooser_entries() -> Array[Dictionary]:
 		CHOOSER_MOVES:
 			var instance: PokemonInstanceResource = load(path) as PokemonInstanceResource
 			for move in SkirmishMoveLoadout.move_pool_for_instance(instance):
-				out.append({"id": move.move_id, "label": move.display_name(), "detail": "%s %s  Pow %d" % [move.type.capitalize(), _category_label(move), move.base_power], "icon_path": "", "type": move.type, "category": move.category})
+				out.append({"id": move.move_id, "label": move.display_name(), "detail": "%s %s  Pow %d" % [move.type.capitalize(), _category_label(move), move.base_power], "icon_path": "", "type": move.type, "category": move.category, "description": BattleText.move_summary(move)})
 		CHOOSER_ABILITY:
 			var instance: PokemonInstanceResource = load(path) as PokemonInstanceResource
 			for ability_id in CustomSkirmishBuilder.available_ability_ids(instance):
-				out.append({"id": ability_id, "label": _ability_label(ability_id), "detail": "", "icon_path": ""})
+				out.append({"id": ability_id, "label": _ability_label(ability_id), "detail": "", "icon_path": "", "description": BattleText.ability_description(ability_id)})
 		_:
 			for entry in BattleItemCatalog.entries():
-				out.append({"id": String(entry["item_id"]), "label": String(entry["label"]), "detail": String(entry["category"]).capitalize(), "icon_path": String(entry.get("icon_path", ""))})
+				out.append({"id": String(entry["item_id"]), "label": String(entry["label"]), "detail": String(entry["category"]).capitalize(), "icon_path": String(entry.get("icon_path", "")), "description": BattleText.item_description(String(entry["item_id"]))})
 	return out
 
 
@@ -1201,7 +1201,8 @@ func _create_chooser_row(entry: Dictionary) -> Button:
 	button.toggle_mode = chooser_mode == CHOOSER_MOVES
 	button.button_pressed = chooser_selection.has(id) if not id.is_empty() else chooser_selection.is_empty()
 	button.pressed.connect(_on_chooser_row_pressed.bind(id))
-	button.tooltip_text = String(entry.get("label", ""))
+	var description: String = String(entry.get("description", ""))
+	button.tooltip_text = String(entry.get("label", "")) + ("\n" + description if not description.is_empty() else "")
 
 	var content := Control.new()
 	content.set_anchors_preset(Control.PRESET_FULL_RECT)

@@ -61,7 +61,7 @@ func handle_input(event: InputEvent) -> void:
 
 
 func move_camera(delta: float) -> void:
-	camera_service.move_camera(delta, controls.is_joystick)
+	camera_service.move_camera(delta, controls.is_joystick, controls.lock_horizontal_pan)
 
 
 func camera_rotation_inputs(delta: float) -> void:

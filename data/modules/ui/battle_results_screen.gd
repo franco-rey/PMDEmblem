@@ -18,6 +18,9 @@ var _title: Label = null
 var _subtitle: Label = null
 var _columns: HBoxContainer = null
 var _buttons: Dictionary = {}
+var _level: TacticsLevel = null
+var _copy_button: Button = null
+var _copy_tween: Tween = null
 
 
 func _ready() -> void:
@@ -65,11 +68,20 @@ func _ready() -> void:
 	_add_button(buttons, "Lobby", "LobbyButton", lobby_requested)
 	_add_button(buttons, "Main Menu", "MainMenuButton", main_menu_requested)
 	_add_button(buttons, "Next Battle", "NextButton", next_requested)
+	_copy_button = Button.new()
+	_copy_button.name = "CopyButton"
+	_copy_button.text = "Copy Notation"
+	_copy_button.custom_minimum_size = Vector2(200, BUTTON_HEIGHT)
+	_copy_button.pressed.connect(_on_copy_pressed)
+	buttons.add_child(_copy_button)
 	visible = false
 
 
 func show_result(result: int, definition: SkirmishDefinitionResource, level: TacticsLevel, next_label: String = "") -> void:
 	result_code = result
+	_level = level
+	_copy_button.text = "Copy Notation"
+	_copy_button.visible = level != null and level.notation != null
 	var viewport_width: float = _center.size.x if _center != null else 0.0
 	if viewport_width > 0.0:
 		_panel.custom_minimum_size.x = minf(PANEL_WIDTH, viewport_width - 40.0)
@@ -160,7 +172,34 @@ func _unit_row(pawn: TacticsPawn, level: TacticsLevel) -> HBoxContainer:
 	if pawn.stats != null:
 		bar.set_values(pawn.stats.curr_health, pawn.stats.max_health)
 	text.add_child(bar)
+	if level != null and level.stats_tracker != null:
+		var summary: Dictionary = level.stats_tracker.summary(pawn)
+		var stats_label := Label.new()
+		stats_label.name = "UnitStats"
+		stats_label.text = "Dealt %d  Taken %d  KO %d" % [int(summary.get("dealt", 0)), int(summary.get("taken", 0)), int(summary.get("kos", 0))]
+		stats_label.add_theme_font_size_override("font_size", 24)
+		stats_label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
+		text.add_child(stats_label)
 	return row
+
+
+func notation_text() -> String:
+	if _level == null or not is_instance_valid(_level) or _level.notation == null:
+		return ""
+	return _level.notation.text()
+
+
+func _on_copy_pressed() -> void:
+	var text: String = notation_text()
+	if text.is_empty():
+		return
+	DisplayServer.clipboard_set(text)
+	_copy_button.text = "Copied!"
+	if _copy_tween != null and _copy_tween.is_valid():
+		_copy_tween.kill()
+	_copy_tween = create_tween()
+	_copy_tween.tween_interval(1.5)
+	_copy_tween.tween_callback(func() -> void: _copy_button.text = "Copy Notation")
 
 
 func _add_button(row: HBoxContainer, text: String, node_name: String, signal_to_emit: Signal) -> void:

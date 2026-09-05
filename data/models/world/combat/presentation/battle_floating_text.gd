@@ -5,12 +5,18 @@ const RISE_HEIGHT: float = 0.7
 const LIFETIME: float = 1.1
 const FADE_SECONDS: float = 0.4
 const START_HEIGHT: float = 1.45
+const CALLOUT_HEIGHT: float = 1.85
 const PIXEL_SIZE: float = 0.006
 const BASE_FONT_SIZE: int = 60
 const BIG_FONT_SIZE: int = 72
 
+const CALLOUT_COOLDOWN_MS: int = 1500
+const STAT_SHORT: Dictionary = {"attack": "ATK", "defense": "DEF", "special_attack": "SPA", "special_defense": "SPD", "speed": "SPE", "accuracy": "ACC", "evasion": "EVA", "hp": "HP"}
+const SILENT_STATUSES: Array[String] = ["charging", "recharge", "rampage", "bide", "rollout", "ice_ball", "petal_dance", "thrash", "outrage", "uproar", "airborne", "underground", "underwater", "vanished", "protect"]
+
 var level: TacticsLevel = null
 var spawned_total: int = 0
+var _recent: Dictionary = {}
 
 
 class FloatingPopup extends Label3D:
@@ -64,19 +70,52 @@ func _on_event(event: Dictionary) -> void:
 			_schedule(event.get("defender"), "NO EFFECT", PmdStyle.TEXT_DIM, BASE_FONT_SIZE, true)
 		"status_tick":
 			_schedule(event.get("unit"), "-%d" % int(event.get("amount", 0)), PmdStyle.HP_LOW, BASE_FONT_SIZE, false)
+		"stat_stage_changed":
+			var stat: String = String(STAT_SHORT.get(String(event.get("stat", "")), String(event.get("stat", "")).to_upper()))
+			var change: int = int(event.get("after", 0)) - int(event.get("before", 0))
+			if change == 0:
+				_schedule(event.get("unit"), "%s %s" % [stat, "MAX" if int(event.get("delta", 0)) > 0 else "MIN"], PmdStyle.TEXT_DIM, BASE_FONT_SIZE, true)
+			else:
+				_schedule(event.get("unit"), "%s %s%d" % [stat, "+" if change > 0 else "", change], PmdStyle.HP_HIGH if change > 0 else PmdStyle.HP_LOW, BASE_FONT_SIZE, true)
+		"status_applied":
+			var status_id: String = String(event.get("status_id", ""))
+			if not SILENT_STATUSES.has(status_id) and not StatusBadgeRow.HIDDEN.has(status_id):
+				_schedule(event.get("unit"), BattleMessageCatalog._status_label(status_id).to_upper(), PmdStyle.TEXT_GOLD, BASE_FONT_SIZE, true)
+		"intrinsic_triggered":
+			var ability: String = String(event.get("intrinsic_id", ""))
+			if String(event.get("hook", "")) != "battle_start" and _callout_allowed(event.get("unit"), "ability:" + ability):
+				_schedule(event.get("unit"), BattleText.ability_name(ability), PmdStyle.CURSOR, BASE_FONT_SIZE, true, CALLOUT_HEIGHT)
+		"held_item_triggered", "held_item_consumed":
+			var item_id: String = String(event.get("item_id", ""))
+			var holder: Variant = event.get("unit", event.get("target", null))
+			if _callout_allowed(holder, "item:" + item_id):
+				var item: PokemonItemResource = PokemonItemService.load_item(item_id)
+				_schedule(holder, item.display_name() if item != null else item_id.capitalize(), PmdStyle.CURSOR, BASE_FONT_SIZE, true, CALLOUT_HEIGHT)
 
 
-func _schedule(target: Variant, text: String, color: Color, size: int, through_runner: bool) -> void:
+func _callout_allowed(target: Variant, key: String) -> bool:
+	var pawn: TacticsPawn = _pawn_of(target)
+	if pawn == null:
+		return false
+	var full_key: String = "%s|%s" % [pawn.get_instance_id(), key]
+	var now: int = Time.get_ticks_msec()
+	if _recent.has(full_key) and now - int(_recent[full_key]) < CALLOUT_COOLDOWN_MS:
+		return false
+	_recent[full_key] = now
+	return true
+
+
+func _schedule(target: Variant, text: String, color: Color, size: int, through_runner: bool, height: float = START_HEIGHT) -> void:
 	var pawn: TacticsPawn = _pawn_of(target)
 	if pawn == null:
 		return
 	if through_runner and level != null and level.presentation_runner != null and level.presentation_runner.is_busy() and not level.presentation_runner.immediate_mode:
-		level.presentation_runner.enqueue({"kind": BattlePresentationRunner.KIND_CALLBACK, "callable": show_text.bind(pawn, text, color, size)})
+		level.presentation_runner.enqueue({"kind": BattlePresentationRunner.KIND_CALLBACK, "callable": show_text.bind(pawn, text, color, size, height)})
 	else:
-		show_text(pawn, text, color, size)
+		show_text(pawn, text, color, size, height)
 
 
-func show_text(pawn: TacticsPawn, text: String, color: Color, size: int) -> FloatingPopup:
+func show_text(pawn: TacticsPawn, text: String, color: Color, size: int, height: float = START_HEIGHT) -> FloatingPopup:
 	if pawn == null or not is_instance_valid(pawn):
 		return null
 	var popup := FloatingPopup.new()
@@ -95,7 +134,7 @@ func show_text(pawn: TacticsPawn, text: String, color: Color, size: int) -> Floa
 	popup.render_priority = 2
 	add_child(popup)
 	var jitter: float = float((spawned_total % 3) - 1) * 0.12
-	popup.start = pawn.global_position + Vector3(jitter, START_HEIGHT, 0.0)
+	popup.start = pawn.global_position + Vector3(jitter, height, 0.0)
 	popup.global_position = popup.start
 	spawned_total += 1
 	if level != null and level.battle_log != null:

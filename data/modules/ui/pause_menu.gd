@@ -17,6 +17,7 @@ var _dim: ColorRect = null
 var _center: CenterContainer = null
 var _menu: PanelContainer = null
 var _graphics: GraphicsSettingsPanel = null
+var _controls: ControlsPanel = null
 var _buttons: Dictionary = {}
 
 
@@ -56,22 +57,31 @@ func _ready() -> void:
 	_add_button(column, "Return to Lobby", "LobbyButton", func() -> void: _leave(lobby_requested))
 	_add_button(column, "Main Menu", "MainMenuButton", func() -> void: _leave(main_menu_requested))
 	_add_button(column, "Options", "GraphicsButton", _show_graphics)
+	_add_button(column, "Controls", "ControlsButton", _show_controls)
 	_add_button(column, "Quit Game", "QuitButton", func() -> void: _leave(quit_requested))
 	_graphics = GraphicsSettingsPanel.new()
 	_graphics.visible = false
 	_graphics.closed.connect(_hide_graphics)
+	_graphics.controls_requested.connect(_show_controls)
 	_center.add_child(_graphics)
+	_controls = ControlsPanel.new()
+	_controls.visible = false
+	_controls.closed.connect(_hide_controls)
+	_center.add_child(_controls)
 	visible = false
 
 
 func _input(event: InputEvent) -> void:
-	if not event.is_action_pressed("ui_cancel"):
+	var start_pressed: bool = event is InputEventJoypadButton and (event as InputEventJoypadButton).pressed and (event as InputEventJoypadButton).button_index == JOY_BUTTON_START
+	if not event.is_action_pressed("ui_cancel") and not start_pressed:
 		return
 	if event is InputEventKey and (event as InputEventKey).echo:
 		return
 	if is_open:
 		if _graphics.visible:
 			_hide_graphics()
+		elif _controls.visible:
+			_hide_controls()
 		else:
 			close()
 		get_viewport().set_input_as_handled()
@@ -88,6 +98,7 @@ func open() -> void:
 	visible = true
 	_menu.visible = true
 	_graphics.visible = false
+	_controls.visible = false
 	get_tree().paused = true
 	var resume: Button = _buttons.get("ResumeButton", null)
 	if resume != null:
@@ -113,6 +124,21 @@ func _show_graphics() -> void:
 	_graphics.visible = true
 	_graphics.refresh()
 	_graphics.focus_first()
+
+
+func _show_controls() -> void:
+	_menu.visible = false
+	_graphics.visible = false
+	_controls.visible = true
+	_controls.focus_first()
+
+
+func _hide_controls() -> void:
+	_controls.visible = false
+	_menu.visible = true
+	var button: Button = _buttons.get("ControlsButton", null)
+	if button != null:
+		button.grab_focus()
 
 
 func _hide_graphics() -> void:

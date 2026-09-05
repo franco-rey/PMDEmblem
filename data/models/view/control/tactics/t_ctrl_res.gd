@@ -20,6 +20,17 @@ const PREVIEW_MOVE_SLOT: String = "move_slot"
 @export var is_joystick: bool
 var preview_mode: String = PREVIEW_NONE
 var preview_move_slot_index: int = -1
+var keyboard_mode: bool = false
+var cursor_key: Variant = null
+var armed_key: Variant = null
+var target_index: int = 0
+var lock_horizontal_pan: bool = false
+
+
+func reset_keyboard_selection() -> void:
+	cursor_key = null
+	armed_key = null
+	target_index = 0
 
 var actions: Dictionary = {
 	"Move": "_player_wants_to_move",

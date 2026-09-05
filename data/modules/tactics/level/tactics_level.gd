@@ -50,6 +50,11 @@ var notation_context: Dictionary = {}
 var battle_label: String = ""
 var weather_overlay: WeatherOverlay = null
 var floating_text: BattleFloatingText = null
+var banner: BattleBanner = null
+var terrain_overlay: TerrainOverlay = null
+var stats_tracker: BattleStatsTracker = BattleStatsTracker.new()
+var intro_pending: bool = false
+var round_index: int = 0
 var battle_finished: bool = false
 var scheduler: BattleScheduler = null
 var battle_units: Array[BattleUnit] = []
@@ -93,6 +98,9 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if battle_finished:
 		return
+	if ui_control != null:
+		ui_control.move_camera(delta)
+		ui_control.camera_rotation_inputs(delta)
 	if use_speed_scheduler:
 		_run_scheduler_loop(delta)
 	else:
@@ -125,6 +133,13 @@ func _setup_presentation() -> void:
 	floating_text.name = "BattleFloatingText"
 	add_child(floating_text)
 	floating_text.setup(self)
+	banner = BattleBanner.new()
+	add_child(banner)
+	banner.setup(self)
+	terrain_overlay = TerrainOverlay.new()
+	add_child(terrain_overlay)
+	terrain_overlay.setup(self)
+	stats_tracker.setup(battle_log)
 	_ensure_sky()
 
 
@@ -333,7 +348,7 @@ func _handle_turn(delta: float) -> void:
 
 func _run_scheduler_loop(delta: float) -> void:
 	if not _scheduler_started:
-		if not (participant.is_configured(player) and participant.is_configured(opponent)):
+		if intro_pending or not (participant.is_configured(player) and participant.is_configured(opponent)):
 			return
 		_start_scheduler()
 		return
@@ -786,6 +801,9 @@ func _on_round_building() -> void:
 
 
 func _on_round_started() -> void:
+	round_index += 1
+	if banner != null:
+		banner.show_turn(round_index)
 	for unit in battle_units:
 		if unit.pawn != null:
 			unit.pawn.res.has_acted_this_round = false

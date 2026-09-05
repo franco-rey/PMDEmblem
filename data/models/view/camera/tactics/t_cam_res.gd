@@ -45,6 +45,8 @@ var is_snapping_to_quad: bool = false:
 	set(val):
 		is_snapping_to_quad = val
 		DebugLog.debug_nospam("quad_snap", val)
+var orbit_direction: int = 0
+const ORBIT_SPEED_DEGREES: float = 20.0
 var is_rotating: bool = false:
 	set(val):
 		is_rotating = val
@@ -90,6 +92,11 @@ func toggle_perspective() -> String:
 		x_rot = isometric_pitch
 	is_rotating = true
 	return perspective
+
+
+func toggle_orbit(direction: int) -> void:
+	orbit_direction = 0 if orbit_direction == direction else direction
+	is_rotating = false
 
 
 func rotate_camera(delta: float, twist: float = 0.0) -> void:

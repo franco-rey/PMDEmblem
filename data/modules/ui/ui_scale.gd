@@ -22,7 +22,10 @@ static func compute(window_size: Vector2, screen_scale: float = 1.0) -> float:
 	var by_height: float = window_size.y / DESIGN_HEIGHT * bonus
 	var by_width: float = window_size.x / MIN_DESIGN_WIDTH * bonus if window_size.x > 1.0 else by_height
 	var raw: float = clampf(minf(by_height, by_width), MIN_FACTOR, MAX_FACTOR)
-	return maxf(MIN_FACTOR, snappedf(raw, SNAP_STEP))
+	var snapped: float = maxf(MIN_FACTOR, snappedf(raw, SNAP_STEP))
+	while snapped > MIN_FACTOR and window_size.x / snapped < MIN_DESIGN_WIDTH:
+		snapped = maxf(MIN_FACTOR, snapped - SNAP_STEP)
+	return snapped
 
 
 static func screen_scale_for(window: Window) -> float:

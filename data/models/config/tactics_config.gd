@@ -9,6 +9,7 @@ static var color: Dictionary = {
 	"coral_red": "ff4242BF",
 	"path_cyan": "e6fbffF2",
 	"commit_gold": "ffd54aD8",
+	"danger_red": "ff3a3a4A",
 }
 
 static var mat_color: Dictionary = {
@@ -19,6 +20,7 @@ static var mat_color: Dictionary = {
 	"hover_attackable": create_material(str(color.coral_red)),
 	"path": create_material(str(color.path_cyan)),
 	"committed": create_material(str(color.commit_gold)),
+	"danger": create_material(str(color.danger_red)),
 }
 
 static var pawn: Dictionary = {

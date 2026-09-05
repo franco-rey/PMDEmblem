@@ -25,6 +25,13 @@ func free_look(delta: float, t_pivot: Node3D, p_pivot: Node3D) -> void:
 	reset_twist_pitch_inputs()
 
 
+func orbit(delta: float, t_pivot: Node3D) -> void:
+	if res.orbit_direction == 0:
+		return
+	t_pivot.rotate_y(deg_to_rad(res.ORBIT_SPEED_DEGREES * float(res.orbit_direction)) * delta)
+	res.y_rot = int(round(fposmod(t_pivot.rotation_degrees.y, 360.0)))
+
+
 func rotate_camera(delta: float, t_pivot: Node3D, p_pivot: Node3D) -> void:
 	var curr_quat_t: Quaternion = Quaternion.from_euler(t_pivot.rotation)
 	var curr_quat_p: Quaternion = Quaternion.from_euler(p_pivot.rotation)

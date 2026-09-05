@@ -61,6 +61,23 @@ func _run() -> void:
 	controls.camera_rotation_inputs(FRAME)
 	Input.action_release("camera_free_look")
 	_assert_true(res.in_free_look and not res.is_rotating, "middle click starts free look even while a step rotation is in flight")
+	res.in_free_look = false
+	var before_orbit: float = camera_node.t_pivot.rotation_degrees.y
+	res.toggle_orbit(-1)
+	for i in range(60):
+		camera_node.serv.process(FRAME, camera_node)
+	var turned: float = wrapf(camera_node.t_pivot.rotation_degrees.y - before_orbit, -180.0, 180.0)
+	_assert_true(res.orbit_direction == -1 and absf(absf(turned) - res.ORBIT_SPEED_DEGREES) < 3.0, "the left bracket orbits the camera slowly (%.1f degrees in a second)" % turned)
+	res.toggle_orbit(-1)
+	var after_stop: float = camera_node.t_pivot.rotation_degrees.y
+	for i in range(30):
+		camera_node.serv.process(FRAME, camera_node)
+	_assert_true(res.orbit_direction == 0 and absf(wrapf(camera_node.t_pivot.rotation_degrees.y - after_stop, -180.0, 180.0)) < 1.5, "pressing the same bracket again stops the orbit")
+	res.toggle_orbit(-1)
+	res.toggle_orbit(1)
+	_assert_true(res.orbit_direction == 1, "the other bracket reverses the orbit")
+	res.orbit_direction = 0
+	res.in_free_look = true
 	camera_node.serv.rotate.deactivate_free_look(camera_node)
 	_assert_true(not res.in_free_look and res.is_snapping_to_quad, "releasing free look snaps to the nearest quadrant")
 	await create_timer(res.quad_snap_duration + 0.2).timeout

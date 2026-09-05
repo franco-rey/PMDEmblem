@@ -6,6 +6,8 @@ const HISTORY_LIMIT: int = 300
 const FONT_SIZE: int = 24
 const FLASH_TIME: float = 0.8
 const DOCK_SIZE: Vector2 = Vector2(640, 236)
+const MIN_DOCK_HEIGHT: float = 96.0
+const SPEED_BAR_RESERVE: float = 500.0
 
 var history: Array[String] = []
 var weather_text: String = ""
@@ -76,11 +78,33 @@ func _ready() -> void:
 	_scroll.add_child(_lines)
 
 
+var dock_height: float = DOCK_SIZE.y
+var dock_width_override: float = 0.0
+
+
+func set_dock_width(value: float) -> void:
+	dock_width_override = value
+	_update_dock_width()
+
+
+func current_dock_width() -> float:
+	return _dock.size.x if _dock != null and _dock.size.x > 0.0 else DOCK_SIZE.x
+
+
 func set_minimized(value: bool) -> void:
 	minimized = value
 	_scroll.visible = not value
 	_toggle.text = "+" if value else "-"
-	_dock.offset_top = -header_dock_height() - 16 if value else -DOCK_SIZE.y - 16
+	_dock.offset_top = -header_dock_height() - 16 if value else -dock_height - 16
+
+
+func set_dock_height(value: float) -> void:
+	var clamped: float = clampf(value, MIN_DOCK_HEIGHT, DOCK_SIZE.y)
+	if is_equal_approx(clamped, dock_height):
+		return
+	dock_height = clamped
+	if not minimized and _dock != null:
+		_dock.offset_top = -dock_height - 16
 
 
 func header_dock_height() -> float:
@@ -96,7 +120,7 @@ func dock_top() -> float:
 func _update_dock_width() -> void:
 	if _dock == null:
 		return
-	var dock_width: float = dock_width_for(_dock.get_parent_area_size().x)
+	var dock_width: float = dock_width_override if dock_width_override > 0.0 else dock_width_for(_dock.get_parent_area_size().x)
 	if not is_equal_approx(_dock.offset_right, 16.0 + dock_width):
 		_dock.offset_right = 16.0 + dock_width
 
@@ -104,7 +128,7 @@ func _update_dock_width() -> void:
 static func dock_width_for(width: float) -> float:
 	if width <= 0.0:
 		return DOCK_SIZE.x
-	return clampf(width - 460.0, 320.0, DOCK_SIZE.x)
+	return clampf(width - SPEED_BAR_RESERVE, 320.0, DOCK_SIZE.x)
 
 
 func setup(battle_log: BattleLog) -> void:

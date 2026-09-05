@@ -6,7 +6,7 @@ const SECTION: String = "graphics"
 const WINDOW_MODES: Array[String] = ["windowed", "fullscreen", "borderless"]
 const RESOLUTIONS: Array[Vector2i] = [Vector2i(1280, 720), Vector2i(1600, 900), Vector2i(1920, 1080), Vector2i(2560, 1440), Vector2i(3840, 2160)]
 const UI_SCALES: Array[float] = [0.0, 1.0, 2.0, 3.0]
-const CPU_SPEEDS: Array[float] = [0.5, 1.0, 2.0, 5.0, 10.0]
+const CPU_SPEEDS: Array[float] = [0.25, 0.5, 1.0, 2.5, 5.0, 10.0]
 
 static var window_mode: String = "windowed"
 static var resolution: Vector2i = Vector2i(1920, 1080)
@@ -14,7 +14,9 @@ static var ui_scale: float = 0.0
 static var vsync: bool = true
 static var camera_track: bool = true
 static var cpu_battle_report: bool = true
-static var cpu_speed: float = 2.0
+static var cpu_speed: float = 0.5
+static var battle_flair: bool = true
+static var danger_zone: bool = false
 static var loaded: bool = false
 
 
@@ -30,12 +32,14 @@ static func load_settings() -> void:
 		camera_track = bool(config.get_value(SECTION, "camera_track", camera_track))
 		cpu_battle_report = bool(config.get_value(SECTION, "cpu_battle_report", cpu_battle_report))
 		cpu_speed = float(config.get_value(SECTION, "cpu_speed", cpu_speed))
+		battle_flair = bool(config.get_value(SECTION, "battle_flair", battle_flair))
+		danger_zone = bool(config.get_value(SECTION, "danger_zone", danger_zone))
 	if not WINDOW_MODES.has(window_mode):
 		window_mode = "windowed"
 	if not UI_SCALES.has(ui_scale):
 		ui_scale = 0.0
 	if not CPU_SPEEDS.has(cpu_speed):
-		cpu_speed = 2.0
+		cpu_speed = 0.5
 	loaded = true
 
 
@@ -48,6 +52,8 @@ static func save_settings() -> bool:
 	config.set_value(SECTION, "camera_track", camera_track)
 	config.set_value(SECTION, "cpu_battle_report", cpu_battle_report)
 	config.set_value(SECTION, "cpu_speed", cpu_speed)
+	config.set_value(SECTION, "battle_flair", battle_flair)
+	config.set_value(SECTION, "danger_zone", danger_zone)
 	return config.save(SETTINGS_PATH) == OK
 
 
@@ -69,14 +75,20 @@ static func apply(window: Window) -> void:
 		_:
 			DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, false, window_id)
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED, window_id)
-			if DisplayServer.window_get_size(window_id) != resolution:
-				DisplayServer.window_set_size(resolution, window_id)
-				var screen: int = DisplayServer.window_get_current_screen(window_id)
-				var origin: Vector2i = DisplayServer.screen_get_position(screen)
-				var screen_size: Vector2i = DisplayServer.screen_get_size(screen)
-				DisplayServer.window_set_position(origin + (screen_size - resolution) / 2, window_id)
+			var screen: int = DisplayServer.window_get_current_screen(window_id)
+			var usable: Rect2i = DisplayServer.screen_get_usable_rect(screen)
+			var target: Vector2i = fitted_resolution(resolution, usable.size)
+			if DisplayServer.window_get_size(window_id) != target:
+				DisplayServer.window_set_size(target, window_id)
+				DisplayServer.window_set_position(usable.position + (usable.size - target) / 2, window_id)
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if vsync else DisplayServer.VSYNC_DISABLED, window_id)
 	UiScale.apply(window)
+
+
+static func fitted_resolution(wanted: Vector2i, usable: Vector2i) -> Vector2i:
+	if usable.x <= 0 or usable.y <= 0:
+		return wanted
+	return Vector2i(mini(wanted.x, usable.x), mini(wanted.y, usable.y))
 
 
 static func window_mode_label(mode: String) -> String:
@@ -99,7 +111,8 @@ static func ui_scale_label(value: float) -> String:
 
 
 static func cpu_speed_label(value: float) -> String:
-	if is_equal_approx(value, roundf(value)):
-		return "%dx" % int(roundf(value))
-	return "%sx" % ("%.1f" % value)
+	var shown: float = value * 2.0
+	if is_equal_approx(shown, roundf(shown)):
+		return "%dx" % int(roundf(shown))
+	return "%sx" % ("%.1f" % shown)
 

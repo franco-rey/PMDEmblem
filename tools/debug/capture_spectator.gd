@@ -25,7 +25,25 @@ func _init() -> void:
 	call_deferred("_run")
 
 
+var _settings_snapshot: String = ""
+
+
+func _snapshot_settings() -> void:
+	if FileAccess.file_exists(GameSettings.SETTINGS_PATH):
+		_settings_snapshot = FileAccess.get_file_as_string(GameSettings.SETTINGS_PATH)
+
+
+func _restore_settings() -> void:
+	if _settings_snapshot.is_empty():
+		return
+	var file := FileAccess.open(GameSettings.SETTINGS_PATH, FileAccess.WRITE)
+	if file != null:
+		file.store_string(_settings_snapshot)
+		file.close()
+
+
 func _run() -> void:
+	_snapshot_settings()
 	DisplayServer.window_set_size(window_size)
 	root.content_scale_size = Vector2i(0, 0)
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUTPUT_DIR))
@@ -35,9 +53,13 @@ func _run() -> void:
 		print("capture: launch failed")
 		quit(1)
 		return
-	DisplayServer.window_set_size(window_size)
-	UiScale.override_factor = UiScale.compute(Vector2(window_size))
-	UiScale.apply(root)
+	GameSettings.window_mode = "windowed"
+	GameSettings.resolution = window_size
+	UiScale.override_factor = 0.0
+	GameSettings.ui_scale = UiScale.compute(Vector2(window_size))
+	GameSettings.apply(root)
+	await process_frame
+	await process_frame
 	await process_frame
 	var level: TacticsLevel = driver.level
 	var frames: int = 0
@@ -60,6 +82,7 @@ func _run() -> void:
 			shots += 1
 	print("capture: target panel seen=%s turns=%d" % [str(target_seen), level.notation.turn_index])
 	Engine.time_scale = 1.0
+	_restore_settings()
 	for path in captured:
 		print("capture: %s" % path)
 	quit(0)

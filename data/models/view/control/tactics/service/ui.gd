@@ -154,14 +154,13 @@ func set_item_picker_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls) 
 	var can_use: bool = bool(entry.get("can_use", false))
 	use_button.text = "%s %s" % [String(entry.get("use_verb", "Use")), item.display_name()]
 	use_button.disabled = not can_use
-	use_button.tooltip_text = "" if can_use else "This item has no use action; it can be thrown"
+	var item_text: String = BattleText.item_description(item.item_id)
+	use_button.tooltip_text = item_text if can_use else "This item has no use action; it can be thrown\n%s" % item_text
 	var options: Array[Dictionary] = Targeting.throw_options(p, 8, _units_for(p), Targeting.arena_tile_keys(_level_for(p)))
 	throw_button.text = "Throw %s" % item.display_name()
 	throw_button.disabled = options.is_empty()
-	throw_button.tooltip_text = "" if not options.is_empty() else "No open tile to throw toward"
-	var first: Control = _first_enabled_child(picker)
-	if first != null and first.is_inside_tree():
-		first.grab_focus()
+	throw_button.tooltip_text = item_text if not options.is_empty() else "No open tile to throw toward\n%s" % item_text
+	_focus_picker_if_idle(picker)
 
 
 func _units_for(p: TacticsPawn) -> Array[TacticsPawn]:
@@ -249,15 +248,12 @@ func set_actions_menu_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls)
 	var actions: VBoxContainer = _actions_container(ctrl)
 	if actions == null:
 		return
-	if not actions.visible:
-		var move_button: Button = actions.get_node_or_null("Move") as Button
-		if move_button != null and move_button.is_inside_tree():
-			move_button.grab_focus()
-
 	if not p:
 		actions.visible = false
 		return
 	actions.visible = v and p.can_act()
+	_show_only_cancel_while_choosing(ctrl, actions)
+	_sync_menu_focus(ctrl, actions)
 
 	var action_move: Button = actions.get_node_or_null("Move") as Button
 	var action_attack: Button = actions.get_node_or_null("Attack") as Button
@@ -319,7 +315,7 @@ func set_move_picker_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls, 
 		if not charging_move.is_empty() and move.move_id != charging_move:
 			button.text = "%s\n%s %s  PP %d/%d" % [move.display_name(), move.type.capitalize(), _category_label(move), pp, move.pp]
 			button.disabled = true
-			button.tooltip_text = "Charging %s" % BattleMessageCatalog.move_label(charging_move)
+			button.tooltip_text = "Charging %s\n%s" % [BattleMessageCatalog.move_label(charging_move), BattleText.move_summary(move)]
 			continue
 		button.text = "%s\n%s %s  PP %d/%d" % [
 			move.display_name(),
@@ -329,7 +325,46 @@ func set_move_picker_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls, 
 			move.pp,
 		]
 		button.disabled = not has_pp or not has_target
-		button.tooltip_text = "No PP" if not has_pp else ("No legal target" if not has_target else "")
+		var reason: String = "No PP" if not has_pp else ("No legal target" if not has_target else "")
+		var summary: String = BattleText.move_summary(move)
+		button.tooltip_text = summary if reason.is_empty() else "%s\n%s" % [reason, summary]
+	_focus_picker_if_idle(picker)
+
+
+func _show_only_cancel_while_choosing(ctrl: TacticsControls, actions: VBoxContainer) -> void:
+	if ctrl == null or ctrl.serv == null or ctrl.serv.participant == null:
+		return
+	var stage: int = ctrl.serv.participant.stage
+	var choosing: bool = stage in [TacticsParticipantResource.STAGE_SHOW_MOVEMENTS, TacticsParticipantResource.STAGE_SELECT_LOCATION, TacticsParticipantResource.STAGE_DISPLAY_TARGETS, TacticsParticipantResource.STAGE_SELECT_ATTACK_TARGET, TacticsParticipantResource.STAGE_SELECT_THROW_TARGET]
+	for child in actions.get_children():
+		if child is Button:
+			(child as Button).visible = not choosing or child.name == "Cancel"
+
+
+func _sync_menu_focus(ctrl: TacticsControls, actions: VBoxContainer) -> void:
+	if ctrl == null or not ctrl.is_inside_tree() or ctrl.serv == null or ctrl.serv.participant == null:
+		return
+	var stage: int = ctrl.serv.participant.stage
+	var viewport: Viewport = ctrl.get_viewport()
+	if viewport == null:
+		return
+	var owner: Control = viewport.gui_get_focus_owner()
+	var owner_in_menu: bool = owner != null and actions.is_ancestor_of(owner)
+	if actions.visible and stage == TacticsParticipantResource.STAGE_SHOW_ACTIONS:
+		if not owner_in_menu:
+			var first: Control = _first_enabled_child(actions)
+			if first != null and first.is_inside_tree():
+				first.grab_focus()
+	elif owner_in_menu:
+		owner.release_focus()
+
+
+func _focus_picker_if_idle(picker: Control) -> void:
+	if picker == null or not picker.is_inside_tree():
+		return
+	var owner: Control = picker.get_viewport().gui_get_focus_owner()
+	if owner != null and picker.is_ancestor_of(owner) and owner.visible and not (owner is Button and (owner as Button).disabled):
+		return
 	var first: Control = _first_enabled_child(picker)
 	if first != null and first.is_inside_tree():
 		first.grab_focus()

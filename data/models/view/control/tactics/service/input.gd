@@ -16,6 +16,8 @@ func update_mouse_mode() -> void:
 
 func handle_input(event: InputEvent) -> void:
 	controls.is_joystick = event is InputEventJoypadButton or event is InputEventJoypadMotion
+	if event is InputEventMouseMotion and (event as InputEventMouseMotion).relative.length_squared() > 16.0:
+		controls.keyboard_mode = false
 
 
 func get_3d_canvas_mouse_position(collision_mask: int, ctrl: TacticsControls) -> Object:

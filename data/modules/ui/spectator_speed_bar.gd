@@ -4,7 +4,7 @@ extends CanvasLayer
 signal speed_selected(value: float)
 
 const LAYER_INDEX: int = 19
-const BUTTON_SIZE: Vector2 = Vector2(88, 48)
+const BUTTON_SIZE: Vector2 = Vector2(64, 44)
 
 var _panel: PanelContainer = null
 var _buttons: Dictionary = {}
@@ -34,7 +34,8 @@ func _ready() -> void:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 6)
 	column.add_child(row)
-	for value in GameSettings.CPU_SPEEDS:
+	for i in range(GameSettings.CPU_SPEEDS.size()):
+		var value: float = GameSettings.CPU_SPEEDS[i]
 		var button := Button.new()
 		button.name = "Speed_%s" % GameSettings.cpu_speed_label(value).replace(".", "_")
 		button.text = GameSettings.cpu_speed_label(value)

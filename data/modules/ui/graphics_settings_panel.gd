@@ -2,6 +2,7 @@ class_name GraphicsSettingsPanel
 extends PanelContainer
 
 signal closed
+signal controls_requested
 
 const ROW_HEIGHT: float = 48.0
 const PANEL_WIDTH: float = 620.0
@@ -13,6 +14,8 @@ var vsync_toggle: CheckButton = null
 var camera_track_toggle: CheckButton = null
 var cpu_report_toggle: CheckButton = null
 var cpu_speed_picker: OptionButton = null
+var battle_flair_toggle: CheckButton = null
+var controls_button: Button = null
 var close_button: Button = null
 var status_label: Label = null
 
@@ -53,9 +56,15 @@ func _ready() -> void:
 	vsync_row.add_child(vsync_toggle)
 	camera_track_toggle = _toggle(column, "Camera Track", "CameraTrackToggle")
 	cpu_report_toggle = _toggle(column, "Show Battle Report after CPU Battles", "CpuReportToggle")
-	cpu_speed_picker = _picker(column, "CPU battle speed")
+	cpu_speed_picker = _picker(column, "Battle speed")
 	for value in GameSettings.CPU_SPEEDS:
 		cpu_speed_picker.add_item(GameSettings.cpu_speed_label(value))
+	battle_flair_toggle = _toggle(column, "Battle Flair (intro, turn banners, notices)", "BattleFlairToggle")
+	controls_button = Button.new()
+	controls_button.name = "ControlsButton"
+	controls_button.text = "Controls"
+	controls_button.custom_minimum_size.y = ROW_HEIGHT
+	column.add_child(controls_button)
 	status_label = Label.new()
 	status_label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
 	status_label.text = "Changes apply immediately and are saved."
@@ -72,6 +81,8 @@ func _ready() -> void:
 	camera_track_toggle.toggled.connect(_on_camera_track_toggled)
 	cpu_report_toggle.toggled.connect(_on_cpu_report_toggled)
 	cpu_speed_picker.item_selected.connect(_on_cpu_speed_selected)
+	battle_flair_toggle.toggled.connect(_on_battle_flair_toggled)
+	controls_button.pressed.connect(func() -> void: controls_requested.emit())
 	close_button.pressed.connect(func() -> void: closed.emit())
 	refresh()
 
@@ -84,6 +95,7 @@ func refresh() -> void:
 	camera_track_toggle.set_pressed_no_signal(GameSettings.camera_track)
 	cpu_report_toggle.set_pressed_no_signal(GameSettings.cpu_battle_report)
 	cpu_speed_picker.select(maxi(0, GameSettings.CPU_SPEEDS.find(GameSettings.cpu_speed)))
+	battle_flair_toggle.set_pressed_no_signal(GameSettings.battle_flair)
 	resolution_picker.disabled = GameSettings.window_mode != "windowed"
 
 
@@ -128,6 +140,11 @@ func _on_camera_track_toggled(pressed: bool) -> void:
 
 func _on_cpu_report_toggled(pressed: bool) -> void:
 	GameSettings.cpu_battle_report = pressed
+	_apply_and_save()
+
+
+func _on_battle_flair_toggled(pressed: bool) -> void:
+	GameSettings.battle_flair = pressed
 	_apply_and_save()
 
 

@@ -67,7 +67,7 @@ func _run() -> void:
 	_assert_true(buttons.size() == 6, "pause menu offers resume, restart, lobby, main menu, graphics and quit")
 	pause._show_graphics()
 	var panel: GraphicsSettingsPanel = pause._graphics
-	_assert_true(panel.visible and panel.mode_picker.item_count == 3 and panel.resolution_picker.item_count == 5 and panel.scale_picker.item_count == 4 and panel.camera_track_toggle != null and panel.cpu_report_toggle != null and panel.cpu_speed_picker.item_count == 5, "options panel lists window modes, resolutions, UI scales, camera track, CPU report and CPU speeds")
+	_assert_true(panel.visible and panel.mode_picker.item_count == 3 and panel.resolution_picker.item_count == 5 and panel.scale_picker.item_count == 4 and panel.camera_track_toggle != null and panel.cpu_report_toggle != null and panel.cpu_speed_picker.item_count == 6, "options panel lists window modes, resolutions, UI scales, camera track, CPU report and CPU speeds")
 	var camera_node_early: TacticsCamera = main.find_child("TacticsCamera", true, false)
 	GameSettings.camera_track = false
 	camera_node_early.res.target = level.notation.pawn_for_id("E1")
@@ -118,11 +118,14 @@ func _run() -> void:
 	log_dock.set_minimized(false)
 	hud.set_status_minimized(false)
 	_assert_true(TacticsConfig.hover_controls.size() >= 2 and TacticsConfig.hover_controls_contain(log_dock._toggle.get_global_rect().get_center()), "dock toggles register for the click-through guard")
+	var override_before: float = UiScale.override_factor
+	UiScale.override_factor = 0.0
 	_assert_true(is_equal_approx(UiScale.compute(Vector2(1920, 1080), 2.0), 1.0) and is_equal_approx(UiScale.compute(Vector2(2560, 1440), 1.0), 1.5), "UI scale snaps to half steps")
-	_assert_true(is_equal_approx(UiScale.compute(Vector2(1080, 1920), 1.0), 1.0) and is_equal_approx(UiScale.compute(Vector2(1080, 1080), 1.0), 1.0), "portrait and square windows scale by width so the layout fits")
-	_assert_true(not hud.stacked_layout_for(1920.0) and hud.stacked_layout_for(1080.0), "the HUD stacks the queue under the panels when the top row cannot fit")
-	hud._apply_layout(Vector2(1080.0, 1920.0))
-	_assert_true(hud._queue_column.offset_top > BattleHud.PANEL_HEIGHT and is_equal_approx(hud._status_dock.offset_right, 16.0 + BattleMessageLog.dock_width_for(1080.0)), "stacked layout moves the queue box down and narrows the docks")
+	_assert_true(is_equal_approx(UiScale.compute(Vector2(1080, 1920), 1.0), 0.75) and is_equal_approx(UiScale.compute(Vector2(1080, 1080), 1.0), 0.75) and is_equal_approx(UiScale.compute(Vector2(1600, 1600), 1.0), 1.0) and is_equal_approx(UiScale.compute(Vector2(1280, 720), 1.0), 1.0), "portrait, square and narrow windows scale so the logical width never drops below 1280")
+	UiScale.override_factor = override_before
+	_assert_true(not hud.stacked_layout_for(1920.0) and hud.stacked_layout_for(1000.0), "the HUD stacks the queue under the panels when the top row cannot fit even with the smallest tiles")
+	hud._apply_layout(Vector2(1000.0, 1920.0))
+	_assert_true(hud._queue_column.offset_top > BattleHud.PANEL_HEIGHT and is_equal_approx(hud._status_dock.offset_right, 16.0 + BattleMessageLog.dock_width_for(1000.0)), "stacked layout moves the queue box down and narrows the docks")
 	hud._apply_layout(Vector2(1920.0, 1080.0))
 	_assert_true(is_equal_approx(hud._queue_column.offset_top, 16.0), "wide layout restores the top row")
 	var camera_node: TacticsCamera = main.find_child("TacticsCamera", true, false)
