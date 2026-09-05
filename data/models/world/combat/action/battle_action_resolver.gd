@@ -311,8 +311,8 @@ func _run_move(attacker: TacticsPawn, declared_target: TacticsPawn, move: Pokemo
 	_presentation_entry = presentation_catalog.skill(move.move_id)
 	if animation_resolver.runner != null and not _presentation_entry.is_empty():
 		BattleActionPresentation.enqueue_move_start(animation_resolver.runner, attacker, declared_target, targets, move, _presentation_entry, chosen_state, battle_log)
-	else:
-		_play_move_vfx(attacker, declared_target, move, battle_level, battle_log)
+	elif _presentation_entry.is_empty():
+		_append(battle_log, {"kind": "vfx_skipped", "label": move.move_id, "reason": "no_presentation_entry"})
 
 	if move_index >= 0:
 		attacker.stats.consume_pp(move_index)
@@ -620,6 +620,7 @@ func _resolve_one_target(
 
 	if animation_resolver.runner != null and not _presentation_entry.is_empty():
 		BattleActionPresentation.enqueue_hit_fx(animation_resolver.runner, _presentation_entry, attacker, target, move.move_id)
+		_enqueue_hit_char_action(attacker, target, move, battle_log)
 
 	var effectiveness: float = _status_adjusted_effectiveness(target, move, intrinsic_service.adjust_effectiveness(attacker.stats, target.stats, move, damage_resolver._effectiveness(move, target.stats, type_chart), type_chart), type_chart)
 	if target.stats.battle_statuses.has("magic_coat") and move.category == PokemonMoveResource.CATEGORY_STATUS and attacker != target:
@@ -2275,15 +2276,21 @@ func _move_for(attacker: TacticsPawn, move_index: int) -> PokemonMoveResource:
 	return attacker.stats.move_slots[move_index]
 
 
-func _play_move_vfx(attacker: TacticsPawn, target: TacticsPawn, move: PokemonMoveResource, battle_level: TacticsLevel, battle_log: BattleLog) -> void:
-	if battle_level == null or move == null:
+func _enqueue_hit_char_action(attacker: TacticsPawn, target: TacticsPawn, move: PokemonMoveResource, battle_log: BattleLog) -> void:
+	if target == attacker:
 		return
-	var player: MoveVFXPlayer = battle_level.get_node_or_null("MoveVFXPlayer") as MoveVFXPlayer
-	if player == null:
-		player = MoveVFXPlayer.new()
-		player.name = "MoveVFXPlayer"
-		battle_level.add_child(player)
-	player.play_for_move(move, attacker, target, battle_log)
+	var hit_action: Variant = _presentation_entry.get("hit_char_action", null)
+	if not (hit_action is Dictionary):
+		return
+	if String((hit_action as Dictionary).get("kind", "")) != "frame_type":
+		return
+	var action_name: String = String((hit_action as Dictionary).get("name", ""))
+	if action_name.is_empty() or action_name == "None" or action_name == "Hurt":
+		return
+	var state: String = animation_resolver.select_for_source_action(target, action_name, move.move_id, battle_log, true)
+	if state.is_empty() or state == TacticsPawnSprite.ANIM_IDLE:
+		return
+	BattleActionPresentation.enqueue_reaction(animation_resolver.runner, target, state, BattleAnimationResolver.REACTION_DURATIONS.get("move_use", 0.45))
 
 
 func _load_type_chart() -> TypeChartResource:

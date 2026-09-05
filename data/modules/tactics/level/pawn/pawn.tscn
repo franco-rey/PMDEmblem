@@ -108,6 +108,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 1, 2.08165e-12)
 target_position = Vector3(2.08165e-12, -1.6, 2.08165e-12)
 
 [node name="Character" type="Sprite3D" parent="."]
+layers = 2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.602, 0)
 billboard = 1
 alpha_cut = 2
@@ -130,6 +131,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.602, 0)
 visible = false
 
 [node name="NameLabel" type="Label3D" parent="Character/CharacterUI"]
+layers = 2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.62, 0)
 offset = Vector2(0, 68)
 billboard = 1
@@ -140,6 +142,7 @@ font_size = 48
 outline_size = 0
 
 [node name="HealthLabel" type="Label3D" parent="Character/CharacterUI"]
+layers = 2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.62, 0)
 offset = Vector2(0, 32)
 billboard = 1

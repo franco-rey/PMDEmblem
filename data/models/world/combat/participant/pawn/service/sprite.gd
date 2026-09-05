@@ -154,6 +154,7 @@ func _ensure_ground_shadow() -> void:
 	shadow.transparent = true
 	shadow.alpha_cut = SpriteBase3D.ALPHA_CUT_DISABLED
 	shadow.render_priority = -1
+	shadow.layers = 2
 	shadow.modulate = Color(0.0, 0.0, 0.0, 0.42)
 	var width: float = SHADOW_WIDTHS.get(clampi(shadow_size, 0, 3), 26.0)
 	shadow.scale = Vector3(width / 64.0, 1.0, width * 0.55 / 64.0)
