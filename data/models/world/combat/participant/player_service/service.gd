@@ -20,8 +20,9 @@ func toggle_enemy_stats(opponent_node: Node, other_node: Node = null) -> void:
 	if res.display_opponent_stats:
 		for p in enemy_pawns:
 			if p is TacticsPawn:
-				p.res.pawn_hud_enabled = true
-				p.show_pawn_stats(true)
+				var alive: bool = (p as TacticsPawn).is_alive()
+				p.res.pawn_hud_enabled = alive
+				p.show_pawn_stats(alive)
 		_hide_side_stats(other_node)
 	else:
 		_hide_side_stats(opponent_node)

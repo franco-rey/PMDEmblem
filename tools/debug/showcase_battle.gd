@@ -52,6 +52,12 @@ var orbit_speed: float = 40.0
 var orbit_arc: float = 80.0
 var top_down: bool = false
 var result_line: String = ""
+var director: bool = false
+var speed_setting: float = 0.0
+var center_marker: Node3D = null
+var director_turn: int = 0
+var director_round: int = -1
+var director_shot: String = ""
 
 
 func _init() -> void:
@@ -95,6 +101,10 @@ func _run() -> void:
 			plan_path = String(arg).substr(7)
 		elif String(arg).begins_with("--spin="):
 			spin = String(arg).substr(7) == "1"
+		elif String(arg).begins_with("--director="):
+			director = String(arg).substr(11) == "1"
+		elif String(arg).begins_with("--speed="):
+			speed_setting = float(String(arg).substr(8))
 		elif String(arg).begins_with("--code="):
 			code_override = String(arg).substr(7)
 	driver = DRIVER.new(self)
@@ -122,6 +132,14 @@ func _run() -> void:
 		print("showcase: fast phase ended after %d turns at %.2f s" % [turns_taken, float(Engine.get_physics_frames()) / 60.0])
 	if cinematic:
 		GameSettings.battle_flair = true
+		if director:
+			GameSettings.camera_track = true
+			center_marker = Node3D.new()
+			center_marker.name = "DirectorMarker"
+			level.add_child(center_marker)
+			center_marker.global_position = _board_center()
+		if speed_setting > 0.0:
+			GameSettings.cpu_speed = speed_setting
 		GameSettings.window_mode = "windowed"
 		GameSettings.resolution = Vector2i(1920, 1080)
 		UiScale.override_factor = 0.0
@@ -136,8 +154,11 @@ func _run() -> void:
 	if cinematic:
 		base_yaw = level.camera.y_rot
 		level.camera.target_fov = 40.0
-		_enter_shot(0)
-		_cinematic_tick(0.0)
+		if director:
+			_director_cut("wide", null, null)
+		else:
+			_enter_shot(0)
+			_cinematic_tick(0.0)
 		_camera_loop()
 	await _hold(START_HOLD * (1 if spin else (2 if cinematic else 1)))
 	while turns_taken < max_turns and _battle_alive() and not _out_of_time():
@@ -148,7 +169,11 @@ func _run() -> void:
 		await _take_turn(pawn)
 		await _hold(TURN_HOLD * (2 if spin else (3 if cinematic else 1)))
 	print("showcase: seed %d, %d turns taken, %s" % [seed_value, turns_taken, result_line if not result_line.is_empty() else "no result"])
-	await _hold(END_HOLD)
+	if director:
+		_director_cut("finale", null, null)
+		await _hold(END_HOLD * 3)
+	else:
+		await _hold(END_HOLD)
 	_restore_settings()
 	quit(0)
 
@@ -179,10 +204,75 @@ func _next_shot() -> void:
 	pass
 
 
+func _board_center() -> Vector3:
+	var total: Vector3 = Vector3.ZERO
+	var count: int = 0
+	for pawn in _all_units():
+		total += pawn.global_position
+		count += 1
+	return total / float(maxi(1, count))
+
+
+func _director_cut(kind: String, focus: TacticsPawn, other: TacticsPawn) -> void:
+	var camera: TacticsCameraResource = level.camera
+	director_shot = kind
+	orbit_dir = -orbit_dir
+	var wants_top_down: bool = kind == "top"
+	if wants_top_down != top_down:
+		camera.toggle_perspective()
+		top_down = wants_top_down
+	match kind:
+		"wide":
+			orbit_speed = 5.0
+			camera.x_rot = -34
+			camera.target_fov = 42.0
+			center_marker.global_position = _board_center()
+		"medium":
+			orbit_speed = 8.0
+			camera.x_rot = -33
+			camera.target_fov = 34.0
+			var a: Vector3 = focus.global_position if focus != null else _board_center()
+			var b: Vector3 = other.global_position if other != null else a
+			center_marker.global_position = ((a + b) * 0.5).lerp(_board_center(), 0.35)
+		"top":
+			orbit_speed = 4.0
+			camera.target_fov = 40.0
+			center_marker.global_position = _board_center()
+		"finale":
+			orbit_speed = 14.0
+			camera.x_rot = -30
+			camera.target_fov = 40.0
+			center_marker.global_position = _board_center()
+	camera.target = center_marker
+
+
+func _director_turn_start(pawn: TacticsPawn) -> void:
+	director_turn += 1
+	if level.round_index != director_round:
+		director_round = level.round_index
+		_director_cut("wide", null, null)
+	elif director_turn % 9 == 0:
+		_director_cut("top", null, null)
+	elif director_shot == "medium":
+		center_marker.global_position = pawn.global_position.lerp(_board_center(), 0.35)
+
+
+func _director_tick(dt: float) -> void:
+	orbit_phase += orbit_dir * orbit_speed * dt
+	level.camera.y_rot = int(fmod(float(base_yaw) + 180.0 + orbit_phase + 360.0, 360.0))
+	if level.camera.target != center_marker:
+		level.camera.target = center_marker
+
+
 func _camera_loop() -> void:
 	var previous: int = -1
-	while cinematic and _battle_alive():
+	while cinematic and (director or _battle_alive()):
 		await physics_frame
+		if level == null or not is_instance_valid(level) or level.camera == null:
+			return
+		if director:
+			_director_tick(1.0 / 60.0)
+			continue
 		var elapsed: float = float(Engine.get_physics_frames() - start_frame) / 60.0
 		var index: int = _shot_index_at(elapsed)
 		if index != previous:
@@ -270,7 +360,8 @@ func _skip_intro() -> void:
 
 func _hold(frames: int) -> void:
 	for i in range(frames):
-		_skip_intro()
+		if not director:
+			_skip_intro()
 		await physics_frame
 
 
@@ -310,6 +401,8 @@ func _slot_for(pawn: TacticsPawn, move_id: String) -> int:
 func _take_turn(pawn: TacticsPawn) -> void:
 	var slug: String = _slug_of(pawn)
 	var acted: bool = false
+	if director:
+		_director_turn_start(pawn)
 	var queue: Array = queues.get(slug, [])
 	var index: int = 0
 	while index < queue.size() and not acted:
@@ -447,6 +540,8 @@ func _show_actions(pawn: TacticsPawn) -> void:
 
 
 func _perform_attack(pawn: TacticsPawn, slot: int, target: TacticsPawn) -> void:
+	if director and director_shot != "top":
+		_director_cut("medium", pawn, target)
 	var controls: TacticsControls = _controls()
 	if not cinematic or controls == null:
 		await driver._attack(pawn, slot, target)
