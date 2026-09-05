@@ -29,6 +29,11 @@ func load_skirmish(definition: SkirmishDefinitionResource, battle_parent: Node =
 	level.use_speed_scheduler = true
 	level.battle_seed = definition.seed
 	level.battle_label = definition.skirmish_id
+	level.notation_context = {
+		"map": definition.map.map_id if definition.map != null else "",
+		"mode": SkirmishControlMode.normalize(definition.control_mode),
+		"code": SkirmishCode.encode_definition(definition),
+	}
 
 	var arena: TacticsArena = map_scene.instantiate() as TacticsArena
 	if arena == null:

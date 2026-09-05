@@ -22,6 +22,10 @@ func _ready() -> void:
 	badges.pawn = self
 	badges.position = Vector3(0.0, 1.32, 0.0)
 	$Character.add_child(badges)
+	var state_visuals := PawnStateVisuals.new()
+	state_visuals.name = "StateVisuals"
+	state_visuals.pawn = self
+	add_child(state_visuals)
 
 
 func _physics_process(delta: float) -> void:

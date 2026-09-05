@@ -45,9 +45,8 @@ func process_surrounding_tiles(root_tile: TacticsTile, height: float, allies_on_
 			if not _neighbor.pf_root and _neighbor != root_tile:
 				if not _neighbor.is_taken():
 					_add_to_tiles_list.call(_neighbor)
-				elif not (allies_on_map.size() > 0):
-					if not (_neighbor.get_tile_occupier() in allies_on_map):
-						_add_to_tiles_list.call(_neighbor)
+				elif allies_on_map.is_empty() or (_neighbor.get_tile_occupier() in allies_on_map):
+					_add_to_tiles_list.call(_neighbor)
 
 
 func get_pathfinding_tilestack(to: TacticsTile) -> Array:

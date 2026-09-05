@@ -260,6 +260,8 @@ func player_wants_to_wait() -> void:
 		participant.display_opponent_stats = false
 	if controls != null:
 		controls.clear_hover_preview()
+	if _release_charge_first():
+		return
 	participant.curr_pawn.end_pawn_turn()
 	participant.stage = 0
 
@@ -269,7 +271,19 @@ func player_wants_to_skip_turn() -> void:
 		participant.display_opponent_stats = false
 	if controls != null:
 		controls.clear_hover_preview()
+	if _release_charge_first():
+		return
 	participant.skip_turn()
+
+
+func _release_charge_first() -> bool:
+	var level: TacticsLevel = _level_node()
+	if level == null or participant.curr_pawn == null:
+		return false
+	if level.release_charge(participant.curr_pawn):
+		controls.set_actions_menu_visibility(false, participant.curr_pawn)
+		return true
+	return false
 
 
 func player_wants_to_attack() -> void:

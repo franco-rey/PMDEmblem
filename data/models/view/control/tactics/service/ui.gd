@@ -273,14 +273,22 @@ func set_actions_menu_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls)
 			_replace_signal_connections(action_move.mouse_entered, _on_move_action_mouse_entered.bind(ctrl))
 			_replace_signal_connections(action_move.mouse_exited, _on_move_action_mouse_exited.bind(ctrl))
 		action_move.disabled = not p.res.can_move
-	var has_usable_move: bool = p.stats.move_slots.is_empty() or p.stats.first_usable_move_index(false) >= 0
+	var charging_move: String = _charging_move_id(p)
+	var has_usable_move: bool = p.stats.move_slots.is_empty() or p.stats.first_usable_move_index(false) >= 0 or not charging_move.is_empty()
 	if action_attack != null:
 		action_attack.disabled = not p.res.can_attack or not has_usable_move
 	var action_item: Button = ensure_item_action_button(ctrl)
 	if action_item != null:
 		var held: PokemonItemResource = PokemonItemService.held_item_for(p.stats) if p.stats != null else null
-		action_item.disabled = held == null or not p.res.can_attack
+		action_item.disabled = held == null or not p.res.can_attack or not charging_move.is_empty()
 		action_item.text = "Item" if held == null else "Item: %s" % held.display_name()
+
+
+func _charging_move_id(p: TacticsPawn) -> String:
+	if p == null or p.stats == null:
+		return ""
+	var payload: Variant = p.stats.battle_statuses.get("charging", null)
+	return String((payload as Dictionary).get("move_id", "")) if payload is Dictionary else ""
 
 
 func _on_move_action_mouse_entered(ctrl: TacticsControls) -> void:
@@ -314,6 +322,12 @@ func set_move_picker_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls, 
 		var pp: int = p.stats.current_pp[i] if i < p.stats.current_pp.size() else 0
 		var has_pp: bool = pp > 0
 		var has_target: bool = Targeting.has_legal_target(p, move, all_units)
+		var charging_move: String = _charging_move_id(p)
+		if not charging_move.is_empty() and move.move_id != charging_move:
+			button.text = "%s\n%s %s  PP %d/%d" % [move.display_name(), move.type.capitalize(), _category_label(move), pp, move.pp]
+			button.disabled = true
+			button.tooltip_text = "Charging %s" % BattleMessageCatalog.move_label(charging_move)
+			continue
 		button.text = "%s\n%s %s  PP %d/%d" % [
 			move.display_name(),
 			move.type.capitalize(),

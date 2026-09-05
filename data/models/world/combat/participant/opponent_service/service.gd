@@ -51,6 +51,7 @@ func chase_nearest_enemy(opponent: Node3D, player_node: Node) -> void:
 			if action.move_index < res.curr_pawn.stats.move_slots.size():
 				var move: PokemonMoveResource = res.curr_pawn.stats.move_slots[action.move_index]
 				res.curr_pawn.stats.attack_range = max(1, move.tactical_range_value)
+		_apply_charge_lock(res.curr_pawn)
 		var to: TacticsTile = arena.get_nearest_target_adjacent_tile(res.curr_pawn, player_node.get_children())
 		res.curr_pawn.res.pathfinding_tilestack = arena.get_pathfinding_tilestack(to)
 		camera.target = to
@@ -104,7 +105,18 @@ func choose_pawn_to_attack() -> void:
 		_level_for(res.curr_pawn)
 	)
 	res.pending_intent = null
-	if action.intent != null and action.intent.is_item_action():
+	var level: TacticsLevel = _level_for(res.curr_pawn)
+	if level != null and level.charging_slot(res.curr_pawn) >= 0:
+		var release_target: TacticsPawn = level.charging_release_target(res.curr_pawn)
+		if release_target == null:
+			level.cancel_charge(res.curr_pawn, "no_target")
+			res.curr_pawn.res.use_legacy_attack_fallback = false
+			res.attackable_pawn = null
+		else:
+			res.curr_pawn.res.selected_move_index = level.charging_slot(res.curr_pawn)
+			res.curr_pawn.res.use_legacy_attack_fallback = false
+			res.attackable_pawn = release_target
+	elif action.intent != null and action.intent.is_item_action():
 		res.curr_pawn.res.use_legacy_attack_fallback = false
 		res.pending_intent = action.intent
 		res.attackable_pawn = action.target_unit
@@ -127,6 +139,17 @@ func choose_pawn_to_attack() -> void:
 			print_rich("[color=orange]No target detected.[/color]")
 
 	res.stage = res.STAGE_MOVE_PAWN
+
+
+func _apply_charge_lock(pawn: TacticsPawn) -> void:
+	var level: TacticsLevel = _level_for(pawn)
+	if level == null:
+		return
+	var slot: int = level.charging_slot(pawn)
+	if slot < 0:
+		return
+	pawn.res.selected_move_index = slot
+	pawn.stats.attack_range = max(1, pawn.stats.move_slots[slot].tactical_range_value)
 
 
 func _level_for(pawn: TacticsPawn) -> TacticsLevel:

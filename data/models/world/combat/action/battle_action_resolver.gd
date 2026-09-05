@@ -304,6 +304,7 @@ func _run_move(attacker: TacticsPawn, declared_target: TacticsPawn, move: Pokemo
 		"attacker": attacker,
 		"move_id": move.move_id,
 		"slot_index": move_index,
+		"target": declared_target,
 		"target_count": targets.size(),
 	})
 	_bind_presentation(battle_level)

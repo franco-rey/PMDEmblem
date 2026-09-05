@@ -41,6 +41,7 @@ var battle_conditions: Dictionary = {}
 var message_log: BattleMessageLog = null
 var hud: BattleHud = null
 var notation: BattleNotation = BattleNotation.new()
+var notation_context: Dictionary = {}
 var battle_label: String = ""
 var weather_overlay: WeatherOverlay = null
 var battle_finished: bool = false
@@ -118,6 +119,77 @@ func _setup_presentation() -> void:
 
 func is_presentation_busy() -> bool:
 	return presentation_runner != null and presentation_runner.is_busy()
+
+
+func charging_payload(pawn: TacticsPawn) -> Dictionary:
+	if pawn == null or pawn.stats == null:
+		return {}
+	var payload: Variant = pawn.stats.battle_statuses.get("charging", null)
+	return payload if payload is Dictionary else {}
+
+
+func charging_slot(pawn: TacticsPawn) -> int:
+	var move_id: String = String(charging_payload(pawn).get("move_id", ""))
+	if move_id.is_empty():
+		return -1
+	for i in range(pawn.stats.move_slots.size()):
+		var move: PokemonMoveResource = pawn.stats.move_slots[i]
+		if move != null and move.move_id == move_id:
+			return i
+	return -1
+
+
+func charging_release_target(pawn: TacticsPawn) -> TacticsPawn:
+	var slot: int = charging_slot(pawn)
+	if slot < 0:
+		return null
+	var move: PokemonMoveResource = pawn.stats.move_slots[slot]
+	var legal: Array[TacticsPawn] = Targeting.legal_targets_for_move(pawn, move, units_on_map())
+	var declared: Variant = charging_payload(pawn).get("target_unit", null)
+	if declared is TacticsPawn and is_instance_valid(declared) and legal.has(declared):
+		return declared
+	var best: TacticsPawn = null
+	var best_distance: float = INF
+	for candidate in legal:
+		var distance: float = candidate.global_position.distance_squared_to(pawn.global_position)
+		if distance < best_distance:
+			best_distance = distance
+			best = candidate
+	return best
+
+
+func release_charge(pawn: TacticsPawn) -> bool:
+	var slot: int = charging_slot(pawn)
+	if slot < 0:
+		return false
+	var target: TacticsPawn = charging_release_target(pawn)
+	if target == null:
+		cancel_charge(pawn, "no_target")
+		return false
+	var p_res: TacticsParticipantResource = participant.res
+	pawn.res.can_attack = true
+	pawn.res.can_move = false
+	pawn.res.selected_move_index = slot
+	p_res.curr_pawn = pawn
+	p_res.attackable_pawn = target
+	p_res.pending_intent = null
+	p_res.throw_options = []
+	p_res.display_opponent_stats = true
+	p_res.stage = p_res.STAGE_ATTACK
+	battle_log.append({"kind": "charge_released", "attacker": pawn, "move_id": pawn.stats.move_slots[slot].move_id, "target": target})
+	return true
+
+
+func cancel_charge(pawn: TacticsPawn, reason: String) -> void:
+	var move_id: String = String(charging_payload(pawn).get("move_id", ""))
+	if move_id.is_empty():
+		return
+	var ops: BattleStateOps = _ops()
+	ops.remove_status(pawn, "charging", {"source": reason})
+	for status_id in BattleMoveSpecials.INVULNERABLE_STATUSES:
+		if pawn.stats.battle_statuses.has(status_id):
+			ops.remove_status(pawn, status_id, {"source": reason})
+	battle_log.append({"kind": "move_rejected", "attacker": pawn, "move_id": move_id, "reason": "charge_%s" % reason})
 
 
 func land_item(item_id: String, key: Vector3i, world_position: Vector3, source: String = "", defer_visual: bool = false) -> void:

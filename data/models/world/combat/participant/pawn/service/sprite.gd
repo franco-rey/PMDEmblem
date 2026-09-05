@@ -87,6 +87,7 @@ var one_shot: bool = false
 var one_shot_finished: bool = false
 var facing_row: int = 0
 var lunge_offset: Vector3 = Vector3.ZERO
+var lift_world: float = 0.0
 var pose_frozen: bool = false
 var base_local_position: Vector3 = Vector3(0.0, DEFAULT_CHARACTER_CENTER_Y, 0.0)
 
@@ -448,9 +449,12 @@ func _apply_state_texture(state: String) -> void:
 
 
 func _apply_grounding_offset(state: String) -> void:
+	offset.y = _grounding_offset_px(state) + lift_world / pixel_size
+
+
+func _grounding_offset_px(state: String) -> float:
 	if grounding_mode == GROUNDING_SOURCE:
-		offset.y = float(ground_shadow_px + maxi(0, foot_drop_px(state))) - (DEFAULT_CHARACTER_CENTER_Y / pixel_size)
-		return
+		return float(ground_shadow_px + maxi(0, foot_drop_px(state))) - (DEFAULT_CHARACTER_CENTER_Y / pixel_size)
 	var cell_h: float = float(state_cell_heights.get(state, DEFAULT_FRAME_CELL_PX))
 	var bottom_padding: float = float(state_bottom_paddings.get(state, DEFAULT_FRAME_BOTTOM_PADDING_PX))
 	var current_visible_foot_y: float = (
@@ -458,7 +462,12 @@ func _apply_grounding_offset(state: String) -> void:
 		- (cell_h * pixel_size * 0.5)
 		+ (bottom_padding * pixel_size)
 	)
-	offset.y = (DEFAULT_VISIBLE_FOOT_Y - current_visible_foot_y) / pixel_size
+	return (DEFAULT_VISIBLE_FOOT_Y - current_visible_foot_y) / pixel_size
+
+
+func set_lift(height: float) -> void:
+	lift_world = height
+	_apply_grounding_offset(current_state)
 
 
 func foot_drop_px(state: String) -> int:

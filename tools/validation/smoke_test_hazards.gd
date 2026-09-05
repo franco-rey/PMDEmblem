@@ -81,7 +81,7 @@ func _run() -> void:
 	resolver.execute(squirtle, charmander, 2, level)
 	_assert_true(level.hazards().tiles.is_empty(), "Defog clears every hazard")
 	var notation: String = level.notation.text()
-	_assert_true(notation.contains("hazard +spikes") and notation.contains("hazards cleared"), "notation records hazard placement and clearing")
+	_assert_true(notation.contains("hz +spikes") and notation.contains("hz clear"), "notation records hazard placement and clearing")
 	await _teardown(setup)
 	if failures > 0:
 		push_error("smoke: hazards failed %d check(s)" % failures)

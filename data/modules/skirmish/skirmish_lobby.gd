@@ -418,9 +418,17 @@ func _create_setup_panel() -> PanelContainer:
 	margin.add_theme_constant_override("margin_bottom", 10)
 	panel.add_child(margin)
 
+	var setup_scroll := ScrollContainer.new()
+	setup_scroll.name = "SetupScroll"
+	setup_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	setup_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	setup_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	margin.add_child(setup_scroll)
+
 	var column := VBoxContainer.new()
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_theme_constant_override("separation", 8)
-	margin.add_child(column)
+	setup_scroll.add_child(column)
 
 	var top_row := HBoxContainer.new()
 	column.add_child(top_row)

@@ -60,6 +60,8 @@ static func encode_definition(definition: SkirmishDefinitionResource) -> String:
 	if definition == null:
 		return ""
 	var tokens: Array[String] = ["match", "seed=%d" % definition.seed, "mode=%s" % _mode_token(definition.control_mode)]
+	if definition.map != null and not definition.map.map_id.is_empty() and definition.map.resource_path != DEFAULT_MAP_PATH:
+		tokens.append("map=%s" % definition.map.map_id)
 	var player: String = _encode_team(definition.player_team)
 	var enemy: String = _encode_team(definition.enemy_team)
 	if not player.is_empty():
