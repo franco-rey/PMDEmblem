@@ -116,6 +116,7 @@ func _ready() -> void:
 	UiScale.watch(get_tree().root)
 	add_child(SoundPlayer.new())
 	add_child(UiSoundHook.new())
+	add_child(MusicPlayer.new())
 	BattleNotation.clear_output_dir()
 	_style_main_menu()
 	_setup_menus()
@@ -130,6 +131,7 @@ func _ready() -> void:
 		skirmish_lobby.launch_series_requested.connect(_on_lobby_launch_series_requested)
 		skirmish_lobby.close_requested.connect(_on_lobby_close_requested)
 	launch_button.grab_focus()
+	MusicPlayer.play_scene("menu")
 
 func _process(_delta: float) -> void:
 	_poll_speed_keys()
@@ -264,6 +266,7 @@ func _on_main_menu_requested() -> void:
 		skirmish_lobby.visible = false
 	$UI/MapSelector.visible = true
 	launch_button.grab_focus()
+	MusicPlayer.play_scene("menu")
 
 
 func _on_quit_requested() -> void:
@@ -477,6 +480,7 @@ func _launch_definition(definition: SkirmishDefinitionResource, return_to_lobby_
 	var human: bool = _definition_has_human_control(definition)
 	interface_visible = true
 	_set_tactics_controls_enabled(human)
+	MusicPlayer.play(MusicPlayer.battle_track_for(definition.map.map_id if definition != null and definition.map != null else "", definition.seed if definition != null else 0))
 	var camera_node: TacticsCamera = find_child("TacticsCamera", true, false) as TacticsCamera
 	if camera_node != null and camera_node.res != null:
 		camera_node.res.spectator = not human
@@ -551,6 +555,7 @@ func _on_lobby_launch_series_requested(definitions: Array[SkirmishDefinitionReso
 
 func _on_lobby_close_requested() -> void:
 	$UI/MapSelector.visible = true
+	MusicPlayer.play_scene("menu")
 	_set_tactics_controls_enabled(false)
 	launch_button.grab_focus()
 
@@ -568,6 +573,7 @@ func _on_skirmish_ended(result: int, definition: SkirmishDefinitionResource) -> 
 		if show_report and results_screen != null and ended_level != null and is_instance_valid(ended_level) and DisplayServer.get_name() != "headless":
 			_ended_definition = definition
 			_ended_result = result
+			MusicPlayer.stop(1.5)
 			results_screen.show_result(result, definition, ended_level, "Next Battle (%d/%d)" % [skirmish_queue_index + 1, skirmish_queue.size()])
 			return
 		if skirmish_loader != null:
@@ -583,6 +589,7 @@ func _on_skirmish_ended(result: int, definition: SkirmishDefinitionResource) -> 
 	if show_report and results_screen != null and ended_level != null and is_instance_valid(ended_level) and DisplayServer.get_name() != "headless":
 		_ended_definition = definition
 		_ended_result = result
+		MusicPlayer.stop(1.5)
 		results_screen.show_result(result, definition, ended_level)
 		return
 	if skirmish_loader != null:

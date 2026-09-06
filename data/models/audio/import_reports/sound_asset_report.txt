@@ -1,7 +1,7 @@
 PMDEmblem sound asset report
-generated_at: 2026-09-05T22:10:18.863126+00:00
-files: 784 copied: 0 music_included: False
-categories: Battle=759, Fanfare=13, Menu=12
+generated_at: 2026-09-06T06:31:37.668220+00:00
+files: 857 copied: 73 music_included: True
+categories: Battle=759, Fanfare=13, Menu=12, Music=73
 presentation sounds: 391 missing: 1
 status sounds: 51 map status sounds: 18
 cries: 0 unmatched: 0

@@ -33,7 +33,7 @@ def main() -> int:
     if not sound_root.is_dir():
         print(f"error: PMDO sound folder missing at {sound_root}")
         return 2
-    payload = _package_sounds(sources.pmdo_root, sound_root, args.dry_run, args.include_music, Path(args.cries_root) if args.cries_root else None)
+    payload = _package_sounds(sources.pmdo_root, sound_root, args.dry_run, not args.skip_music, Path(args.cries_root) if args.cries_root else None)
     summary = payload["summary"]
     print(
         "sound packager %s: files=%d copied=%d cries=%d missing_presentation=%d missing_cues=%d"
@@ -65,7 +65,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--pmdo-root", dest="pmdo_root")
     parser.add_argument("--raw-asset-root", dest="raw_asset_root")
     parser.add_argument("--sprite-collab-root", dest="sprite_collab_root")
-    parser.add_argument("--include-music", action="store_true")
+    parser.add_argument("--skip-music", action="store_true")
     parser.add_argument("--cries-root", dest="cries_root")
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--dry-run", action="store_true")

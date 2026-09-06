@@ -141,6 +141,7 @@ func _ready() -> void:
 
 func open() -> void:
 	visible = true
+	MusicPlayer.play_scene("lobby")
 	_set_active_side(active_side)
 	_queue_update_grid_columns()
 
