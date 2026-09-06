@@ -16,4 +16,8 @@ func get_all_neighbors(height: float) -> Array[Node3D]:
 
 
 func get_object_above() -> Object:
-	return $Above.get_collider()
+	var ray: RayCast3D = $Above as RayCast3D
+	if ray == null:
+		return null
+	ray.force_raycast_update()
+	return ray.get_collider()

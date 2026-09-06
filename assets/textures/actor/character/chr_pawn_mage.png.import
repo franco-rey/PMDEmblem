@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dtnp3dsqu2yy6"
 path.s3tc="res://.godot/imported/chr_pawn_mage.png-d7f92787e0708020f0135909d1a80883.s3tc.ctex"
+path.etc2="res://.godot/imported/chr_pawn_mage.png-d7f92787e0708020f0135909d1a80883.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/textures/actor/character/chr_pawn_mage.png"
-dest_files=["res://.godot/imported/chr_pawn_mage.png-d7f92787e0708020f0135909d1a80883.s3tc.ctex"]
+dest_files=["res://.godot/imported/chr_pawn_mage.png-d7f92787e0708020f0135909d1a80883.s3tc.ctex", "res://.godot/imported/chr_pawn_mage.png-d7f92787e0708020f0135909d1a80883.etc2.ctex"]
 
 [params]
 

@@ -28,7 +28,7 @@ func _run() -> void:
 			missing_cues.append(cue_id)
 	_assert_true(SoundCues.all_ids().size() >= 30 and missing_cues.is_empty(), "every cue in the cue table resolves (missing %s)" % str(missing_cues))
 	var stream: AudioStream = SoundLibrary.stream_for("Menu/Confirm")
-	_assert_true(stream != null and stream is AudioStreamOggVorbis and stream.get_length() > 0.0, "an OGG loads straight from the ignored asset folder")
+	_assert_true(stream != null and stream is AudioStreamOggVorbis and stream.get_length() > 0.0, "an OGG resolves through the imported audio library, so exported builds keep their sound")
 	GameSettings.load_settings()
 	var saved_master: float = GameSettings.master_volume
 	var saved_sfx: float = GameSettings.sfx_volume

@@ -64,6 +64,7 @@ var multiverse_stage: MultiverseStage = null
 var multiverse_fx: MultiverseFx = null
 var multiverse_minimap: MultiverseMinimap = null
 var battle_finished: bool = false
+var net_session: Node = null
 var scheduler: BattleScheduler = null
 var battle_units: Array[BattleUnit] = []
 var presentation_runner: BattlePresentationRunner = null
@@ -549,6 +550,12 @@ func clear_hazards(source: TacticsPawn, foes_only: bool, move_id: String) -> int
 	return hazards().clear(source, foes_only, battle_log, move_id)
 
 
+func record_move_intent(pawn: TacticsPawn, tile: TacticsTile) -> void:
+	if pawn == null or not is_instance_valid(pawn) or tile == null:
+		return
+	battle_log.append({"kind": "unit_move_started", "unit": pawn, "tile": Targeting._tile_key(tile)})
+
+
 func on_pawn_reached_tile(pawn: TacticsPawn, position: Vector3) -> void:
 	if hazard_service != null:
 		hazard_service.on_pawn_reached(pawn, position)
@@ -599,6 +606,20 @@ func _ops() -> BattleStateOps:
 		state_ops = BattleStateOps.new(self, battle_log, intrinsic_service)
 		intrinsic_service.state_ops = state_ops
 	return state_ops
+
+
+func pawn_team(pawn: TacticsPawn) -> int:
+	if player != null and pawn != null and player.is_ancestor_of(pawn):
+		return PokemonInstanceResource.Team.PLAYER
+	return PokemonInstanceResource.Team.ENEMY
+
+
+func is_remote_pawn(pawn: TacticsPawn) -> bool:
+	if net_session == null or not is_instance_valid(net_session) or pawn == null:
+		return false
+	if not bool(net_session.call("in_battle")):
+		return false
+	return pawn_team(pawn) != int(net_session.get("local_side"))
 
 
 func units_on_map() -> Array[TacticsPawn]:
@@ -1153,6 +1174,12 @@ func _check_and_handle_battle_end() -> void:
 			return
 		result = RESULT_PLAYER_LOSS
 
+	finish_battle(result)
+
+
+func finish_battle(result: int, reason: String = "") -> void:
+	if battle_finished:
+		return
 	battle_finished = true
 	turn_stage = 2
 	_refill_pp_for_units(player.get_children())
@@ -1161,7 +1188,7 @@ func _check_and_handle_battle_end() -> void:
 		"kind": "battle_ended",
 		"winner": "player" if result == RESULT_PLAYER_WIN else "opponent",
 	})
-	notation.finish(result)
+	notation.finish(result, reason)
 	var notation_path: String = notation.save()
 	if not notation_path.is_empty():
 		print("battle: notation saved to %s" % notation_path)

@@ -29,6 +29,8 @@ var _root: Control = null
 var _queue_row: HBoxContainer = null
 var _round_label: Label = null
 var _weather_chip: PanelContainer = null
+var _net_chip: PanelContainer = null
+var _net_label: Label = null
 var _weather_label: Label = null
 var _tiles: Dictionary = {}
 var _tile_order: Array[TacticsPawn] = []
@@ -137,6 +139,7 @@ func _build() -> void:
 	_build_active_panel()
 	_build_target_panel()
 	_build_weather_chip()
+	_build_net_chip()
 	_build_status_dock()
 	_build_inspector()
 	danger_enabled = GameSettings.danger_zone
@@ -297,6 +300,31 @@ func _build_unit_panel_content(panel: PanelContainer, mirrored: bool) -> Diction
 	statuses.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(statuses)
 	return {"frame": frame, "portrait": portrait, "name": name_label, "hp": hp, "meta": meta, "item_icon": item_icon, "detail": detail, "statuses": statuses}
+
+
+func _build_net_chip() -> void:
+	_net_chip = PanelContainer.new()
+	_net_chip.name = "NetChip"
+	_net_chip.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_net_chip.anchor_left = 0.5
+	_net_chip.anchor_right = 0.5
+	_net_chip.offset_top = 214
+	_net_chip.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_net_chip.add_theme_stylebox_override("panel", PmdStyle.chip(PmdStyle.NAVY_DEEP, PmdStyle.FRAME))
+	_net_chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_net_chip.visible = false
+	_net_label = Label.new()
+	_net_label.name = "NetLabel"
+	_net_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_net_chip.add_child(_net_label)
+	_root.add_child(_net_chip)
+
+
+func set_network_text(text: String) -> void:
+	if _net_chip == null or _net_label == null:
+		return
+	_net_chip.visible = not text.is_empty()
+	_net_label.text = text
 
 
 func _build_weather_chip() -> void:
@@ -639,7 +667,7 @@ func hovered_unit() -> TacticsPawn:
 	var space: PhysicsDirectSpaceState3D = level.get_world_3d().direct_space_state
 	var hit: Dictionary = space.intersect_ray(PhysicsRayQueryParameters3D.create(from, to, 2, []))
 	var collider: Variant = hit.get("collider", null)
-	if collider is TacticsPawn:
+	if collider is TacticsPawn and (collider as TacticsPawn).is_alive():
 		return collider
 	var tile_hit: Dictionary = space.intersect_ray(PhysicsRayQueryParameters3D.create(from, to, 1, []))
 	var tile: Variant = tile_hit.get("collider", null)
@@ -671,7 +699,7 @@ func _update_inspector() -> void:
 	var target: TacticsPawn = pinned_pawn
 	if target == null and _hover_candidate != null and now_ms - _hover_since_ms >= HOVER_DELAY_MS:
 		target = _hover_candidate
-	if target != null and (not is_instance_valid(target) or target.stats == null):
+	if target != null and (not is_instance_valid(target) or target.stats == null or not target.is_alive()):
 		target = null
 		pinned_pawn = null
 	var now: int = Time.get_ticks_msec()

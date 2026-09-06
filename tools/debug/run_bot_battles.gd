@@ -188,6 +188,22 @@ func _round_count(level: TacticsLevel) -> int:
 
 func _check_invariants(level: TacticsLevel, out: Dictionary) -> void:
 	var failures: Array = out["invariant_failures"]
+	var settled: bool = true
+	for pawn in level.units_on_map():
+		if pawn.res != null and (pawn.res.is_moving or not pawn.res.pathfinding_tilestack.is_empty()):
+			settled = false
+			break
+	var occupied: Dictionary = {}
+	for pawn in (level.units_on_map() if settled else []):
+		if pawn.stats == null or not pawn.is_alive():
+			continue
+		var tile: TacticsTile = pawn.get_tile()
+		if tile == null:
+			continue
+		if occupied.has(tile):
+			failures.append("shared tile %s %s" % [String(occupied[tile]), pawn.name])
+		else:
+			occupied[tile] = pawn.name
 	for pawn in level.units_on_map():
 		if pawn.stats == null:
 			continue

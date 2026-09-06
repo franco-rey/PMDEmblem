@@ -1,6 +1,8 @@
 class_name BattleNotation
 extends RefCounted
 
+signal line_appended(line: String, index: int)
+
 const OUTPUT_DIR: String = "res://logs/debug/battles"
 const INDENT: String = "  "
 const STAT_TOKENS: Dictionary = {
@@ -23,6 +25,13 @@ var _level: TacticsLevel = null
 var _unit_ids: Dictionary = {}
 var _known_tiles: Dictionary = {}
 var _turn_pawn: TacticsPawn = null
+var _attempt_attacker: TacticsPawn = null
+var _attempt_move_id: String = ""
+
+
+func _append(line: String) -> void:
+	lines.append(line)
+	line_appended.emit(line, lines.size() - 1)
 
 
 var origin: Vector3i:
@@ -52,26 +61,26 @@ func setup(level: TacticsLevel, label: String, seed: int) -> void:
 	_turn_pawn = null
 	grid.setup(Targeting.arena_tile_keys(level))
 	_assign_unit_ids(level)
-	lines.append("[Notation %s]" % NotationParser.quote("pmdn/2" if level != null and level.multiverse_enabled else NotationParser.VERSION))
+	_append("[Notation %s]" % NotationParser.quote("pmdn/2" if level != null and level.multiverse_enabled else NotationParser.VERSION))
 	if level != null and level.multiverse_enabled:
-		lines.append("[Multiverse \"1\"]")
-	lines.append("[Battle %s]" % NotationParser.quote(battle_label))
-	lines.append("[Seed %d]" % battle_seed)
+		_append("[Multiverse \"1\"]")
+	_append("[Battle %s]" % NotationParser.quote(battle_label))
+	_append("[Seed %d]" % battle_seed)
 	var map_id: String = String(context.get("map", ""))
 	if not map_id.is_empty():
-		lines.append("[Map %s]" % NotationParser.quote(map_id))
+		_append("[Map %s]" % NotationParser.quote(map_id))
 	var mode: String = String(context.get("mode", ""))
 	if not mode.is_empty():
-		lines.append("[Mode %s]" % mode)
+		_append("[Mode %s]" % mode)
 	var code: String = String(context.get("code", ""))
 	if not code.is_empty():
-		lines.append("[Code %s]" % NotationParser.quote(code))
-	lines.append("[Grid %s]" % grid.grid_span())
-	lines.append("[Origin %d %d]" % [grid.origin.x, grid.origin.z])
+		_append("[Code %s]" % NotationParser.quote(code))
+	_append("[Grid %s]" % grid.grid_span())
+	_append("[Origin %d %d]" % [grid.origin.x, grid.origin.z])
 	for terrain_line in grid.terrain_lines():
-		lines.append(terrain_line)
+		_append(terrain_line)
 	for pawn in level.units_on_map():
-		lines.append(_unit_line(pawn))
+		_append(_unit_line(pawn))
 		_known_tiles[pawn] = label_for_pawn(pawn)
 
 
@@ -133,20 +142,20 @@ func set_unit_ids(ids: Dictionary) -> void:
 func record_travel(move_id: String, traveller_ids: Array[String], from_coords: Vector2i, to_coords: Vector2i, kind: String, new_l: int, branch_from: Vector2i = Vector2i.ZERO, user_id: String = "") -> void:
 	var verb: String = "hop" if kind == "hop" else "travel"
 	var actor: String = user_id if not user_id.is_empty() else (traveller_ids[0] if not traveller_ids.is_empty() else "?")
-	lines.append(INDENT + "%s %s %s L%dT%d -> L%dT%d with %s" % [verb, actor, move_id, from_coords.x, from_coords.y, to_coords.x, to_coords.y, ",".join(traveller_ids)])
+	_append(INDENT + "%s %s %s L%dT%d -> L%dT%d with %s" % [verb, actor, move_id, from_coords.x, from_coords.y, to_coords.x, to_coords.y, ",".join(traveller_ids)])
 	if kind != "hop":
-		lines.append("branch L%d from L%dT%d" % [new_l, branch_from.x, branch_from.y])
+		_append("branch L%d from L%dT%d" % [new_l, branch_from.x, branch_from.y])
 
 
 func record_branch(board: BoardSnapshot, ids: Array[String]) -> void:
-	lines.append("board L%d T%d" % [board.timeline, board.turn])
+	_append("board L%d T%d" % [board.timeline, board.turn])
 	for pawn in _unit_ids.keys():
 		if is_instance_valid(pawn) and ids.has(String(_unit_ids[pawn])):
-			lines.append(INDENT + _unit_line(pawn))
+			_append(INDENT + _unit_line(pawn))
 
 
 func record_board_switch(l: int, t: int) -> void:
-	lines.append("present L%d T%d" % [l, t])
+	_append("present L%d T%d" % [l, t])
 
 
 func pawn_for_id(id: String) -> TacticsPawn:
@@ -181,12 +190,12 @@ func mark_turn_start(pawn: TacticsPawn) -> void:
 	turn_index += 1
 	_turn_pawn = pawn
 	_known_tiles[pawn] = label_for_pawn(pawn)
-	lines.append("T%d %s @%s" % [turn_index, unit_id(pawn), label_for_pawn(pawn)])
+	_append("T%d %s @%s" % [turn_index, unit_id(pawn), label_for_pawn(pawn)])
 
 
 func mark_turn_end(pawn: TacticsPawn) -> void:
 	_sync_position(pawn)
-	lines.append(INDENT + "end")
+	_append(INDENT + "end")
 	if _turn_pawn == pawn:
 		_turn_pawn = null
 
@@ -197,7 +206,19 @@ func record(event: Dictionary) -> void:
 	if actor != null and kind != "forced_movement":
 		_sync_position(actor)
 	match kind:
+		"move_attempted":
+			var attempt_target: TacticsPawn = _pawn_of(event.get("target", null))
+			var attempt_token: String = "-"
+			if attempt_target != null:
+				attempt_token = "self" if attempt_target == event.get("attacker") else unit_id(attempt_target)
+			_attempt_attacker = actor
+			_attempt_move_id = String(event.get("move_id", ""))
+			_action("atk %s %s %s" % [str(int(event.get("slot_index", -1)) + 1), _attempt_move_id, attempt_token])
 		"move_used":
+			if actor != null and actor == _attempt_attacker and String(event.get("move_id", "")) == _attempt_move_id:
+				_attempt_attacker = null
+				_attempt_move_id = ""
+				return
 			var slot: int = int(event.get("slot_index", -1))
 			var target: TacticsPawn = _pawn_of(event.get("target", null))
 			var target_token: String = "-"
@@ -269,6 +290,15 @@ func record(event: Dictionary) -> void:
 					to = grid.label(raw_to)
 				_known_tiles[unit] = to
 				_action("push %s %s>%s %s" % [unit_id(unit), from, to, _token(event.get("mode", event.get("move_id", "")))])
+		"unit_move_started":
+			var mover: TacticsPawn = _pawn_of(event.get("unit", null))
+			var destination: Variant = event.get("tile", null)
+			if mover != null and destination is Vector3i:
+				var to: String = grid.label(destination)
+				var before: String = String(_known_tiles.get(mover, label_for_pawn(mover)))
+				if before != to and mover == _turn_pawn:
+					_known_tiles[mover] = to
+					_action("mv %s>%s" % [before, to])
 		"unit_fainted":
 			_action("ko %s" % unit_id(event.get("unit")))
 		"turn_skipped":
@@ -305,11 +335,18 @@ func record(event: Dictionary) -> void:
 			_action("held landed %s %s %s" % [unit_id(event.get("attacker")), unit_id(event.get("defender")), _token(event.get("item_id", ""))])
 
 
-func finish(result: int) -> void:
+func record_stay(unit: Variant) -> void:
+	_append(INDENT + "stay %s" % unit_id(unit))
+
+
+func finish(result: int, reason: String = "") -> void:
 	var winner: String = "player" if result == 1 else ("enemy" if result == 2 else "none")
-	lines.append("result %s turns=%d code=%d" % [winner, turn_index, result])
+	var line: String = "result %s turns=%d code=%d" % [winner, turn_index, result]
+	if not reason.is_empty():
+		line += " reason=%s" % _token(reason)
+	_append(line)
 	for pawn in (_level.units_on_map() if _level != null else []):
-		lines.append("final %s %s @%s" % [unit_id(pawn), hp_ref(pawn), label_for_pawn(pawn)])
+		_append("final %s %s @%s" % [unit_id(pawn), hp_ref(pawn), label_for_pawn(pawn)])
 
 
 func text() -> String:
@@ -390,6 +427,8 @@ func _unit_line(pawn: TacticsPawn) -> String:
 func _sync_position(pawn: TacticsPawn) -> void:
 	if pawn == null or not is_instance_valid(pawn):
 		return
+	if pawn.res != null and (pawn.res.is_moving or not pawn.res.pathfinding_tilestack.is_empty()):
+		return
 	var now: String = label_for_pawn(pawn)
 	if now == "?":
 		return
@@ -404,7 +443,7 @@ func _sync_position(pawn: TacticsPawn) -> void:
 
 
 func _action(text: String) -> void:
-	lines.append(INDENT + text)
+	_append(INDENT + text)
 
 
 static func _token(value: Variant) -> String:

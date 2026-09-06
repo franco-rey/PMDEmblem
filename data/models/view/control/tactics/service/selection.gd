@@ -28,7 +28,7 @@ func select_pawn(player: Node3D, ctrl: TacticsControls) -> void:
 	else:
 		ctrl.curr_pawn.show_pawn_stats(true)
 
-	if Input.is_action_just_pressed("ui_accept") and ctrl.curr_pawn.can_act():
+	if Input.is_action_just_pressed("ui_accept") and not locked() and ctrl.curr_pawn.can_act():
 		if ctrl.curr_pawn in player.get_children():
 			t_cam.target = ctrl.curr_pawn
 			participant.curr_pawn = ctrl.curr_pawn
@@ -82,15 +82,25 @@ func cursor_shadow_visible() -> bool:
 	return _cursor_shadow != null and is_instance_valid(_cursor_shadow) and _cursor_shadow.visible
 
 
+func locked() -> bool:
+	return controls != null and controls.remote_turn
+
+
 func _keyboard_confirm() -> bool:
+	if locked():
+		return false
 	return Input.is_action_just_pressed("ui_accept") and not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
 
 
 func _mouse_confirm() -> bool:
+	if locked():
+		return false
 	return Input.is_action_just_pressed("ui_accept") and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
 
 
 func _nav_direction(ctrl: TacticsControls) -> Vector3i:
+	if locked():
+		return Vector3i.ZERO
 	var screen := Vector2.ZERO
 	if Input.is_action_just_pressed("ui_right"):
 		screen.x += 1.0
@@ -210,6 +220,9 @@ func _commit_location(tile: TacticsTile, ctrl: TacticsControls) -> bool:
 	var active_pawn: TacticsPawn = participant.curr_pawn if participant.curr_pawn != null else ctrl.curr_pawn
 	if active_pawn == null:
 		return false
+	var level_node: TacticsLevel = _level_node()
+	if level_node != null:
+		level_node.record_move_intent(active_pawn, tile)
 	active_pawn.res.pathfinding_tilestack = arena.get_pathfinding_tilestack(tile)
 	arena.mark_committed(tile)
 	SoundPlayer.cue("battle.move_commit")
@@ -273,6 +286,8 @@ func _commit_target(tile: TacticsTile) -> bool:
 
 
 func _target_cycle_step() -> int:
+	if locked():
+		return 0
 	var step: int = 0
 	if Input.is_action_just_pressed("camera_right") or Input.is_action_just_pressed("ui_right") or Input.is_action_just_pressed("ui_up"):
 		step += 1
@@ -283,6 +298,8 @@ func _target_cycle_step() -> int:
 
 func _select_hovered_pawn(ctrl: TacticsControls) -> PhysicsBody3D:
 	var pawn: TacticsPawn = input_service.get_3d_canvas_mouse_position(2, ctrl)
+	if pawn != null and not pawn.is_alive():
+		pawn = null
 	var tile: TacticsTile = input_service.get_3d_canvas_mouse_position(1, ctrl) if not pawn else pawn.get_tile()
 	arena.mark_hover_tile(tile)
 	return pawn if pawn else tile.get_tile_occupier() if tile else null
@@ -290,6 +307,8 @@ func _select_hovered_pawn(ctrl: TacticsControls) -> PhysicsBody3D:
 
 func _select_hovered_tile(ctrl: TacticsControls) -> TacticsTile:
 	var pawn: TacticsPawn = input_service.get_3d_canvas_mouse_position(2, ctrl)
+	if pawn != null and not pawn.is_alive():
+		pawn = null
 	var tile: TacticsTile = input_service.get_3d_canvas_mouse_position(1, ctrl) if not pawn else pawn.get_tile()
 	arena.mark_hover_tile(tile)
 	return tile
@@ -626,7 +645,7 @@ func player_wants_to_cancel_travel() -> void:
 	var pawn: TacticsPawn = participant.curr_pawn
 	if level != null:
 		var move_id: String = String(level.multiverse.pending_travel.get("move_id", ""))
-		level.multiverse.cancel_travel()
+		level.multiverse.cancel_travel(MultiverseController.CANCEL_CHOICE)
 		if bool(level.multiverse.travel_rule(move_id).get("strike", false)) and pawn != null and level.release_charge(pawn):
 			return
 	participant.stage = participant.STAGE_SHOW_ACTIONS if pawn != null and pawn.can_act() else participant.STAGE_SELECT_PAWN

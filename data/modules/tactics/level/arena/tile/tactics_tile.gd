@@ -55,7 +55,10 @@ func get_neighbors(height: float) -> Array:
 
 
 func get_tile_occupier() -> Object:
-	return $RayCasting.get_object_above()
+	var above: Object = $RayCasting.get_object_above()
+	if above is TacticsPawn and not (above as TacticsPawn).is_alive():
+		return null
+	return above
 
 
 func is_taken() -> bool:

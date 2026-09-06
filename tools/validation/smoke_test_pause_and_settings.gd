@@ -83,9 +83,18 @@ func _run() -> void:
 	cpu_res.stage = cpu_res.STAGE_MOVE_PAWN
 	hud_early._refresh_target_panel()
 	_assert_true(hud_early._target_panel.visible and hud_early._target_pawn == level.notation.pawn_for_id("P1"), "target panel shows the CPU's target during its attack stage")
+	level._scheduler_started = true
+	main._sync_turn_speed()
+	_assert_true(main.speed_bar.visible, "the speed bar appears for a CPU turn in a human match")
+	main.set_interface_visible(false)
+	_assert_true(not main.speed_bar.visible, "hiding the interface hides the speed bar in a human match")
+	main.set_interface_visible(true)
+	_assert_true(main.speed_bar.visible, "showing the interface brings the speed bar back in a human match")
 	cpu_pawn.stats.pokemon_instance.control_type = PokemonInstanceResource.ControlType.PLAYER
 	cpu_res.attackable_pawn = null
 	cpu_res.stage = cpu_res.STAGE_SHOW_ACTIONS
+	main._sync_turn_speed()
+	_assert_true(not main.speed_bar.visible, "the speed bar leaves once the player is acting again")
 	hud_early._refresh_target_panel()
 	panel._on_scale_selected(2)
 	_assert_true(is_equal_approx(GameSettings.ui_scale, 2.0) and is_equal_approx(UiScale.override_factor, 2.0), "picking a UI scale applies it")
@@ -144,6 +153,10 @@ func _run() -> void:
 		_assert_true(bots_camera != null and bots_camera.res.spectator, "bot match frees the camera for spectating")
 		_assert_true(bool(bots.main._can_open_pause_menu()), "pause menu opens during a bot match")
 		_assert_true(is_equal_approx(Engine.time_scale, GameSettings.cpu_speed) and bots.main.speed_bar.visible, "bot match runs at the CPU speed with the speed bar shown (%.1fx)" % Engine.time_scale)
+		bots.main.set_interface_visible(false)
+		_assert_true(not bots.main.speed_bar.visible, "hiding the interface hides the speed bar while spectating")
+		bots.main.set_interface_visible(true)
+		_assert_true(bots.main.speed_bar.visible, "showing the interface brings the speed bar back while spectating")
 		bots.main.speed_bar._on_pressed(5.0)
 		_assert_true(is_equal_approx(Engine.time_scale, 5.0) and is_equal_approx(GameSettings.cpu_speed, 5.0), "speed bar changes the battle speed and saves it")
 		bots.main.speed_bar._on_pressed(saved_speed)

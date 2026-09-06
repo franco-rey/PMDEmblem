@@ -16,6 +16,7 @@ const TRAVEL_MOVES: Dictionary = {
 	"shadow_force": {"axis": "space", "travellers": "user", "strike": true},
 }
 const IMMUNE_SPECIES: Array[String] = ["0493_arceus"]
+const CANCEL_CHOICE: String = "choice"
 
 var level: TacticsLevel = null
 var state: MultiverseState = MultiverseState.new()
@@ -184,6 +185,9 @@ func capture(mid_round: bool) -> BoardSnapshot:
 
 
 func capture_unit(pawn: TacticsPawn, unit: BattleUnit) -> Dictionary:
+	var tile_ray: RayCast3D = pawn.get_node_or_null("Tile") as RayCast3D
+	if tile_ray != null:
+		tile_ray.force_raycast_update()
 	var stats: Stats = pawn.stats
 	var instance: PokemonInstanceResource = stats.pokemon_instance
 	var entry: Dictionary = {
@@ -332,12 +336,11 @@ func _spawn_unit(entry: Dictionary) -> TacticsPawn:
 	expertise.name = "Expertise"
 	expertise.pokemon_instance = instance
 	pawn.add_child(expertise)
+	pawn.position = parent.global_transform.affine_inverse() * (entry["position"] as Vector3)
+	pawn.rotation = entry["rotation"]
 	parent.add_child(pawn)
 	pawn.global_position = entry["position"]
-	pawn.rotation = entry["rotation"]
-	var tile_ray: RayCast3D = pawn.get_node_or_null("Tile") as RayCast3D
-	if tile_ray != null:
-		tile_ray.force_raycast_update()
+	pawn.sync_physics_body()
 	return pawn
 
 
@@ -369,6 +372,10 @@ func _apply_unit(pawn: TacticsPawn, entry: Dictionary, pawns_by_id: Dictionary) 
 			pawn.res.set(field, entry["res"][field])
 	pawn.serv.ui.update_character_health(pawn)
 	pawn.serv.ui.tint_when_unable_to_act(pawn)
+	if not stats.is_active():
+		var visuals: PawnStateVisuals = pawn.get_node_or_null("StateVisuals") as PawnStateVisuals
+		if visuals != null:
+			visuals.settle_faint()
 
 
 func _encode(value: Variant) -> Variant:
@@ -479,12 +486,15 @@ func cpu_choice() -> int:
 	return -1
 
 
-func cancel_travel() -> void:
+func cancel_travel(reason: String = "") -> void:
 	clear_travel_preview()
 	if pending_travel.is_empty():
 		return
-	level.battle_log.append({"kind": "travel_cancelled", "unit": pending_travel.get("user"), "move_id": String(pending_travel.get("move_id", ""))})
+	var user: Variant = pending_travel.get("user")
+	level.battle_log.append({"kind": "travel_cancelled", "unit": user, "move_id": String(pending_travel.get("move_id", "")), "reason": reason})
 	pending_travel = {}
+	if reason == CANCEL_CHOICE and level.notation != null and user is TacticsPawn and is_instance_valid(user):
+		level.notation.record_stay(user)
 
 
 func pick_random_option() -> int:

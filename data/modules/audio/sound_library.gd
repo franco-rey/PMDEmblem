@@ -63,14 +63,19 @@ static func cry_name(slug: String) -> String:
 
 
 static func _load_stream(path: String) -> AudioStream:
-	var absolute: String = ProjectSettings.globalize_path(path)
+	if ResourceLoader.exists(path):
+		var imported: Resource = ResourceLoader.load(path)
+		if imported is AudioStream:
+			return imported as AudioStream
+	if not FileAccess.file_exists(path):
+		return null
 	match path.get_extension().to_lower():
 		"ogg":
-			return AudioStreamOggVorbis.load_from_file(absolute)
+			return AudioStreamOggVorbis.load_from_file(path)
 		"wav":
-			return AudioStreamWAV.load_from_file(absolute)
+			return AudioStreamWAV.load_from_file(path)
 		"mp3":
-			return AudioStreamMP3.load_from_file(absolute)
+			return AudioStreamMP3.load_from_file(path)
 	return null
 
 
@@ -82,7 +87,7 @@ static func stream_for(name: String) -> AudioStream:
 		return _streams[key]
 	var path: String = path_for(key)
 	var stream: AudioStream = null
-	if not path.is_empty() and FileAccess.file_exists(path):
+	if not path.is_empty() and (ResourceLoader.exists(path) or FileAccess.file_exists(path)):
 		stream = _load_stream(path)
 	_streams[key] = stream
 	return stream

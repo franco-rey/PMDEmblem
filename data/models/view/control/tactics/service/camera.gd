@@ -34,13 +34,13 @@ func handle_rotation_inputs(delta: float) -> void:
 		t_cam.toggle_orbit(1)
 	elif Input.is_action_just_pressed("camera_rotate_left"):
 		if not t_cam.in_free_look:
-			t_cam.orbit_direction = 0
+			t_cam.stop_orbit()
 			t_cam.rotate_camera(delta, -ROTATE_STEP_DEGREES)
 	elif Input.is_action_just_pressed("camera_rotate_right"):
 		if not t_cam.in_free_look:
-			t_cam.orbit_direction = 0
+			t_cam.stop_orbit()
 			t_cam.rotate_camera(delta, ROTATE_STEP_DEGREES)
 	elif Input.is_action_just_pressed("camera_free_look"):
 		t_cam.is_rotating = false
-		t_cam.orbit_direction = 0
+		t_cam.stop_orbit()
 		t_cam.in_free_look = true

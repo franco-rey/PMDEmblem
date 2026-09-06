@@ -16,6 +16,16 @@ var faint_seconds: float = 0.0
 var _labels_hidden_for_faint: bool = false
 var _marker: Node3D = null
 var _tween: Tween = null
+var _retired: bool = false
+var _hidden: bool = false
+var _collision_layer: int = 0
+var _collision_mask: int = 0
+
+
+func _ready() -> void:
+	if pawn != null:
+		_collision_layer = pawn.collision_layer
+		_collision_mask = pawn.collision_mask
 
 
 func _process(delta: float) -> void:
@@ -24,12 +34,18 @@ func _process(delta: float) -> void:
 	if pawn.stats.is_active():
 		faint_seconds = 0.0
 		_labels_hidden_for_faint = false
+		if _retired:
+			_restore_presence()
 	else:
 		faint_seconds += delta
 		if not _labels_hidden_for_faint:
 			_labels_hidden_for_faint = true
 			pawn.show_pawn_stats(false)
 			pawn.res.pawn_hud_enabled = false
+		if not _retired:
+			_retire_presence()
+		if not _hidden and faint_seconds >= FAINT_HOLD_SECONDS + FAINT_FADE_SECONDS:
+			_hide_remains()
 	var next: String = ""
 	if pawn.stats.is_active():
 		for candidate in STATES:
@@ -62,6 +78,41 @@ func _apply(next: String) -> void:
 		_tween = create_tween()
 		_tween.tween_method(sprite.set_lift, sprite.lift_world, target_lift, LIFT_SECONDS).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	state = next
+
+
+func settle_faint() -> void:
+	if pawn == null or pawn.stats == null or pawn.stats.is_active():
+		return
+	faint_seconds = FAINT_HOLD_SECONDS + FAINT_FADE_SECONDS
+	_labels_hidden_for_faint = true
+	pawn.show_pawn_stats(false)
+	pawn.res.pawn_hud_enabled = false
+	_retire_presence()
+	_hide_remains()
+
+
+func is_retired() -> bool:
+	return _retired
+
+
+func _retire_presence() -> void:
+	_retired = true
+	pawn.collision_layer = 0
+	pawn.collision_mask = 0
+
+
+func _hide_remains() -> void:
+	_hidden = true
+	pawn.visible = false
+	_clear_marker()
+
+
+func _restore_presence() -> void:
+	_retired = false
+	_hidden = false
+	pawn.collision_layer = _collision_layer
+	pawn.collision_mask = _collision_mask
+	pawn.visible = true
 
 
 func faint_alpha() -> float:

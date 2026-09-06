@@ -92,6 +92,10 @@ const MIN_WINDOW_SIZE: Vector2i = Vector2i(1280, 720)
 var level_instance: TacticsLevel
 var skirmish_loader: SkirmishLoader
 var pause_menu: PauseMenu = null
+var net_session: NetSession = null
+var multiplayer_menu: MultiplayerMenu = null
+var net_beacon: LanBeacon = null
+var multiplayer_button: Button = null
 var results_screen: BattleResultsScreen = null
 var speed_bar: SpectatorSpeedBar = null
 var interface_visible: bool = true
@@ -128,6 +132,16 @@ func _ready() -> void:
 	_style_main_menu()
 	_setup_menus()
 	_set_tactics_controls_enabled(false)
+	net_session = NetSession.new()
+	net_session.local_name = GameSettings.player_name
+	net_session.start_requested.connect(_on_net_start_requested)
+	net_session.battle_over_remote.connect(_on_net_battle_over)
+	net_session.notice.connect(_on_net_notice)
+	net_session.desynced.connect(_on_net_desync)
+	net_session.state_changed.connect(_on_net_state_changed)
+	add_child(net_session)
+	net_beacon = LanBeacon.new()
+	add_child(net_beacon)
 	skirmish_loader = SkirmishLoader.new()
 	add_child(skirmish_loader)
 	skirmish_loader.skirmish_ended.connect(_on_skirmish_ended)
@@ -141,6 +155,7 @@ func _ready() -> void:
 	MusicPlayer.play_scene("menu")
 
 func _process(_delta: float) -> void:
+	_poll_net_ready()
 	_poll_speed_keys()
 	_poll_interface_toggle()
 	_sync_turn_speed()
@@ -148,6 +163,126 @@ func _process(_delta: float) -> void:
 	var backdrop: Control = $UI.get_node_or_null("Backdrop") as Control
 	if backdrop != null:
 		backdrop.visible = $UI/MapSelector.visible or (skirmish_lobby != null and skirmish_lobby.visible)
+
+
+func _on_multiplayer_pressed() -> void:
+	var overlay: Control = $UI.get_node_or_null("OptionsOverlay") as Control
+	if overlay == null:
+		return
+	$UI/MapSelector.visible = false
+	overlay.visible = true
+	menu_graphics_panel.visible = false
+	menu_controls_panel.visible = false
+	multiplayer_menu.visible = true
+	multiplayer_menu.focus_first()
+
+
+func _on_net_host_requested(port: int) -> void:
+	net_session.local_name = GameSettings.player_name
+	var error: String = net_session.host(port)
+	if not error.is_empty():
+		multiplayer_menu.set_status(error)
+		return
+	net_beacon.start_broadcast(port, GameSettings.player_name)
+	_open_network_lobby()
+
+
+func _on_net_join_requested(address: String, port: int) -> void:
+	net_session.local_name = GameSettings.player_name
+	var error: String = net_session.join(address, port)
+	if not error.is_empty():
+		multiplayer_menu.set_status(error)
+		return
+	multiplayer_menu.set_status("Connecting to %s..." % address)
+
+
+func _on_net_state_changed(state: int) -> void:
+	if state == NetSession.LOBBY and skirmish_lobby != null and not skirmish_lobby.visible and level_instance == null:
+		_open_network_lobby()
+	if state == NetSession.IDLE:
+		net_beacon.stop_broadcast()
+		if skirmish_lobby != null:
+			skirmish_lobby.set_session(null)
+
+
+func _open_network_lobby() -> void:
+	var overlay: Control = $UI.get_node_or_null("OptionsOverlay") as Control
+	if overlay != null:
+		overlay.visible = false
+	if multiplayer_menu != null:
+		multiplayer_menu.visible = false
+	$UI/MapSelector.visible = false
+	_set_tactics_controls_enabled(false)
+	if skirmish_lobby != null:
+		skirmish_lobby.set_session(net_session)
+		skirmish_lobby.open()
+
+
+func _on_resign_requested() -> void:
+	if net_session != null and net_session.in_battle():
+		net_session.resign()
+
+
+func _poll_net_ready() -> void:
+	if net_session == null:
+		return
+	if pause_menu != null:
+		pause_menu.pauses_tree = not net_session.in_battle()
+		pause_menu.resign_visible = net_session.in_battle()
+	if level_instance != null and is_instance_valid(level_instance) and level_instance.hud != null:
+		level_instance.hud.set_network_text(_net_chip_text())
+	if not net_session.in_battle():
+		return
+	if level_instance == null or not is_instance_valid(level_instance):
+		return
+	if level_instance != null and is_instance_valid(level_instance) and level_instance._scheduler_started and not level_instance.intro_pending:
+		net_session.mark_ready()
+
+
+func _net_chip_text() -> String:
+	if net_session == null or not net_session.in_battle():
+		return ""
+	if not net_session.ready_to_play():
+		return "Waiting for %s" % net_session.remote_name
+	return "Waiting for %s" % net_session.remote_name if net_session.remote_turn_active() else "Your turn"
+
+
+func _on_net_start_requested(code: String, _battle_id: String) -> void:
+	if results_screen != null and results_screen.visible:
+		results_screen.visible = false
+		_finish_ended_level()
+	var built: Dictionary = SkirmishCode.build_definitions(code)
+	if not bool(built.get("ok", false)):
+		push_error("Main: network start code failed: %s" % String(built.get("error", "")))
+		return
+	var definitions: Array = built.get("definitions", [])
+	if definitions.is_empty():
+		return
+	skirmish_queue.clear()
+	skirmish_queue_index = 0
+	skirmish_queue_code = ""
+	_relaunch = Callable()
+	await _launch_definition(definitions[0] as SkirmishDefinitionResource, false)
+	if level_instance != null and is_instance_valid(level_instance):
+		level_instance.net_session = net_session
+		net_session.attach_level(level_instance)
+
+
+func _on_net_battle_over(_result: int, reason: String) -> void:
+	if level_instance != null and is_instance_valid(level_instance) and level_instance.banner != null:
+		level_instance.banner.show_notice("Battle ended: %s" % reason)
+
+
+func _on_net_desync(reason: String) -> void:
+	push_error("Main: multiplayer desync: %s" % reason)
+	_on_net_notice("The two games fell out of step: %s" % reason)
+
+
+func _on_net_notice(text: String) -> void:
+	if level_instance != null and is_instance_valid(level_instance) and level_instance.banner != null:
+		level_instance.banner.show_notice(text)
+	else:
+		print("net: %s" % text)
 
 
 func _on_launch_button_pressed() -> void:
@@ -161,6 +296,7 @@ func _setup_menus() -> void:
 	pause_menu.lobby_requested.connect(_on_return_to_lobby_requested)
 	pause_menu.main_menu_requested.connect(_on_main_menu_requested)
 	pause_menu.quit_requested.connect(_on_quit_requested)
+	pause_menu.resign_requested.connect(_on_resign_requested)
 	add_child(pause_menu)
 	results_screen = BattleResultsScreen.new()
 	results_screen.play_again_requested.connect(_on_results_play_again)
@@ -173,6 +309,13 @@ func _setup_menus() -> void:
 	add_child(speed_bar)
 	var menu := $UI/MapSelector/SkirmishMenu as VBoxContainer
 	if menu != null:
+		multiplayer_button = Button.new()
+		multiplayer_button.name = "MultiplayerButton"
+		multiplayer_button.text = "Multiplayer"
+		multiplayer_button.custom_minimum_size = MENU_CONTROL_SIZE
+		multiplayer_button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
+		multiplayer_button.pressed.connect(_on_multiplayer_pressed)
+		menu.add_child(multiplayer_button)
 		options_button = Button.new()
 		options_button.name = "OptionsButton"
 		options_button.text = "Options"
@@ -215,6 +358,17 @@ func _setup_menus() -> void:
 		menu_graphics_panel.visible = true
 		menu_graphics_panel.focus_first())
 	overlay.add_child(menu_controls_panel)
+	multiplayer_menu = MultiplayerMenu.new()
+	multiplayer_menu.visible = false
+	multiplayer_menu.closed.connect(func() -> void:
+		overlay.visible = false
+		multiplayer_menu.visible = false
+		$UI/MapSelector.visible = true
+		if multiplayer_button != null:
+			multiplayer_button.grab_focus())
+	multiplayer_menu.host_requested.connect(_on_net_host_requested)
+	multiplayer_menu.join_requested.connect(_on_net_join_requested)
+	overlay.add_child(multiplayer_menu)
 
 
 func _can_open_pause_menu() -> bool:
@@ -311,6 +465,7 @@ func set_interface_visible(value: bool) -> void:
 		level_instance.set_interface_visible(interface_visible)
 	if speed_bar != null and not interface_visible:
 		speed_bar.visible = false
+	_sync_turn_speed()
 
 
 func _sync_turn_speed() -> void:
@@ -322,14 +477,11 @@ func _sync_turn_speed() -> void:
 	if participant == null or participant.res == null:
 		return
 	var current: TacticsPawn = participant.res.curr_pawn
-	var human_match: bool = tactics_controls != null and tactics_controls.visible
-	if not human_match:
-		return
 	var cpu_turn: bool = current != null and is_instance_valid(current) and current.stats != null and current.stats.pokemon_instance != null and current.stats.pokemon_instance.control_type != PokemonInstanceResource.ControlType.PLAYER and level_instance._scheduler_started
 	var wanted: float = GameSettings.cpu_speed
-	if not is_equal_approx(Engine.time_scale, wanted):
+	if _controls_enabled and not is_equal_approx(Engine.time_scale, wanted):
 		_set_battle_speed(wanted)
-	var show_bar: bool = cpu_turn and interface_visible
+	var show_bar: bool = interface_visible and (cpu_turn or not _controls_enabled)
 	if speed_bar.visible != show_bar:
 		speed_bar.visible = show_bar
 		speed_bar.highlight(GameSettings.cpu_speed)
@@ -346,6 +498,13 @@ func _on_speed_selected(value: float) -> void:
 
 
 func _on_results_play_again() -> void:
+	if net_session != null and net_session.active():
+		if not net_session.host_role:
+			return
+		var code: String = net_session.pending_code
+		_finish_ended_level()
+		net_session.start_battle(code)
+		return
 	_finish_ended_level()
 	if _relaunch.is_valid():
 		_relaunch.call()
@@ -508,7 +667,7 @@ func _launch_definition(definition: SkirmishDefinitionResource, return_to_lobby_
 	if speed_bar != null:
 		speed_bar.visible = not human
 		speed_bar.highlight(GameSettings.cpu_speed)
-	if level_instance.banner != null and GameSettings.battle_flair and DisplayServer.get_name() != "headless":
+	if level_instance.banner != null and GameSettings.battle_flair and DisplayServer.get_name() != "headless" and (net_session == null or not net_session.active()):
 		level_instance.banner.show_intro(level_instance, definition)
 
 
@@ -610,7 +769,10 @@ func _on_skirmish_ended(result: int, definition: SkirmishDefinitionResource) -> 
 		_ended_definition = definition
 		_ended_result = result
 		MusicPlayer.stop(1.5)
-		results_screen.show_result(result, definition, ended_level)
+		var networked: bool = net_session != null and net_session.active()
+		results_screen.show_result(result, definition, ended_level, "", net_session.local_side if networked else PokemonInstanceResource.Team.PLAYER)
+		if networked:
+			results_screen.set_play_again_label("Rematch" if net_session.host_role else "Waiting for the host", net_session.host_role)
 		return
 	if skirmish_loader != null:
 		skirmish_loader.unload_current()

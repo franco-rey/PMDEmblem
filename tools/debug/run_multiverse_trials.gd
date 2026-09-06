@@ -80,6 +80,15 @@ func _trial(seed: int, travel_chance: float, replay: bool, team_min: int, team_m
 	var player: Array[String] = _roster(rng, rng.randi_range(team_min, team_max))
 	var enemy: Array[String] = _roster(rng, rng.randi_range(team_min, team_max))
 	var code: String = "match seed=%d mode=bots map=chessboard multiverse=1 p=%s e=%s" % [seed, "|".join(player), "|".join(enemy)]
+	var forced: String = _arg("code", "")
+	if not forced.is_empty():
+		var parts: PackedStringArray = forced.split(" ", false)
+		for i in range(parts.size()):
+			if parts[i].begins_with("seed="):
+				parts[i] = "seed=%d" % seed
+			elif parts[i].begins_with("mode="):
+				parts[i] = "mode=bots"
+		code = " ".join(parts)
 	out["code"] = code
 	print("trial: start seed=%d %s" % [seed, code])
 	var ok: bool = await driver._launch(code)
@@ -87,7 +96,8 @@ func _trial(seed: int, travel_chance: float, replay: bool, team_min: int, team_m
 		out["result"] = "launch_failed"
 		return out
 	level = driver.level
-	level.presentation_runner.immediate_mode = true
+	level.presentation_runner.immediate_mode = _arg("immediate", "1") == "1"
+	Engine.time_scale = maxf(0.1, float(_arg("speed", "1")))
 	level.process_mode = Node.PROCESS_MODE_ALWAYS
 	var policy_rng := RandomNumberGenerator.new()
 	policy_rng.seed = hash("policy:%d" % seed)
@@ -98,9 +108,12 @@ func _trial(seed: int, travel_chance: float, replay: bool, team_min: int, team_m
 	var frames: int = 0
 	var ended: Array = [false, -1]
 	var latest: Array = [{}]
+	var seen_failures: Dictionary = {}
 	var gather: Callable = func() -> void:
 		if is_instance_valid(level) and level.multiverse != null:
 			latest[0] = _gather(level)
+			for failure in (latest[0] as Dictionary).get("invariant_failures", []):
+				seen_failures[String(failure)] = true
 	level.battle_ended.connect(func(result: int) -> void:
 		ended[0] = true
 		ended[1] = result
@@ -120,6 +133,11 @@ func _trial(seed: int, travel_chance: float, replay: bool, team_min: int, team_m
 	out["frames"] = frames
 	for key in (latest[0] as Dictionary):
 		out[key] = latest[0][key]
+	var merged: Array = []
+	for failure in seen_failures.keys():
+		merged.append(String(failure))
+	merged.sort()
+	out["invariant_failures"] = merged
 	if not ended[0] and frames >= MAX_FRAMES:
 		print("trial: STALL seed=%d %s" % [seed, JSON.stringify(out.get("stall", {}))])
 	out["result"] = ("player" if ended[1] == TacticsLevel.RESULT_PLAYER_WIN else ("enemy" if ended[1] == TacticsLevel.RESULT_PLAYER_LOSS else "result_%d" % ended[1])) if ended[0] else ("turn_cap" if int(out.get("turns", 0)) >= MAX_TURNS else "frame_cap")
@@ -282,6 +300,37 @@ func _check_units(battle_level: TacticsLevel, out: Dictionary) -> void:
 				failures.append("stage out of range %s %s %d" % [pawn.name, String(stat), stage])
 		if pawn.stats.curr_health == 0 and pawn.stats.is_active():
 			failures.append("zero hp but active %s" % pawn.name)
+	var settled: bool = true
+	for pawn in battle_level.units_on_map():
+		if pawn.res != null and (pawn.res.is_moving or not pawn.res.pathfinding_tilestack.is_empty()):
+			settled = false
+			break
+	var occupied: Dictionary = {}
+	for pawn in (battle_level.units_on_map() if settled else []):
+		if pawn.stats == null or not pawn.is_alive():
+			continue
+		var ray: RayCast3D = pawn.get_node_or_null("Tile") as RayCast3D
+		if ray != null:
+			ray.force_raycast_update()
+		var tile: TacticsTile = pawn.get_tile()
+		if tile == null:
+			continue
+		var key: Vector3i = Targeting._tile_key(tile)
+		if occupied.has(key):
+			failures.append("two living units share %s: %s and %s" % [battle_level.notation.tile_label(key), String(occupied[key]), battle_level.notation.unit_id(pawn)])
+		else:
+			occupied[key] = battle_level.notation.unit_id(pawn)
+	for l in battle_level.multiverse.state.timeline_ids():
+		for board in battle_level.multiverse.state.boards(l):
+			var seen: Dictionary = {}
+			for entry in board.units:
+				if not bool(entry.get("alive", false)):
+					continue
+				var board_key: Vector3i = entry["tile"]
+				if seen.has(board_key):
+					failures.append("board L%dT%d records %s and %s on the same tile" % [board.timeline, board.turn, String(seen[board_key]), String(entry["id"])])
+				else:
+					seen[board_key] = String(entry["id"])
 
 
 func _aggregate() -> Dictionary:

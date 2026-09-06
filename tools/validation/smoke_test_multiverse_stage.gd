@@ -97,15 +97,23 @@ func _run() -> void:
 	await physics_frame
 	_assert_true(mv.pending_travel.is_empty() and not mv.preview_active and stage._preview_root == null, "ending the turn without choosing cancels the travel and removes its preview")
 	var grown: float = minimap.fit_scale(mv.state, mv.state.timeline_ids())
-	var close: float = minimap.close_scale()
-	_assert_true(grown <= minimap.fit_scale(mv.state, [0]) and grown > 0.0, "the mini map's fit never grows as the multiverse widens (%.2f)" % grown)
-	_assert_true(is_equal_approx(close * minimap.board_footprint().length(), MultiverseMinimap.DIAMETER - 2.0 * MultiverseMinimap.RING) and is_equal_approx(minimap.board_footprint().x, stage.board_size.x), "fully zoomed in, one board card is inscribed in the mini map circle with the board's own footprint")
+	_assert_true(grown <= minimap.fit_scale(mv.state, [0]) and grown > 0.0 and grown <= MultiverseMinimap.CELL / MultiverseStage.pitch, "the mini map's fit never grows as the multiverse widens and never passes the cell size (%.2f)" % grown)
+	var fov_saved: float = camera.res.current_fov
+	var dolly_saved: float = camera.res.current_distance
 	camera.res.current_fov = camera.res.min_zoom
 	camera.res.current_distance = 0.0
-	_assert_true(is_equal_approx(minimap.layout_scale(mv.state, mv.state.timeline_ids()), close), "at the camera's closest zoom the mini map uses the close scale")
+	_assert_true(is_equal_approx(minimap.layout_scale(mv.state, mv.state.timeline_ids()), minimap.close_scale()) and minimap.close_scale() > grown, "at the camera's closest zoom the mini map zooms in past the fit, to the close scale")
 	camera.res.current_fov = camera.res.max_zoom
 	camera.res.current_distance = camera.res.max_overview
-	_assert_true(is_equal_approx(minimap.layout_scale(mv.state, mv.state.timeline_ids()), minf(grown, close)), "at the camera's farthest zoom the mini map fits the whole multiverse with a margin")
+	_assert_true(is_equal_approx(minimap.layout_scale(mv.state, mv.state.timeline_ids()), grown), "at the camera's farthest zoom the mini map fits the whole multiverse")
+	camera.res.current_fov = fov_saved
+	camera.res.current_distance = dolly_saved
+	var pan_before: Vector3 = camera.global_position
+	var centre_before: Vector3 = minimap.view_centre(mv.state)
+	camera.global_position = pan_before + Vector3(5.0, 0.0, -3.0)
+	var centre_after: Vector3 = minimap.view_centre(mv.state)
+	camera.global_position = pan_before
+	_assert_true((centre_after - centre_before).is_equal_approx(Vector3(5.0, 0.0, -3.0)), "the mini map's centre pans with the camera")
 	_finish()
 
 

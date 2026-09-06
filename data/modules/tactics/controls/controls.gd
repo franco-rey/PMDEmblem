@@ -41,10 +41,12 @@ func camera_rotation_inputs(delta: float) -> void:
 	serv.camera_rotation_inputs(delta)
 
 
-func get_act(action: String = "") -> Button:
-	if action == "":
-		return %Actions
+func get_act(action: String) -> Button:
 	return %Actions.get_node(action)
+
+
+func get_actions() -> Control:
+	return %Actions
 
 
 func is_mouse_hovering_ui_elem() -> bool:

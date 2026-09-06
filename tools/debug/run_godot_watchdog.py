@@ -10,7 +10,7 @@ import time
 from pathlib import Path
 
 
-DEFAULT_GODOT = "/Applications/Godot_mono.app/Contents/MacOS/Godot"
+DEFAULT_GODOT = "/Applications/Godot.app/Contents/MacOS/Godot"
 
 
 def parse_args() -> argparse.Namespace:

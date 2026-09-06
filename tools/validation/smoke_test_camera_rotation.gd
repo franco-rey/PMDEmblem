@@ -68,11 +68,12 @@ func _run() -> void:
 		camera_node.serv.process(FRAME, camera_node)
 	var turned: float = wrapf(camera_node.t_pivot.rotation_degrees.y - before_orbit, -180.0, 180.0)
 	_assert_true(res.orbit_direction == -1 and absf(absf(turned) - res.ORBIT_SPEED_DEGREES) < 3.0, "the left bracket orbits the camera slowly (%.1f degrees in a second)" % turned)
+	var after_stop: float = fposmod(camera_node.t_pivot.rotation_degrees.y, 360.0)
 	res.toggle_orbit(-1)
-	var after_stop: float = camera_node.t_pivot.rotation_degrees.y
-	for i in range(30):
-		camera_node.serv.process(FRAME, camera_node)
-	_assert_true(res.orbit_direction == 0 and absf(wrapf(camera_node.t_pivot.rotation_degrees.y - after_stop, -180.0, 180.0)) < 1.5, "pressing the same bracket again stops the orbit")
+	_assert_true(res.orbit_direction == 0 and res.is_snapping_to_quad, "pressing the same bracket again stops the orbit and starts the settle")
+	_assert_true(res.y_rot % 45 == 0, "the settle targets a 45 degree multiple (%d)" % res.y_rot)
+	var committed: float = wrapf(float(res.y_rot) - after_stop, -180.0, 180.0)
+	_assert_true(committed <= 0.0 and committed > -45.0, "the settle follows through in the orbit direction (%.1f degrees from %.1f)" % [committed, after_stop])
 	res.toggle_orbit(-1)
 	res.toggle_orbit(1)
 	_assert_true(res.orbit_direction == 1, "the other bracket reverses the orbit")

@@ -2,9 +2,11 @@ class_name MultiverseMinimap
 extends Control
 
 const DIAMETER: float = 250.0
-const FIT_MARGIN: float = 0.85
+const CARD: float = 24.0
+const CELL: float = 34.0
 const RING: float = 5.0
-const MIN_CARD: float = 5.0
+const MIN_SCALE: float = 0.3
+const NEAR_FACTOR: float = 2.5
 const COLOR_BACK: Color = Color(0.05, 0.06, 0.14, 0.92)
 const COLOR_FIELD: Color = Color(0.72, 0.73, 0.78, 0.28)
 const COLOR_PRESENT: Color = Color(0.20, 0.18, 0.30, 0.9)
@@ -73,6 +75,14 @@ func project(slot: Vector3, centre: Vector2, scale: float) -> Vector2:
 	return centre + Vector2(flat.dot(right), -flat.dot(forward)) * scale
 
 
+func view_centre(state: MultiverseState) -> Vector3:
+	var centre: Vector3 = MultiverseStage.slot(state.focus)
+	var camera: TacticsCamera = stage.camera_node() if stage != null else null
+	if camera != null and camera.is_inside_tree():
+		centre += Vector3(camera.global_position.x, 0.0, camera.global_position.z)
+	return centre
+
+
 func fit_scale(state: MultiverseState, ids: Array[int]) -> float:
 	var focus: Vector3 = MultiverseStage.slot(state.focus)
 	var reach: float = MultiverseStage.pitch
@@ -81,18 +91,11 @@ func fit_scale(state: MultiverseState, ids: Array[int]) -> float:
 			var d: Vector3 = MultiverseStage.slot(board.coords()) - focus
 			reach = maxf(reach, maxf(absf(d.x), absf(d.z)) + MultiverseStage.pitch * 0.5)
 	var radius: float = DIAMETER * 0.5 - RING - 4.0
-	return radius / reach * FIT_MARGIN
-
-
-func board_footprint() -> Vector2:
-	if stage == null:
-		return Vector2(8.6, 8.6)
-	return Vector2(maxf(stage.board_size.x, 1.0), maxf(stage.board_size.z, 1.0))
+	return clampf(radius / reach, MIN_SCALE, CELL / MultiverseStage.pitch)
 
 
 func close_scale() -> float:
-	var footprint: Vector2 = board_footprint()
-	return (DIAMETER - 2.0 * RING) / footprint.length()
+	return CELL / MultiverseStage.pitch * NEAR_FACTOR
 
 
 func zoom_fraction() -> float:
@@ -109,9 +112,9 @@ func zoom_fraction() -> float:
 
 
 func layout_scale(state: MultiverseState, ids: Array[int]) -> float:
-	var near: float = close_scale()
-	var far: float = minf(fit_scale(state, ids), near)
-	return near * pow(far / near, clampf(zoom_fraction(), 0.0, 1.0))
+	var far: float = fit_scale(state, ids)
+	var near: float = maxf(far, close_scale())
+	return far * pow(near / far, 1.0 - clampf(zoom_fraction(), 0.0, 1.0))
 
 
 func _draw_mask() -> void:
@@ -134,12 +137,10 @@ func _draw_field(field: Control) -> void:
 	var ids: Array[int] = state.timeline_ids()
 	var centre: Vector2 = size * 0.5
 	var scale: float = layout_scale(state, ids)
-	var focus: Vector3 = MultiverseStage.slot(state.focus)
-	var footprint: Vector2 = board_footprint()
-	var card: float = maxf(MIN_CARD, minf(footprint.x, footprint.y) * scale)
-	var band: float = clampf(card * 0.45, 2.0, 60.0)
+	var focus: Vector3 = view_centre(state)
+	var card: float = CARD * clampf(scale / (CELL / MultiverseStage.pitch), 0.35, NEAR_FACTOR)
+	var band: float = maxf(2.0, card * 0.45)
 	var now: int = state.present()
-	var owed: Array[Vector2i] = state.owed_boards()
 	for l in ids:
 		var active: bool = state.is_active(l)
 		var first: int = state.first_turn(l)
@@ -161,7 +162,7 @@ func _draw_field(field: Control) -> void:
 	var present_b: Vector2 = project(MultiverseStage.slot(Vector2i(ids.min(), now)) - focus - Vector3(MultiverseStage.pitch * 0.5, 0.0, -MultiverseStage.pitch * 0.6), centre, scale)
 	field.draw_line(present_a, present_b, COLOR_PRESENT, maxf(2.0, band * 0.9), true)
 	var font: Font = PmdStyle.TEXT_FONT
-	var font_size: int = int(clampf(card * 0.72, 7.0, 96.0))
+	var font_size: int = int(clampf(card * 0.72, 7.0, 40.0))
 	for l in ids:
 		for board in state.boards(l):
 			var coords: Vector2i = board.coords()
@@ -171,20 +172,10 @@ func _draw_field(field: Control) -> void:
 			if status == MultiverseStage.STATUS_CURRENT:
 				fill = fill.lerp(MultiverseStage.COLOR_PENDING, 0.5 + 0.5 * sin(_pulse * 6.0))
 			var at: Vector2 = project(MultiverseStage.slot(coords) - focus, centre, scale)
-			var half_x: float = maxf(MIN_CARD * 0.5, footprint.x * scale * 0.5)
-			var half_z: float = maxf(MIN_CARD * 0.5, footprint.y * scale * 0.5)
-			var base: Vector3 = MultiverseStage.slot(coords) - focus
-			var corners := PackedVector2Array([
-				project(base + Vector3(-half_x / scale, 0.0, -half_z / scale), centre, scale),
-				project(base + Vector3(half_x / scale, 0.0, -half_z / scale), centre, scale),
-				project(base + Vector3(half_x / scale, 0.0, half_z / scale), centre, scale),
-				project(base + Vector3(-half_x / scale, 0.0, half_z / scale), centre, scale),
-			])
-			field.draw_colored_polygon(corners, fill)
+			var rect := Rect2(at - Vector2(card, card) * 0.5, Vector2(card, card))
+			field.draw_rect(rect, fill, true)
 			var outline: Color = COLOR_LABEL if status != MultiverseStage.STATUS_PENDING else Color(1.0, 0.55, 0.2, 1.0)
-			var closed: PackedVector2Array = corners.duplicate()
-			closed.append(corners[0])
-			field.draw_polyline(closed, outline, 1.0 if status != MultiverseStage.STATUS_PENDING and status != MultiverseStage.STATUS_CURRENT else 2.0, true)
+			field.draw_rect(rect, outline, false, 1.0 if status != MultiverseStage.STATUS_PENDING and status != MultiverseStage.STATUS_CURRENT else 2.0)
 			last_cards[coords] = status
 			if card >= 9.0:
 				var text: String = str(coords.y)
@@ -204,5 +195,3 @@ func _draw_field(field: Control) -> void:
 				points.append(from * (u * u) + control * (2.0 * u * t) + to * (t * t))
 			field.draw_polyline(points, color, 2.0, true)
 			field.draw_circle(to, 2.5, color)
-	if owed.is_empty():
-		return

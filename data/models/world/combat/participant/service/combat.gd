@@ -44,6 +44,8 @@ func _handle_pending_travel(is_player: bool) -> bool:
 	if level == null or level.multiverse.pending_travel.is_empty():
 		return false
 	var mv: MultiverseController = level.multiverse
+	if level.is_remote_pawn(res.curr_pawn):
+		return true
 	var rule: Dictionary = mv.travel_rule(String(mv.pending_travel.get("move_id", "")))
 	var options: Array = mv.pending_travel.get("options", [])
 	if bool(rule.get("random", false)):
