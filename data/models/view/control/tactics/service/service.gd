@@ -39,6 +39,7 @@ func setup(ctrl: TacticsControls) -> void:
 		controls.connect("called_select_pawn", ctrl.select_pawn)
 		controls.connect("called_select_pawn_to_attack", ctrl.select_pawn_to_attack)
 		controls.connect("called_select_move", ctrl.select_move)
+		controls.connect("called_select_travel", ctrl.select_travel)
 		controls.connect("called_select_item_action", ctrl.select_item_action)
 		controls.connect("called_select_throw_target", ctrl.select_throw_target)
 		controls.connect("called_select_new_location", ctrl.select_new_location)
@@ -86,6 +87,10 @@ func select_pawn_to_attack(ctrl: TacticsControls) -> void:
 
 func select_move(ctrl: TacticsControls) -> void:
 	pawn_selection_service.select_move(ctrl)
+
+
+func select_travel(ctrl: TacticsControls) -> void:
+	pawn_selection_service.select_travel(ctrl)
 
 
 func select_item_action(ctrl: TacticsControls) -> void:

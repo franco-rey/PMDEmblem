@@ -38,7 +38,9 @@
   "step": "Battle/DUN_Tile_Step",
   "status_tick": "Battle/DUN_Hit_Neutral",
   "rejected": "Menu/Error",
-  "end_turn": "Menu/Skip"
+  "end_turn": "Menu/Skip",
+  "time_travel": "Battle/EVT_Dimensional_Scream",
+  "board_switch": "Battle/DUN_Warp"
  },
  "status": {
   "paralyze": "Battle/DUN_Paralyzed",

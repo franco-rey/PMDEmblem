@@ -10,6 +10,7 @@ var level: TacticsLevel = null
 var log_lines: Array[String] = []
 var failures: int = 0
 var current_unit: TacticsPawn = null
+var last_notation: String = ""
 
 
 func _init(scene_tree: SceneTree) -> void:
@@ -31,7 +32,7 @@ func run_script(lines: Array) -> Dictionary:
 			NotationParser.KIND_TAG:
 				if String(parsed.get("key", "")) == "Code":
 					code = String(parsed.get("value", ""))
-			NotationParser.KIND_TERRAIN, NotationParser.KIND_UNIT, NotationParser.KIND_RESULT, NotationParser.KIND_FINAL, NotationParser.KIND_COMMENT:
+			NotationParser.KIND_TERRAIN, NotationParser.KIND_UNIT, NotationParser.KIND_RESULT, NotationParser.KIND_FINAL, NotationParser.KIND_COMMENT, NotationParser.KIND_BOARD, NotationParser.KIND_BRANCH, NotationParser.KIND_PRESENT:
 				pass
 			_:
 				commands.append(line)
@@ -54,6 +55,16 @@ func _level_alive() -> bool:
 
 
 func _launch(code: String) -> bool:
+	var stale: bool = false
+	for child in tree.root.get_children():
+		if child.has_method("unload_level"):
+			child.unload_level()
+			tree.root.remove_child(child)
+			child.queue_free()
+			stale = true
+	if stale:
+		await tree.physics_frame
+		await tree.physics_frame
 	main = (load(MAIN_SCENE_PATH) as PackedScene).instantiate()
 	tree.root.add_child(main)
 	await tree.process_frame
@@ -77,6 +88,11 @@ func _launch(code: String) -> bool:
 		_fail("level did not launch: %s" % String(lobby.status_label.text))
 		return false
 	level.process_mode = Node.PROCESS_MODE_ALWAYS
+	last_notation = ""
+	var launched: TacticsLevel = level
+	launched.battle_ended.connect(func(_result_code: int) -> void:
+		if is_instance_valid(launched):
+			last_notation = launched.notation.text())
 	var frames: int = 0
 	while not level._scheduler_started and frames < MAX_WAIT_FRAMES:
 		await tree.physics_frame
@@ -138,6 +154,8 @@ func _run_command(command: String) -> void:
 					return
 				await _throw_item(pawn, args[2], direction)
 		"end":
+			if args.is_empty() and (current_unit == null or not is_instance_valid(current_unit)):
+				return
 			var pawn: TacticsPawn = current_unit if args.is_empty() else _unit_for_ref(args[0])
 			if pawn == null:
 				_fail("end needs a current unit: %s" % command)
@@ -173,6 +191,8 @@ func _run_command(command: String) -> void:
 				_fail("wait needs a unit: %s" % command)
 				return
 			await _end_turn(pawn)
+		"travel", "hop":
+			await _replay_travel(verb, args, command)
 		"rounds":
 			var count: int = int(args[0]) if not args.is_empty() else 1
 			for i in range(count):
@@ -181,6 +201,39 @@ func _run_command(command: String) -> void:
 		_:
 			if not ["hit", "miss", "nfx", "st", "tick", "stat", "heal", "wx", "fld", "hz", "push", "ko", "skip", "rej", "held"].has(verb):
 				_fail("unknown command: %s" % command)
+
+
+func _replay_travel(verb: String, args: PackedStringArray, command: String) -> void:
+	var mv: MultiverseController = level.multiverse
+	if mv.pending_travel.is_empty():
+		_fail("no travel pending for: %s" % command)
+		return
+	var dest: String = args[4] if args.size() > 4 else ""
+	var parts: PackedStringArray = dest.trim_prefix("L").split("T")
+	if parts.size() != 2:
+		_fail("bad destination in: %s" % command)
+		return
+	var dest_l: int = int(parts[0])
+	var dest_t: int = int(parts[1])
+	var options: Array = mv.pending_travel.get("options", [])
+	var choice: int = -1
+	for i in range(options.size()):
+		var option: Dictionary = options[i]
+		var kind: String = String(option.get("kind", ""))
+		if verb == "hop" and kind == "hop" and int(option.get("to", 0)) == dest_l:
+			choice = i
+		elif verb == "travel" and kind != "hop" and (option.get("from", Vector2i(-99, -99)) as Vector2i).y == dest_t:
+			choice = i
+	if choice < 0:
+		_fail("no option reaches %s in: %s" % [dest, command])
+		return
+	if not mv.commit_travel(choice):
+		_fail("travel commit failed: %s" % command)
+		return
+	current_unit = null
+	await tree.physics_frame
+	await tree.physics_frame
+	_log("%s replayed to %s" % [verb, dest])
 
 
 func _require_current(command: String) -> TacticsPawn:
@@ -217,8 +270,19 @@ func _end_turn(pawn: TacticsPawn) -> void:
 	await _wait_turn_change(pawn)
 
 
+func _settle(pawn: TacticsPawn) -> void:
+	var frames: int = 0
+	while frames < 10 and (pawn.get_tile() == null):
+		var ray: RayCast3D = pawn.get_node_or_null("Tile") as RayCast3D
+		if ray != null:
+			ray.force_raycast_update()
+		await tree.physics_frame
+		frames += 1
+
+
 func _move(pawn: TacticsPawn, tile_label: String) -> void:
 	var participant: TacticsParticipantResource = level.participant.res
+	await _settle(pawn)
 	participant.curr_pawn = pawn
 	participant.stage = participant.STAGE_SHOW_MOVEMENTS
 	await tree.physics_frame
@@ -228,7 +292,15 @@ func _move(pawn: TacticsPawn, tile_label: String) -> void:
 		_fail("no tile %s" % tile_label)
 		return
 	if not tile.reachable:
-		_fail("%s cannot reach %s" % [level.notation.unit_ref(pawn), tile_label])
+		level.arena.reset_all_tile_markers()
+		level.arena.process_surrounding_tiles(pawn.get_tile(), pawn.stats.movement, pawn.get_parent().get_children())
+		level.arena.mark_reachable_tiles(pawn.get_tile(), pawn.stats.movement)
+	if not tile.reachable:
+		var reachable_count: int = 0
+		for key in Targeting.arena_tile_keys(level):
+			if (Targeting.arena_tile_keys(level)[key] as TacticsTile).reachable:
+				reachable_count += 1
+		_fail("%s cannot reach %s (movement=%d, tile=%s, reachable=%d, stage=%d)" % [level.notation.unit_ref(pawn), tile_label, pawn.stats.movement, str(pawn.get_tile()), reachable_count, participant.stage])
 		participant.stage = participant.STAGE_SHOW_ACTIONS
 		return
 	pawn.res.pathfinding_tilestack = level.arena.get_pathfinding_tilestack(tile)
@@ -360,4 +432,4 @@ func _fail(text: String) -> void:
 
 
 func _result() -> Dictionary:
-	return {"failures": failures, "log": log_lines, "notation": level.notation.text() if _level_alive() else "", "level": level if _level_alive() else null}
+	return {"failures": failures, "log": log_lines, "notation": level.notation.text() if _level_alive() else last_notation, "level": level if _level_alive() else null}

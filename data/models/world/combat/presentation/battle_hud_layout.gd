@@ -65,9 +65,11 @@ static func solve(input: Dictionary) -> Dictionary:
 	var queue_top: float = MARGIN + PANEL_HEIGHT + GAP if stacked else MARGIN
 	var chip_top: float = queue_top + queue_height + GAP
 	var inspector_top: float = MARGIN + PANEL_HEIGHT + GAP + (queue_height + GAP if stacked else 0.0)
+	var corner_reserve: float = float(input.get("corner_reserve", 0.0))
+	var dock_left: float = MARGIN
 	var dock_width: float = clampf(size.x - SPEED_BAR_RESERVE, DOCK_MIN_WIDTH, DOCK_WIDTH)
 	var status_height: float = STATUS_MIN_HEIGHT if status_minimized else STATUS_HEIGHT
-	var reserved_top: float = MARGIN + PANEL_HEIGHT + GAP + (queue_height + GAP if stacked else 0.0)
+	var reserved_top: float = MARGIN + PANEL_HEIGHT + GAP + (queue_height + GAP if stacked else 0.0) + (corner_reserve + GAP if corner_reserve > 0.0 else 0.0)
 	var log_height: float = clampf(size.y - reserved_top - MARGIN - status_height - GAP - MARGIN, LOG_MIN_HEIGHT, LOG_HEIGHT)
 	var inspector_width: float = minf(INSPECTOR_WIDTH, maxf(inspector_min_width, size.x - 2.0 * MARGIN - GAP - dock_width))
 	var inspector_max: float = maxf(120.0, size.y - inspector_top - MARGIN - inspector_margins)
@@ -80,6 +82,7 @@ static func solve(input: Dictionary) -> Dictionary:
 		"chip_visible": not stacked,
 		"chip_top": chip_top,
 		"dock_width": dock_width,
+		"dock_left": dock_left,
 		"log_height": log_height,
 		"inspector_top": inspector_top,
 		"inspector_width": inspector_width,

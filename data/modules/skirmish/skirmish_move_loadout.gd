@@ -87,6 +87,13 @@ static func move_pool_for_instance(instance: PokemonInstanceResource) -> Array[P
 			continue
 		seen[slug] = true
 		out.append(move)
+	for slug in CustomMoves.move_ids_for_species(instance.species.species_id):
+		if seen.has(slug):
+			continue
+		var custom: PokemonMoveResource = CustomMoves.load_move(slug)
+		if custom != null:
+			seen[slug] = true
+			out.append(custom)
 	return out
 
 

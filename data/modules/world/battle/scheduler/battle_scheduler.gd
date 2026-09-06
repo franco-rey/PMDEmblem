@@ -13,6 +13,7 @@ var _active_unit: BattleUnit = null
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _tie_values: Dictionary = {}
 var _battle_ended_emitted: bool = false
+var round_gate: Callable = Callable()
 
 
 func start_battle(units: Array, battle_seed: int) -> void:
@@ -118,6 +119,9 @@ func peek_upcoming(count: int) -> Array[BattleUnit]:
 func _build_queue() -> void:
 	var living: Array[BattleUnit] = []
 	for u in _units:
+		if u.rest_rounds > 0:
+			u.rest_rounds -= 1
+			continue
 		if u.is_alive():
 			living.append(u)
 	living.sort_custom(_is_less_than)
@@ -133,7 +137,10 @@ func _activate_next() -> void:
 		turn_started.emit(_active_unit)
 		return
 
-	if is_battle_over():
+	var board_over: bool = is_battle_over()
+	if round_gate.is_valid() and not bool(round_gate.call(board_over)):
+		return
+	if board_over:
 		if not _battle_ended_emitted:
 			_battle_ended_emitted = true
 			battle_ended.emit()
@@ -149,6 +156,33 @@ func _activate_next() -> void:
 		_active_unit = next
 		turn_started.emit(_active_unit)
 		return
+
+
+func resume() -> void:
+	_activate_next()
+
+
+func detach_active() -> void:
+	if _active_unit == null:
+		return
+	var completed: BattleUnit = _active_unit
+	_active_unit = null
+	turn_completed.emit(completed)
+
+
+func snapshot_state() -> Dictionary:
+	return {"units": _units.duplicate(), "queue": _queue.duplicate(), "tie_values": _tie_values.duplicate(), "rng_state": _rng.state}
+
+
+func restore_state(units: Array[BattleUnit], queue: Array[BattleUnit], tie_values: Dictionary, rng_state: int) -> void:
+	_units = units.duplicate()
+	_queue = queue.duplicate()
+	_tie_values = {}
+	for unit in _units:
+		_tie_values[unit] = int(tie_values.get(unit, _rng.randi()))
+	_rng.state = rng_state
+	_active_unit = null
+	_battle_ended_emitted = false
 
 
 func _is_less_than(a: BattleUnit, b: BattleUnit) -> bool:

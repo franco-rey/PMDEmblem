@@ -57,6 +57,12 @@ var stats_tracker: BattleStatsTracker = BattleStatsTracker.new()
 var intro_pending: bool = false
 var interface_visible: bool = true
 var round_index: int = 0
+var multiverse: MultiverseController = MultiverseController.new()
+var multiverse_enabled: bool = false
+var timeline_map: TimelineMap = null
+var multiverse_stage: MultiverseStage = null
+var multiverse_fx: MultiverseFx = null
+var multiverse_minimap: MultiverseMinimap = null
 var battle_finished: bool = false
 var scheduler: BattleScheduler = null
 var battle_units: Array[BattleUnit] = []
@@ -96,12 +102,41 @@ func _ready() -> void:
 		scheduler.turn_completed.connect(_on_turn_completed)
 		scheduler.round_building.connect(_on_round_building)
 		scheduler.round_started.connect(_on_round_started)
+		multiverse.setup(self)
+		scheduler.round_gate = multiverse.round_gate
+
+func ensure_multiverse_presentation() -> void:
+	if multiverse_stage != null and is_instance_valid(multiverse_stage):
+		return
+	multiverse_stage = MultiverseStage.new()
+	add_child(multiverse_stage)
+	multiverse_stage.setup(self)
+	multiverse.stage = multiverse_stage
+	multiverse_fx = MultiverseFx.new()
+	add_child(multiverse_fx)
+	multiverse.fx = multiverse_fx
+	multiverse_minimap = MultiverseMinimap.new()
+	multiverse_minimap.setup(self, multiverse_stage)
+	if hud != null:
+		hud.set_corner_control(multiverse_minimap, MultiverseMinimap.DIAMETER)
+	else:
+		add_child(multiverse_minimap)
+	multiverse.minimap = multiverse_minimap
+	camera.boundary_radius = camera_boundary_radius + MultiverseStage.PITCH * 4.0
+	camera.max_overview = 160.0
+
 
 func set_interface_visible(value: bool) -> void:
 	interface_visible = value
 	for layer in [hud, message_log, banner]:
 		if layer != null and is_instance_valid(layer):
 			layer.visible = value
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if multiverse_enabled and timeline_map != null and event.is_action_pressed("toggle_timeline_map") and not battle_finished:
+		timeline_map.toggle()
+		get_viewport().set_input_as_handled()
 
 
 func _physics_process(delta: float) -> void:
@@ -146,6 +181,9 @@ func _setup_presentation() -> void:
 	sound_cues.name = "BattleSoundCues"
 	add_child(sound_cues)
 	sound_cues.setup(self)
+	timeline_map = TimelineMap.new()
+	add_child(timeline_map)
+	timeline_map.setup(self)
 	banner = BattleBanner.new()
 	add_child(banner)
 	banner.setup(self)
@@ -229,6 +267,17 @@ func release_charge(pawn: TacticsPawn) -> bool:
 		cancel_charge(pawn, "no_target")
 		return false
 	var p_res: TacticsParticipantResource = participant.res
+	var charged_move: String = String(charging_payload(pawn).get("move_id", ""))
+	if multiverse.enabled and bool(multiverse.travel_rule(charged_move).get("strike", false)) and not multiverse.strike_hop_declined.has(pawn) and multiverse.request_travel(charged_move, pawn, null) > 0:
+		multiverse.strike_hop_declined[pawn] = true
+		p_res.curr_pawn = pawn
+		if pawn.stats.pokemon_instance != null and pawn.stats.pokemon_instance.control_type == PokemonInstanceResource.ControlType.PLAYER:
+			p_res.stage = p_res.STAGE_SELECT_TRAVEL
+			return true
+		var choice: int = multiverse.cpu_choice()
+		if choice >= 0 and multiverse.commit_travel(choice):
+			return true
+		multiverse.cancel_travel()
 	pawn.res.can_attack = true
 	pawn.res.can_move = false
 	pawn.res.selected_move_index = slot
@@ -381,6 +430,15 @@ func _run_scheduler_loop(delta: float) -> void:
 		if pawn.res.presentation_locked or is_presentation_busy():
 			_advance_presentation_wait(unit, delta)
 			return
+		if multiverse_enabled and _travel_choice_open():
+			var travel_actor: Node3D = player if unit.team == PokemonInstanceResource.Team.PLAYER else opponent
+			var travel_target: Node3D = opponent if unit.team == PokemonInstanceResource.Team.PLAYER else player
+			if not participant.is_configured(travel_actor):
+				participant.configure(camera, ui_control)
+			participant.act(delta, unit.control_type == PokemonInstanceResource.ControlType.PLAYER, travel_actor, travel_target)
+			return
+		if multiverse_enabled and not multiverse.pending_travel.is_empty():
+			multiverse.cancel_travel()
 		scheduler.complete_active_unit()
 		return
 
@@ -397,6 +455,13 @@ func _run_scheduler_loop(delta: float) -> void:
 
 	participant.act(delta, is_human, actor_parent, target_parent)
 	_sweep_fainted_units()
+
+
+func _travel_choice_open() -> bool:
+	var stage: int = participant.res.stage
+	if stage == participant.res.STAGE_SELECT_TRAVEL:
+		return true
+	return stage == participant.res.STAGE_ATTACK and not multiverse.pending_travel.is_empty()
 
 
 func _advance_presentation_wait(unit: BattleUnit, delta: float) -> void:
@@ -806,9 +871,15 @@ func _on_turn_completed(unit: BattleUnit) -> void:
 	unit.pawn.res.has_acted_this_round = true
 	intrinsic_service.on_turn_completed(unit.pawn, battle_log)
 	notation.mark_turn_end(unit.pawn)
+	if multiverse_enabled:
+		multiverse.on_turn_completed()
 
 
 func _on_round_building() -> void:
+	multiverse.enabled = multiverse_enabled
+	if multiverse_enabled:
+		ensure_multiverse_presentation()
+	multiverse.on_round_building()
 	intrinsic_service.apply_speed_modifiers(battle_units, self, battle_log)
 	PokemonItemService.apply_speed_multipliers(battle_units, battle_log)
 
@@ -1073,6 +1144,10 @@ func _check_and_handle_battle_end() -> void:
 		if not scheduler.is_battle_over():
 			return
 	var result: int = check_battle_end(player.get_children(), opponent.get_children())
+	if multiverse.enabled and not multiverse.state.timelines.is_empty():
+		result = multiverse.multiverse_result()
+		if result == RESULT_ONGOING:
+			return
 	if result == RESULT_ONGOING:
 		if not use_speed_scheduler:
 			return

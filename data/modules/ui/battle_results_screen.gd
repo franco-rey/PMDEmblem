@@ -107,6 +107,8 @@ func show_result(result: int, definition: SkirmishDefinitionResource, level: Tac
 	var seed: int = definition.seed if definition != null else (level.battle_seed if level != null else 0)
 	var turns: int = level.notation.turn_index if level != null and level.notation != null else 0
 	_subtitle.text = "%s   Seed %d   %d turns" % [mode, seed, turns]
+	if level != null and level.multiverse != null and level.multiverse.enabled and not level.multiverse.state.timelines.is_empty():
+		_subtitle.text += "   Timelines %d   Travels %d" % [level.multiverse.state.timeline_ids().size(), level.multiverse.travels]
 	for child in _columns.get_children():
 		child.queue_free()
 	if level != null:

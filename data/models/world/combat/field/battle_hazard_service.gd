@@ -93,6 +93,18 @@ func on_pawn_reached(pawn: TacticsPawn, position: Vector3) -> void:
 			return
 
 
+func restore_tiles(next_tiles: Dictionary) -> void:
+	for key in markers.keys():
+		for hazard_id in (markers[key] as Dictionary).keys():
+			_remove_marker(key, String(hazard_id))
+	markers.clear()
+	tiles = next_tiles
+	var tile_keys: Dictionary = Targeting.arena_tile_keys(battle_level)
+	for key in tiles:
+		for hazard_id in (tiles[key] as Dictionary).keys():
+			_refresh_marker(key, String(hazard_id), int((tiles[key][hazard_id] as Dictionary).get("layers", 1)), tile_keys.get(key, null))
+
+
 func clear(source: TacticsPawn, foes_only: bool, battle_log: BattleLog, move_id: String) -> int:
 	var removed: int = 0
 	for key in tiles.keys():

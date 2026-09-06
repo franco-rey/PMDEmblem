@@ -184,11 +184,9 @@ static func _unit_name(value: Variant) -> String:
 
 
 static func _move_label(move_id: String) -> String:
-	var path: String = "res://data/models/pokemon/generated/moves/%s.tres" % move_id
-	if ResourceLoader.exists(path):
-		var move: PokemonMoveResource = load(path) as PokemonMoveResource
-		if move != null:
-			return move.display_name()
+	var move: PokemonMoveResource = CustomMoves.load_move(move_id)
+	if move != null:
+		return move.display_name()
 	return move_id.capitalize()
 
 

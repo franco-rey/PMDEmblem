@@ -367,6 +367,12 @@ func player_wants_to_move() -> void:
 
 
 func player_wants_to_cancel() -> void:
+	var pawn: TacticsPawn = participant.curr_pawn
+	if participant.stage == participant.STAGE_SHOW_ACTIONS and pawn != null and pawn.res != null and pawn.res.can_move and pawn.res.can_attack:
+		var menu: Node = pawn.get_tree().root.find_child("PauseMenu", true, false) if pawn.is_inside_tree() else null
+		if menu != null and menu.has_method("open"):
+			menu.call("open")
+			return
 	if participant.display_opponent_stats:
 		participant.display_opponent_stats = false
 	if controls != null:
@@ -591,6 +597,39 @@ func select_move(ctrl: TacticsControls) -> void:
 	var units: Array[TacticsPawn] = _all_units_for_selection()
 	(ctrl.serv.ui_service as TacticsUIService).set_move_picker_visibility(true, participant.curr_pawn, ctrl, units)
 	_update_move_picker_preview()
+
+
+func select_travel(ctrl: TacticsControls) -> void:
+	controls.set_actions_menu_visibility(false, participant.curr_pawn)
+	(ctrl.serv.ui_service as TacticsUIService).set_move_picker_visibility(false, participant.curr_pawn, ctrl, [])
+	var level: TacticsLevel = _level_node()
+	if level == null or level.multiverse.pending_travel.is_empty():
+		(ctrl.serv.ui_service as TacticsUIService).set_travel_picker_visibility(false, ctrl, {})
+		participant.stage = participant.STAGE_SELECT_PAWN
+		return
+	(ctrl.serv.ui_service as TacticsUIService).set_travel_picker_visibility(true, ctrl, level.multiverse.pending_travel)
+
+
+func player_wants_to_travel(option_index: int) -> void:
+	var level: TacticsLevel = _level_node()
+	if level == null:
+		return
+	if participant.stage != participant.STAGE_SELECT_TRAVEL:
+		return
+	if level.multiverse.commit_travel(option_index):
+		return
+	player_wants_to_cancel_travel()
+
+
+func player_wants_to_cancel_travel() -> void:
+	var level: TacticsLevel = _level_node()
+	var pawn: TacticsPawn = participant.curr_pawn
+	if level != null:
+		var move_id: String = String(level.multiverse.pending_travel.get("move_id", ""))
+		level.multiverse.cancel_travel()
+		if bool(level.multiverse.travel_rule(move_id).get("strike", false)) and pawn != null and level.release_charge(pawn):
+			return
+	participant.stage = participant.STAGE_SHOW_ACTIONS if pawn != null and pawn.can_act() else participant.STAGE_SELECT_PAWN
 
 
 func refresh_hover_preview() -> void:

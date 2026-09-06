@@ -3,7 +3,14 @@ extends Node
 const SkirmishCode = preload("res://data/modules/skirmish/skirmish_code.gd")
 const SkirmishControlMode = preload("res://data/modules/skirmish/skirmish_control_mode.gd")
 
+const TEMPORAL_CODE: String = "match seed=7 mode=pvc map=chessboard multiverse=1 p=0483_dialga@100:roar_of_time,dragon_claw,flash_cannon,earth_power:pressure|0251_celebi@100:dimensional_hole,psychic,giga_drain,recover:natural_cure|0474_porygon_z@100:dimensional_glitch,tri_attack,thunderbolt,ice_beam:adaptability|0493_arceus@100:judgment,recover,extreme_speed,earth_power:multitype|0253_grovyle@100:dimensional_hole,leaf_blade,quick_attack,pursuit:overgrow e=0484_palkia@100:spacial_rend,aqua_tail,dragon_claw,earth_power:pressure|0487_giratina@100:shadow_force,dragon_claw,shadow_sneak,will_o_wisp:pressure|0720_hoopa@100:hyperspace_hole,hyperspace_fury,psychic,shadow_ball:magician|0477_dusknoir@100:dimensional_hole,shadow_punch,ice_punch,will_o_wisp:pressure"
 const MANUAL_SKIRMISHES: Array[Dictionary] = [
+	{
+		"kind": "code",
+		"id": "temporal_5v4",
+		"label": "Temporal Skirmish 5v4 (5D chess, fixed)",
+		"code": TEMPORAL_CODE,
+	},
 	{
 		"kind": "static",
 		"id": "demo_3v3",
@@ -367,6 +374,8 @@ func _finish_ended_level() -> void:
 	if skirmish_loader != null and level_instance == skirmish_loader.current_level:
 		skirmish_loader.unload_current()
 	elif is_instance_valid(level_instance):
+		if level_instance.get_parent() != null:
+			level_instance.get_parent().remove_child(level_instance)
 		level_instance.queue_free()
 	level_instance = null
 	_ended_definition = null
@@ -424,6 +433,13 @@ func _resolve_skirmish_definition(entry: Dictionary) -> SkirmishDefinitionResour
 	var kind: String = String(entry.get("kind", "static"))
 	if kind == "random":
 		return _build_random_skirmish(entry)
+	if kind == "code":
+		var built: Dictionary = SkirmishCode.build_definitions(String(entry.get("code", "")))
+		if not bool(built.get("ok", false)):
+			push_error("Main: preset code failed: %s" % String(built.get("error", "")))
+			return null
+		var definitions: Array = built.get("definitions", [])
+		return definitions[0] if not definitions.is_empty() else null
 	var path: String = String(entry.get("path", ""))
 	var definition: SkirmishDefinitionResource = load(path) as SkirmishDefinitionResource
 	if definition == null:
@@ -464,7 +480,11 @@ func _label_for_picker_entry(entry: Dictionary) -> String:
 
 
 func _launch_definition(definition: SkirmishDefinitionResource, return_to_lobby_on_failure: bool) -> void:
+	var had_level: bool = level_instance != null and is_instance_valid(level_instance)
 	unload_level()
+	if had_level:
+		await get_tree().physics_frame
+		await get_tree().physics_frame
 	level_instance = skirmish_loader.load_skirmish(definition, world)
 	if level_instance == null:
 		push_error("Main: loader rejected skirmish %s" % (definition.skirmish_id if definition != null else "?"))

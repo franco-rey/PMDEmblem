@@ -78,6 +78,11 @@ func _on_event(event: Dictionary) -> void:
 				_cue(cue_id, kind)
 			else:
 				_sound(SoundLibrary.status_sound(status_id), kind)
+		"travel":
+			_cue("battle.time_travel", kind)
+		"board_switched":
+			if String(event.get("reason", "")) != "travel":
+				_cue("battle.board_switch", kind)
 		"weather_started":
 			var condition_id: String = String(event.get("condition_id", ""))
 			var weather_cue: String = "weather.%s" % condition_id

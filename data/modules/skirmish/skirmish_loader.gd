@@ -94,6 +94,7 @@ func load_skirmish(definition: SkirmishDefinitionResource, battle_parent: Node =
 	var parent: Node = battle_parent if battle_parent != null else get_parent()
 	if parent == null:
 		parent = get_tree().root
+	level.multiverse_enabled = definition.multiverse
 	parent.add_child(level)
 	skirmish_loaded.emit(level)
 	return level
@@ -101,6 +102,8 @@ func load_skirmish(definition: SkirmishDefinitionResource, battle_parent: Node =
 
 func unload_current() -> void:
 	if is_instance_valid(current_level):
+		if current_level.get_parent() != null:
+			current_level.get_parent().remove_child(current_level)
 		current_level.queue_free()
 	current_level = null
 	current_definition = null

@@ -99,6 +99,7 @@ var type_filter: OptionButton
 var sort_picker: OptionButton
 var map_picker: OptionButton
 var control_mode_picker: OptionButton
+var multiverse_toggle: CheckButton
 var seed_input: LineEdit
 var difficulty_spin: SpinBox
 var random_enemy_check: CheckBox
@@ -459,6 +460,13 @@ func _create_setup_panel() -> PanelContainer:
 	_add_control_mode_item("CPU vs CPU", SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU)
 	control_mode_picker.item_selected.connect(_on_control_mode_selected)
 	column.add_child(_labeled_control("Control", control_mode_picker))
+
+	multiverse_toggle = CheckButton.new()
+	multiverse_toggle.name = "MultiverseToggle"
+	multiverse_toggle.button_pressed = false
+	multiverse_toggle.tooltip_text = "5D chess rules: Roar of Time, Spacial Rend and the other dimension moves open and cross timelines"
+	multiverse_toggle.toggled.connect(func(_pressed: bool) -> void: _refresh_launch_state())
+	column.add_child(_labeled_control("Multiversal Rules", multiverse_toggle))
 
 	seed_input = LineEdit.new()
 	seed_input.name = "SeedInput"
@@ -1838,6 +1846,7 @@ func _build_launch_result(store_state: bool) -> Dictionary:
 		"control_mode": _selected_control_mode(),
 	}
 	var result: Dictionary = _build_from_state(state)
+	_apply_multiverse(result)
 	if not result.get("ok", false):
 		_set_status(String(result.get("error", "Could not build skirmish")))
 		return result
@@ -1860,6 +1869,16 @@ func _build_launch_result(store_state: bool) -> Dictionary:
 	else:
 		_set_status("Seed: %d" % last_resolved_seed)
 	return result
+
+
+func _apply_multiverse(result: Dictionary) -> void:
+	var wanted: bool = multiverse_toggle != null and multiverse_toggle.button_pressed
+	var primary: SkirmishDefinitionResource = result.get("definition", null) as SkirmishDefinitionResource
+	if primary != null and wanted:
+		primary.multiverse = true
+	for definition in result.get("definitions", []):
+		if definition is SkirmishDefinitionResource and wanted:
+			(definition as SkirmishDefinitionResource).multiverse = true
 
 
 func _build_from_state(state: Dictionary) -> Dictionary:
