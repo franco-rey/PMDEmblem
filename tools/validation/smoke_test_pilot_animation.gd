@@ -2,7 +2,7 @@ extends SceneTree
 
 const PAWN_SCENE_PATH: String = "res://data/modules/tactics/level/pawn/pawn.tscn"
 const EXPERTISE_SCENE_PATH: String = "res://data/modules/stats/expertise/expertise.tscn"
-const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/test_arena.tres"
+const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
 const PILOT: Array[Dictionary] = [
 	{"slug": "0001_bulbasaur", "aliases": {"Strike": "strike", "Dance": "dance"}, "moves": {"tackle": "Attack", "razor_leaf": "Shoot", "vine_whip": "Swing", "growl": "Sound"}},

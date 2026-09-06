@@ -1,7 +1,7 @@
 extends SceneTree
 
 const MAIN_SCENE_PATH: String = "res://assets/scene/main.tscn"
-const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/test_arena.tres"
+const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const ROSTER_DIR: String = "res://data/models/pokemon/overrides/instances/"
 const EXPECTED_ROSTER: Array[String] = [
 	"0475_gallade",
@@ -13,7 +13,7 @@ const EXPECTED_ROSTER: Array[String] = [
 	"0356_dusclops",
 ]
 const FIXED_SEED: int = 424242
-const ANCHOR_POOL_SIZE: int = 8
+const ANCHOR_POOL_SIZE: int = 16
 
 var failures: int = 0
 
@@ -21,7 +21,7 @@ var failures: int = 0
 func _init() -> void:
 	await _check_main_scene_controls()
 	_check_builder_static_listings()
-	_check_test_arena_anchor_count()
+	_check_chessboard_anchor_count()
 	await _check_build_1v1()
 	_check_control_modes()
 	await _check_build_8v8_with_duplicates()
@@ -81,21 +81,21 @@ func _check_builder_static_listings() -> void:
 		_assert_true(instance != null, "%s.tres loads as PokemonInstanceResource" % slug)
 
 	var maps: Array[String] = CustomSkirmishBuilder.map_paths()
-	_assert_true(maps.has(TEST_ARENA_MAP_PATH), "map_paths includes test_arena")
+	_assert_true(maps.has(TEST_ARENA_MAP_PATH), "map_paths includes the chessboard")
 
 
-func _check_test_arena_anchor_count() -> void:
+func _check_chessboard_anchor_count() -> void:
 	var map: MapDefinitionResource = load(TEST_ARENA_MAP_PATH) as MapDefinitionResource
 	if map == null:
-		_fail("test_arena MapDefinitionResource loads")
+		_fail("chessboard MapDefinitionResource loads")
 		return
 	var scene: PackedScene = load(map.scene_path) as PackedScene
 	if scene == null:
-		_fail("test_arena scene loads")
+		_fail("chessboard scene loads")
 		return
 	var arena: Node = scene.instantiate()
 	if arena == null:
-		_fail("test_arena scene instantiates")
+		_fail("chessboard scene instantiates")
 		return
 	var spawn_points: Node = arena.get_node_or_null("SpawnPoints")
 	var player_count: int = 0
@@ -109,8 +109,8 @@ func _check_test_arena_anchor_count() -> void:
 			elif _is_anchor(child.name, "SpawnEnemy"):
 				enemy_count += 1
 	arena.free()
-	_assert_true(player_count >= ANCHOR_POOL_SIZE, "test_arena has >= %d SpawnPlayer anchors (got %d)" % [ANCHOR_POOL_SIZE, player_count])
-	_assert_true(enemy_count >= ANCHOR_POOL_SIZE, "test_arena has >= %d SpawnEnemy anchors (got %d)" % [ANCHOR_POOL_SIZE, enemy_count])
+	_assert_true(player_count >= ANCHOR_POOL_SIZE, "chessboard has >= %d SpawnPlayer anchors (got %d)" % [ANCHOR_POOL_SIZE, player_count])
+	_assert_true(enemy_count >= ANCHOR_POOL_SIZE, "chessboard has >= %d SpawnEnemy anchors (got %d)" % [ANCHOR_POOL_SIZE, enemy_count])
 
 
 func _check_build_1v1() -> void:
@@ -277,10 +277,10 @@ func _check_invalid_seed_rejected() -> void:
 	_assert_true(not too_few.get("ok", true), "empty player team is rejected")
 
 	var too_many_player: Array[String] = []
-	for i in range(CustomSkirmishBuilder.MAX_TEAM_SIZE + 1):
+	for i in range(CustomSkirmishBuilder.max_team_size_for(TEST_ARENA_MAP_PATH) + 1):
 		too_many_player.append(_roster_path("0448_lucario"))
 	var too_many: Dictionary = CustomSkirmishBuilder.build(too_many_player, enemy_team, TEST_ARENA_MAP_PATH, str(FIXED_SEED))
-	_assert_true(not too_many.get("ok", true), ">8 player team is rejected")
+	_assert_true(not too_many.get("ok", true), "player team past the map cap is rejected")
 
 
 func _signature_for(definition: SkirmishDefinitionResource) -> Array[String]:

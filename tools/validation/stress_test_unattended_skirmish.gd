@@ -11,7 +11,7 @@ const MANUAL_IDS: Array[String] = [
 	"type_effectiveness_test",
 ]
 const MANUAL_PATH: String = "res://data/models/skirmish/manual/%s.tres"
-const DEFAULT_MAP_PATH: String = "res://data/models/maps/definitions/test_arena.tres"
+const DEFAULT_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const HEARTBEAT_FRAMES: int = 60
 const TRACE_FRAMES: int = 30
 

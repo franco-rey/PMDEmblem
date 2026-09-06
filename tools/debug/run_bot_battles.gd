@@ -1,6 +1,6 @@
 extends SceneTree
 
-const MAP_PATH: String = "res://data/models/maps/definitions/test_arena.tres"
+const MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const OUTPUT_DIR: String = "res://logs/debug/validation"
 const MAX_FRAMES: int = 24000
 const TRACKED_KINDS: Array[String] = ["move_used", "damage_dealt", "miss", "status_applied", "status_tick", "status_removed", "stat_stage_changed", "healed", "weather_started", "weather_tick", "hazard_placed", "hazard_triggered", "intrinsic_triggered", "item_used", "item_thrown", "held_item_consumed", "unit_fainted", "move_rejected", "move_blocked", "effect_unsupported", "move_charging", "counter_triggered", "knocked_back", "forced_movement", "move_copied", "crash_damage", "turn_skipped"]

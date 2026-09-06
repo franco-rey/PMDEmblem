@@ -86,7 +86,7 @@ func pre_execute(resolver: BattleActionResolver, attacker: TacticsPawn, target: 
 		if battle_level == null:
 			return true
 		var destination: Vector3i = resolver._random_free_key(attacker, rng, battle_level)
-		if destination == Vector3i.ZERO and resolver._unit_key(attacker) != Vector3i.ZERO:
+		if destination == BattleActionResolver.NO_KEY:
 			_append(battle_log, {"kind": "move_rejected", "attacker": attacker, "move_id": id, "reason": "no_free_tile"})
 			return true
 		resolver._move_unit_to_key(attacker, destination, move, "teleport", battle_level, battle_log, "warp")

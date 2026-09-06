@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MapDefinitionResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/models/maps/resources/map_definition_resource.gd" id="1_map"]
+
+[resource]
+script = ExtResource("1_map")
+map_id = "grids"
+display_name = "Grids"
+scene_path = "res://assets/maps/level/arena/grids.tscn"
+biome = "board"
+recommended_team_size = 15
+recommended_elevation = "flat"
+max_team_size = 15
+default_seed = 0

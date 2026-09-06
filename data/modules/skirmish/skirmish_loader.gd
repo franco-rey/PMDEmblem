@@ -43,6 +43,13 @@ func load_skirmish(definition: SkirmishDefinitionResource, battle_parent: Node =
 	arena.name = "TacticsArena"
 	arena.unique_name_in_owner = true
 	level.add_child(arena)
+	var tiles: Node = arena.get_node_or_null("Tiles")
+	if tiles != null:
+		var reach: float = 0.0
+		for tile in tiles.get_children():
+			if tile is Node3D:
+				reach = maxf(reach, maxf(absf((tile as Node3D).position.x), absf((tile as Node3D).position.z)))
+		level.camera_boundary_radius = maxf(level.camera_boundary_radius, reach + 4.0)
 
 	var participant := TacticsParticipant.new()
 	participant.name = "TacticsParticipant"

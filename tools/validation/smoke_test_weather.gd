@@ -1,6 +1,6 @@
 extends SceneTree
 
-const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/test_arena.tres"
+const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
 
 var failures: int = 0
@@ -142,6 +142,10 @@ func _level(attacker_slug: String, move_ids: Array, defender_slug: String) -> Di
 	level.process_mode = Node.PROCESS_MODE_ALWAYS
 	await process_frame
 	await process_frame
+	var started: int = 0
+	while not level._scheduler_started and started < 300:
+		await physics_frame
+		started += 1
 	var attacker: TacticsPawn = level.player.get_child(0)
 	var defender: TacticsPawn = level.opponent.get_child(0)
 	var keys: Dictionary = Targeting.arena_tile_keys(level)

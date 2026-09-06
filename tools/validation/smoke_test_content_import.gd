@@ -2,7 +2,7 @@ extends SceneTree
 
 const MANIFEST_PATH: String = "res://data/models/pokemon/generated/manifests/pokemon_import_manifest.json"
 const REPORT_JSON_PATH: String = "res://data/models/pokemon/import_reports/pokemon_import_report.json"
-const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/test_arena.tres"
+const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const REQUIRED_CURRENT_SEVEN: Array[String] = [
 	"0475_gallade",
 	"0448_lucario",

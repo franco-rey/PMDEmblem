@@ -1,6 +1,6 @@
 extends SceneTree
 
-const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/test_arena.tres"
+const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
 const OUTPUT_DIR: String = "res://logs/debug/move_verification"
 const PILOT: Array[Dictionary] = [

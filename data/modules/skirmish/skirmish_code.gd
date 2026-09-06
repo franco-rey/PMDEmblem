@@ -4,7 +4,7 @@ extends RefCounted
 const SkirmishControlMode = preload("res://data/modules/skirmish/skirmish_control_mode.gd")
 
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
-const DEFAULT_MAP_PATH: String = "res://data/models/maps/definitions/test_arena.tres"
+const DEFAULT_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const MAX_MATCHES: int = 10
 
 

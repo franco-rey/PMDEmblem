@@ -202,11 +202,12 @@ func _check_duplicate_cap() -> void:
 	if lobby == null:
 		return
 	lobby.activate_player_team()
-	while lobby.get_player_team_paths().size() < CustomSkirmishBuilder.MAX_TEAM_SIZE:
+	var cap: int = CustomSkirmishBuilder.max_team_size_for(SkirmishCode.DEFAULT_MAP_PATH)
+	while lobby.get_player_team_paths().size() < cap:
 		_assert_true(lobby.add_roster_index(0), "duplicate add fills player cap")
 	var overflow_ok: bool = lobby.add_roster_index(0)
 	_assert_true(not overflow_ok, "adding past team cap is rejected cleanly")
-	_assert_true(lobby.get_player_team_paths().size() == CustomSkirmishBuilder.MAX_TEAM_SIZE, "player team stays at cap after rejected add")
+	_assert_true(lobby.get_player_team_paths().size() == cap, "player team stays at cap after rejected add")
 
 
 func _check_explicit_build() -> void:
@@ -218,7 +219,7 @@ func _check_explicit_build() -> void:
 		return
 	var definition: SkirmishDefinitionResource = result["definition"]
 	_assert_true(definition != null, "explicit lobby setup returns SkirmishDefinitionResource")
-	_assert_true(definition.player_team.size() == CustomSkirmishBuilder.MAX_TEAM_SIZE, "explicit build preserves player tray")
+	_assert_true(definition.player_team.size() == CustomSkirmishBuilder.max_team_size_for(SkirmishCode.DEFAULT_MAP_PATH), "explicit build preserves player tray")
 	_assert_true(definition.enemy_team.size() == 1, "explicit build preserves enemy tray")
 	_assert_true(_loader_accepts(definition), "explicit lobby definition is loader-ready")
 

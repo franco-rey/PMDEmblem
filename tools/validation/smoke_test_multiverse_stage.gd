@@ -27,7 +27,7 @@ func _run() -> void:
 	var stage: MultiverseStage = level.multiverse_stage
 	_assert_true(stage != null and mv.stage == stage and stage.get_parent() == level, "the multiverse stage is created under the level when the rules are on")
 	_assert_true(stage._templates.size() >= 2 and stage.board_size.x > 5.0 and stage.board_size.z > 5.0, "the stage copies the chessboard's visual meshes into shared multimeshes (%d templates, %s)" % [stage._templates.size(), str(stage.board_size)])
-	_assert_true(MultiverseStage.slot(Vector2i(0, 1)) == Vector3.ZERO and MultiverseStage.slot(Vector2i(1, 3)) == Vector3(2.0 * MultiverseStage.PITCH, 0.0, -MultiverseStage.PITCH), "slots run turns along x and timelines along z")
+	_assert_true(MultiverseStage.slot(Vector2i(0, 1)) == Vector3.ZERO and MultiverseStage.slot(Vector2i(1, 3)) == Vector3(2.0 * MultiverseStage.pitch, 0.0, -MultiverseStage.pitch), "slots run turns along x and timelines along z")
 	_assert_true(stage.offset_for(mv.state.focus) == Vector3.ZERO and stage.board_status(mv.state.focus) == MultiverseStage.STATUS_CURRENT, "the live board sits at the origin and reads as current")
 	_assert_true(stage.refreshes >= 1 and not stage.field_visible and stage.bands.is_empty() and stage.boards.is_empty() and not stage._live_halo.visible, "with a single timeline the world field stays hidden and the battle looks normal")
 	var fx: MultiverseFx = level.multiverse_fx
@@ -50,14 +50,14 @@ func _run() -> void:
 	stage.field_visible = true
 	stage.recentre_camera(Vector2i(0, 1), Vector2i(0, 2))
 	var snapped: bool = is_equal_approx(camera.global_position.x, stage.board_centre.x) and is_equal_approx(camera.global_position.z, stage.board_centre.z)
-	_assert_true(snapped or camera.global_position.is_equal_approx(before - Vector3(MultiverseStage.PITCH, 0.0, 0.0)), "re-centring on the next turn slides the camera back one pitch and pans it onto the live board (immediate mode snaps)")
+	_assert_true(snapped or camera.global_position.is_equal_approx(before - Vector3(MultiverseStage.pitch, 0.0, 0.0)), "re-centring on the next turn slides the camera back one pitch and pans it onto the live board (immediate mode snaps)")
 	stage.recentre_camera(Vector2i(0, 2), Vector2i(0, 1))
 	camera.global_position = before
 	stage.field_visible = false
 	var scale: float = minimap.layout_scale(mv.state, mv.state.timeline_ids())
 	minimap.yaw = 0.0
-	var right: Vector2 = minimap.project(Vector3(MultiverseStage.PITCH, 0.0, 0.0), Vector2(100, 100), scale)
-	var ahead: Vector2 = minimap.project(Vector3(0.0, 0.0, -MultiverseStage.PITCH), Vector2(100, 100), scale)
+	var right: Vector2 = minimap.project(Vector3(MultiverseStage.pitch, 0.0, 0.0), Vector2(100, 100), scale)
+	var ahead: Vector2 = minimap.project(Vector3(0.0, 0.0, -MultiverseStage.pitch), Vector2(100, 100), scale)
 	_assert_true(scale > 0.0 and right.x > 100.0 and is_equal_approx(right.y, 100.0) and ahead.y < 100.0, "the mini map projects the turn axis to the right and the camera's forward upward")
 	await _play_rounds_until(2)
 	_assert_true(level.round_index == 2 and not stage.field_visible and stage.past_markers.is_empty(), "after one round on a single timeline the field is still hidden")
@@ -83,9 +83,9 @@ func _run() -> void:
 	_assert_true(fx.travels_played == 1 and fx.switches_played >= 1, "the ripple played once for the travel and the switch pulse for the return to L0 (%d, %d)" % [fx.travels_played, fx.switches_played])
 	_assert_true(mv.state.focus == Vector2i(0, 2) and stage.boards.has(Vector2i(1, 2)) and stage.board_status(Vector2i(1, 2)) == MultiverseStage.STATUS_PENDING, "the new universe shows as a pending replica beside the live board")
 	var replica: Node3D = stage.boards[Vector2i(1, 2)]["node"]
-	_assert_true(replica.visible and replica.position.is_equal_approx(Vector3(0.0, 0.0, -MultiverseStage.PITCH)) and (replica.get_node("Units") as Node3D).get_child_count() == 6, "the replica sits one row over and carries six ghost pawns, the copies plus the two arrivals")
+	_assert_true(replica.visible and replica.position.is_equal_approx(Vector3(0.0, 0.0, -MultiverseStage.pitch)) and (replica.get_node("Units") as Node3D).get_child_count() == 6, "the replica sits one row over and carries six ghost pawns, the copies plus the two arrivals")
 	_assert_true(stage.field_visible and stage.connectors.has(1) and stage.bands.has(1) and stage.bands[0]["span"] == Vector2i(1, 2) and int(stage.past_markers[0]["count"]) == 1 and stage._live_halo.visible, "the first branch reveals the field: bands, the branch connector, one past marker on L0 and the live halo")
-	_assert_true(camera.global_position.is_equal_approx(camera_before) or camera.global_position.distance_to(camera_before) < MultiverseStage.PITCH * 2.5, "the camera stays within the compensated range after the switch there and back")
+	_assert_true(camera.global_position.is_equal_approx(camera_before) or camera.global_position.distance_to(camera_before) < MultiverseStage.pitch * 2.5, "the camera stays within the compensated range after the switch there and back")
 	var later: BattleUnit = await _next_active()
 	_assert_true(later != null and later.pawn != null, "play continues on the origin board after the tear")
 	var foe: TacticsPawn = _foe_of(later.pawn)
@@ -97,7 +97,7 @@ func _run() -> void:
 	await physics_frame
 	_assert_true(mv.pending_travel.is_empty() and not mv.preview_active and stage._preview_root == null, "ending the turn without choosing cancels the travel and removes its preview")
 	var grown: float = minimap.layout_scale(mv.state, mv.state.timeline_ids())
-	_assert_true(grown <= scale and grown >= MultiverseMinimap.MIN_SCALE and scale <= MultiverseMinimap.CELL / MultiverseStage.PITCH, "the mini map scale never grows past the cell size and shrinks as the multiverse widens (%.2f -> %.2f)" % [scale, grown])
+	_assert_true(grown <= scale and grown >= MultiverseMinimap.MIN_SCALE and scale <= MultiverseMinimap.CELL / MultiverseStage.pitch, "the mini map scale never grows past the cell size and shrinks as the multiverse widens (%.2f -> %.2f)" % [scale, grown])
 	_finish()
 
 

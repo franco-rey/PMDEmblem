@@ -8,7 +8,7 @@ const RandomSkirmishGenerator = preload("res://data/modules/skirmish/random_skir
 const SkirmishControlMode = preload("res://data/modules/skirmish/skirmish_control_mode.gd")
 const MIN_TEAM_SIZE: int = 1
 const MAX_TEAM_SIZE: int = 8
-const ABSOLUTE_MAX_TEAM_SIZE: int = 16
+const ABSOLUTE_MAX_TEAM_SIZE: int = 20
 const ANCHOR_POOL_SIZE: int = 8
 const ROSTER_SLUGS: Array[String] = [
 	"0475_gallade",

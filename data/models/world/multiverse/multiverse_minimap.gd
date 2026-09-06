@@ -76,13 +76,13 @@ func project(slot: Vector3, centre: Vector2, scale: float) -> Vector2:
 
 func layout_scale(state: MultiverseState, ids: Array[int]) -> float:
 	var focus: Vector3 = MultiverseStage.slot(state.focus)
-	var reach: float = MultiverseStage.PITCH
+	var reach: float = MultiverseStage.pitch
 	for l in ids:
 		for board in state.boards(l):
 			var d: Vector3 = MultiverseStage.slot(board.coords()) - focus
-			reach = maxf(reach, maxf(absf(d.x), absf(d.z)) + MultiverseStage.PITCH * 0.5)
+			reach = maxf(reach, maxf(absf(d.x), absf(d.z)) + MultiverseStage.pitch * 0.5)
 	var radius: float = DIAMETER * 0.5 - RING - 4.0
-	return clampf(radius / reach, MIN_SCALE, CELL / MultiverseStage.PITCH)
+	return clampf(radius / reach, MIN_SCALE, CELL / MultiverseStage.pitch)
 
 
 func _draw_mask() -> void:
@@ -106,7 +106,7 @@ func _draw_field(field: Control) -> void:
 	var centre: Vector2 = size * 0.5
 	var scale: float = layout_scale(state, ids)
 	var focus: Vector3 = MultiverseStage.slot(state.focus)
-	var card: float = CARD * clampf(scale / (CELL / MultiverseStage.PITCH), 0.35, 1.0)
+	var card: float = CARD * clampf(scale / (CELL / MultiverseStage.pitch), 0.35, 1.0)
 	var band: float = maxf(2.0, card * 0.45)
 	var now: int = state.present()
 	var owed: Array[Vector2i] = state.owed_boards()
@@ -115,8 +115,8 @@ func _draw_field(field: Control) -> void:
 		var first: int = state.first_turn(l)
 		var latest: BoardSnapshot = state.latest(l)
 		var color: Color = MultiverseStage.COLOR_BAND if active else MultiverseStage.COLOR_BAND_FROZEN
-		var a: Vector2 = project(MultiverseStage.slot(Vector2i(l, first)) - focus - Vector3(MultiverseStage.PITCH * 0.5, 0.0, 0.0), centre, scale)
-		var b: Vector2 = project(MultiverseStage.slot(Vector2i(l, latest.turn)) - focus + Vector3(MultiverseStage.PITCH * 0.6, 0.0, 0.0), centre, scale)
+		var a: Vector2 = project(MultiverseStage.slot(Vector2i(l, first)) - focus - Vector3(MultiverseStage.pitch * 0.5, 0.0, 0.0), centre, scale)
+		var b: Vector2 = project(MultiverseStage.slot(Vector2i(l, latest.turn)) - focus + Vector3(MultiverseStage.pitch * 0.6, 0.0, 0.0), centre, scale)
 		field.draw_line(a, b, color, band, true)
 		var dir: Vector2 = (b - a).normalized()
 		var side: Vector2 = Vector2(-dir.y, dir.x)
@@ -124,11 +124,11 @@ func _draw_field(field: Control) -> void:
 		if state.origins.has(l):
 			var origin: Vector2i = state.origins[l]
 			var o: Vector2 = project(MultiverseStage.slot(origin) - focus, centre, scale)
-			var bend: Vector2 = project(MultiverseStage.slot(Vector2i(l, origin.y)) - focus - Vector3(MultiverseStage.PITCH * 0.5, 0.0, 0.0), centre, scale)
+			var bend: Vector2 = project(MultiverseStage.slot(Vector2i(l, origin.y)) - focus - Vector3(MultiverseStage.pitch * 0.5, 0.0, 0.0), centre, scale)
 			var mid: Vector2 = project(MultiverseStage.slot(Vector2i(l, origin.y)) - focus + Vector3(0.0, 0.0, (MultiverseStage.slot(origin) - MultiverseStage.slot(Vector2i(l, origin.y))).z * 0.5), centre, scale)
 			field.draw_polyline(PackedVector2Array([o, mid, bend]), color, band * 0.8, true)
-	var present_a: Vector2 = project(MultiverseStage.slot(Vector2i(ids.max(), now)) - focus - Vector3(MultiverseStage.PITCH * 0.5, 0.0, MultiverseStage.PITCH * 0.6), centre, scale)
-	var present_b: Vector2 = project(MultiverseStage.slot(Vector2i(ids.min(), now)) - focus - Vector3(MultiverseStage.PITCH * 0.5, 0.0, -MultiverseStage.PITCH * 0.6), centre, scale)
+	var present_a: Vector2 = project(MultiverseStage.slot(Vector2i(ids.max(), now)) - focus - Vector3(MultiverseStage.pitch * 0.5, 0.0, MultiverseStage.pitch * 0.6), centre, scale)
+	var present_b: Vector2 = project(MultiverseStage.slot(Vector2i(ids.min(), now)) - focus - Vector3(MultiverseStage.pitch * 0.5, 0.0, -MultiverseStage.pitch * 0.6), centre, scale)
 	field.draw_line(present_a, present_b, COLOR_PRESENT, maxf(2.0, band * 0.9), true)
 	var font: Font = PmdStyle.TEXT_FONT
 	var font_size: int = int(clampf(card * 0.72, 7.0, 12.0))
