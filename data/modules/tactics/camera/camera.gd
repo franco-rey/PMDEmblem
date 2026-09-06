@@ -17,6 +17,7 @@ func _ready() -> void:
 	res.boundary_center = global_position
 	res.connect("called_rotate_camera", rotate_camera)
 	res.connect("called_move_camera", move_camera)
+	res.connect("called_snap_orbit", snap_orbit)
 
 
 func _process(delta: float) -> void:
@@ -35,6 +36,10 @@ func rotate_camera(delta: float, twist: int = 0) -> void:
 	res.is_rotating = true
 	serv.rotate.add_angle_to_horiz_rotation(twist)
 	serv.rotate.rotate_camera(delta, t_pivot, p_pivot)
+
+
+func snap_orbit(direction: int) -> void:
+	serv.rotate.snap_orbit_to_quadrant(self, direction)
 
 
 func free_look(delta: float) -> void:

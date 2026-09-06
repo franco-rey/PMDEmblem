@@ -1902,12 +1902,11 @@ func _set_unit_key(unit: TacticsPawn, key: Vector3i, battle_level: TacticsLevel)
 		unit.global_position = destination
 	else:
 		unit.position = destination
-	var ray: Node = unit.get_node_or_null("Tile")
-	if ray is RayCast3D and unit.is_inside_tree():
-		(ray as RayCast3D).force_raycast_update()
+	if unit.is_inside_tree():
+		unit.sync_physics_body()
 		if unit.has_method("center"):
 			unit.center()
-		(ray as RayCast3D).force_raycast_update()
+		unit.sync_physics_body()
 	var current_tile: TacticsTile = unit.get_tile()
 	if current_tile != null and current_tile.get_parent() == unit:
 		current_tile.position = Vector3(key.x, current_tile.position.y, key.z)

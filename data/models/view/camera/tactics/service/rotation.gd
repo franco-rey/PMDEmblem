@@ -6,9 +6,12 @@ const MAX_VERT_ROT: int = 20
 const MIN_VERT_ROT: int = -45
 const FREE_LOOK_ROT_FACTOR: int = 2
 const ROTATION_DONE_RADIANS: float = 0.002
+const SNAP_STEP_DEGREES: float = 45.0
+const QUADRANT_EPSILON: float = 0.001
 
 var res: TacticsCameraResource
 var controls: TacticsControlsResource
+var quad_tween: Tween
 
 
 func _init(_res: TacticsCameraResource, _controls: TacticsControlsResource) -> void:
@@ -126,11 +129,36 @@ func is_joystick_input_active() -> bool:
 
 
 func snap_to_nearest_quadrant(camera: TacticsCamera) -> void:
+	snap_to_quadrant(camera, calculate_nearest_quadrant(camera))
+
+
+func snap_orbit_to_quadrant(camera: TacticsCamera, direction: int) -> void:
+	if direction == 0:
+		cancel_quadrant_snap()
+		return
+	snap_to_quadrant(camera, Vector3(res.x_rot, calculate_next_quadrant(camera, direction), 0))
+
+
+func cancel_quadrant_snap() -> void:
+	if quad_tween != null and quad_tween.is_valid():
+		quad_tween.kill()
+	quad_tween = null
+	res.is_snapping_to_quad = false
+
+
+func calculate_next_quadrant(camera: TacticsCamera, direction: int) -> float:
+	var current: float = fposmod(camera.t_pivot.rotation_degrees.y, 360.0)
+	var index: float = current / SNAP_STEP_DEGREES
+	var stepped: float = ceilf(index - QUADRANT_EPSILON) if direction > 0 else floorf(index + QUADRANT_EPSILON)
+	return stepped * SNAP_STEP_DEGREES
+
+
+func snap_to_quadrant(camera: TacticsCamera, quadrant: Vector3) -> void:
+	cancel_quadrant_snap()
 	res.is_snapping_to_quad = true
-	var nearest_quadrant: Vector3 = calculate_nearest_quadrant(camera)
 
 	var current_rotation: Vector3 = camera.t_pivot.rotation_degrees
-	var target_rotation: Vector3 = nearest_quadrant
+	var target_rotation: Vector3 = quadrant
 
 	var rotation_difference: float = target_rotation.y - current_rotation.y
 	if abs(rotation_difference) > 180:
@@ -140,6 +168,7 @@ func snap_to_nearest_quadrant(camera: TacticsCamera) -> void:
 			target_rotation.y += 360
 
 	var tween: Tween = camera.create_tween()
+	quad_tween = tween
 	tween.tween_property(camera.t_pivot, "rotation_degrees", target_rotation, res.quad_snap_duration).set_trans(Tween.TRANS_SINE)
 	tween.parallel().tween_property(camera.p_pivot, "rotation_degrees:x", res.z_rot, res.quad_snap_duration).set_trans(Tween.TRANS_SINE)
 	tween.tween_callback(

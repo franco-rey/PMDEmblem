@@ -3,7 +3,8 @@ extends Node3D
 
 static var pitch: float = 11.0
 const PITCH_GAP: float = 2.4
-const BAND_WIDTH: float = 2.4
+const BAND_FRACTION: float = 0.12
+const BAND_MIN_WIDTH: float = 0.8
 const BAND_Y: float = -0.62
 const MARKER_Y: float = -0.36
 const HALO_Y: float = -0.30
@@ -363,7 +364,7 @@ func _refresh_band(l: int, state: MultiverseState) -> void:
 		node.name = "Band_L%d" % l
 		var length: float = float(span.y - span.x) * pitch + pitch
 		var points := PackedVector3Array([board_centre + Vector3(-pitch * 0.5, BAND_Y, 0.0), board_centre + Vector3(length - pitch * 0.5, BAND_Y, 0.0)])
-		node.mesh = ribbon_mesh(points, BAND_WIDTH, true)
+		node.mesh = ribbon_mesh(points, band_width(), true)
 		node.material_override = _flat_material(COLOR_BAND if active else COLOR_BAND_FROZEN, false)
 		add_child(node)
 		entry = {"node": node, "span": span, "active": active}
@@ -418,7 +419,7 @@ func _refresh_connector(l: int, state: MultiverseState) -> void:
 		var points := PackedVector3Array()
 		for i in range(CONNECTOR_SAMPLES + 1):
 			points.append(_cubic(start, c1, c2, finish, float(i) / float(CONNECTOR_SAMPLES)))
-		node.mesh = ribbon_mesh(points, BAND_WIDTH * 0.8, false)
+		node.mesh = ribbon_mesh(points, band_width() * 0.8, false)
 		node.material_override = _flat_material(COLOR_BAND if active else COLOR_BAND_FROZEN, false)
 		add_child(node)
 		entry = {"node": node, "active": active}
@@ -544,6 +545,10 @@ static func _frame_mesh(width: float, depth: float, thickness: float) -> ArrayMe
 	return st.commit()
 
 
+static func band_width() -> float:
+	return maxf(BAND_MIN_WIDTH, pitch * BAND_FRACTION)
+
+
 static func ribbon_mesh(points: PackedVector3Array, width: float, arrow: bool) -> ArrayMesh:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
@@ -582,11 +587,11 @@ static func ribbon_mesh(points: PackedVector3Array, width: float, arrow: bool) -
 		st.add_vertex(b - sides[i + 1])
 	if arrow:
 		var tip_base: Vector3 = path[path.size() - 1]
-		var side: Vector3 = Vector3(-last_dir.z, 0.0, last_dir.x) * (half * 1.9)
+		var side: Vector3 = Vector3(-last_dir.z, 0.0, last_dir.x) * (half * 1.7)
 		st.set_normal(Vector3.UP)
 		st.add_vertex(tip_base - side)
 		st.add_vertex(tip_base + side)
-		st.add_vertex(tip_base + last_dir * (width * 1.4))
+		st.add_vertex(tip_base + last_dir * (width * 1.25))
 	return st.commit()
 
 

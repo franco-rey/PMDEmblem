@@ -4,6 +4,7 @@ extends Resource
 signal called_move_camera
 signal called_free_look
 signal called_rotate_camera
+signal called_snap_orbit(direction: int)
 signal edge_pan_toggled(enabled: bool)
 
 @export_category("Movement")
@@ -99,8 +100,20 @@ func toggle_perspective() -> String:
 
 
 func toggle_orbit(direction: int) -> void:
+	var previous: int = orbit_direction
 	orbit_direction = 0 if orbit_direction == direction else direction
 	is_rotating = false
+	if orbit_direction == 0:
+		if previous != 0:
+			called_snap_orbit.emit(previous)
+	elif is_snapping_to_quad:
+		called_snap_orbit.emit(0)
+
+
+func stop_orbit() -> void:
+	orbit_direction = 0
+	if is_snapping_to_quad:
+		called_snap_orbit.emit(0)
 
 
 func rotate_camera(delta: float, twist: float = 0.0) -> void:

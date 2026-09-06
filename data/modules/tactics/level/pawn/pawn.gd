@@ -36,6 +36,16 @@ func center() -> bool:
 	return character.adjust_to_center(self)
 
 
+func sync_physics_body() -> void:
+	if not is_inside_tree():
+		return
+	force_update_transform()
+	PhysicsServer3D.body_set_state(get_rid(), PhysicsServer3D.BODY_STATE_TRANSFORM, global_transform)
+	var tile_ray: RayCast3D = get_node_or_null("Tile") as RayCast3D
+	if tile_ray != null:
+		tile_ray.force_raycast_update()
+
+
 func show_pawn_stats(v: bool) -> void:
 	$Character/CharacterUI.visible = v
 

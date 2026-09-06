@@ -185,6 +185,9 @@ func capture(mid_round: bool) -> BoardSnapshot:
 
 
 func capture_unit(pawn: TacticsPawn, unit: BattleUnit) -> Dictionary:
+	var tile_ray: RayCast3D = pawn.get_node_or_null("Tile") as RayCast3D
+	if tile_ray != null:
+		tile_ray.force_raycast_update()
 	var stats: Stats = pawn.stats
 	var instance: PokemonInstanceResource = stats.pokemon_instance
 	var entry: Dictionary = {
@@ -333,12 +336,11 @@ func _spawn_unit(entry: Dictionary) -> TacticsPawn:
 	expertise.name = "Expertise"
 	expertise.pokemon_instance = instance
 	pawn.add_child(expertise)
+	pawn.position = parent.global_transform.affine_inverse() * (entry["position"] as Vector3)
+	pawn.rotation = entry["rotation"]
 	parent.add_child(pawn)
 	pawn.global_position = entry["position"]
-	pawn.rotation = entry["rotation"]
-	var tile_ray: RayCast3D = pawn.get_node_or_null("Tile") as RayCast3D
-	if tile_ray != null:
-		tile_ray.force_raycast_update()
+	pawn.sync_physics_body()
 	return pawn
 
 

@@ -465,6 +465,7 @@ func set_interface_visible(value: bool) -> void:
 		level_instance.set_interface_visible(interface_visible)
 	if speed_bar != null and not interface_visible:
 		speed_bar.visible = false
+	_sync_turn_speed()
 
 
 func _sync_turn_speed() -> void:
@@ -476,14 +477,11 @@ func _sync_turn_speed() -> void:
 	if participant == null or participant.res == null:
 		return
 	var current: TacticsPawn = participant.res.curr_pawn
-	var human_match: bool = tactics_controls != null and tactics_controls.visible
-	if not human_match:
-		return
 	var cpu_turn: bool = current != null and is_instance_valid(current) and current.stats != null and current.stats.pokemon_instance != null and current.stats.pokemon_instance.control_type != PokemonInstanceResource.ControlType.PLAYER and level_instance._scheduler_started
 	var wanted: float = GameSettings.cpu_speed
-	if not is_equal_approx(Engine.time_scale, wanted):
+	if _controls_enabled and not is_equal_approx(Engine.time_scale, wanted):
 		_set_battle_speed(wanted)
-	var show_bar: bool = cpu_turn and interface_visible
+	var show_bar: bool = interface_visible and (cpu_turn or not _controls_enabled)
 	if speed_bar.visible != show_bar:
 		speed_bar.visible = show_bar
 		speed_bar.highlight(GameSettings.cpu_speed)
