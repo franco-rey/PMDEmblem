@@ -28,6 +28,7 @@ const SECTIONS: Array = [
 	]],
 	["Interface", [
 		["Hide or show the interface", ["toggle_interface"], []],
+		["Timeline map (multiverse battles)", ["toggle_timeline_map"], []],
 		["Inspect a unit", [], ["Hover", "Click to lock", "x to unlock"]],
 		["Shrink or grow a dock", [], ["- and + on the dock header"]],
 	]],

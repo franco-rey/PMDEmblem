@@ -15,6 +15,7 @@ const STAGE_SELECT_MOVE: int = 8
 const STAGE_SELECT_ITEM_ACTION: int = 9
 const STAGE_SELECT_THROW_TARGET: int = 10
 const STAGE_ITEM_ACTION: int = 11
+const STAGE_SELECT_TRAVEL: int = 12
 var stage: int = 0
 var pending_intent: BattleActionIntent = null
 var throw_options: Array[Dictionary] = []

@@ -62,6 +62,8 @@ static func encode_definition(definition: SkirmishDefinitionResource) -> String:
 	var tokens: Array[String] = ["match", "seed=%d" % definition.seed, "mode=%s" % _mode_token(definition.control_mode)]
 	if definition.map != null and not definition.map.map_id.is_empty() and definition.map.resource_path != DEFAULT_MAP_PATH:
 		tokens.append("map=%s" % definition.map.map_id)
+	if definition.multiverse:
+		tokens.append("multiverse=1")
 	var player: String = _encode_team(definition.player_team)
 	var enemy: String = _encode_team(definition.enemy_team)
 	if not player.is_empty():
@@ -175,6 +177,7 @@ static func _parse_segment(segment: String) -> Dictionary:
 		"difficulty": null,
 		"player_specs": [],
 		"enemy_specs": [],
+		"multiverse": false,
 		"raw": segment,
 	}
 	var saw_key_value: bool = false
@@ -243,6 +246,8 @@ static func _apply_key_value(raw: Dictionary, key: String, value: String) -> Dic
 			if match_count < 1 or match_count > MAX_MATCHES:
 				return {"ok": false, "error": "matches must be 1-%d" % MAX_MATCHES}
 			raw["matches"] = match_count
+		"multiverse":
+			raw["multiverse"] = value in ["1", "true", "on", "yes"]
 		"map":
 			if value.is_empty():
 				return {"ok": false, "error": "map cannot be empty"}
@@ -359,6 +364,7 @@ static func _build_match(match_data: Dictionary, fallback_state: Dictionary, mat
 	if not bool(explicit_result.get("ok", false)):
 		return explicit_result
 	SkirmishControlMode.apply_to_definition(definition, mode)
+	definition.multiverse = bool(match_data.get("multiverse", false))
 	var meta: Dictionary = definition.generation_metadata.duplicate(true)
 	meta["skirmish_code"] = String(match_data.get("raw", ""))
 	meta["series_index"] = match_index
@@ -494,10 +500,7 @@ static func _apply_side_specs(team: Array[PokemonInstanceResource], specs: Array
 static func _load_move(slug: String) -> PokemonMoveResource:
 	if slug.is_empty():
 		return null
-	var path: String = "%s%s.tres" % [GENERATED_MOVES_DIR, slug]
-	if not ResourceLoader.exists(path):
-		return null
-	return load(path) as PokemonMoveResource
+	return CustomMoves.load_move(slug)
 
 
 static func _is_integer_with_bots(text: String) -> bool:

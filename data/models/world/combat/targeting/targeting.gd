@@ -26,9 +26,9 @@ static func compute_range(unit: TacticsPawn, move: PokemonMoveResource) -> Array
 			tiles.append(origin + Vector3i(0, 0, 1))
 			tiles.append(origin + Vector3i(0, 0, -1))
 		PokemonMoveResource.TacticalRangeKind.LINE:
-			var dir: Vector3i = _facing_direction(unit)
-			for i in range(1, distance + 1):
-				tiles.append(origin + dir * i)
+			for dir in [Vector3i(1, 0, 0), Vector3i(-1, 0, 0), Vector3i(0, 0, 1), Vector3i(0, 0, -1)]:
+				for i in range(1, distance + 1):
+					tiles.append(origin + dir * i)
 		PokemonMoveResource.TacticalRangeKind.PROJECTILE:
 			for x in range(-distance, distance + 1):
 				for z in range(-distance, distance + 1):
@@ -73,6 +73,31 @@ static func filter_by_alignment(
 
 static func legal_targets_for_move(unit: TacticsPawn, move: PokemonMoveResource, units_on_map: Array[TacticsPawn]) -> Array[TacticsPawn]:
 	return filter_by_alignment(compute_range(unit, move), unit, move, units_on_map)
+
+
+static func line_direction_to(unit: TacticsPawn, target: TacticsPawn) -> Vector3i:
+	if unit == null or target == null or unit.get_tile() == null or target.get_tile() == null:
+		return Vector3i.ZERO
+	var delta: Vector3i = _tile_key(target.get_tile()) - _tile_key(unit.get_tile())
+	if delta.x != 0 and delta.z != 0:
+		return Vector3i.ZERO
+	if delta.x != 0:
+		return Vector3i(signi(delta.x), 0, 0)
+	if delta.z != 0:
+		return Vector3i(0, 0, signi(delta.z))
+	return Vector3i.ZERO
+
+
+static func targets_on_line(unit: TacticsPawn, move: PokemonMoveResource, units_on_map: Array[TacticsPawn], direction: Vector3i) -> Array[TacticsPawn]:
+	var out: Array[TacticsPawn] = []
+	if direction == Vector3i.ZERO:
+		return out
+	var origin: Vector3i = _tile_key(unit.get_tile())
+	var distance: int = maxi(1, move.tactical_range_value + BattleIntrinsicService.range_bonus_for(unit.stats, move))
+	var line: Array[Vector3i] = []
+	for i in range(1, distance + 1):
+		line.append(origin + direction * i)
+	return filter_by_alignment(line, unit, move, units_on_map)
 
 
 static func has_legal_target(unit: TacticsPawn, move: PokemonMoveResource, units_on_map: Array[TacticsPawn]) -> bool:

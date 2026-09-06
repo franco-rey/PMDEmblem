@@ -10,6 +10,9 @@ const KIND_TURN: String = "turn"
 const KIND_ACTION: String = "action"
 const KIND_RESULT: String = "result"
 const KIND_FINAL: String = "final"
+const KIND_BOARD: String = "board"
+const KIND_BRANCH: String = "branch"
+const KIND_PRESENT: String = "present"
 const COMMAND_VERBS: Array[String] = ["mv", "atk", "item", "end"]
 
 
@@ -36,6 +39,12 @@ static func parse(line: String) -> Dictionary:
 			return {"kind": KIND_RESULT, "winner": tokens[1] if tokens.size() > 1 else "", "fields": _fields(_slice(tokens, 2))}
 		"final":
 			return {"kind": KIND_FINAL, "unit": tokens[1] if tokens.size() > 1 else "", "fields": _fields(_slice(tokens, 2))}
+		"board":
+			return {"kind": KIND_BOARD, "tokens": tokens}
+		"branch":
+			return {"kind": KIND_BRANCH, "tokens": tokens}
+		"present":
+			return {"kind": KIND_PRESENT, "tokens": tokens}
 	return {"kind": KIND_ACTION, "verb": head, "args": _slice(tokens, 1), "tokens": tokens}
 
 
@@ -78,7 +87,11 @@ static func quote(text: String) -> String:
 
 
 static func is_unit_id(text: String) -> bool:
-	return text.length() >= 2 and (text.begins_with("P") or text.begins_with("E")) and text.substr(1).is_valid_int()
+	var base: String = text.rstrip("'")
+	if base.length() < 2 or not (base.begins_with("P") or base.begins_with("E")):
+		return false
+	return base.substr(1).is_valid_int()
+
 
 
 static func split_move(text: String) -> PackedStringArray:

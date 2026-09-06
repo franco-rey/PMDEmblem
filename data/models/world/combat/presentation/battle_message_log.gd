@@ -80,6 +80,7 @@ func _ready() -> void:
 
 var dock_height: float = DOCK_SIZE.y
 var dock_width_override: float = 0.0
+var dock_left: float = 16.0
 
 
 func set_dock_width(value: float) -> void:
@@ -117,12 +118,19 @@ func dock_top() -> float:
 	return _dock.offset_top
 
 
+func set_dock_left(value: float) -> void:
+	dock_left = value
+	if _dock != null and not is_equal_approx(_dock.offset_left, value):
+		_dock.offset_left = value
+	_update_dock_width()
+
+
 func _update_dock_width() -> void:
 	if _dock == null:
 		return
 	var dock_width: float = dock_width_override if dock_width_override > 0.0 else dock_width_for(_dock.get_parent_area_size().x)
-	if not is_equal_approx(_dock.offset_right, 16.0 + dock_width):
-		_dock.offset_right = 16.0 + dock_width
+	if not is_equal_approx(_dock.offset_right, dock_left + dock_width):
+		_dock.offset_right = dock_left + dock_width
 
 
 static func dock_width_for(width: float) -> float:
@@ -164,10 +172,10 @@ func add_message(text: String) -> void:
 
 
 func _scroll_to_end() -> void:
-	if _scroll == null:
+	if _scroll == null or not is_inside_tree():
 		return
 	await get_tree().process_frame
-	if _scroll != null and is_instance_valid(_scroll):
+	if _scroll != null and is_instance_valid(_scroll) and is_inside_tree():
 		_scroll.scroll_vertical = int(_scroll.get_v_scroll_bar().max_value)
 
 

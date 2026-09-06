@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_move"]
+
+[resource]
+script = ExtResource("1_move")
+move_id = "dimensional_hole"
+index_number = 9001
+name = "Dimensional Hole"
+description = "The user opens a Dimensional Hole and slips back to an earlier moment of its own timeline, opening a new one. It arrives winded and rests a turn."
+type = "psychic"
+pp = 5
+tactical_range_kind = 6
+tactical_range_value = 0
+target_alignment = 1
+effect_tags = Array[String](["PMDEmblem.Multiverse.TimeHop"])
+effect_records = Array[Dictionary]([{
+"delta": 1,
+"family": "stat_stage",
+"source_bucket": "OnHits",
+"source_event": "PMDEmblem.Multiverse.TimeHop",
+"stat": "evasion",
+"status_id": "mod_evasion",
+"target": "hit_target"
+}])
+animation_key = "status_attack"

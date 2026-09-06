@@ -52,7 +52,9 @@ func setup(level: TacticsLevel, label: String, seed: int) -> void:
 	_turn_pawn = null
 	grid.setup(Targeting.arena_tile_keys(level))
 	_assign_unit_ids(level)
-	lines.append("[Notation %s]" % NotationParser.quote(NotationParser.VERSION))
+	lines.append("[Notation %s]" % NotationParser.quote("pmdn/2" if level != null and level.multiverse_enabled else NotationParser.VERSION))
+	if level != null and level.multiverse_enabled:
+		lines.append("[Multiverse \"1\"]")
 	lines.append("[Battle %s]" % NotationParser.quote(battle_label))
 	lines.append("[Seed %d]" % battle_seed)
 	var map_id: String = String(context.get("map", ""))
@@ -120,6 +122,31 @@ func _pawn_of(value: Variant) -> TacticsPawn:
 			if is_instance_valid(pawn) and (pawn as TacticsPawn).stats == value:
 				return pawn
 	return null
+
+
+func set_unit_ids(ids: Dictionary) -> void:
+	_unit_ids.clear()
+	for pawn in ids:
+		_unit_ids[pawn] = String(ids[pawn])
+
+
+func record_travel(move_id: String, traveller_ids: Array[String], from_coords: Vector2i, to_coords: Vector2i, kind: String, new_l: int, branch_from: Vector2i = Vector2i.ZERO, user_id: String = "") -> void:
+	var verb: String = "hop" if kind == "hop" else "travel"
+	var actor: String = user_id if not user_id.is_empty() else (traveller_ids[0] if not traveller_ids.is_empty() else "?")
+	lines.append(INDENT + "%s %s %s L%dT%d -> L%dT%d with %s" % [verb, actor, move_id, from_coords.x, from_coords.y, to_coords.x, to_coords.y, ",".join(traveller_ids)])
+	if kind != "hop":
+		lines.append("branch L%d from L%dT%d" % [new_l, branch_from.x, branch_from.y])
+
+
+func record_branch(board: BoardSnapshot, ids: Array[String]) -> void:
+	lines.append("board L%d T%d" % [board.timeline, board.turn])
+	for pawn in _unit_ids.keys():
+		if is_instance_valid(pawn) and ids.has(String(_unit_ids[pawn])):
+			lines.append(INDENT + _unit_line(pawn))
+
+
+func record_board_switch(l: int, t: int) -> void:
+	lines.append("present L%d T%d" % [l, t])
 
 
 func pawn_for_id(id: String) -> TacticsPawn:

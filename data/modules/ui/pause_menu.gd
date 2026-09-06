@@ -98,6 +98,7 @@ func open() -> void:
 		return
 	is_open = true
 	visible = true
+	MusicPlayer.duck(true)
 	_menu.visible = true
 	_graphics.visible = false
 	_controls.visible = false
@@ -112,6 +113,7 @@ func close() -> void:
 		return
 	is_open = false
 	visible = false
+	MusicPlayer.duck(false)
 	get_tree().paused = false
 	resumed.emit()
 

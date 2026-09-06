@@ -245,18 +245,24 @@ func after_hit(resolver: BattleActionResolver, attacker: TacticsPawn, target: Ta
 	var id: String = move.move_id
 	if id == "fell_stinger" and was_active and not target.stats.is_active():
 		resolver._ops(battle_level, battle_log).change_stat_stage(attacker, "attack", 3, {"kind": "move", "attacker": attacker, "move": move})
+	if battle_level != null and battle_level.multiverse.enabled and target != attacker and target.stats.is_active() and attacker.stats.is_active():
+		var travellers: String = String(battle_level.multiverse.travel_rule(id).get("travellers", ""))
+		var declared: TacticsPawn = battle_level.multiverse.declared_target
+		if (travellers == "both" or travellers == "target") and (declared == null or not is_instance_valid(declared) or declared == target):
+			battle_level.multiverse.request_travel(id, attacker, target)
 
 
 func after_move(resolver: BattleActionResolver, attacker: TacticsPawn, move: PokemonMoveResource, battle_level: TacticsLevel, battle_log: BattleLog) -> void:
 	if attacker == null or attacker.stats == null or move == null:
 		return
-	var ops: BattleStateOps = resolver._ops(battle_level, battle_log)
 	if SELF_FAINT_MOVES.has(move.move_id) and attacker.stats.is_active():
-		var outcome: Dictionary = ops.damage(attacker, attacker.stats.curr_health, {"kind": "self_faint", "attacker": attacker, "move": move})
+		var outcome: Dictionary = resolver._ops(battle_level, battle_log).damage(attacker, attacker.stats.curr_health, {"kind": "self_faint", "attacker": attacker, "move": move})
 		if bool(outcome.get("fainted", false)):
 			resolver.animation_resolver.select_reaction(attacker, move, "faint", battle_log)
 	if RECHARGE_MOVES.has(move.move_id) and attacker.stats.is_active():
-		ops.apply_status(attacker, "recharge", {"counter": 1}, {"kind": "move", "move": move, "skip_rules": true})
+		resolver._ops(battle_level, battle_log).apply_status(attacker, "recharge", {"counter": 1}, {"kind": "move", "move": move, "skip_rules": true})
+	if battle_level != null and battle_level.multiverse.enabled and attacker.stats.is_active() and String(battle_level.multiverse.travel_rule(move.move_id).get("travellers", "")) == "user" and not bool(battle_level.multiverse.travel_rule(move.move_id).get("strike", false)):
+		battle_level.multiverse.request_travel(move.move_id, attacker, attacker)
 
 
 func target_invulnerable(target: TacticsPawn, move: PokemonMoveResource) -> String:

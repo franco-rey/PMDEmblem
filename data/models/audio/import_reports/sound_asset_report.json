@@ -1,6 +1,6 @@
 {
  "cue_missing": [],
- "generated_at": "2026-09-05T22:10:18.863126+00:00",
+ "generated_at": "2026-09-06T06:31:37.668220+00:00",
  "presentation_missing": [
   "-"
  ],
@@ -12,14 +12,15 @@
   "categories": {
    "Battle": 759,
    "Fanfare": 13,
-   "Menu": 12
+   "Menu": 12,
+   "Music": 73
   },
-  "copied_count": 0,
+  "copied_count": 73,
   "cry_count": 0,
   "cry_unmatched": [],
-  "file_count": 784,
+  "file_count": 857,
   "map_status_sound_count": 18,
-  "music_included": false,
+  "music_included": true,
   "presentation_missing_count": 1,
   "presentation_sound_count": 391,
   "status_sound_count": 51

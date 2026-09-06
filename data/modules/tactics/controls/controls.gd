@@ -75,6 +75,26 @@ func select_move() -> void:
 	serv.select_move(self)
 
 
+func select_travel() -> void:
+	serv.select_travel(self)
+
+
+func _player_wants_to_travel(option_index: int) -> void:
+	(serv.ui_service as TacticsUIService).set_travel_picker_visibility(false, self, {})
+	serv.pawn_selection_service.player_wants_to_travel(option_index)
+
+
+func _player_previews_travel(option_index: int) -> void:
+	var level: TacticsLevel = get_tree().root.find_child("TacticsLevel", true, false) as TacticsLevel
+	if level != null and level.multiverse != null:
+		level.multiverse.highlight_travel_option(option_index)
+
+
+func _player_wants_to_cancel_travel() -> void:
+	(serv.ui_service as TacticsUIService).set_travel_picker_visibility(false, self, {})
+	serv.pawn_selection_service.player_wants_to_cancel_travel()
+
+
 func select_item_action() -> void:
 	serv.select_item_action(self)
 

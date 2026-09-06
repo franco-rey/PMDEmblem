@@ -26,6 +26,10 @@ var target: Node3D = null:
 @export_range(0.1, 50) var min_zoom: float = 1.0
 @export_range(10.0, 100.0) var max_zoom: float = 10.0
 var current_fov: float = 50.0
+var base_distance: float = 20.0
+var overview_distance: float = 0.0
+var current_distance: float = 0.0
+var max_overview: float = 0.0
 var target_fov: float = 50.0
 
 @export_category("Panning")

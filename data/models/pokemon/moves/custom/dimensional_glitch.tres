@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_move"]
+
+[resource]
+script = ExtResource("1_move")
+move_id = "dimensional_glitch"
+index_number = 9002
+name = "Dimensional Glitch"
+description = "The user's modified program tries to travel through an alien dimension. It lands in a random one; the error is part of the design."
+type = "normal"
+pp = 5
+tactical_range_kind = 6
+tactical_range_value = 0
+target_alignment = 1
+effect_tags = Array[String](["PMDEmblem.Multiverse.DimensionHop"])
+effect_records = Array[Dictionary]([{
+"delta": 1,
+"family": "stat_stage",
+"source_bucket": "OnHits",
+"source_event": "PMDEmblem.Multiverse.DimensionHop",
+"stat": "speed",
+"status_id": "mod_speed",
+"target": "hit_target"
+}])
+animation_key = "status_attack"

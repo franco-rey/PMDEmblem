@@ -136,7 +136,4 @@ static func current_move_ids(instance: PokemonInstanceResource) -> Array[String]
 static func load_move(move_id: String) -> PokemonMoveResource:
 	if move_id.is_empty():
 		return null
-	var path: String = "%s%s.tres" % [GENERATED_MOVES_DIR, move_id]
-	if not ResourceLoader.exists(path):
-		return null
-	return load(path) as PokemonMoveResource
+	return CustomMoves.load_move(move_id)

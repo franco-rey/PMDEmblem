@@ -30,6 +30,9 @@ func setup(camera: TacticsCamera, cam_node: Camera3D) -> void:
 	else:
 		res.target_fov = cam_node.fov
 		res.viewport_size = camera.get_viewport().size
+	res.base_distance = cam_node.position.z
+	res.overview_distance = 0.0
+	res.current_distance = 0.0
 
 
 func process(delta: float, camera: TacticsCamera) -> void:

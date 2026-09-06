@@ -6,6 +6,7 @@ var stats: Stats = null
 var team: int = 0
 var control_type: int = 0
 var insertion_order: int = 0
+var rest_rounds: int = 0
 
 
 func _init(_pawn: TacticsPawn = null, _stats: Stats = null, _team: int = 0, _control_type: int = 0, _insertion_order: int = 0) -> void:

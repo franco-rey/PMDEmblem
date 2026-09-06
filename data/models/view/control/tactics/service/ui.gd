@@ -245,6 +245,9 @@ func set_actions_menu_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls)
 	var item_picker: VBoxContainer = ensure_item_picker(ctrl)
 	if v and item_picker != null:
 		item_picker.visible = false
+	var travel_picker: VBoxContainer = _travel_picker(ctrl)
+	if v and travel_picker != null:
+		travel_picker.visible = false
 	var actions: VBoxContainer = _actions_container(ctrl)
 	if actions == null:
 		return
@@ -334,6 +337,72 @@ func set_move_picker_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls, 
 	_focus_picker_if_idle(picker)
 
 
+func set_travel_picker_visibility(v: bool, ctrl: TacticsControls, pending: Dictionary) -> void:
+	var picker: VBoxContainer = _travel_picker(ctrl)
+	if picker == null:
+		return
+	picker.visible = v and not pending.is_empty()
+	if not picker.visible:
+		picker.set_meta("serial", -1)
+		return
+	var serial: int = int(pending.get("serial", 0))
+	if int(picker.get_meta("serial", -1)) == serial:
+		return
+	picker.set_meta("serial", serial)
+	var options: Array = pending.get("options", [])
+	var move_id: String = String(pending.get("move_id", ""))
+	var title: Label = picker.get_node("Title") as Label
+	title.text = "%s: choose a %s" % [BattleMessageCatalog.move_label(move_id), "moment" if String(MultiverseController.TRAVEL_MOVES.get(move_id, {}).get("axis", "")) == "time" else "dimension"]
+	for child in picker.get_children():
+		if child.name.begins_with("Option"):
+			child.queue_free()
+	var cancel_button: Button = picker.get_node("Cancel") as Button
+	for i in range(options.size()):
+		var option: Dictionary = options[i]
+		var button := Button.new()
+		button.name = "Option%d" % i
+		button.custom_minimum_size = Vector2(240, 48)
+		button.mouse_filter = Control.MOUSE_FILTER_STOP
+		button.text = String(option.get("label", ""))
+		var board: Variant = option.get("board", null)
+		if board is BoardSnapshot:
+			button.tooltip_text = "Player %d standing, enemy %d standing" % [(board as BoardSnapshot).standing(0), (board as BoardSnapshot).standing(1)]
+		button.pressed.connect(ctrl._player_wants_to_travel.bind(i))
+		button.focus_entered.connect(ctrl._player_previews_travel.bind(i))
+		button.mouse_entered.connect(ctrl._player_previews_travel.bind(i))
+		picker.add_child(button)
+		picker.move_child(button, picker.get_child_count() - 2)
+	_replace_signal_connections(cancel_button.pressed, ctrl._player_wants_to_cancel_travel)
+	_focus_picker_if_idle(picker)
+
+
+func _travel_picker(ctrl: TacticsControls) -> VBoxContainer:
+	if ctrl == null:
+		return null
+	var existing: Node = ctrl.get_node_or_null("HBox/TravelPicker")
+	if existing is VBoxContainer:
+		return existing
+	var hbox: HBoxContainer = ctrl.get_node_or_null("HBox") as HBoxContainer
+	if hbox == null:
+		return null
+	var picker := VBoxContainer.new()
+	picker.name = "TravelPicker"
+	picker.visible = false
+	picker.mouse_filter = Control.MOUSE_FILTER_STOP
+	picker.alignment = BoxContainer.ALIGNMENT_END
+	var title := Label.new()
+	title.name = "Title"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	picker.add_child(title)
+	var cancel_button := Button.new()
+	cancel_button.name = "Cancel"
+	cancel_button.text = "Stay"
+	cancel_button.custom_minimum_size = Vector2(240, 48)
+	picker.add_child(cancel_button)
+	hbox.add_child(picker)
+	return picker
+
+
 func _show_only_cancel_while_choosing(ctrl: TacticsControls, actions: VBoxContainer) -> void:
 	if ctrl == null or ctrl.serv == null or ctrl.serv.participant == null:
 		return
@@ -342,6 +411,11 @@ func _show_only_cancel_while_choosing(ctrl: TacticsControls, actions: VBoxContai
 	for child in actions.get_children():
 		if child is Button:
 			(child as Button).visible = not choosing or child.name == "Cancel"
+	var cancel: Button = actions.get_node_or_null("Cancel") as Button
+	if cancel != null:
+		var pawn: TacticsPawn = ctrl.serv.participant.curr_pawn
+		var fresh: bool = stage == TacticsParticipantResource.STAGE_SHOW_ACTIONS and pawn != null and pawn.res != null and pawn.res.can_move and pawn.res.can_attack
+		cancel.text = "Menu" if fresh else "Cancel"
 
 
 func _sync_menu_focus(ctrl: TacticsControls, actions: VBoxContainer) -> void:

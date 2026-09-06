@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_move"]
+
+[resource]
+script = ExtResource("1_move")
+move_id = "judgment"
+index_number = 9004
+name = "Judgment"
+description = "The user releases countless shots of light at the target."
+type = "normal"
+category = 2
+base_power = 100
+accuracy = 100
+pp = 10
+tactical_range_kind = 1
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC"])
+effect_records = Array[Dictionary]([{
+"family": "damage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
+"target": "hit_target"
+}])
+animation_key = "special_attack"

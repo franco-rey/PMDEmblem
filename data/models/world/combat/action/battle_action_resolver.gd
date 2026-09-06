@@ -241,6 +241,8 @@ func execute_move(attacker: TacticsPawn, declared_target: TacticsPawn, move: Pok
 
 
 func _run_move(attacker: TacticsPawn, declared_target: TacticsPawn, move: PokemonMoveResource, move_index: int, battle_level: TacticsLevel) -> bool:
+	if battle_level != null and battle_level.multiverse != null:
+		battle_level.multiverse.declared_target = declared_target
 	var battle_log: BattleLog = battle_level.battle_log if battle_level != null else null
 	if declared_target == null or not declared_target.is_alive():
 		_append(battle_log, {
@@ -1405,10 +1407,7 @@ func _generated_copyable_moves(source_move_id: String) -> Array[PokemonMoveResou
 
 
 func _load_generated_move(move_id: String) -> PokemonMoveResource:
-	var key: String = move_id.strip_edges().to_lower()
-	if key.is_empty():
-		return null
-	return load("%s/%s.tres" % [GENERATED_MOVES_DIR, key]) as PokemonMoveResource
+	return CustomMoves.load_move(move_id)
 
 
 func _copyable_move(candidate: PokemonMoveResource, source_move_id: String) -> bool:
@@ -2243,7 +2242,14 @@ func _recoil_amount(record: Dictionary, attacker: TacticsPawn) -> int:
 
 
 func _expanded_targets(attacker: TacticsPawn, declared_target: TacticsPawn, move: PokemonMoveResource, battle_level: TacticsLevel) -> Array[TacticsPawn]:
-	if move.tactical_range_kind in [PokemonMoveResource.TacticalRangeKind.AREA, PokemonMoveResource.TacticalRangeKind.LINE]:
+	if move.tactical_range_kind == PokemonMoveResource.TacticalRangeKind.LINE:
+		var direction: Vector3i = Targeting.line_direction_to(attacker, declared_target)
+		if direction == Vector3i.ZERO:
+			direction = _facing_direction(attacker)
+		else:
+			TacticsPawnMovementService.new().look_at_direction_8(attacker, Vector3(float(direction.x), 0.0, float(direction.z)))
+		return Targeting.targets_on_line(attacker, move, _all_units_for(attacker, battle_level), direction)
+	if move.tactical_range_kind == PokemonMoveResource.TacticalRangeKind.AREA:
 		return Targeting.legal_targets_for_move(attacker, move, _all_units_for(attacker, battle_level))
 	if Targeting.alignment_allows(attacker, declared_target, move):
 		return [declared_target]

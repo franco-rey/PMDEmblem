@@ -345,18 +345,23 @@ func _punch_in() -> void:
 
 
 func _index_pawns() -> void:
+	pawns_by_slug.clear()
 	for node in [level.player, level.opponent]:
 		for pawn in node.get_children():
 			if pawn is TacticsPawn and pawn.stats != null and pawn.stats.pokemon_instance != null and pawn.stats.pokemon_instance.species != null:
-				var species_id: String = String(pawn.stats.pokemon_instance.species.species_id)
-				pawns_by_slug[species_id.substr(5)] = pawn
+				var slug: String = _species_slug(pawn)
+				if not pawns_by_slug.has(slug) or not level.notation.unit_id(pawn).ends_with("'"):
+					pawns_by_slug[slug] = pawn
+
+
+func _species_slug(pawn: TacticsPawn) -> String:
+	return String(pawn.stats.pokemon_instance.species.species_id).substr(5)
 
 
 func _slug_of(pawn: TacticsPawn) -> String:
-	for slug in pawns_by_slug:
-		if pawns_by_slug[slug] == pawn:
-			return slug
-	return ""
+	if pawn == null or not is_instance_valid(pawn) or pawn.stats == null or pawn.stats.pokemon_instance == null or pawn.stats.pokemon_instance.species == null:
+		return ""
+	return _species_slug(pawn)
 
 
 func _battle_alive() -> bool:
@@ -409,6 +414,7 @@ func _slot_for(pawn: TacticsPawn, move_id: String) -> int:
 
 
 func _take_turn(pawn: TacticsPawn) -> void:
+	_index_pawns()
 	var slug: String = _slug_of(pawn)
 	var acted: bool = false
 	if director:
@@ -417,6 +423,14 @@ func _take_turn(pawn: TacticsPawn) -> void:
 		await _human_turn_start()
 		await _hold(24)
 	var queue: Array = queues.get(slug, [])
+	if level.multiverse != null and not level.multiverse.pending_travel.is_empty() and level.participant.res.stage == level.participant.res.STAGE_SELECT_TRAVEL:
+		var hop_choice: int = -1
+		if not queue.is_empty() and String((queue[0] as Array)[0]) == "hop":
+			hop_choice = int((queue[0] as Array)[1]) if (queue[0] as Array).size() > 1 else 0
+			queue.remove_at(0)
+		await _answer_travel_picker(pawn, hop_choice)
+		if not _battle_alive() or not is_instance_valid(pawn):
+			return
 	var index: int = 0
 	while index < queue.size() and not acted:
 		var intent: Array = queue[index]
@@ -450,6 +464,19 @@ func _execute_intent(pawn: TacticsPawn, intent: Array) -> String:
 	var kind: String = String(intent[0])
 	if kind == "wait":
 		return "done"
+	if kind == "map":
+		await _press(KEY_M)
+		await _hold(int(intent[1]) if intent.size() > 1 else 90)
+		await _press(KEY_M)
+		await _hold(10)
+		return "moved"
+	if kind == "zoom_out" or kind == "zoom_in":
+		var steps: int = int(intent[1]) if intent.size() > 1 else 6
+		for i in range(steps):
+			await _press(KEY_MINUS if kind == "zoom_out" else KEY_EQUAL)
+			await _hold(6)
+		await _hold(int(intent[2]) if intent.size() > 2 else 120)
+		return "moved"
 	if kind == "move":
 		var label: String = String(intent[1])
 		if not pawn.res.can_move:
@@ -472,6 +499,8 @@ func _execute_intent(pawn: TacticsPawn, intent: Array) -> String:
 		await _perform_attack(pawn, slot, pawn)
 		return "done"
 	if kind == "any":
+		if intent.size() > 2:
+			travel_choice = int(intent[2])
 		var any_slot: int = _slot_for(pawn, String(intent[1]))
 		if any_slot < 0:
 			return "drop"
@@ -490,7 +519,9 @@ func _execute_intent(pawn: TacticsPawn, intent: Array) -> String:
 		print("showcase: %s uses %s on %s" % [_slug_of(pawn), any_move.move_id, _slug_of(options[0])])
 		await _perform_attack(pawn, any_slot, options[0])
 		return "done"
-	var target: TacticsPawn = pawns_by_slug.get(String(intent[intent.size() - 1]), null)
+	if kind == "attack" and intent.size() > 3:
+		travel_choice = int(intent[3])
+	var target: TacticsPawn = pawns_by_slug.get(String(intent[2] if kind == "attack" and intent.size() > 2 else intent[intent.size() - 1]), null)
 	if target == null or not is_instance_valid(target) or not target.is_alive():
 		return "drop"
 	if kind == "throw":
@@ -505,10 +536,11 @@ func _execute_intent(pawn: TacticsPawn, intent: Array) -> String:
 		return "drop"
 	var move: PokemonMoveResource = pawn.stats.move_slots[slot]
 	if not Targeting.legal_targets_for_move(pawn, move, _all_units()).has(target):
-		await _approach(pawn, target)
+		await _approach(pawn, target, move)
 		if not _battle_alive() or not is_instance_valid(pawn) or not is_instance_valid(target):
 			return "retry"
 		if not Targeting.legal_targets_for_move(pawn, move, _all_units()).has(target):
+			print("showcase: %s cannot reach %s with %s from %s (target at %s, legal: %s)" % [_slug_of(pawn), _slug_of(target), move.move_id, level.notation.tile_label(Targeting._tile_key(pawn.get_tile())), level.notation.tile_label(Targeting._tile_key(target.get_tile())), _labels(Targeting.legal_targets_for_move(pawn, move, _all_units()))])
 			return "retry"
 	print("showcase: %s uses %s on %s" % [_slug_of(pawn), move.move_id, _slug_of(target)])
 	await _perform_attack(pawn, slot, target)
@@ -614,9 +646,21 @@ func _human_world_point(world: Vector3) -> Vector2:
 
 
 func _human_click_world(world: Vector3, hover_frames: int) -> void:
+	await _wait_camera_settled()
 	Input.warp_mouse(_human_world_point(world))
 	await _hold(maxi(hover_frames - 8, 4))
-	await _human_click(_human_world_point(world), 8)
+	await _wait_camera_settled()
+	await _human_click(_human_world_point(world), 2)
+
+
+func _wait_camera_settled() -> void:
+	var camera: TacticsCamera = level.get_tree().root.find_child("TacticsCamera", true, false) as TacticsCamera
+	if camera == null:
+		return
+	var frames: int = 0
+	while frames < 150 and (camera.velocity.length() > 0.05 or camera.res.target != null or camera.res.is_rotating):
+		await physics_frame
+		frames += 1
 
 
 func _human_move(pawn: TacticsPawn, tile: TacticsTile) -> void:
@@ -645,15 +689,57 @@ func _human_attack(pawn: TacticsPawn, slot: int, target: TacticsPawn) -> void:
 	await _hold(36)
 	await _human_click_control(_controls().get_node_or_null("HBox/MovePicker/MoveSlot%d" % slot) as Button, 20)
 	await _hold(14)
+	if not is_instance_valid(pawn) or not is_instance_valid(target):
+		return
 	await _human_click_world(target.global_position, 30)
 	var frames: int = 0
-	while frames < 30 and participant.stage != participant.STAGE_ATTACK:
+	while frames < 30 and participant.stage != participant.STAGE_ATTACK and is_instance_valid(pawn):
 		await physics_frame
 		frames += 1
+	if not is_instance_valid(pawn):
+		return
 	if participant.stage == participant.STAGE_ATTACK:
 		await _wait_attack_end(pawn)
+		await _resolve_travel_choice(pawn)
 		return
 	await driver._attack(pawn, slot, target)
+	await _resolve_travel_choice(pawn)
+
+
+var travel_choice: int = -1
+
+
+func _answer_travel_picker(pawn: TacticsPawn, choice: int) -> void:
+	if choice >= 0:
+		travel_choice = choice
+		await _resolve_travel_choice(pawn)
+		return
+	await _hold(20)
+	if human:
+		var picker: Control = _controls().get_node_or_null("HBox/TravelPicker") as Control
+		var stay: Button = picker.get_node_or_null("Cancel") as Button if picker != null else null
+		if stay != null and await _human_click_control(stay, 20):
+			await _hold(12)
+			return
+	level.multiverse.cancel_travel()
+	await _hold(12)
+
+
+func _resolve_travel_choice(_pawn: Variant) -> void:
+	if travel_choice < 0 or level.multiverse == null or level.multiverse.pending_travel.is_empty():
+		travel_choice = -1
+		return
+	var choice: int = travel_choice
+	travel_choice = -1
+	await _hold(20)
+	if human:
+		var picker: Control = _controls().get_node_or_null("HBox/TravelPicker") as Control
+		var button: Button = picker.get_node_or_null("Option%d" % choice) as Button if picker != null else null
+		if button != null and await _human_click_control(button, 24):
+			await _hold(30)
+			return
+	level.multiverse.commit_travel(choice)
+	await _hold(30)
 
 
 func _perform_attack(pawn: TacticsPawn, slot: int, target: TacticsPawn) -> void:
@@ -663,6 +749,7 @@ func _perform_attack(pawn: TacticsPawn, slot: int, target: TacticsPawn) -> void:
 		await _human_leave_top_down()
 		await _hold(12)
 		await _human_attack(pawn, slot, target)
+		await _resolve_travel_choice(pawn)
 		return
 	var controls: TacticsControls = _controls()
 	if not cinematic or controls == null:
@@ -692,7 +779,7 @@ func _wait_attack_end(pawn: TacticsPawn) -> void:
 		await physics_frame
 
 
-func _approach(pawn: TacticsPawn, target: TacticsPawn) -> void:
+func _approach(pawn: TacticsPawn, target: TacticsPawn, move: PokemonMoveResource = null) -> void:
 	if not pawn.res.can_move:
 		return
 	if cinematic and not human and _controls() != null:
@@ -703,7 +790,11 @@ func _approach(pawn: TacticsPawn, target: TacticsPawn) -> void:
 	arena.reset_all_tile_markers()
 	arena.process_surrounding_tiles(pawn.get_tile(), pawn.stats.movement, pawn.get_parent().get_children())
 	arena.mark_reachable_tiles(pawn.get_tile(), pawn.stats.movement)
-	var tile: TacticsTile = arena.get_nearest_target_adjacent_tile(pawn, [target])
+	var tile: TacticsTile = null
+	if move != null and move.tactical_range_kind == PokemonMoveResource.TacticalRangeKind.LINE:
+		tile = _line_tile(pawn, target, move, all_units)
+	if tile == null:
+		tile = arena.get_nearest_target_adjacent_tile(pawn, [target])
 	if tile == null:
 		tile = _closest_reachable_tile(pawn, target, all_units)
 	if tile == null or tile == pawn.get_tile():
@@ -714,6 +805,36 @@ func _approach(pawn: TacticsPawn, target: TacticsPawn) -> void:
 	if cinematic:
 		await _hold(30)
 	await driver._move(pawn, level.notation.tile_label(Targeting._tile_key(tile)))
+
+
+func _line_tile(pawn: TacticsPawn, target: TacticsPawn, move: PokemonMoveResource, all_units: Array[TacticsPawn]) -> TacticsTile:
+	var target_key: Vector3i = Targeting._tile_key(target.get_tile())
+	var own_key: Vector3i = Targeting._tile_key(pawn.get_tile())
+	var reach: int = maxi(1, move.tactical_range_value + BattleIntrinsicService.range_bonus_for(pawn.stats, move))
+	var best: TacticsTile = null
+	var best_distance: int = 1 << 20
+	var keys: Dictionary = Targeting.arena_tile_keys(level)
+	for key in keys:
+		var tile: TacticsTile = keys[key]
+		if key != own_key and (not tile.reachable or Targeting.unit_at_key(key, all_units) != null):
+			continue
+		if key.x != target_key.x and key.z != target_key.z:
+			continue
+		var gap: int = _chebyshev(key, target_key)
+		if gap < 1 or gap > reach:
+			continue
+		var distance: int = _chebyshev(own_key, key)
+		if distance < best_distance:
+			best_distance = distance
+			best = tile
+	return best
+
+
+func _labels(pawns: Array[TacticsPawn]) -> Array[String]:
+	var out: Array[String] = []
+	for pawn in pawns:
+		out.append(_slug_of(pawn))
+	return out
 
 
 func _closest_reachable_tile(pawn: TacticsPawn, target: TacticsPawn, all_units: Array[TacticsPawn]) -> TacticsTile:
@@ -833,11 +954,12 @@ func _end_turn(pawn: TacticsPawn) -> void:
 	if not _battle_alive() or not is_instance_valid(pawn) or not pawn.is_alive():
 		return
 	var active: BattleUnit = level.scheduler.get_active_unit()
-	if active != null and active.pawn == pawn:
+	if active != null and active.pawn == pawn and is_instance_valid(pawn):
 		if human and pawn.can_act():
 			await _show_actions(pawn)
 			if await _human_click_control(_controls().get_act("Wait"), 16):
-				await driver._wait_turn_change(pawn)
+				if is_instance_valid(pawn):
+					await driver._wait_turn_change(pawn)
 				return
 		pawn.end_pawn_turn()
 		level.participant.res.stage = level.participant.res.STAGE_SELECT_PAWN

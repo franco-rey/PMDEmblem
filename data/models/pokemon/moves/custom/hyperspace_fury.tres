@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="PokemonMoveResource" format=3]
+
+[ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_move_resource.gd" id="1_move"]
+
+[resource]
+script = ExtResource("1_move")
+move_id = "hyperspace_fury"
+index_number = 9003
+name = "Hyperspace Fury"
+description = "Using its many arms, the user unleashes a barrage of attacks through a hyperspace hole and hurls the target into a freshly torn universe. This lowers the user's Defense."
+type = "dark"
+category = 1
+base_power = 100
+accuracy = 100
+pp = 5
+tactical_range_kind = 1
+effect_tags = Array[String](["PMDC.Dungeon.DamageFormulaEvent, PMDC", "PMDEmblem.Multiverse.Banish"])
+effect_records = Array[Dictionary]([{
+"family": "damage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.DamageFormulaEvent, PMDC",
+"target": "hit_target"
+}, {
+"delta": -1,
+"family": "stat_stage",
+"source_bucket": "OnHits",
+"source_event": "PMDC.Dungeon.StatusStackBattleEvent, PMDC",
+"stat": "defense",
+"status_id": "mod_defense",
+"target": "self"
+}])
+animation_key = "physical_attack"

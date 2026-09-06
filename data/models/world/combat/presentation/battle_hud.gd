@@ -56,6 +56,8 @@ var _target_pawn: TacticsPawn = null
 var _queue_strip: PanelContainer = null
 var _queue_column: VBoxContainer = null
 var _status_dock: PanelContainer = null
+var _corner: Control = null
+var corner_reserve: float = 0.0
 var _status_rows: VBoxContainer = null
 var _status_signature: String = ""
 var _status_toggle: Button = null
@@ -724,6 +726,20 @@ func set_status_minimized(value: bool) -> void:
 	_place_status_dock()
 
 
+func set_corner_control(control: Control, reserve: float) -> void:
+	if _corner != null and is_instance_valid(_corner):
+		_corner.queue_free()
+	_corner = control
+	corner_reserve = reserve
+	control.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	control.offset_left = MARGIN_PX
+	control.offset_right = MARGIN_PX + reserve
+	control.offset_top = BattleHudLayout.MARGIN + BattleHudLayout.PANEL_HEIGHT + BattleHudLayout.GAP
+	control.offset_bottom = control.offset_top + reserve
+	_root.add_child(control)
+	_apply_layout(_root.size)
+
+
 func _place_status_dock() -> void:
 	if _status_dock == null:
 		return
@@ -918,7 +934,7 @@ func rebuild_queue() -> void:
 			divider.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			_queue_row.add_child(divider)
 		_queue_row.add_child(_make_tile(pawns[i], i == 0))
-	_round_label.text = "Turn %d" % maxi(1, round_index)
+	_round_label.text = level.multiverse.board_label() if level != null and level.multiverse != null and level.multiverse.enabled else "Turn %d" % maxi(1, round_index)
 	_round_label.visible = pawns.size() > 0
 	_queue_strip.visible = pawns.size() > 0
 	_refresh_tiles(true)
@@ -1150,8 +1166,7 @@ func _move_is_damaging(move_id: String) -> bool:
 	if move_id.is_empty():
 		return false
 	if not _move_cache.has(move_id):
-		var path: String = "%s%s.tres" % [GENERATED_MOVES_DIR, move_id]
-		var move: PokemonMoveResource = load(path) as PokemonMoveResource if ResourceLoader.exists(path) else null
+		var move: PokemonMoveResource = CustomMoves.load_move(move_id)
 		_move_cache[move_id] = move != null and move.is_damaging()
 	return bool(_move_cache[move_id])
 
@@ -1256,6 +1271,7 @@ func _layout_input(size: Vector2) -> Dictionary:
 		"inspector_content": _inspector_column.size.y if _inspector_column != null else 0.0,
 		"inspector_margins": inspector_margins,
 		"inspector_min_width": _inspector.get_combined_minimum_size().x if _inspector != null else 300.0,
+		"corner_reserve": corner_reserve,
 	}
 
 
@@ -1272,9 +1288,13 @@ func _apply_layout(size: Vector2) -> void:
 	if _weather_chip.visible != wants_chip:
 		_weather_chip.visible = wants_chip
 	var dock_width: float = float(plan["dock_width"])
-	if not is_equal_approx(_status_dock.offset_right, MARGIN_PX + dock_width):
-		_status_dock.offset_right = MARGIN_PX + dock_width
+	var dock_left: float = float(plan["dock_left"])
+	if not is_equal_approx(_status_dock.offset_left, dock_left):
+		_status_dock.offset_left = dock_left
+	if not is_equal_approx(_status_dock.offset_right, dock_left + dock_width):
+		_status_dock.offset_right = dock_left + dock_width
 	if level != null and level.message_log != null:
+		level.message_log.set_dock_left(dock_left)
 		level.message_log.set_dock_height(float(plan["log_height"]))
 		level.message_log.set_dock_width(dock_width)
 	_place_inspector(plan)

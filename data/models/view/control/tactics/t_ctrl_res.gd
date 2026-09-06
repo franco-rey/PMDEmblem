@@ -7,6 +7,7 @@ signal called_camera_rotation
 signal called_select_pawn
 signal called_select_pawn_to_attack
 signal called_select_move
+signal called_select_travel
 signal called_select_item_action
 signal called_select_throw_target
 signal called_select_new_location
@@ -64,6 +65,10 @@ func select_pawn_to_attack() -> void:
 
 func select_move() -> void:
 	called_select_move.emit()
+
+
+func select_travel() -> void:
+	called_select_travel.emit()
 
 
 func select_item_action() -> void:
