@@ -114,6 +114,8 @@ func _ready() -> void:
 		DisplayServer.window_set_min_size(MIN_WINDOW_SIZE)
 	GameSettings.apply(get_tree().root)
 	UiScale.watch(get_tree().root)
+	add_child(SoundPlayer.new())
+	add_child(UiSoundHook.new())
 	BattleNotation.clear_output_dir()
 	_style_main_menu()
 	_setup_menus()

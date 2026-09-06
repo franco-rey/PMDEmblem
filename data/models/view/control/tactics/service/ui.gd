@@ -248,6 +248,9 @@ func set_actions_menu_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls)
 	var actions: VBoxContainer = _actions_container(ctrl)
 	if actions == null:
 		return
+	for child in actions.get_children():
+		if child is Button and (child as Button).text in ["Wait", "End Turn"]:
+			child.add_to_group(UiSoundHook.OPT_OUT_GROUP)
 	if not p:
 		actions.visible = false
 		return

@@ -80,6 +80,7 @@ func _log_timeout(pawn: TacticsPawn, target: Vector3) -> void:
 
 
 func _notify_tile_reached(pawn: TacticsPawn, position: Vector3) -> void:
+	SoundPlayer.cue("battle.step", -8.0)
 	var node: Node = pawn.get_parent()
 	while node != null and not (node is TacticsLevel):
 		node = node.get_parent()

@@ -166,6 +166,7 @@ func keyboard_move_cursor(direction: Vector3i, ctrl: TacticsControls, flag: Stri
 	if best != null:
 		_disarm()
 		controls.cursor_key = _tile_key(best)
+		SoundPlayer.cue("ui.cursor")
 		return best
 	return current
 
@@ -211,6 +212,7 @@ func _commit_location(tile: TacticsTile, ctrl: TacticsControls) -> bool:
 		return false
 	active_pawn.res.pathfinding_tilestack = arena.get_pathfinding_tilestack(tile)
 	arena.mark_committed(tile)
+	SoundPlayer.cue("battle.move_commit")
 	t_cam.target = tile
 	controls.reset_keyboard_selection()
 	hide_cursor_shadow()
@@ -233,6 +235,8 @@ func legal_targets(move: PokemonMoveResource) -> Array[TacticsPawn]:
 
 func keyboard_cycle_target(step: int, ctrl: TacticsControls) -> TacticsPawn:
 	controls.keyboard_mode = true
+	if step != 0:
+		SoundPlayer.cue("battle.target_cycle")
 	var move: PokemonMoveResource = _move_for_slot(participant.curr_pawn, participant.curr_pawn.res.selected_move_index if participant.curr_pawn != null else -1)
 	var targets: Array[TacticsPawn] = legal_targets(move)
 	if targets.is_empty():
@@ -261,6 +265,7 @@ func _commit_target(tile: TacticsTile) -> bool:
 	if move != null:
 		_log_move_selected(participant.curr_pawn, move, move_index)
 	arena.mark_committed(tile)
+	SoundPlayer.cue("battle.target_commit")
 	t_cam.target = participant.attackable_pawn
 	controls.reset_keyboard_selection()
 	participant.stage = 7
@@ -542,11 +547,13 @@ func player_wants_to_wait() -> void:
 		controls.clear_hover_preview()
 	if _release_charge_first():
 		return
+	SoundPlayer.cue("battle.end_turn")
 	participant.curr_pawn.end_pawn_turn()
 	participant.stage = 0
 
 
 func player_wants_to_skip_turn() -> void:
+	SoundPlayer.cue("battle.end_turn")
 	if participant.display_opponent_stats:
 		participant.display_opponent_stats = false
 	if controls != null:

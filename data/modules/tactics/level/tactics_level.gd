@@ -50,6 +50,7 @@ var notation_context: Dictionary = {}
 var battle_label: String = ""
 var weather_overlay: WeatherOverlay = null
 var floating_text: BattleFloatingText = null
+var sound_cues: BattleSoundCues = null
 var banner: BattleBanner = null
 var terrain_overlay: TerrainOverlay = null
 var stats_tracker: BattleStatsTracker = BattleStatsTracker.new()
@@ -141,6 +142,10 @@ func _setup_presentation() -> void:
 	floating_text.name = "BattleFloatingText"
 	add_child(floating_text)
 	floating_text.setup(self)
+	sound_cues = BattleSoundCues.new()
+	sound_cues.name = "BattleSoundCues"
+	add_child(sound_cues)
+	sound_cues.setup(self)
 	banner = BattleBanner.new()
 	add_child(banner)
 	banner.setup(self)

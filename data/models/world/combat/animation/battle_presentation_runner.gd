@@ -17,6 +17,7 @@ const KIND_LUNGE: String = "lunge"
 const KIND_LOG: String = "log"
 const KIND_CALLBACK: String = "callback"
 const KIND_FACE: String = "face"
+const KIND_SOUND: String = "sound"
 const MAX_SEQUENCE_SECONDS: float = 12.0
 const MAX_CUE_SECONDS: float = 6.0
 
@@ -179,6 +180,11 @@ func _run_cue(cue: Dictionary) -> float:
 			var event: Variant = cue.get("event", {})
 			if event is Dictionary:
 				_append_log(event)
+			return 0.0
+		KIND_SOUND:
+			var sound_name: String = String(cue.get("sound", ""))
+			var played: bool = SoundPlayer.sound(sound_name, float(cue.get("volume_db", 0.0)))
+			_append_log({"kind": "sound_played" if played else "sound_skipped", "sound": sound_name, "label": String(cue.get("label", ""))})
 			return 0.0
 		KIND_CALLBACK:
 			var callable: Variant = cue.get("callable", null)

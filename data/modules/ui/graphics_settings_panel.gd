@@ -15,6 +15,10 @@ var camera_track_toggle: CheckButton = null
 var cpu_report_toggle: CheckButton = null
 var cpu_speed_picker: OptionButton = null
 var battle_flair_toggle: CheckButton = null
+var master_slider: HSlider = null
+var sfx_slider: HSlider = null
+var music_slider: HSlider = null
+var _volume_labels: Dictionary = {}
 var controls_button: Button = null
 var close_button: Button = null
 var status_label: Label = null
@@ -60,6 +64,9 @@ func _ready() -> void:
 	for value in GameSettings.CPU_SPEEDS:
 		cpu_speed_picker.add_item(GameSettings.cpu_speed_label(value))
 	battle_flair_toggle = _toggle(column, "Battle Flair (intro, turn banners, notices)", "BattleFlairToggle")
+	master_slider = _slider(column, "Master volume", "MasterVolumeSlider")
+	sfx_slider = _slider(column, "Effects volume", "EffectsVolumeSlider")
+	music_slider = _slider(column, "Music volume", "MusicVolumeSlider")
 	controls_button = Button.new()
 	controls_button.name = "ControlsButton"
 	controls_button.text = "Controls"
@@ -82,6 +89,9 @@ func _ready() -> void:
 	cpu_report_toggle.toggled.connect(_on_cpu_report_toggled)
 	cpu_speed_picker.item_selected.connect(_on_cpu_speed_selected)
 	battle_flair_toggle.toggled.connect(_on_battle_flair_toggled)
+	master_slider.value_changed.connect(_on_volume_changed.bind("master"))
+	sfx_slider.value_changed.connect(_on_volume_changed.bind("sfx"))
+	music_slider.value_changed.connect(_on_volume_changed.bind("music"))
 	controls_button.pressed.connect(func() -> void: controls_requested.emit())
 	close_button.pressed.connect(func() -> void: closed.emit())
 	refresh()
@@ -96,6 +106,9 @@ func refresh() -> void:
 	cpu_report_toggle.set_pressed_no_signal(GameSettings.cpu_battle_report)
 	cpu_speed_picker.select(maxi(0, GameSettings.CPU_SPEEDS.find(GameSettings.cpu_speed)))
 	battle_flair_toggle.set_pressed_no_signal(GameSettings.battle_flair)
+	_show_volume(master_slider, GameSettings.master_volume)
+	_show_volume(sfx_slider, GameSettings.sfx_volume)
+	_show_volume(music_slider, GameSettings.music_volume)
 	resolution_picker.disabled = GameSettings.window_mode != "windowed"
 
 
@@ -117,6 +130,51 @@ func _picker(column: VBoxContainer, caption: String) -> OptionButton:
 	picker.custom_minimum_size = Vector2(280, ROW_HEIGHT)
 	row.add_child(picker)
 	return picker
+
+
+func _slider(column: VBoxContainer, caption: String, node_name: String) -> HSlider:
+	var row := HBoxContainer.new()
+	row.custom_minimum_size.y = ROW_HEIGHT
+	column.add_child(row)
+	var label := Label.new()
+	label.text = caption
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(label)
+	var value_label := Label.new()
+	value_label.custom_minimum_size.x = 64
+	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	value_label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
+	row.add_child(value_label)
+	var slider := HSlider.new()
+	slider.name = node_name
+	slider.min_value = 0.0
+	slider.max_value = 1.0
+	slider.step = 0.05
+	slider.custom_minimum_size = Vector2(210, ROW_HEIGHT)
+	slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(slider)
+	_volume_labels[slider] = value_label
+	return slider
+
+
+func _show_volume(slider: HSlider, value: float) -> void:
+	if slider == null:
+		return
+	slider.set_value_no_signal(clampf(value, 0.0, 1.0))
+	var label: Label = _volume_labels.get(slider, null)
+	if label != null:
+		label.text = GameSettings.volume_label(value)
+
+
+func _on_volume_changed(value: float, key: String) -> void:
+	match key:
+		"master":
+			GameSettings.master_volume = clampf(value, 0.0, 1.0)
+		"sfx":
+			GameSettings.sfx_volume = clampf(value, 0.0, 1.0)
+		"music":
+			GameSettings.music_volume = clampf(value, 0.0, 1.0)
+	_apply_and_save()
 
 
 func _toggle(column: VBoxContainer, caption: String, node_name: String) -> CheckButton:

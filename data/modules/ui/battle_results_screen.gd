@@ -92,6 +92,7 @@ func show_result(result: int, definition: SkirmishDefinitionResource, level: Tac
 	next_button.visible = series
 	next_button.text = next_label
 	var human_player: bool = definition == null or definition.control_mode != SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU
+	SoundPlayer.cue("battle.victory" if result == 1 else ("battle.defeat" if result == 2 else ""))
 	match result:
 		1:
 			_title.text = "Victory!" if human_player else "Player side wins"

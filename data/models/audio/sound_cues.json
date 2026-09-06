@@ -1,0 +1,68 @@
+{
+ "ui": {
+  "cursor": "Menu/Select",
+  "confirm": "Menu/Confirm",
+  "cancel": "Menu/Cancel",
+  "toggle": "Menu/Toggle",
+  "error": "Menu/Error",
+  "pause_open": "Menu/Confirm"
+ },
+ "battle": {
+  "victory": "Fanfare/MissionClear",
+  "defeat": "Fanfare/MissionFail",
+  "hit_neutral": "Battle/DUN_Hit_Neutral",
+  "hit_super": "Battle/DUN_Hit_Super_Effective",
+  "hit_nve": "Battle/DUN_Hit_NVE",
+  "hit_immune": "Battle/DUN_Hit_Immune",
+  "miss": "Battle/DUN_Miss",
+  "protect": "Battle/DUN_Protect",
+  "heal": "Battle/DUN_Heal",
+  "faint": "Battle/DUN_Deep_Fall",
+  "stat_up": "Battle/DUN_Stat_Up",
+  "stat_down": "Battle/DUN_Stat_Down",
+  "stat_up_attack": "Battle/DUN_Attack_Up",
+  "stat_down_attack": "Battle/DUN_Atk_Down",
+  "stat_down_defense": "Battle/DUN_Defense_Down",
+  "stat_up_special_attack": "Battle/DUN_SpAtk_Up",
+  "stat_down_special_attack": "Battle/DUN_SpAtk_Down",
+  "stat_up_special_defense": "Battle/DUN_SpDef_Up",
+  "stat_down_special_defense": "Battle/DUN_SpDef_Down",
+  "stat_up_speed": "Battle/DUN_Speed_Up",
+  "stat_down_speed": "Battle/DUN_Speed_Down",
+  "stat_up_evasion": "Battle/DUN_Evasion_Up",
+  "stat_down_evasion": "Battle/DUN_Evasion_Down",
+  "unit_selected": "Menu/Select",
+  "move_commit": "Menu/Confirm",
+  "target_commit": "Menu/Confirm",
+  "target_cycle": "Menu/Select",
+  "step": "Battle/DUN_Tile_Step",
+  "status_tick": "Battle/DUN_Hit_Neutral",
+  "rejected": "Menu/Error",
+  "end_turn": "Menu/Skip"
+ },
+ "status": {
+  "paralyze": "Battle/DUN_Paralyzed",
+  "sleep": "Battle/DUN_Sleep",
+  "confuse": "Battle/DUN_Confused",
+  "freeze": "Battle/DUN_Ice_Ball_2",
+  "poison": "Battle/DUN_Poison_Trap",
+  "poison_toxic": "Battle/DUN_Poison_Trap",
+  "burn": "Battle/DUN_Blast_Burn"
+ },
+ "weather": {
+  "rain": "Battle/DUN_Rain_Dance",
+  "sandstorm": "Battle/DUN_Sandstorm",
+  "hail": "Battle/DUN_Hail",
+  "snow": "Battle/DUN_Snowy_Weather",
+  "sunny": "Battle/DUN_Sunny_Day",
+  "primordial_sea": "Battle/DUN_Rain_Dance",
+  "desolate_land": "Battle/DUN_Sunny_Day",
+  "delta_stream": "Battle/DUN_Cloudy"
+ },
+ "lobby": {
+  "join": "Fanfare/JoinTeam",
+  "leave": "Fanfare/LeaveTeam",
+  "item": "Fanfare/Item",
+  "skill": "Fanfare/LearnSkill"
+ }
+}

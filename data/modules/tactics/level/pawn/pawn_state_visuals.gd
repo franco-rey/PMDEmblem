@@ -13,6 +13,7 @@ const FAINT_FADE_SECONDS: float = 0.7
 var pawn: TacticsPawn = null
 var state: String = ""
 var faint_seconds: float = 0.0
+var _labels_hidden_for_faint: bool = false
 var _marker: Node3D = null
 var _tween: Tween = null
 
@@ -22,8 +23,13 @@ func _process(delta: float) -> void:
 		return
 	if pawn.stats.is_active():
 		faint_seconds = 0.0
+		_labels_hidden_for_faint = false
 	else:
 		faint_seconds += delta
+		if not _labels_hidden_for_faint:
+			_labels_hidden_for_faint = true
+			pawn.show_pawn_stats(false)
+			pawn.res.pawn_hud_enabled = false
 	var next: String = ""
 	if pawn.stats.is_active():
 		for candidate in STATES:

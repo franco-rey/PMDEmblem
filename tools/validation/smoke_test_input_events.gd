@@ -141,6 +141,13 @@ func _run() -> void:
 	_assert_true(level.hud.danger_enabled == danger_before, "Z toggles it back")
 	GameSettings.danger_zone = danger_before
 	GameSettings.save_settings()
+	var res_after: TacticsParticipantResource = level.participant.res
+	var pin_stage: int = res_after.stage
+	res_after.stage = res_after.STAGE_ATTACK
+	_assert_true(not level.hud._pin_allowed(level.opponent.get_child(0)), "a click while the attack resolves does not pin the inspector")
+	res_after.stage = res_after.STAGE_SHOW_ACTIONS
+	_assert_true(level.hud._pin_allowed(level.opponent.get_child(0)), "a click on an idle turn still pins the inspector")
+	res_after.stage = pin_stage
 	var controls_node: Control = main.get("tactics_controls") as Control
 	await _tap(KEY_TAB)
 	_assert_true(not level.hud.visible and not level.message_log.visible and not level.banner.visible and not controls_node.visible and not bool(main.get("interface_visible")), "Tab hides the battle interface")
