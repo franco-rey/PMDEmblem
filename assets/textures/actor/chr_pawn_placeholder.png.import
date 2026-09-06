@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bob12its3i651"
 path.s3tc="res://.godot/imported/chr_pawn_placeholder.png-e464487b64da15ac33ce48ff979318c7.s3tc.ctex"
+path.etc2="res://.godot/imported/chr_pawn_placeholder.png-e464487b64da15ac33ce48ff979318c7.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/textures/actor/chr_pawn_placeholder.png"
-dest_files=["res://.godot/imported/chr_pawn_placeholder.png-e464487b64da15ac33ce48ff979318c7.s3tc.ctex"]
+dest_files=["res://.godot/imported/chr_pawn_placeholder.png-e464487b64da15ac33ce48ff979318c7.s3tc.ctex", "res://.godot/imported/chr_pawn_placeholder.png-e464487b64da15ac33ce48ff979318c7.etc2.ctex"]
 
 [params]
 

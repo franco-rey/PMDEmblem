@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cjkpd4x507ra2"
 path.s3tc="res://.godot/imported/chr_pawn_archer.png-c5c34d55a31797db00c36674b06b3000.s3tc.ctex"
+path.etc2="res://.godot/imported/chr_pawn_archer.png-c5c34d55a31797db00c36674b06b3000.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/textures/actor/character/chr_pawn_archer.png"
-dest_files=["res://.godot/imported/chr_pawn_archer.png-c5c34d55a31797db00c36674b06b3000.s3tc.ctex"]
+dest_files=["res://.godot/imported/chr_pawn_archer.png-c5c34d55a31797db00c36674b06b3000.s3tc.ctex", "res://.godot/imported/chr_pawn_archer.png-c5c34d55a31797db00c36674b06b3000.etc2.ctex"]
 
 [params]
 

@@ -13,7 +13,7 @@ const KIND_FINAL: String = "final"
 const KIND_BOARD: String = "board"
 const KIND_BRANCH: String = "branch"
 const KIND_PRESENT: String = "present"
-const COMMAND_VERBS: Array[String] = ["mv", "atk", "item", "end"]
+const COMMAND_VERBS: Array[String] = ["mv", "atk", "item", "end", "stay"]
 
 
 static func parse(line: String) -> Dictionary:

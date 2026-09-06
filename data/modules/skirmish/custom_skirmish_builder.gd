@@ -76,18 +76,10 @@ static func fill_random_paths(paths: Array[String], target_size: int, seed: int)
 
 static func map_paths() -> Array[String]:
 	var out: Array[String] = []
-	var dir: DirAccess = DirAccess.open(MAP_DIR)
-	if dir == null:
-		push_error("CustomSkirmishBuilder: cannot open %s" % MAP_DIR)
-		return out
-	dir.list_dir_begin()
-	var name: String = dir.get_next()
-	while name != "":
-		if not dir.current_is_dir() and name.ends_with(".tres"):
-			out.append("%s%s" % [MAP_DIR, name])
-		name = dir.get_next()
-	dir.list_dir_end()
-	out.sort()
+	for name in ResourceDir.file_names(MAP_DIR):
+		out.append("%s%s" % [MAP_DIR, name])
+	if out.is_empty():
+		push_error("CustomSkirmishBuilder: no maps under %s" % MAP_DIR)
 	return out
 
 
@@ -450,17 +442,8 @@ static func _clone_instance_for_side(template: PokemonInstanceResource, team: in
 
 static func _discover_roster_paths(dir_path: String) -> Array[String]:
 	var out: Array[String] = []
-	var dir: DirAccess = DirAccess.open(dir_path)
-	if dir == null:
-		return out
-	dir.list_dir_begin()
-	var name: String = dir.get_next()
-	while name != "":
-		if not dir.current_is_dir() and name.ends_with(".tres"):
-			out.append("%s%s" % [dir_path, name])
-		name = dir.get_next()
-	dir.list_dir_end()
-	out.sort()
+	for name in ResourceDir.file_names(dir_path):
+		out.append("%s%s" % [dir_path, name])
 	return out
 
 

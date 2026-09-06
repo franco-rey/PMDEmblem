@@ -6,6 +6,7 @@ signal restart_requested
 signal lobby_requested
 signal main_menu_requested
 signal quit_requested
+signal resign_requested
 
 const LAYER_INDEX: int = 30
 const BUTTON_HEIGHT: float = 56.0
@@ -19,6 +20,10 @@ var _menu: PanelContainer = null
 var _graphics: GraphicsSettingsPanel = null
 var _controls: ControlsPanel = null
 var _buttons: Dictionary = {}
+
+
+var pauses_tree: bool = true
+var resign_visible: bool = false
 
 
 func _ready() -> void:
@@ -54,6 +59,7 @@ func _ready() -> void:
 	column.add_child(title)
 	_add_button(column, "Resume", "ResumeButton", close)
 	_add_button(column, "Restart Skirmish", "RestartButton", func() -> void: _leave(restart_requested))
+	_add_button(column, "Resign", "ResignButton", func() -> void: _leave(resign_requested))
 	_add_button(column, "Return to Lobby", "LobbyButton", func() -> void: _leave(lobby_requested))
 	_add_button(column, "Main Menu", "MainMenuButton", func() -> void: _leave(main_menu_requested))
 	_add_button(column, "Options", "GraphicsButton", _show_graphics)
@@ -102,7 +108,11 @@ func open() -> void:
 	_menu.visible = true
 	_graphics.visible = false
 	_controls.visible = false
-	get_tree().paused = true
+	if pauses_tree:
+		get_tree().paused = true
+	var resign: Button = _buttons.get("ResignButton", null)
+	if resign != null:
+		resign.visible = resign_visible
 	var resume: Button = _buttons.get("ResumeButton", null)
 	if resume != null:
 		resume.grab_focus()

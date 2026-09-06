@@ -141,6 +141,8 @@ func _on_item_picker_gui_input(event: InputEvent, callable: Callable, ctrl: Tact
 
 
 func set_item_picker_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls) -> void:
+	if controls != null and controls.remote_turn:
+		v = false
 	var picker: VBoxContainer = ensure_item_picker(ctrl)
 	if picker == null:
 		return
@@ -239,6 +241,8 @@ func _replace_signal_connections(signal_ref: Signal, callable: Callable) -> void
 
 
 func set_actions_menu_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls) -> void:
+	if controls != null and controls.remote_turn:
+		v = false
 	var picker: VBoxContainer = ensure_move_picker(ctrl)
 	if v and picker != null:
 		picker.visible = false
@@ -301,6 +305,8 @@ func _on_move_action_mouse_exited(ctrl: TacticsControls) -> void:
 
 
 func set_move_picker_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls, all_units: Array[TacticsPawn]) -> void:
+	if controls != null and controls.remote_turn:
+		v = false
 	var picker: VBoxContainer = ensure_move_picker(ctrl)
 	if picker == null:
 		return
@@ -338,6 +344,8 @@ func set_move_picker_visibility(v: bool, p: TacticsPawn, ctrl: TacticsControls, 
 
 
 func set_travel_picker_visibility(v: bool, ctrl: TacticsControls, pending: Dictionary) -> void:
+	if controls != null and controls.remote_turn:
+		v = false
 	var picker: VBoxContainer = _travel_picker(ctrl)
 	if picker == null:
 		return

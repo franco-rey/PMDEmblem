@@ -99,17 +99,9 @@ static func _load_species_for_bare_slug(bare_slug: String) -> PokemonSpeciesReso
 
 static func _all_generated_species() -> Array[PokemonSpeciesResource]:
 	var out: Array[PokemonSpeciesResource] = []
-	var dir: DirAccess = DirAccess.open(GENERATED_SPECIES_DIR)
-	if dir == null:
-		return out
-	dir.list_dir_begin()
-	var filename: String = dir.get_next()
-	while filename != "":
-		if not dir.current_is_dir() and filename.ends_with(".tres"):
-			var species: PokemonSpeciesResource = load("%s/%s" % [GENERATED_SPECIES_DIR, filename]) as PokemonSpeciesResource
-			if species != null:
-				out.append(species)
-		filename = dir.get_next()
-	dir.list_dir_end()
+	for filename in ResourceDir.file_names(GENERATED_SPECIES_DIR):
+		var species: PokemonSpeciesResource = load("%s/%s" % [GENERATED_SPECIES_DIR, filename]) as PokemonSpeciesResource
+		if species != null:
+			out.append(species)
 	out.sort_custom(func(a: PokemonSpeciesResource, b: PokemonSpeciesResource) -> bool: return a.species_id < b.species_id)
 	return out

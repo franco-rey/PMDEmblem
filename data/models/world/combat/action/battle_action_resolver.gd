@@ -245,6 +245,14 @@ func _run_move(attacker: TacticsPawn, declared_target: TacticsPawn, move: Pokemo
 	if battle_level != null and battle_level.multiverse != null:
 		battle_level.multiverse.declared_target = declared_target
 	var battle_log: BattleLog = battle_level.battle_log if battle_level != null else null
+	if move_index >= 0:
+		_append(battle_log, {
+			"kind": "move_attempted",
+			"attacker": attacker,
+			"move_id": move.move_id,
+			"slot_index": move_index,
+			"target": declared_target,
+		})
 	if declared_target == null or not declared_target.is_alive():
 		_append(battle_log, {
 			"kind": "move_rejected",
@@ -1389,20 +1397,10 @@ func _last_ally_move(attacker: TacticsPawn, battle_level: TacticsLevel) -> Pokem
 
 func _generated_copyable_moves(source_move_id: String) -> Array[PokemonMoveResource]:
 	var out: Array[PokemonMoveResource] = []
-	var dir: DirAccess = DirAccess.open(GENERATED_MOVES_DIR)
-	if dir == null:
-		return out
-	dir.list_dir_begin()
-	while true:
-		var file_name: String = dir.get_next()
-		if file_name.is_empty():
-			break
-		if dir.current_is_dir() or not file_name.ends_with(".tres"):
-			continue
+	for file_name in ResourceDir.file_names(GENERATED_MOVES_DIR):
 		var loaded: PokemonMoveResource = load("%s/%s" % [GENERATED_MOVES_DIR, file_name]) as PokemonMoveResource
 		if _copyable_move(loaded, source_move_id):
 			out.append(loaded)
-	dir.list_dir_end()
 	out.sort_custom(func(a: PokemonMoveResource, b: PokemonMoveResource) -> bool: return a.move_id < b.move_id)
 	return out
 

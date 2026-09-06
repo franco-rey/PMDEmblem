@@ -1,9 +1,11 @@
 class_name GameSettings
 extends RefCounted
 
+const GAME_VERSION: String = "0.18.0"
 const SETTINGS_PATH: String = "user://settings.cfg"
 const SECTION: String = "graphics"
 const AUDIO_SECTION: String = "audio"
+const NET_SECTION: String = "network"
 const AUDIO_BUSES: Dictionary = {"master": "Master", "sfx": "SFX", "music": "Music"}
 const WINDOW_MODES: Array[String] = ["windowed", "fullscreen", "borderless"]
 const RESOLUTIONS: Array[Vector2i] = [Vector2i(1280, 720), Vector2i(1600, 900), Vector2i(1920, 1080), Vector2i(2560, 1440), Vector2i(3840, 2160)]
@@ -22,6 +24,9 @@ static var danger_zone: bool = false
 static var master_volume: float = 1.0
 static var sfx_volume: float = 0.8
 static var music_volume: float = 0.6
+static var player_name: String = ""
+static var last_address: String = "127.0.0.1"
+static var net_port: int = 24555
 static var loaded: bool = false
 
 
@@ -39,6 +44,9 @@ static func load_settings() -> void:
 		cpu_speed = float(config.get_value(SECTION, "cpu_speed", cpu_speed))
 		battle_flair = bool(config.get_value(SECTION, "battle_flair", battle_flair))
 		danger_zone = bool(config.get_value(SECTION, "danger_zone", danger_zone))
+		player_name = String(config.get_value(NET_SECTION, "player_name", player_name))
+		last_address = String(config.get_value(NET_SECTION, "last_address", last_address))
+		net_port = int(config.get_value(NET_SECTION, "port", net_port))
 		master_volume = clampf(float(config.get_value(AUDIO_SECTION, "master_volume", master_volume)), 0.0, 1.0)
 		sfx_volume = clampf(float(config.get_value(AUDIO_SECTION, "sfx_volume", sfx_volume)), 0.0, 1.0)
 		music_volume = clampf(float(config.get_value(AUDIO_SECTION, "music_volume", music_volume)), 0.0, 1.0)
@@ -48,7 +56,16 @@ static func load_settings() -> void:
 		ui_scale = 0.0
 	if not CPU_SPEEDS.has(cpu_speed):
 		cpu_speed = 0.5
+	if player_name.strip_edges().is_empty():
+		player_name = default_player_name()
 	loaded = true
+
+
+static func default_player_name() -> String:
+	var candidate: String = OS.get_environment("USER")
+	if candidate.strip_edges().is_empty():
+		candidate = "Player"
+	return candidate.strip_edges()
 
 
 static func save_settings() -> bool:
@@ -62,6 +79,9 @@ static func save_settings() -> bool:
 	config.set_value(SECTION, "cpu_speed", cpu_speed)
 	config.set_value(SECTION, "battle_flair", battle_flair)
 	config.set_value(SECTION, "danger_zone", danger_zone)
+	config.set_value(NET_SECTION, "player_name", player_name)
+	config.set_value(NET_SECTION, "last_address", last_address)
+	config.set_value(NET_SECTION, "port", net_port)
 	config.set_value(AUDIO_SECTION, "master_volume", master_volume)
 	config.set_value(AUDIO_SECTION, "sfx_volume", sfx_volume)
 	config.set_value(AUDIO_SECTION, "music_volume", music_volume)

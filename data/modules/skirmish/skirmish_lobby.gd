@@ -85,6 +85,15 @@ var last_resolved_seed: int = 0
 
 var _built: bool = false
 var _last_launch_state: Dictionary = {}
+var net_session: NetSession = null
+var net_ready_check: CheckBox = null
+var net_status_label: Label = null
+var _net_syncing: bool = false
+var _net_sent: Dictionary = {}
+var _net_push_timer: float = 0.0
+var _remote_items: Array = []
+var _remote_specs: Array = []
+var _remote_random: bool = false
 
 var player_tray: PanelContainer
 var enemy_tray: PanelContainer
@@ -509,6 +518,21 @@ func _create_setup_panel() -> PanelContainer:
 	column.add_child(_labeled_control("Your Team", _slider_row(player_size_slider, "PlayerSizeValue")))
 	enemy_size_spin = _team_size_slider("EnemySizeSlider", 3)
 	column.add_child(_labeled_control("Enemy Team", _slider_row(enemy_size_spin, "EnemySizeValue")))
+
+	net_status_label = Label.new()
+	net_status_label.name = "NetStatus"
+	net_status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	net_status_label.visible = false
+	_apply_body_font(net_status_label)
+	column.add_child(net_status_label)
+
+	net_ready_check = CheckBox.new()
+	net_ready_check.name = "NetReadyCheck"
+	net_ready_check.text = "Ready"
+	net_ready_check.custom_minimum_size.y = CONTROL_HEIGHT
+	net_ready_check.visible = false
+	net_ready_check.toggled.connect(_on_net_ready_toggled)
+	column.add_child(net_ready_check)
 
 	launch_button = Button.new()
 	launch_button.name = "LaunchButton"
@@ -1607,6 +1631,17 @@ func _refresh_details() -> void:
 
 
 func _refresh_launch_state() -> void:
+	if network_mode():
+		if not net_session.host_role:
+			launch_button.disabled = true
+			launch_button.text = "Waiting for the host"
+			return
+		launch_button.text = "Launch Skirmish"
+		var own_ok: bool = not player_team_paths.is_empty() or (random_player_check != null and random_player_check.button_pressed)
+		var their_ok: bool = not enemy_team_paths.is_empty() or _remote_random
+		launch_button.disabled = not (own_ok and their_ok and net_session.both_ready() and not map_paths.is_empty())
+		return
+	launch_button.text = "Launch Skirmish"
 	var map_ok: bool = not map_paths.is_empty()
 	var validation: Dictionary = _validate_seed_text()
 	var seed_ok: bool = bool(validation.get("ok", false))
@@ -1642,6 +1677,8 @@ func _is_roster_entry_less_than(a: Dictionary, b: Dictionary) -> bool:
 
 
 func _on_tray_gui_input(event: InputEvent, side: String) -> void:
+	if network_mode() and side != local_side_key():
+		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		_set_active_side(side)
 
@@ -1809,7 +1846,223 @@ func _on_random_player_toggled(_enabled: bool) -> void:
 	_refresh_launch_state()
 
 
+func set_session(session: NetSession) -> void:
+	net_session = session
+	if session != null and is_instance_valid(session):
+		if not session.remote_lobby_changed.is_connected(_on_remote_lobby):
+			session.remote_lobby_changed.connect(_on_remote_lobby)
+		if not session.state_changed.is_connected(_on_net_state_changed):
+			session.state_changed.connect(_on_net_state_changed)
+	set_process(true)
+	_apply_network_mode()
+
+
+func network_mode() -> bool:
+	return net_session != null and is_instance_valid(net_session) and net_session.active()
+
+
+func local_side_key() -> String:
+	return SIDE_PLAYER if net_session == null or net_session.host_role else SIDE_ENEMY
+
+
+func remote_side_key() -> String:
+	return SIDE_ENEMY if local_side_key() == SIDE_PLAYER else SIDE_PLAYER
+
+
+func _on_net_state_changed(_state: int) -> void:
+	_apply_network_mode()
+
+
+func _on_net_ready_toggled(value: bool) -> void:
+	if net_session != null and is_instance_valid(net_session):
+		net_session.set_ready(value)
+	_refresh_launch_state()
+
+
+func _apply_network_mode() -> void:
+	var net: bool = network_mode()
+	if net_status_label != null:
+		net_status_label.visible = net
+	if net_ready_check != null:
+		net_ready_check.visible = net
+	var host_role: bool = net and net_session.host_role
+	if control_mode_picker != null:
+		control_mode_picker.disabled = net
+		if net:
+			for i in range(control_mode_picker.item_count):
+				if String(control_mode_picker.get_item_metadata(i)) == SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_PLAYER:
+					control_mode_picker.select(i)
+					break
+	if map_picker != null:
+		map_picker.disabled = net and not host_role
+	if seed_input != null:
+		seed_input.editable = not net or host_role
+	if multiverse_toggle != null:
+		multiverse_toggle.disabled = net and not host_role
+	for slider in [player_size_slider, enemy_size_spin, difficulty_spin]:
+		if slider != null:
+			slider.editable = not net or host_role
+	if random_player_check != null:
+		random_player_check.disabled = net and not host_role
+	if random_enemy_check != null:
+		random_enemy_check.disabled = net and host_role
+	if net:
+		active_side = local_side_key()
+	_refresh_team_trays()
+	_refresh_launch_state()
+	_update_net_status()
+
+
+func _update_net_status() -> void:
+	if net_status_label == null or not network_mode():
+		return
+	var lines: Array[String] = []
+	match net_session.state:
+		NetSession.HOSTING:
+			var addresses: PackedStringArray = (net_session.link as EnetLink).local_addresses() if net_session.link is EnetLink else PackedStringArray()
+			lines.append("Hosting on port %d. Waiting for a player." % GameSettings.net_port)
+			if addresses.size() > 0:
+				lines.append("Your address: %s" % ", ".join(addresses))
+		NetSession.CONNECTING:
+			lines.append("Connecting...")
+		NetSession.LOBBY, NetSession.STARTING, NetSession.ENDED:
+			lines.append("%s with %s." % ["Hosting" if net_session.host_role else "Joined", net_session.remote_name])
+			lines.append("You play Team %d. %s" % [1 if net_session.host_role else 2, "They are ready." if net_session.remote_ready else "Waiting for them to ready up."])
+	net_status_label.text = "\n".join(lines)
+
+
+func network_state() -> Dictionary:
+	var side: String = local_side_key()
+	_sync_specs(side)
+	var paths: Array[String] = (player_team_paths if side == SIDE_PLAYER else enemy_team_paths).duplicate()
+	var random_side: bool = false
+	if side == SIDE_PLAYER and random_player_check != null:
+		random_side = random_player_check.button_pressed
+	elif side == SIDE_ENEMY and random_enemy_check != null:
+		random_side = random_enemy_check.button_pressed
+	return {
+		"map_path": map_paths[clampi(map_picker.selected, 0, map_paths.size() - 1)] if not map_paths.is_empty() else "",
+		"seed_text": seed_input.text if seed_input != null else "",
+		"multiverse": multiverse_toggle != null and multiverse_toggle.button_pressed,
+		"player_team_size": int(player_size_slider.value) if player_size_slider != null else 3,
+		"enemy_team_size": int(enemy_size_spin.value) if enemy_size_spin != null else 3,
+		"difficulty_tier": int(difficulty_spin.value) if difficulty_spin != null else 0,
+		"paths": paths,
+		"items": _items_for_side(side),
+		"specs": _specs_payload(side),
+		"random": random_side,
+		"ready": net_ready_check != null and net_ready_check.button_pressed,
+	}
+
+
+func _process(delta: float) -> void:
+	if not network_mode() or _net_syncing or not visible:
+		return
+	_net_push_timer += delta
+	if _net_push_timer < 0.25:
+		return
+	_net_push_timer = 0.0
+	var state: Dictionary = network_state()
+	if state == _net_sent:
+		return
+	_net_sent = state
+	net_session.send_lobby(state)
+	_update_net_status()
+
+
+func _on_remote_lobby(state: Dictionary) -> void:
+	if not network_mode():
+		return
+	_net_syncing = true
+	var remote: String = remote_side_key()
+	var paths: Array[String] = []
+	for entry in state.get("paths", []):
+		paths.append(String(entry))
+	if remote == SIDE_ENEMY:
+		enemy_team_paths = paths
+		enemy_slot_specs.clear()
+	else:
+		player_team_paths = paths
+		player_slot_specs.clear()
+	_sync_specs(remote)
+	_remote_items = state.get("items", [])
+	_remote_specs = state.get("specs", [])
+	_remote_random = bool(state.get("random", false))
+	if not net_session.host_role:
+		var wanted_map: String = String(state.get("map_path", ""))
+		for i in range(map_paths.size()):
+			if map_paths[i] == wanted_map:
+				map_picker.select(i)
+				break
+		if seed_input != null:
+			seed_input.text = String(state.get("seed_text", ""))
+		if multiverse_toggle != null:
+			multiverse_toggle.button_pressed = bool(state.get("multiverse", false))
+		if player_size_slider != null:
+			player_size_slider.value = int(state.get("player_team_size", player_size_slider.value))
+		if enemy_size_spin != null:
+			enemy_size_spin.value = int(state.get("enemy_team_size", enemy_size_spin.value))
+		if random_player_check != null:
+			random_player_check.button_pressed = _remote_random
+	_refresh_team_trays()
+	_refresh_slot_section()
+	_net_syncing = false
+	_refresh_launch_state()
+	_update_net_status()
+
+
+func _network_launch_state() -> Dictionary:
+	var local: String = local_side_key()
+	_sync_specs(SIDE_PLAYER)
+	_sync_specs(SIDE_ENEMY)
+	var own_paths: Array[String] = (player_team_paths if local == SIDE_PLAYER else enemy_team_paths).duplicate()
+	var own_items: Array = _items_for_side(local)
+	var own_specs: Array = _specs_payload(local)
+	var own_random: bool = (random_player_check != null and random_player_check.button_pressed) if local == SIDE_PLAYER else (random_enemy_check != null and random_enemy_check.button_pressed)
+	var player_paths: Array = own_paths if local == SIDE_PLAYER else (player_team_paths.duplicate() as Array)
+	var enemy_paths: Array = own_paths if local == SIDE_ENEMY else (enemy_team_paths.duplicate() as Array)
+	return {
+		"random_enemy": false,
+		"random_player": own_random if local == SIDE_PLAYER else _remote_random,
+		"player_paths": player_paths,
+		"enemy_paths": enemy_paths,
+		"player_items": own_items if local == SIDE_PLAYER else _remote_items,
+		"enemy_items": own_items if local == SIDE_ENEMY else _remote_items,
+		"player_specs": own_specs if local == SIDE_PLAYER else _remote_specs,
+		"enemy_specs": own_specs if local == SIDE_ENEMY else _remote_specs,
+		"map_path": map_paths[clampi(map_picker.selected, 0, map_paths.size() - 1)] if not map_paths.is_empty() else "",
+		"seed_text": seed_input.text,
+		"enemy_team_size": int(enemy_size_spin.value),
+		"player_team_size": int(player_size_slider.value),
+		"difficulty_tier": int(difficulty_spin.value),
+		"control_mode": SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_PLAYER,
+	}
+
+
+func network_launch_code() -> String:
+	var result: Dictionary = _build_from_state(_network_launch_state())
+	_apply_multiverse(result)
+	if not bool(result.get("ok", false)):
+		_set_status(String(result.get("error", "Could not build the match")))
+		return ""
+	var definitions: Array[SkirmishDefinitionResource] = _definitions_from_result(result)
+	if definitions.is_empty():
+		return ""
+	return SkirmishCode.encode_definition(definitions[0])
+
+
 func _on_launch_pressed() -> void:
+	if network_mode():
+		if not net_session.host_role:
+			return
+		var code: String = network_launch_code()
+		if code.is_empty():
+			return
+		last_launch_code = code
+		if code_output != null:
+			code_output.text = code
+		net_session.start_battle(code)
+		return
 	var result: Dictionary = _build_launch_result(true)
 	if not result.get("ok", false):
 		return

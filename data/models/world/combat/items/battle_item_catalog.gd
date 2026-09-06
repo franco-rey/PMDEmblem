@@ -41,16 +41,8 @@ static func entries() -> Array[Dictionary]:
 	var presentation: ActionPresentationCatalog = ActionPresentationCatalog.shared()
 	var paths: Array[String] = []
 	for folder in [GENERATED_ITEMS_DIR, PokemonItemService.CUSTOM_ITEMS_DIR]:
-		var dir: DirAccess = DirAccess.open(folder)
-		if dir == null:
-			continue
-		dir.list_dir_begin()
-		var filename: String = dir.get_next()
-		while filename != "":
-			if not dir.current_is_dir() and filename.ends_with(".tres"):
-				paths.append("%s%s" % [folder, filename])
-			filename = dir.get_next()
-		dir.list_dir_end()
+		for filename in ResourceDir.file_names(folder):
+			paths.append("%s%s" % [folder, filename])
 	paths.sort_custom(func(a: String, b: String) -> bool: return a.get_file() < b.get_file())
 	for path in paths:
 		var item: PokemonItemResource = load(path) as PokemonItemResource

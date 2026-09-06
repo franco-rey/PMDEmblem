@@ -26,6 +26,7 @@ var cursor_key: Variant = null
 var armed_key: Variant = null
 var target_index: int = 0
 var lock_horizontal_pan: bool = false
+var remote_turn: bool = false
 
 
 func reset_keyboard_selection() -> void:

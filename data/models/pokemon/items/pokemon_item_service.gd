@@ -1074,20 +1074,12 @@ static func _is_curer_item(item: PokemonItemResource) -> bool:
 
 static func _all_items(limit: int = 0) -> Array[PokemonItemResource]:
 	var out: Array[PokemonItemResource] = []
-	var dir: DirAccess = DirAccess.open(GENERATED_ITEMS_DIR)
-	if dir == null:
-		return out
-	dir.list_dir_begin()
-	var filename: String = dir.get_next()
-	while filename != "":
-		if not dir.current_is_dir() and filename.ends_with(".tres"):
-			var item: PokemonItemResource = load("%s%s" % [GENERATED_ITEMS_DIR, filename]) as PokemonItemResource
-			if item != null:
-				out.append(item)
-				if limit > 0 and out.size() >= limit:
-					break
-		filename = dir.get_next()
-	dir.list_dir_end()
+	for filename in ResourceDir.file_names(GENERATED_ITEMS_DIR):
+		var item: PokemonItemResource = load("%s%s" % [GENERATED_ITEMS_DIR, filename]) as PokemonItemResource
+		if item != null:
+			out.append(item)
+			if limit > 0 and out.size() >= limit:
+				break
 	return out
 
 

@@ -58,6 +58,8 @@ func handle_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		if event is InputEventKey and (event as InputEventKey).echo:
 			return
+		if controls != null and controls.remote_turn:
+			return
 		player_wants_to_cancel()
 
 

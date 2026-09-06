@@ -77,8 +77,19 @@ func _ready() -> void:
 	visible = false
 
 
-func show_result(result: int, definition: SkirmishDefinitionResource, level: TacticsLevel, next_label: String = "") -> void:
+func set_play_again_label(text: String, enabled: bool) -> void:
+	var button: Button = _buttons.get("PlayAgainButton", null)
+	if button == null:
+		return
+	button.text = text
+	button.disabled = not enabled
+
+
+func show_result(result: int, definition: SkirmishDefinitionResource, level: TacticsLevel, next_label: String = "", local_side: int = PokemonInstanceResource.Team.PLAYER) -> void:
 	result_code = result
+	var viewer_won: int = result
+	if local_side == PokemonInstanceResource.Team.ENEMY:
+		viewer_won = 2 if result == 1 else (1 if result == 2 else result)
 	_level = level
 	_copy_button.text = "Copy Notation"
 	_copy_button.visible = level != null and level.notation != null
@@ -93,7 +104,7 @@ func show_result(result: int, definition: SkirmishDefinitionResource, level: Tac
 	next_button.text = next_label
 	var human_player: bool = definition == null or definition.control_mode != SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU
 	SoundPlayer.cue("battle.victory" if result == 1 else ("battle.defeat" if result == 2 else ""))
-	match result:
+	match viewer_won:
 		1:
 			_title.text = "Victory!" if human_player else "Player side wins"
 			_title.add_theme_color_override("font_color", PmdStyle.TEXT_GOLD)

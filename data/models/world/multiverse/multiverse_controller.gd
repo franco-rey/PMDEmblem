@@ -16,6 +16,7 @@ const TRAVEL_MOVES: Dictionary = {
 	"shadow_force": {"axis": "space", "travellers": "user", "strike": true},
 }
 const IMMUNE_SPECIES: Array[String] = ["0493_arceus"]
+const CANCEL_CHOICE: String = "choice"
 
 var level: TacticsLevel = null
 var state: MultiverseState = MultiverseState.new()
@@ -483,12 +484,15 @@ func cpu_choice() -> int:
 	return -1
 
 
-func cancel_travel() -> void:
+func cancel_travel(reason: String = "") -> void:
 	clear_travel_preview()
 	if pending_travel.is_empty():
 		return
-	level.battle_log.append({"kind": "travel_cancelled", "unit": pending_travel.get("user"), "move_id": String(pending_travel.get("move_id", ""))})
+	var user: Variant = pending_travel.get("user")
+	level.battle_log.append({"kind": "travel_cancelled", "unit": user, "move_id": String(pending_travel.get("move_id", "")), "reason": reason})
 	pending_travel = {}
+	if reason == CANCEL_CHOICE and level.notation != null and user is TacticsPawn and is_instance_valid(user):
+		level.notation.record_stay(user)
 
 
 func pick_random_option() -> int:

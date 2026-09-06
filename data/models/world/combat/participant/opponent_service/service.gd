@@ -53,6 +53,9 @@ func chase_nearest_enemy(opponent: Node3D, player_node: Node) -> void:
 				res.curr_pawn.stats.attack_range = max(1, move.tactical_range_value)
 		_apply_charge_lock(res.curr_pawn)
 		var to: TacticsTile = arena.get_nearest_target_adjacent_tile(res.curr_pawn, player_node.get_children())
+		var battle_level: TacticsLevel = _level_for(res.curr_pawn)
+		if battle_level != null:
+			battle_level.record_move_intent(res.curr_pawn, to)
 		res.curr_pawn.res.pathfinding_tilestack = arena.get_pathfinding_tilestack(to)
 		camera.target = to
 		if DebugLog.debug_enabled:

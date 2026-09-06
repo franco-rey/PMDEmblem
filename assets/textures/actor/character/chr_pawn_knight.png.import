@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://ewitxujpa3p3"
 path.s3tc="res://.godot/imported/chr_pawn_knight.png-86d55b9cd64b9cffe2277aa17e4f434f.s3tc.ctex"
+path.etc2="res://.godot/imported/chr_pawn_knight.png-86d55b9cd64b9cffe2277aa17e4f434f.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/textures/actor/character/chr_pawn_knight.png"
-dest_files=["res://.godot/imported/chr_pawn_knight.png-86d55b9cd64b9cffe2277aa17e4f434f.s3tc.ctex"]
+dest_files=["res://.godot/imported/chr_pawn_knight.png-86d55b9cd64b9cffe2277aa17e4f434f.s3tc.ctex", "res://.godot/imported/chr_pawn_knight.png-86d55b9cd64b9cffe2277aa17e4f434f.etc2.ctex"]
 
 [params]
 
