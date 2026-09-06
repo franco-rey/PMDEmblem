@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://data/modules/tactics/level/tactics_level.gd" id="1_4gyi1"]
 [ext_resource type="Resource" uid="uid://c2mvnq00bfcw5" path="res://data/models/view/camera/tactics/camera.tres" id="2_u24sq"]
-[ext_resource type="PackedScene" uid="uid://dwbmgds45ep4o" path="res://assets/maps/level/arena/test_arena.tscn" id="3_xw0fp"]
+[ext_resource type="PackedScene" uid="uid://c72yeeqi2kjrg" path="res://assets/maps/level/arena/chessboard.tscn" id="3_xw0fp"]
 [ext_resource type="Script" path="res://data/modules/tactics/level/participants/tactics_participant.gd" id="5_breuy"]
 [ext_resource type="Script" path="res://data/modules/tactics/level/participants/player/tactics_player.gd" id="7_3m485"]
 [ext_resource type="PackedScene" uid="uid://6eofg7n4asn5" path="res://data/modules/tactics/level/pawn/pawn.tscn" id="8_08tl5"]
@@ -32,25 +32,25 @@ unique_name_in_owner = true
 script = ExtResource("7_3m485")
 
 [node name="Pawn" parent="TacticsParticipant/TacticsPlayer" instance=ExtResource("8_08tl5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.46078, 2.51051, -5.5579)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.55, -3)
 
 [node name="Expertise" parent="TacticsParticipant/TacticsPlayer/Pawn" instance=ExtResource("9_3uf1v")]
 pokemon_instance = ExtResource("10_modns")
 
 [node name="Pawn2" parent="TacticsParticipant/TacticsPlayer" instance=ExtResource("8_08tl5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.498559, 2.51051, -7.41643)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.55, -4)
 
 [node name="Expertise" parent="TacticsParticipant/TacticsPlayer/Pawn2" instance=ExtResource("9_3uf1v")]
 pokemon_instance = ExtResource("11_4v8eo")
 
 [node name="Pawn3" parent="TacticsParticipant/TacticsPlayer" instance=ExtResource("8_08tl5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.44726, 2.51051, -6.34305)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.55, -3)
 
 [node name="Expertise" parent="TacticsParticipant/TacticsPlayer/Pawn3" instance=ExtResource("9_3uf1v")]
 pokemon_instance = ExtResource("12_f4qdh")
 
 [node name="Pawn4" parent="TacticsParticipant/TacticsPlayer" instance=ExtResource("8_08tl5")]
-transform = Transform3D(0.999994, 0, 0.00338593, 0, 1, 0, -0.00338593, 0, 0.999994, 0.491854, 2.51051, -5.44529)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.55, -4)
 
 [node name="Expertise" parent="TacticsParticipant/TacticsPlayer/Pawn4" instance=ExtResource("9_3uf1v")]
 pokemon_instance = ExtResource("13_y5obl")
@@ -60,37 +60,37 @@ unique_name_in_owner = true
 script = ExtResource("14_t1tcx")
 
 [node name="Pawn" parent="TacticsParticipant/TacticsOpponent" instance=ExtResource("8_08tl5")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 2.39464, -0.0246843, 5.53141)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3, 0.55, 2)
 
 [node name="Expertise" parent="TacticsParticipant/TacticsOpponent/Pawn" instance=ExtResource("9_3uf1v")]
 pokemon_instance = ExtResource("15_1gywj")
 
 [node name="Pawn2" parent="TacticsParticipant/TacticsOpponent" instance=ExtResource("8_08tl5")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 4.51029, -0.0246843, 4.72485)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -1, 0.55, 3)
 
 [node name="Expertise" parent="TacticsParticipant/TacticsOpponent/Pawn2" instance=ExtResource("9_3uf1v")]
 pokemon_instance = ExtResource("15_1gywj")
 
 [node name="Pawn3" parent="TacticsParticipant/TacticsOpponent" instance=ExtResource("8_08tl5")]
-transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 3.45316, -0.0246843, 6.52363)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1, 0.55, 2)
 
 [node name="Expertise" parent="TacticsParticipant/TacticsOpponent/Pawn3" instance=ExtResource("9_3uf1v")]
 pokemon_instance = ExtResource("15_1gywj")
 
 [node name="Pawn4" parent="TacticsParticipant/TacticsOpponent" instance=ExtResource("8_08tl5")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 4.51222, -0.0246843, 7.41789)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 3, 0.55, 3)
 
 [node name="Expertise" parent="TacticsParticipant/TacticsOpponent/Pawn4" instance=ExtResource("9_3uf1v")]
 pokemon_instance = ExtResource("16_pyi4y")
 
 [node name="Pawn5" parent="TacticsParticipant/TacticsOpponent" instance=ExtResource("8_08tl5")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 2.52904, -0.0246843, 8.37854)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.55, 3)
 
 [node name="Expertise" parent="TacticsParticipant/TacticsOpponent/Pawn5" instance=ExtResource("9_3uf1v")]
 pokemon_instance = ExtResource("16_pyi4y")
 
 [node name="Pawn6" parent="TacticsParticipant/TacticsOpponent" instance=ExtResource("8_08tl5")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 3.4708, -0.0246843, 9.43793)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 2, 0.55, 2)
 
 [node name="Expertise" parent="TacticsParticipant/TacticsOpponent/Pawn6" instance=ExtResource("9_3uf1v")]
 pokemon_instance = ExtResource("17_b7l5f")

@@ -15,7 +15,7 @@ func _run() -> void:
 	_assert_true(paths.any(func(p: String) -> bool: return p.ends_with("chessboard.tres")), "chessboard definition is listed for the lobby (%d maps)" % paths.size())
 	var driver = DRIVER.new(self)
 	var ok: bool = await driver._launch(CODE)
-	_assert_true(CustomSkirmishBuilder.max_team_size_for("res://data/models/maps/definitions/chessboard.tres") == 16 and CustomSkirmishBuilder.max_team_size_for("res://data/models/maps/definitions/test_arena.tres") == 8, "team cap is 16 on the chessboard and 8 on the test arena")
+	_assert_true(CustomSkirmishBuilder.max_team_size_for("res://data/models/maps/definitions/chessboard.tres") == 16 and CustomSkirmishBuilder.max_team_size_for("res://data/models/maps/definitions/grids.tres") == 15 and CustomSkirmishBuilder.max_team_size_for("res://data/models/maps/definitions/shogi.tres") == 20, "team caps follow the boards: 16 on the chessboard, 15 on Grids, 20 on Shogi")
 	_assert_true(ok, "16v16 launches on the chessboard")
 	if not ok:
 		_finish()

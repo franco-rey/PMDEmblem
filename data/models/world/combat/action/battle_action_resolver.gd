@@ -1,6 +1,7 @@
 class_name BattleActionResolver
 extends RefCounted
 
+const NO_KEY: Vector3i = Vector3i(-32768, 0, -32768)
 const HAZARD_MOVES: Array[String] = ["spikes", "toxic_spikes", "stealth_rock", "sticky_web"]
 const PROTECTION_STATUSES: Array[String] = ["protect", "detect", "kings_shield", "crafty_shield", "wide_guard", "spiky_shield", "mat_block"]
 const RAMPAGE_STATUSES: Array[String] = ["outrage", "thrash", "petal_dance"]
@@ -1786,7 +1787,7 @@ func _swap_units(attacker: TacticsPawn, target: TacticsPawn, move: PokemonMoveRe
 
 func _random_warp_unit(attacker: TacticsPawn, move: PokemonMoveResource, source_event: String, rng: RandomNumberGenerator, battle_level: TacticsLevel, battle_log: BattleLog) -> void:
 	var destination: Vector3i = _random_free_key(attacker, rng, battle_level)
-	if destination == Vector3i.ZERO and _unit_key(attacker) != Vector3i.ZERO:
+	if destination == NO_KEY:
 		_log_forced_movement_blocked(attacker, move, source_event, battle_log, "no_free_tile")
 		return
 	_move_unit_to_key(attacker, destination, move, source_event, battle_level, battle_log, "warp")
@@ -1799,7 +1800,7 @@ func _warp_allies_in(attacker: TacticsPawn, move: PokemonMoveResource, source_ev
 		if not Targeting.alignment_allows(attacker, ally, move):
 			continue
 		var destination: Vector3i = _adjacent_free_key(attacker, ally, battle_level)
-		if destination == Vector3i.ZERO and _unit_key(attacker) != Vector3i.ZERO:
+		if destination == NO_KEY:
 			_log_forced_movement_blocked(ally, move, source_event, battle_log, "no_adjacent_tile")
 			continue
 		_move_unit_to_key(ally, destination, move, source_event, battle_level, battle_log, "warp_near")
@@ -1931,7 +1932,7 @@ func _is_free_key(key: Vector3i, moving_unit: TacticsPawn, battle_level: Tactics
 func _random_free_key(unit: TacticsPawn, rng: RandomNumberGenerator, battle_level: TacticsLevel) -> Vector3i:
 	var keys: Array[Vector3i] = _free_keys(unit, battle_level)
 	if keys.is_empty():
-		return Vector3i.ZERO
+		return NO_KEY
 	var source_rng: RandomNumberGenerator = rng if rng != null else _fallback_rng
 	return keys[source_rng.randi_range(0, keys.size() - 1)]
 
@@ -1942,7 +1943,7 @@ func _adjacent_free_key(anchor: TacticsPawn, moving_unit: TacticsPawn, battle_le
 		var candidate: Vector3i = anchor_key + direction
 		if _is_free_key(candidate, moving_unit, battle_level):
 			return candidate
-	return Vector3i.ZERO
+	return NO_KEY
 
 
 func _free_keys(unit: TacticsPawn, battle_level: TacticsLevel) -> Array[Vector3i]:

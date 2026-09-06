@@ -122,7 +122,7 @@ func ensure_multiverse_presentation() -> void:
 	else:
 		add_child(multiverse_minimap)
 	multiverse.minimap = multiverse_minimap
-	camera.boundary_radius = camera_boundary_radius + MultiverseStage.PITCH * 4.0
+	camera.boundary_radius = camera_boundary_radius + MultiverseStage.pitch * 4.0
 	camera.max_overview = 160.0
 
 

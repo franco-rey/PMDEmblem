@@ -2,7 +2,7 @@ extends SceneTree
 
 const SkirmishCode = preload("res://data/modules/skirmish/skirmish_code.gd")
 
-const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/test_arena.tres"
+const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 
 var failures: int = 0
 
@@ -97,7 +97,8 @@ func _check_invalid_inputs() -> void:
 	_assert_build_fails("match seed=1 mode=banana", "invalid mode fails")
 	_assert_build_fails("match seed=abc", "invalid seed fails")
 	_assert_build_fails("series seed=1 team=0", "team=0 fails")
-	_assert_build_fails("series seed=1 team=9", "team=9 fails")
+	_assert_build_fails("series seed=1 team=17", "team=17 fails past the chessboard cap")
+	_assert_build_fails("series seed=1 team=21", "team=21 fails past the absolute cap")
 	_assert_build_fails("series seed=1 matches=0", "matches=0 fails")
 	_assert_build_fails("series seed=1 matches=11", "matches=11 fails")
 	_assert_build_fails("match seed=1 p=missingno e=0094_gengar", "unknown Pokemon slug fails")

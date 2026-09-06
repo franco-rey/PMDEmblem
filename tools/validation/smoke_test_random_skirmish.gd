@@ -1,6 +1,6 @@
 extends SceneTree
 
-const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/test_arena.tres"
+const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const RandomSkirmishGenerator = preload("res://data/modules/skirmish/random_skirmish_generator.gd")
 const SUPPORTED_TEAM_SIZES: Array[int] = [1, 2, 3, 4, 5]
 const FIXED_SEED_TEXT: String = "777777"
@@ -37,7 +37,7 @@ func _check_generator_directly() -> void:
 	var roster: Array[PokemonInstanceResource] = _load_team(CustomSkirmishBuilder.roster_paths())
 	var inputs := RandomSkirmishGenerator.GeneratorInputs.new()
 	inputs.seed = FIXED_SEED
-	inputs.biome = "test"
+	inputs.biome = "board"
 	inputs.difficulty_tier = 4
 	inputs.player_party = player_team
 	inputs.enemy_team_size = 3
@@ -49,7 +49,7 @@ func _check_generator_directly() -> void:
 	if definition == null:
 		return
 	_attach_spawn_orders(definition, map)
-	_assert_true(definition.map == map, "direct generator picks test_arena")
+	_assert_true(definition.map == map, "direct generator picks the chessboard")
 	_assert_true(definition.player_team.size() == 3, "direct generator preserves explicit player party")
 	_assert_true(definition.enemy_team.size() == 3, "direct generator creates requested enemy count")
 	_assert_true(definition.objective == SkirmishDefinitionResource.OBJECTIVE_DEFEAT_ALL_ENEMIES, "direct generator uses defeat-all objective")
@@ -159,8 +159,9 @@ func _check_control_modes() -> void:
 func _check_invalid_inputs_rejected() -> void:
 	var zero: Dictionary = CustomSkirmishBuilder.build_random(0, TEST_ARENA_MAP_PATH, "")
 	_assert_true(not zero.get("ok", false), "team size 0 is rejected")
-	var too_many: Dictionary = CustomSkirmishBuilder.build_random(CustomSkirmishBuilder.MAX_TEAM_SIZE + 1, TEST_ARENA_MAP_PATH, "")
-	_assert_true(not too_many.get("ok", false), "team size > %d is rejected" % CustomSkirmishBuilder.MAX_TEAM_SIZE)
+	var cap: int = CustomSkirmishBuilder.max_team_size_for(TEST_ARENA_MAP_PATH)
+	var too_many: Dictionary = CustomSkirmishBuilder.build_random(cap + 1, TEST_ARENA_MAP_PATH, "")
+	_assert_true(not too_many.get("ok", false), "team size > %d is rejected" % cap)
 	var bad_map: Dictionary = CustomSkirmishBuilder.build_random(3, "res://missing_map.tres", FIXED_SEED_TEXT)
 	_assert_true(not bad_map.get("ok", false), "missing map is rejected")
 	var bad_seed: Dictionary = CustomSkirmishBuilder.build_random(3, TEST_ARENA_MAP_PATH, "not a number")
@@ -203,7 +204,7 @@ func _loader_accepts(definition: SkirmishDefinitionResource) -> bool:
 
 func _load_map() -> MapDefinitionResource:
 	var map: MapDefinitionResource = load(TEST_ARENA_MAP_PATH) as MapDefinitionResource
-	_assert_true(map != null, "test_arena map definition loads")
+	_assert_true(map != null, "chessboard map definition loads")
 	return map
 
 

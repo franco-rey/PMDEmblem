@@ -1,7 +1,8 @@
 class_name MultiverseStage
 extends Node3D
 
-const PITCH: float = 11.0
+static var pitch: float = 11.0
+const PITCH_GAP: float = 2.4
 const BAND_WIDTH: float = 2.4
 const BAND_Y: float = -0.62
 const MARKER_Y: float = -0.36
@@ -96,7 +97,7 @@ func setup(battle_level: TacticsLevel) -> void:
 
 
 static func slot(coords: Vector2i) -> Vector3:
-	return Vector3(float(coords.y - 1) * PITCH, 0.0, -float(coords.x) * PITCH)
+	return Vector3(float(coords.y - 1) * pitch, 0.0, -float(coords.x) * pitch)
 
 
 func offset_for(coords: Vector2i) -> Vector3:
@@ -360,8 +361,8 @@ func _refresh_band(l: int, state: MultiverseState) -> void:
 			node.queue_free()
 		node = MeshInstance3D.new()
 		node.name = "Band_L%d" % l
-		var length: float = float(span.y - span.x) * PITCH + PITCH
-		var points := PackedVector3Array([board_centre + Vector3(-PITCH * 0.5, BAND_Y, 0.0), board_centre + Vector3(length - PITCH * 0.5, BAND_Y, 0.0)])
+		var length: float = float(span.y - span.x) * pitch + pitch
+		var points := PackedVector3Array([board_centre + Vector3(-pitch * 0.5, BAND_Y, 0.0), board_centre + Vector3(length - pitch * 0.5, BAND_Y, 0.0)])
 		node.mesh = ribbon_mesh(points, BAND_WIDTH, true)
 		node.material_override = _flat_material(COLOR_BAND if active else COLOR_BAND_FROZEN, false)
 		add_child(node)
@@ -387,7 +388,7 @@ func _refresh_past_markers(l: int, state: MultiverseState) -> void:
 		multimesh.mesh = _marker_mesh
 		multimesh.instance_count = count
 		for i in range(count):
-			multimesh.set_instance_transform(i, Transform3D(Basis.IDENTITY, board_centre + Vector3(float(i) * PITCH, board_base + MARKER_Y, 0.0)))
+			multimesh.set_instance_transform(i, Transform3D(Basis.IDENTITY, board_centre + Vector3(float(i) * pitch, board_base + MARKER_Y, 0.0)))
 		node.multimesh = multimesh
 		node.material_override = _flat_material(COLOR_PAST if active else COLOR_PAST_FROZEN, true)
 		add_child(node)
@@ -411,9 +412,9 @@ func _refresh_connector(l: int, state: MultiverseState) -> void:
 		node.name = "Connector_L%d" % l
 		var target: Vector3 = slot(Vector2i(l, origin.y)) - slot(origin)
 		var start: Vector3 = board_centre + Vector3(0.0, BAND_Y - 0.03, 0.0)
-		var finish: Vector3 = board_centre + Vector3(target.x - PITCH * 0.5, BAND_Y - 0.03, target.z)
+		var finish: Vector3 = board_centre + Vector3(target.x - pitch * 0.5, BAND_Y - 0.03, target.z)
 		var c1: Vector3 = board_centre + Vector3(0.0, BAND_Y - 0.03, target.z * 0.75)
-		var c2: Vector3 = board_centre + Vector3(target.x - PITCH * 0.9, BAND_Y - 0.03, target.z)
+		var c2: Vector3 = board_centre + Vector3(target.x - pitch * 0.9, BAND_Y - 0.03, target.z)
 		var points := PackedVector3Array()
 		for i in range(CONNECTOR_SAMPLES + 1):
 			points.append(_cubic(start, c1, c2, finish, float(i) / float(CONNECTOR_SAMPLES)))
@@ -434,13 +435,13 @@ func _refresh_present(state: MultiverseState, ids: Array[int]) -> void:
 	var low: int = ids.min()
 	var high: int = ids.max()
 	var x: float = offset_for(Vector2i(0, now)).x
-	var z_low: float = offset_for(Vector2i(high, now)).z - PITCH * 0.6
-	var z_high: float = offset_for(Vector2i(low, now)).z + PITCH * 0.6
+	var z_low: float = offset_for(Vector2i(high, now)).z - pitch * 0.6
+	var z_high: float = offset_for(Vector2i(low, now)).z + pitch * 0.6
 	var mesh: BoxMesh = _present_wall.mesh as BoxMesh
 	mesh.size = Vector3(1.6, 0.05, absf(z_high - z_low))
-	_present_wall.position = board_centre + Vector3(x - PITCH * 0.5, board_base + BAND_Y + 0.08, (z_low + z_high) * 0.5)
+	_present_wall.position = board_centre + Vector3(x - pitch * 0.5, board_base + BAND_Y + 0.08, (z_low + z_high) * 0.5)
 	_present_wall.visible = true
-	_present_label.position = board_centre + Vector3(x - PITCH * 0.5, board_base + 0.35, z_low - 1.2)
+	_present_label.position = board_centre + Vector3(x - pitch * 0.5, board_base + 0.35, z_low - 1.2)
 	_present_label.visible = true
 
 
@@ -486,6 +487,7 @@ func _build_templates() -> void:
 		board_base = bounds.position.y
 		board_top = bounds.end.y
 		board_centre = Vector3(bounds.get_center().x, 0.0, bounds.get_center().z)
+		pitch = maxf(board_size.x, board_size.z) + PITCH_GAP
 
 
 func _visual_meshes(root: Node) -> Array[MeshInstance3D]:
@@ -662,7 +664,7 @@ func show_travel_preview(pending: Dictionary) -> void:
 		_preview_groups.append(group)
 	preview_option_count = options.size()
 	var camera: TacticsCamera = camera_node()
-	if camera != null and reach > PITCH * 0.5 and camera.res.max_overview > 0.0:
+	if camera != null and reach > pitch * 0.5 and camera.res.max_overview > 0.0:
 		_preview_overview = camera.res.overview_distance
 		camera.res.overview_distance = clampf(reach * 1.15, camera.res.overview_distance, camera.res.max_overview)
 	highlight_travel_option(0)

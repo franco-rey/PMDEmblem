@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="SkirmishDefinitionResource" load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://data/models/skirmish/resources/skirmish_definition_resource.gd" id="1_n06lt"]
-[ext_resource type="Resource" path="res://data/models/maps/definitions/test_arena.tres" id="2_v3t2h"]
+[ext_resource type="Resource" path="res://data/models/maps/definitions/chessboard.tres" id="2_v3t2h"]
 [ext_resource type="Script" path="res://data/models/pokemon/resources/pokemon_instance_resource.gd" id="3_jefg6"]
 [ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/0475_gallade.tres" id="4_uh21b"]
 [ext_resource type="Resource" path="res://data/models/pokemon/overrides/instances/0448_lucario.tres" id="5_001rw"]

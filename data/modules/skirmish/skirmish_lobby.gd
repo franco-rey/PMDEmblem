@@ -103,6 +103,7 @@ var multiverse_toggle: CheckButton
 var seed_input: LineEdit
 var difficulty_spin: SpinBox
 var random_enemy_check: CheckBox
+var random_player_check: CheckBox
 var enemy_size_spin: HSlider
 var player_size_slider: HSlider
 var status_label: Label
@@ -184,6 +185,12 @@ func add_roster_index(index: int) -> bool:
 		_set_status("Pick a roster Pokemon first")
 		return false
 	return _add_to_active_team(String(roster_entries[index].get("path", "")))
+
+
+func set_random_player_enabled(enabled: bool) -> void:
+	if random_player_check != null:
+		random_player_check.button_pressed = enabled
+	_on_random_player_toggled(enabled)
 
 
 func set_random_enemy_enabled(enabled: bool) -> void:
@@ -482,9 +489,16 @@ func _create_setup_panel() -> PanelContainer:
 	difficulty_spin.value = CustomSkirmishBuilder.DEFAULT_RANDOM_DIFFICULTY_TIER
 	column.add_child(_labeled_control("Difficulty", difficulty_spin))
 
+	random_player_check = CheckBox.new()
+	random_player_check.name = "RandomPlayerCheck"
+	random_player_check.text = "Random Team 1"
+	random_player_check.custom_minimum_size.y = CONTROL_HEIGHT
+	random_player_check.toggled.connect(_on_random_player_toggled)
+	column.add_child(random_player_check)
+
 	random_enemy_check = CheckBox.new()
 	random_enemy_check.name = "RandomEnemyCheck"
-	random_enemy_check.text = "Random Enemy"
+	random_enemy_check.text = "Random Team 2"
 	random_enemy_check.custom_minimum_size.y = CONTROL_HEIGHT
 	random_enemy_check.toggled.connect(_on_random_enemy_toggled)
 	column.add_child(random_enemy_check)
@@ -1593,7 +1607,8 @@ func _refresh_launch_state() -> void:
 	var validation: Dictionary = _validate_seed_text()
 	var seed_ok: bool = bool(validation.get("ok", false))
 	var code_driven: bool = bool(validation.get("code_driven", false))
-	var teams_ok: bool = code_driven or (not player_team_paths.is_empty() and (random_enemy_check.button_pressed or not enemy_team_paths.is_empty()))
+	var player_ready: bool = not player_team_paths.is_empty() or (random_player_check != null and random_player_check.button_pressed)
+	var teams_ok: bool = code_driven or (player_ready and (random_enemy_check.button_pressed or not enemy_team_paths.is_empty()))
 	launch_button.disabled = not (map_ok and seed_ok and teams_ok)
 	if not seed_ok:
 		_set_status(String(validation.get("error", "Invalid skirmish code")))
@@ -1785,6 +1800,11 @@ func _on_random_enemy_toggled(_enabled: bool) -> void:
 	_refresh_launch_state()
 
 
+func _on_random_player_toggled(_enabled: bool) -> void:
+	_refresh_details()
+	_refresh_launch_state()
+
+
 func _on_launch_pressed() -> void:
 	var result: Dictionary = _build_launch_result(true)
 	if not result.get("ok", false):
@@ -1830,13 +1850,15 @@ func _build_launch_result(store_state: bool) -> Dictionary:
 	var map_path: String = map_paths[clampi(map_picker.selected, 0, map_paths.size() - 1)]
 	_sync_specs(SIDE_PLAYER)
 	_sync_specs(SIDE_ENEMY)
+	var random_player: bool = random_player_check != null and random_player_check.button_pressed
 	var state: Dictionary = {
 		"random_enemy": random_enemy_check.button_pressed,
-		"player_paths": player_team_paths.duplicate(),
+		"random_player": random_player,
+		"player_paths": [] if random_player else player_team_paths.duplicate(),
 		"enemy_paths": enemy_team_paths.duplicate(),
-		"player_items": _items_for_side(SIDE_PLAYER),
+		"player_items": [] if random_player else _items_for_side(SIDE_PLAYER),
 		"enemy_items": _items_for_side(SIDE_ENEMY),
-		"player_specs": _specs_payload(SIDE_PLAYER),
+		"player_specs": [] if random_player else _specs_payload(SIDE_PLAYER),
 		"enemy_specs": _specs_payload(SIDE_ENEMY),
 		"map_path": map_path,
 		"seed_text": seed_input.text,
@@ -1894,7 +1916,10 @@ func _build_from_state(state: Dictionary) -> Dictionary:
 	var resolved_seed_text: String = String(legacy.get("seed_text", ""))
 	var control_mode: String = String(legacy.get("control_mode", SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU))
 	var fill_seed: int = CustomSkirmishBuilder.resolve_seed(resolved_seed_text)
-	var player_paths: Array[String] = CustomSkirmishBuilder.fill_random_paths(_string_array(state.get("player_paths", [])), int(state.get("player_team_size", 0)), fill_seed ^ 0x51A7)
+	var player_seed_paths: Array[String] = []
+	if not bool(state.get("random_player", false)):
+		player_seed_paths = _string_array(state.get("player_paths", []))
+	var player_paths: Array[String] = CustomSkirmishBuilder.fill_random_paths(player_seed_paths, int(state.get("player_team_size", 0)), fill_seed ^ 0x51A7)
 	var enemy_paths: Array[String] = CustomSkirmishBuilder.fill_random_paths(_string_array(state.get("enemy_paths", [])), int(state.get("enemy_team_size", 0)), fill_seed ^ 0x3E2D)
 	if bool(state.get("random_enemy", false)):
 		return CustomSkirmishBuilder.build_with_random_enemy(

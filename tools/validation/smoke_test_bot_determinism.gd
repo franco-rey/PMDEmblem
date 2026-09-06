@@ -1,6 +1,6 @@
 extends SceneTree
 
-const MAP_PATH: String = "res://data/models/maps/definitions/test_arena.tres"
+const MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const SEED: int = 4242
 const ROUND_CAP: int = 12
 const MAX_FRAMES: int = 6000
