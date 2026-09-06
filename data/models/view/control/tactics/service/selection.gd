@@ -547,11 +547,13 @@ func player_wants_to_wait() -> void:
 		controls.clear_hover_preview()
 	if _release_charge_first():
 		return
+	SoundPlayer.cue("battle.end_turn")
 	participant.curr_pawn.end_pawn_turn()
 	participant.stage = 0
 
 
 func player_wants_to_skip_turn() -> void:
+	SoundPlayer.cue("battle.end_turn")
 	if participant.display_opponent_stats:
 		participant.display_opponent_stats = false
 	if controls != null:

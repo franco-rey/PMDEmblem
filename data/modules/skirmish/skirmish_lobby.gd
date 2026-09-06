@@ -1146,6 +1146,8 @@ func _close_chooser() -> void:
 		chooser_panel.visible = false
 	if chooser_mode == CHOOSER_MOVES and chooser_slot >= 0:
 		set_slot_moves(chooser_side, chooser_slot, chooser_selection)
+		if not chooser_selection.is_empty():
+			SoundPlayer.cue("lobby.skill")
 	chooser_mode = ""
 	_refresh_slot_section()
 	_refresh_launch_state()
@@ -1200,6 +1202,7 @@ func _create_chooser_row(entry: Dictionary) -> Button:
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
 	button.toggle_mode = chooser_mode == CHOOSER_MOVES
 	button.button_pressed = chooser_selection.has(id) if not id.is_empty() else chooser_selection.is_empty()
+	button.add_to_group(UiSoundHook.OPT_OUT_GROUP)
 	button.pressed.connect(_on_chooser_row_pressed.bind(id))
 	var description: String = String(entry.get("description", ""))
 	button.tooltip_text = String(entry.get("label", "")) + ("\n" + description if not description.is_empty() else "")
@@ -1290,18 +1293,23 @@ func _on_chooser_row_pressed(id: String) -> void:
 		CHOOSER_MOVES:
 			if chooser_selection.has(id):
 				chooser_selection.erase(id)
+				SoundPlayer.cue("ui.toggle")
 			elif chooser_selection.size() < PokemonInstanceResource.MAX_MOVE_SLOTS:
 				chooser_selection.append(id)
+				SoundPlayer.cue("ui.toggle")
 			else:
+				SoundPlayer.cue("ui.error")
 				_set_status("Up to %d moves; deselect one first" % PokemonInstanceResource.MAX_MOVE_SLOTS)
 			_refresh_chooser()
 		CHOOSER_ABILITY:
 			set_slot_ability(chooser_side, chooser_slot, id)
+			SoundPlayer.cue("ui.confirm")
 			chooser_mode = ""
 			chooser_panel.visible = false
 			_refresh_launch_state()
 		_:
 			set_held_item(chooser_side, chooser_slot, id)
+			SoundPlayer.cue("lobby.item" if not id.is_empty() else "ui.confirm")
 			chooser_mode = ""
 			chooser_panel.visible = false
 			_refresh_launch_state()
@@ -1637,6 +1645,7 @@ func _add_to_active_team(path: String) -> bool:
 		_set_status("%s team is at the %d-Pokemon cap" % [_side_label(active_side), _map_max_team_size()])
 		return false
 	team.append(path)
+	SoundPlayer.cue("lobby.join")
 	_sync_item_slots(active_side)
 	_sync_size_slider(active_side)
 	if active_side == SIDE_PLAYER:
@@ -1685,6 +1694,7 @@ func _remove_selected_from_side(side: String) -> void:
 	if idx < 0 or idx >= team.size():
 		idx = team.size() - 1
 	team.remove_at(idx)
+	SoundPlayer.cue("lobby.leave")
 	var specs: Array[Dictionary] = _specs_for_side(side)
 	if idx < specs.size():
 		specs.remove_at(idx)
@@ -1699,6 +1709,8 @@ func _remove_selected_from_side(side: String) -> void:
 
 
 func _clear_side(side: String) -> void:
+	if not (player_team_paths if side == SIDE_PLAYER else enemy_team_paths).is_empty():
+		SoundPlayer.cue("lobby.leave")
 	if side == SIDE_PLAYER:
 		player_team_paths.clear()
 		player_slot_specs.clear()

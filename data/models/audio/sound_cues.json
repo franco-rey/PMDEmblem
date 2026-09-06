@@ -37,7 +37,8 @@
   "target_cycle": "Menu/Select",
   "step": "Battle/DUN_Tile_Step",
   "status_tick": "Battle/DUN_Hit_Neutral",
-  "rejected": "Menu/Error"
+  "rejected": "Menu/Error",
+  "end_turn": "Menu/Skip"
  },
  "status": {
   "paralyze": "Battle/DUN_Paralyzed",
@@ -57,5 +58,11 @@
   "primordial_sea": "Battle/DUN_Rain_Dance",
   "desolate_land": "Battle/DUN_Sunny_Day",
   "delta_stream": "Battle/DUN_Cloudy"
+ },
+ "lobby": {
+  "join": "Fanfare/JoinTeam",
+  "leave": "Fanfare/LeaveTeam",
+  "item": "Fanfare/Item",
+  "skill": "Fanfare/LearnSkill"
  }
 }
