@@ -306,6 +306,26 @@ func _check_random_enemy_build() -> void:
 	_assert_true(String(definition.generation_metadata.get("source", "")) == "random_generator", "random enemy setup routes through RandomSkirmishGenerator")
 	_assert_true(definition.enemy_team.size() == 3, "random enemy setup honors the enemy team slider")
 	_assert_true(_loader_accepts(definition), "random enemy lobby definition is loader-ready")
+	_assert_true(lobby.random_player_check != null and lobby.random_player_check.text == "Random Team 1" and lobby.random_enemy_check.text == "Random Team 2" and lobby.random_player_check.get_index() == lobby.random_enemy_check.get_index() - 1, "the lobby offers Random Team 1 right above Random Team 2")
+	var tray_before: int = lobby.get_player_team_paths().size()
+	lobby.set_random_player_enabled(true)
+	lobby.player_size_slider.value = 5
+	lobby.enemy_size_spin.value = 6
+	var both: Dictionary = lobby.build_current_definition()
+	_assert_true(bool(both.get("ok", false)), "random Team 1 with a random Team 2 builds a definition (%s)" % String(both.get("error", "")))
+	if bool(both.get("ok", false)):
+		var built: SkirmishDefinitionResource = both["definition"]
+		_assert_true(built.player_team.size() == 5 and built.enemy_team.size() == 6, "both random teams take exactly their sliders' counts (%d and %d)" % [built.player_team.size(), built.enemy_team.size()])
+		_assert_true(lobby.get_player_team_paths().size() == tray_before, "random Team 1 leaves the player tray untouched")
+	lobby.set_random_enemy_enabled(false)
+	lobby.player_size_slider.value = 4
+	var explicit_enemy: Dictionary = lobby.build_current_definition()
+	if bool(explicit_enemy.get("ok", false)):
+		var built2: SkirmishDefinitionResource = explicit_enemy["definition"]
+		_assert_true(built2.player_team.size() == 4, "random Team 1 with an explicit Team 2 still takes exactly the player slider (%d)" % built2.player_team.size())
+	else:
+		_assert_true(lobby.get_enemy_team_paths().is_empty(), "random Team 1 with an empty explicit Team 2 is refused, as before (%s)" % String(explicit_enemy.get("error", "")))
+	lobby.set_random_player_enabled(false)
 
 
 func _loader_accepts(definition: SkirmishDefinitionResource) -> bool:

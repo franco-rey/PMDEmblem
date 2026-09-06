@@ -96,17 +96,19 @@ WEDGE_BASES = {
 }
 
 
-def wedge_corner(cell, tiles):
+def wedge_corner(cell, tiles, diagonals=()):
     c, r = cell
-    dx = 0
-    dz = 0
-    for (ox, oz) in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-        if (c + ox, r + oz) in tiles:
-            dx += ox
-            dz += oz
-    if dx == 0 or dz == 0:
-        return None
-    return (dx, dz)
+    walkable_x = [ox for ox in (-1, 1) if (c + ox, r) in tiles]
+    walkable_z = [oz for oz in (-1, 1) if (c, r + oz) in tiles]
+    if len(walkable_x) == 1 and len(walkable_z) == 1:
+        return (walkable_x[0], walkable_z[0])
+    for (sx, sz) in ((1, 1), (1, -1), (-1, 1), (-1, -1)):
+        if (c + sx, r + sz) not in diagonals:
+            continue
+        for corner in ((sx, -sz), (-sx, sz)):
+            if corner[0] in walkable_x and corner[1] in walkable_z:
+                return corner
+    return None
 
 
 def rotate(squares, cols, rows):
@@ -262,7 +264,7 @@ def build(map_id, spec):
             lines.append('surface_material_override/0 = SubResource("frame")')
             lines.append('')
     for cell in sorted(diagonals, key=lambda t: (t[1], t[0])):
-        corner = wedge_corner(cell, tiles)
+        corner = wedge_corner(cell, tiles, diagonals)
         if corner is None:
             continue
         x, z = world(cell)
@@ -274,7 +276,7 @@ def build(map_id, spec):
         lines.append('surface_material_override/0 = SubResource("%s")' % shade)
         lines.append('')
         lines.append('[node name="WedgeUnder_%d_%d" type="MeshInstance3D" parent="Terrain"]' % (cell[0], cell[1]))
-        lines.append('transform = Transform3D(%s, %s, %s, %s)' % (basis, fmt(x), fmt(-0.16 - 0.00005 * (len(ordered) + cell[0] + cell[1] * GRIDS_SIZE)), fmt(z)))
+        lines.append('transform = Transform3D(%s, %s, %s, %s)' % (basis, fmt(x), fmt(-0.16 - 0.00005 * (len(ordered) + cell[0] + cell[1] * cols)), fmt(z)))
         lines.append('mesh = SubResource("wedge_under")')
         lines.append('surface_material_override/0 = SubResource("frame")')
         lines.append('')
