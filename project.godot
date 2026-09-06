@@ -18,7 +18,7 @@ config/name="Poke"
 config/description="A project by @ramaureirac and @mbusson"
 config/version="4.3"
 run/main_scene="res://assets/scene/main.tscn"
-config/features=PackedStringArray("4.6", "Mobile")
+config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://assets/textures/ui/icons/icon.png"
 
 [debug]

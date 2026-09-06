@@ -457,11 +457,13 @@ func _create_setup_panel() -> PanelContainer:
 
 	map_picker = OptionButton.new()
 	map_picker.name = "MapPicker"
+	map_picker.fit_to_longest_item = false
 	map_picker.item_selected.connect(_on_map_changed)
 	column.add_child(_labeled_control("Map", map_picker))
 
 	control_mode_picker = OptionButton.new()
 	control_mode_picker.name = "ControlModePicker"
+	control_mode_picker.fit_to_longest_item = false
 	_add_control_mode_item("Player vs CPU", SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU)
 	_add_control_mode_item("Player vs Player", SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_PLAYER)
 	_add_control_mode_item("CPU vs CPU", SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU)
@@ -600,12 +602,14 @@ func _create_roster_panel() -> PanelContainer:
 
 	type_filter = OptionButton.new()
 	type_filter.name = "TypeFilter"
+	type_filter.fit_to_longest_item = false
 	type_filter.custom_minimum_size = Vector2(TYPE_FILTER_WIDTH, CONTROL_HEIGHT)
 	type_filter.item_selected.connect(_on_filter_changed)
 	toolbar.add_child(type_filter)
 
 	sort_picker = OptionButton.new()
 	sort_picker.name = "SortPicker"
+	sort_picker.fit_to_longest_item = false
 	sort_picker.custom_minimum_size = Vector2(SORT_PICKER_WIDTH, CONTROL_HEIGHT)
 	sort_picker.item_selected.connect(_on_filter_changed)
 	toolbar.add_child(sort_picker)

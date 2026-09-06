@@ -85,7 +85,7 @@ func _run() -> void:
 	await physics_frame
 	await physics_frame
 	owner = ctrl.get_viewport().gui_get_focus_owner()
-	_assert_true(owner != null and ctrl.get_act().is_ancestor_of(owner), "focus is back on the action menu")
+	_assert_true(owner != null and ctrl.get_actions().is_ancestor_of(owner), "focus is back on the action menu")
 	while ctrl.get_viewport().gui_get_focus_owner() != ctrl.get_act("Attack") and frames < 920:
 		await _tap(KEY_DOWN)
 		frames += 1
