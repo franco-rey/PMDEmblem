@@ -369,6 +369,10 @@ func _apply_unit(pawn: TacticsPawn, entry: Dictionary, pawns_by_id: Dictionary) 
 			pawn.res.set(field, entry["res"][field])
 	pawn.serv.ui.update_character_health(pawn)
 	pawn.serv.ui.tint_when_unable_to_act(pawn)
+	if not stats.is_active():
+		var visuals: PawnStateVisuals = pawn.get_node_or_null("StateVisuals") as PawnStateVisuals
+		if visuals != null:
+			visuals.settle_faint()
 
 
 func _encode(value: Variant) -> Variant:

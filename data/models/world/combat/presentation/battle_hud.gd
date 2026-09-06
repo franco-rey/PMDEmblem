@@ -639,7 +639,7 @@ func hovered_unit() -> TacticsPawn:
 	var space: PhysicsDirectSpaceState3D = level.get_world_3d().direct_space_state
 	var hit: Dictionary = space.intersect_ray(PhysicsRayQueryParameters3D.create(from, to, 2, []))
 	var collider: Variant = hit.get("collider", null)
-	if collider is TacticsPawn:
+	if collider is TacticsPawn and (collider as TacticsPawn).is_alive():
 		return collider
 	var tile_hit: Dictionary = space.intersect_ray(PhysicsRayQueryParameters3D.create(from, to, 1, []))
 	var tile: Variant = tile_hit.get("collider", null)
@@ -671,7 +671,7 @@ func _update_inspector() -> void:
 	var target: TacticsPawn = pinned_pawn
 	if target == null and _hover_candidate != null and now_ms - _hover_since_ms >= HOVER_DELAY_MS:
 		target = _hover_candidate
-	if target != null and (not is_instance_valid(target) or target.stats == null):
+	if target != null and (not is_instance_valid(target) or target.stats == null or not target.is_alive()):
 		target = null
 		pinned_pawn = null
 	var now: int = Time.get_ticks_msec()

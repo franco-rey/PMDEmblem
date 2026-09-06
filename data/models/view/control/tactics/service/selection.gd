@@ -283,6 +283,8 @@ func _target_cycle_step() -> int:
 
 func _select_hovered_pawn(ctrl: TacticsControls) -> PhysicsBody3D:
 	var pawn: TacticsPawn = input_service.get_3d_canvas_mouse_position(2, ctrl)
+	if pawn != null and not pawn.is_alive():
+		pawn = null
 	var tile: TacticsTile = input_service.get_3d_canvas_mouse_position(1, ctrl) if not pawn else pawn.get_tile()
 	arena.mark_hover_tile(tile)
 	return pawn if pawn else tile.get_tile_occupier() if tile else null
@@ -290,6 +292,8 @@ func _select_hovered_pawn(ctrl: TacticsControls) -> PhysicsBody3D:
 
 func _select_hovered_tile(ctrl: TacticsControls) -> TacticsTile:
 	var pawn: TacticsPawn = input_service.get_3d_canvas_mouse_position(2, ctrl)
+	if pawn != null and not pawn.is_alive():
+		pawn = null
 	var tile: TacticsTile = input_service.get_3d_canvas_mouse_position(1, ctrl) if not pawn else pawn.get_tile()
 	arena.mark_hover_tile(tile)
 	return tile
