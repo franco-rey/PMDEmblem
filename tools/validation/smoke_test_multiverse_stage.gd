@@ -96,8 +96,16 @@ func _run() -> void:
 	await driver._end_turn(later.pawn)
 	await physics_frame
 	_assert_true(mv.pending_travel.is_empty() and not mv.preview_active and stage._preview_root == null, "ending the turn without choosing cancels the travel and removes its preview")
-	var grown: float = minimap.layout_scale(mv.state, mv.state.timeline_ids())
-	_assert_true(grown <= scale and grown >= MultiverseMinimap.MIN_SCALE and scale <= MultiverseMinimap.CELL / MultiverseStage.pitch, "the mini map scale never grows past the cell size and shrinks as the multiverse widens (%.2f -> %.2f)" % [scale, grown])
+	var grown: float = minimap.fit_scale(mv.state, mv.state.timeline_ids())
+	var close: float = minimap.close_scale()
+	_assert_true(grown <= minimap.fit_scale(mv.state, [0]) and grown > 0.0, "the mini map's fit never grows as the multiverse widens (%.2f)" % grown)
+	_assert_true(is_equal_approx(close * minimap.board_footprint().length(), MultiverseMinimap.DIAMETER - 2.0 * MultiverseMinimap.RING) and is_equal_approx(minimap.board_footprint().x, stage.board_size.x), "fully zoomed in, one board card is inscribed in the mini map circle with the board's own footprint")
+	camera.res.current_fov = camera.res.min_zoom
+	camera.res.current_distance = 0.0
+	_assert_true(is_equal_approx(minimap.layout_scale(mv.state, mv.state.timeline_ids()), close), "at the camera's closest zoom the mini map uses the close scale")
+	camera.res.current_fov = camera.res.max_zoom
+	camera.res.current_distance = camera.res.max_overview
+	_assert_true(is_equal_approx(minimap.layout_scale(mv.state, mv.state.timeline_ids()), minf(grown, close)), "at the camera's farthest zoom the mini map fits the whole multiverse with a margin")
 	_finish()
 
 

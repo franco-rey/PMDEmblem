@@ -62,7 +62,7 @@
   "delta_stream": "Battle/DUN_Cloudy"
  },
  "lobby": {
-  "join": "Fanfare/JoinTeam",
+  "join": "Menu/Confirm",
   "leave": "Fanfare/LeaveTeam",
   "item": "Fanfare/Item",
   "skill": "Fanfare/LearnSkill"

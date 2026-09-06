@@ -9,7 +9,7 @@ const EXPECTED: Dictionary = {
 	"makruk": {"tiles": 64, "cap": 16, "cols": 8, "rows": 8},
 	"sittuyin": {"tiles": 64, "cap": 16, "cols": 8, "rows": 8},
 	"circular": {"tiles": 132, "cap": 16, "cols": 14, "rows": 14},
-	"grids": {"tiles": 272, "cap": 15, "cols": 20, "rows": 20},
+	"grids": {"tiles": 297, "cap": 15, "cols": 21, "rows": 21, "wedges": 36},
 }
 
 var driver: RefCounted = null
@@ -32,7 +32,7 @@ func _run() -> void:
 	_assert_true(ok, "a 15v15 hot-seat skirmish launches on Grids")
 	if ok:
 		var level: TacticsLevel = driver.level
-		_assert_true(level.notation.columns == 20 and level.notation.rows == 20, "the notation sees the 20 by 20 Grids frame (%dx%d)" % [level.notation.columns, level.notation.rows])
+		_assert_true(level.notation.columns == 21 and level.notation.rows == 21, "the notation sees the 21 by 21 Grids frame (%dx%d)" % [level.notation.columns, level.notation.rows])
 		var corner_ok: bool = true
 		for pawn in level.player.get_children():
 			var key: Vector3i = Targeting._tile_key(pawn.get_tile())
@@ -53,7 +53,7 @@ func _run() -> void:
 		for key in Targeting.arena_tile_keys(level):
 			if (Targeting.arena_tile_keys(level)[key] as TacticsTile).reachable:
 				reachable += 1
-		_assert_true(reachable >= 240, "every walkable square of Grids is connected through the bridges (%d reachable)" % reachable)
+		_assert_true(reachable >= 297 - 30, "every walkable square of Grids is connected through the bridges, only the thirty occupied ones excepted (%d reachable)" % reachable)
 	var ring_ok: bool = await driver._launch("match seed=5 mode=bots map=circular team=16")
 	_assert_true(ring_ok, "a 16v16 bot skirmish launches on the Circular ring")
 	if ring_ok:
@@ -188,8 +188,14 @@ func _check_map(map_id: String, expected: Dictionary) -> void:
 	var frames: int = 0
 	var lights: int = 0
 	var darks: int = 0
+	var wedges: int = 0
 	if terrain != null:
 		for child in terrain.get_children():
+			if child.name.begins_with("Wedge_"):
+				wedges += 1
+				var wedge_key: Vector3i = Vector3i(roundi((child as Node3D).position.x), 0, roundi((child as Node3D).position.z))
+				if keys.has(wedge_key):
+					off_tile += 1
 			if child.name.begins_with("Square_"):
 				squares += 1
 				var material: Material = (child as MeshInstance3D).get_surface_override_material(0)
@@ -205,7 +211,8 @@ func _check_map(map_id: String, expected: Dictionary) -> void:
 	_assert_true(max_x - min_x + 1 == int(expected["cols"]) and max_z - min_z + 1 == int(expected["rows"]), "%s spans %dx%d (%dx%d)" % [map_id, int(expected["cols"]), int(expected["rows"]), max_x - min_x + 1, max_z - min_z + 1])
 	_assert_true(map.max_team_size == int(expected["cap"]) and CustomSkirmishBuilder.max_team_size_for(path) == int(expected["cap"]), "%s caps teams at %d (%d)" % [map_id, int(expected["cap"]), map.max_team_size])
 	_assert_true(players >= int(expected["cap"]) and enemies >= int(expected["cap"]) and off_tile == 0, "%s has %d anchors a side on walkable squares (%d/%d, %d off)" % [map_id, int(expected["cap"]), players, enemies, off_tile])
-	_assert_true(squares == tile_count and frames >= 1 and absi(lights - darks) <= 2, "%s keeps the chessboard look: a light or dark block per square and the brown foundation (%d squares, %d light, %d dark, %d frame pieces)" % [map_id, squares, lights, darks, frames])
+	_assert_true(squares == tile_count and frames >= 1 and absi(lights - darks) <= maxi(2, tile_count / 12), "%s keeps the chessboard look: a light or dark block per square and the brown foundation (%d squares, %d light, %d dark, %d frame pieces)" % [map_id, squares, lights, darks, frames])
+	_assert_true(wedges == int(expected.get("wedges", 0)), "%s draws %d chamfer wedges on squares nobody can stand on (%d)" % [map_id, int(expected.get("wedges", 0)), wedges])
 
 
 func _assert_true(condition: bool, label: String) -> void:

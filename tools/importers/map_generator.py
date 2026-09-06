@@ -59,22 +59,54 @@ def ring_tiles(cols, rows, inner, outer):
     return tiles
 
 
+GRIDS_SIZE = 21
+GRIDS_HOLES = (4, 12)
+GRIDS_HOLE = 5
+
+
 def grids_tiles():
-    size = 20
+    size = GRIDS_SIZE
     tiles = rect_tiles(size, size)
-    for hole_c in (4, 11):
-        for hole_r in (4, 11):
-            for c in range(hole_c, hole_c + 5):
-                for r in range(hole_r, hole_r + 5):
+    diagonals = set()
+    for hole_c in GRIDS_HOLES:
+        for hole_r in GRIDS_HOLES:
+            for c in range(hole_c, hole_c + GRIDS_HOLE):
+                for r in range(hole_r, hole_r + GRIDS_HOLE):
                     tiles.discard((c, r))
+            for corner in ((hole_c, hole_r), (hole_c + GRIDS_HOLE - 1, hole_r), (hole_c, hole_r + GRIDS_HOLE - 1), (hole_c + GRIDS_HOLE - 1, hole_r + GRIDS_HOLE - 1)):
+                diagonals.add(corner)
     for corner in ((0, 0), (0, size - 1), (size - 1, 0), (size - 1, size - 1)):
         tiles.discard(corner)
-    for notch in (5, 6, 7, 12, 13, 14):
-        tiles.discard((notch, 0))
-        tiles.discard((notch, size - 1))
-        tiles.discard((0, notch))
-        tiles.discard((size - 1, notch))
-    return tiles
+        diagonals.add(corner)
+    for hole in GRIDS_HOLES:
+        for offset in range(GRIDS_HOLE):
+            cell = hole + offset
+            for spot in ((cell, 0), (cell, size - 1), (0, cell), (size - 1, cell)):
+                tiles.discard(spot)
+                if offset == 0 or offset == GRIDS_HOLE - 1:
+                    diagonals.add(spot)
+    return tiles, diagonals
+
+
+WEDGE_BASES = {
+    (-1, -1): "1, 0, 0, 0, 0, -1, 0, 1, 0",
+    (-1, 1): "0, 1, 0, 0, 0, -1, -1, 0, 0",
+    (1, 1): "-1, 0, 0, 0, 0, -1, 0, -1, 0",
+    (1, -1): "0, -1, 0, 0, 0, -1, 1, 0, 0",
+}
+
+
+def wedge_corner(cell, tiles):
+    c, r = cell
+    dx = 0
+    dz = 0
+    for (ox, oz) in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+        if (c + ox, r + oz) in tiles:
+            dx += ox
+            dz += oz
+    if dx == 0 or dz == 0:
+        return None
+    return (dx, dz)
 
 
 def rotate(squares, cols, rows):
@@ -109,8 +141,9 @@ def ring_anchors(tiles, cols, rows, count):
 
 
 def grids_anchors(tiles):
+    far = GRIDS_SIZE - 4
     player = sorted([t for t in tiles if t[0] <= 3 and t[1] <= 3], key=lambda t: (t[1], t[0]))
-    enemy = sorted([t for t in tiles if t[0] >= 16 and t[1] >= 16], key=lambda t: (-t[1], -t[0]))
+    enemy = sorted([t for t in tiles if t[0] >= far and t[1] >= far], key=lambda t: (-t[1], -t[0]))
     return player, enemy
 
 
@@ -121,7 +154,7 @@ MAPS = {
     "makruk": {"name": "Makruk", "cols": 8, "rows": 8, "cap": 16, "player": MAKRUK_SETUP, "note": "Thai chess: eight on the back rank, eight pawns on the third rank"},
     "sittuyin": {"name": "Sittuyin", "cols": 8, "rows": 8, "cap": 16, "player": SITTUYIN_WHITE, "enemy": SITTUYIN_BLACK, "note": "Burmese chess: pawns on the a3 to d3 and e4 to h4 diagonal, the eight pieces placed behind them as in the reference diagram"},
     "circular": {"name": "Circular", "cols": 14, "rows": 14, "cap": 16, "kind": "ring", "inner": 2.9, "outer": 7.0, "note": "Circular chess: four rings of sixteen squares, sixteen pieces a side folded into the ring"},
-    "grids": {"name": "Grids", "cols": 20, "rows": 20, "cap": 15, "kind": "grids", "note": "Nine rounded squares joined by bridges around four holes; fifteen a side starting in opposite corners"},
+    "grids": {"name": "Grids", "cols": 21, "rows": 21, "cap": 15, "kind": "grids", "note": "Nine rounded squares joined by three-wide bridges around four five-square holes; chamfered corners drawn as wedges nobody can stand on; fifteen a side starting in opposite corners"},
 }
 
 
@@ -140,11 +173,12 @@ def build(map_id, spec):
     cols = spec["cols"]
     rows = spec["rows"]
     kind = spec.get("kind", "rect")
+    diagonals = set()
     if kind == "ring":
         tiles = ring_tiles(cols, rows, spec["inner"], spec["outer"])
         player, enemy = ring_anchors(tiles, cols, rows, spec["cap"])
     elif kind == "grids":
-        tiles = grids_tiles()
+        tiles, diagonals = grids_tiles()
         player, enemy = grids_anchors(tiles)
     else:
         tiles = rect_tiles(cols, rows)
@@ -160,19 +194,28 @@ def build(map_id, spec):
 
     ordered = sorted(tiles, key=lambda t: (t[1], t[0]))
     lines = []
-    load_steps = 6 if kind == "rect" else 6
-    lines.append('[gd_scene load_steps=%d format=3 uid="%s"]' % (load_steps + 1, uid_for(map_id)))
+    load_steps = 7 + (2 if diagonals else 0)
+    lines.append('[gd_scene load_steps=%d format=3 uid="%s"]' % (load_steps, uid_for(map_id)))
     lines.append('[ext_resource type="Script" path="%s" id="1_arena"]' % ARENA_SCRIPT)
     lines.append(TILE_MESH)
     lines.append('[sub_resource type="BoxMesh" id="block"]')
     lines.append('size = Vector3(1, 0.5, 1)')
     lines.append('')
+    if diagonals:
+        lines.append('[sub_resource type="PrismMesh" id="wedge"]')
+        lines.append('left_to_right = 0.0')
+        lines.append('size = Vector3(1, 1, 0.5)')
+        lines.append('')
+        lines.append('[sub_resource type="PrismMesh" id="wedge_under"]')
+        lines.append('left_to_right = 0.0')
+        lines.append('size = Vector3(1.6, 1.6, 0.3)')
+        lines.append('')
     if kind == "rect":
         lines.append('[sub_resource type="BoxMesh" id="slab"]')
         lines.append('size = Vector3(%s, 0.3, %s)' % (fmt(cols + 0.6), fmt(rows + 0.6)))
     else:
         lines.append('[sub_resource type="BoxMesh" id="slab"]')
-        lines.append('size = Vector3(1.12, 0.3, 1.12)')
+        lines.append('size = Vector3(1.6, 0.3, 1.6)')
     lines.append('')
     lines.append(MATERIALS)
     lines.append('[node name="Arena" type="Node3D"]')
@@ -204,7 +247,7 @@ def build(map_id, spec):
         lines.append('mesh = SubResource("slab")')
         lines.append('surface_material_override/0 = SubResource("frame")')
         lines.append('')
-    for t in ordered:
+    for index, t in enumerate(ordered):
         x, z = world(t)
         shade = "dark" if (x + z) % 2 == 0 else "light"
         lines.append('[node name="Square_%d_%d" type="MeshInstance3D" parent="Terrain"]' % (t[0], t[1]))
@@ -214,10 +257,27 @@ def build(map_id, spec):
         lines.append('')
         if kind != "rect":
             lines.append('[node name="Under_%d_%d" type="MeshInstance3D" parent="Terrain"]' % (t[0], t[1]))
-            lines.append('transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, -0.16, %s)' % (fmt(x), fmt(z)))
+            lines.append('transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)' % (fmt(x), fmt(-0.16 - 0.00005 * index), fmt(z)))
             lines.append('mesh = SubResource("slab")')
             lines.append('surface_material_override/0 = SubResource("frame")')
             lines.append('')
+    for cell in sorted(diagonals, key=lambda t: (t[1], t[0])):
+        corner = wedge_corner(cell, tiles)
+        if corner is None:
+            continue
+        x, z = world(cell)
+        shade = "dark" if (x + z) % 2 == 0 else "light"
+        basis = WEDGE_BASES[corner]
+        lines.append('[node name="Wedge_%d_%d" type="MeshInstance3D" parent="Terrain"]' % (cell[0], cell[1]))
+        lines.append('transform = Transform3D(%s, %s, 0.24, %s)' % (basis, fmt(x), fmt(z)))
+        lines.append('mesh = SubResource("wedge")')
+        lines.append('surface_material_override/0 = SubResource("%s")' % shade)
+        lines.append('')
+        lines.append('[node name="WedgeUnder_%d_%d" type="MeshInstance3D" parent="Terrain"]' % (cell[0], cell[1]))
+        lines.append('transform = Transform3D(%s, %s, %s, %s)' % (basis, fmt(x), fmt(-0.16 - 0.00005 * (len(ordered) + cell[0] + cell[1] * GRIDS_SIZE)), fmt(z)))
+        lines.append('mesh = SubResource("wedge_under")')
+        lines.append('surface_material_override/0 = SubResource("frame")')
+        lines.append('')
     lines.append('[node name="SpawnPoints" type="Node3D" parent="."]')
     lines.append('')
     for prefix, anchors in (("SpawnPlayer", player), ("SpawnEnemy", enemy)):
@@ -251,7 +311,7 @@ def build(map_id, spec):
 def fmt(value):
     if float(value).is_integer():
         return str(int(value))
-    return ("%.4f" % value).rstrip("0").rstrip(".")
+    return ("%.5f" % value).rstrip("0").rstrip(".")
 
 
 def main():

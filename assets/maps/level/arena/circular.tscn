@@ -18,7 +18,7 @@ _surfaces = [{
 size = Vector3(1, 0.5, 1)
 
 [sub_resource type="BoxMesh" id="slab"]
-size = Vector3(1.12, 0.3, 1.12)
+size = Vector3(1.6, 0.3, 1.6)
 
 [sub_resource type="StandardMaterial3D" id="light"]
 albedo_color = Color(0.87, 0.82, 0.68, 1)
@@ -593,7 +593,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_5_0" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.16, -7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.16005, -7)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -603,7 +603,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_6_0" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.16, -7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.1601, -7)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -613,7 +613,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_7_0" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.16, -7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.16015, -7)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -623,7 +623,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_8_0" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.16, -7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.1602, -7)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -633,7 +633,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_9_0" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16, -7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16025, -7)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -643,7 +643,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_3_1" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16, -6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.1603, -6)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -653,7 +653,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_4_1" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.16, -6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.16035, -6)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -663,7 +663,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_5_1" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.16, -6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.1604, -6)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -673,7 +673,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_6_1" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.16, -6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.16045, -6)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -683,7 +683,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_7_1" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.16, -6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1605, -6)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -693,7 +693,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_8_1" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.16, -6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.16055, -6)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -703,7 +703,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_9_1" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16, -6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.1606, -6)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -713,7 +713,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_10_1" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.16, -6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.16065, -6)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -723,7 +723,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_2_2" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.16, -5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.1607, -5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -733,7 +733,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_3_2" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16, -5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16075, -5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -743,7 +743,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_4_2" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.16, -5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.1608, -5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -753,7 +753,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_5_2" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.16, -5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.16085, -5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -763,7 +763,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_6_2" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.16, -5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.1609, -5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -773,7 +773,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_7_2" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.16, -5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.16095, -5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -783,7 +783,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_8_2" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.16, -5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.161, -5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -793,7 +793,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_9_2" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16, -5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16105, -5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -803,7 +803,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_10_2" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.16, -5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.1611, -5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -813,7 +813,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_11_2" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16, -5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16115, -5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -823,7 +823,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_1_3" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.16, -4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.1612, -4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -833,7 +833,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_2_3" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.16, -4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.16125, -4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -843,7 +843,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_3_3" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16, -4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.1613, -4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -853,7 +853,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_4_3" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.16, -4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.16135, -4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -863,7 +863,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_5_3" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.16, -4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.1614, -4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -873,7 +873,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_6_3" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.16, -4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.16145, -4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -883,7 +883,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_7_3" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.16, -4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1615, -4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -893,7 +893,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_8_3" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.16, -4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.16155, -4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -903,7 +903,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_9_3" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16, -4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.1616, -4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -913,7 +913,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_10_3" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.16, -4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.16165, -4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -923,7 +923,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_11_3" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16, -4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.1617, -4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -933,7 +933,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_12_3" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -0.16, -4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -0.16175, -4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -943,7 +943,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_0_4" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -0.16, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -0.1618, -3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -953,7 +953,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_1_4" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.16, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.16185, -3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -963,7 +963,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_2_4" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.16, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.1619, -3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -973,7 +973,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_3_4" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16195, -3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -983,7 +983,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_4_4" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.16, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.162, -3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -993,7 +993,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_5_4" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.16, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.16205, -3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1003,7 +1003,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_8_4" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.16, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.1621, -3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1013,7 +1013,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_9_4" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16215, -3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1023,7 +1023,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_10_4" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.16, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.1622, -3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1033,7 +1033,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_11_4" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16225, -3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1043,7 +1043,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_12_4" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -0.16, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -0.1623, -3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1053,7 +1053,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_13_4" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.16, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.16235, -3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1063,7 +1063,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_0_5" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -0.16, -2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -0.1624, -2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1073,7 +1073,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_1_5" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.16, -2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.16245, -2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1083,7 +1083,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_2_5" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.16, -2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.1625, -2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1093,7 +1093,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_3_5" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16, -2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16255, -2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1103,7 +1103,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_4_5" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.16, -2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.1626, -2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1113,7 +1113,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_9_5" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16, -2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16265, -2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1123,7 +1123,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_10_5" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.16, -2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.1627, -2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1133,7 +1133,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_11_5" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16, -2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16275, -2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1143,7 +1143,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_12_5" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -0.16, -2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -0.1628, -2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1153,7 +1153,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_13_5" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.16, -2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.16285, -2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1163,7 +1163,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_0_6" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -0.16, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -0.1629, -1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1173,7 +1173,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_1_6" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.16, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.16295, -1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1183,7 +1183,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_2_6" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.16, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.163, -1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1193,7 +1193,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_3_6" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16305, -1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1203,7 +1203,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_10_6" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.16, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.1631, -1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1213,7 +1213,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_11_6" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16315, -1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1223,7 +1223,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_12_6" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -0.16, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -0.1632, -1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1233,7 +1233,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_13_6" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.16, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.16325, -1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1243,7 +1243,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_0_7" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -0.16, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -0.1633, 0)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1253,7 +1253,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_1_7" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.16, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.16335, 0)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1263,7 +1263,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_2_7" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.16, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.1634, 0)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1273,7 +1273,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_3_7" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16345, 0)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1283,7 +1283,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_10_7" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.16, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.1635, 0)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1293,7 +1293,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_11_7" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16355, 0)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1303,7 +1303,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_12_7" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -0.16, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -0.1636, 0)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1313,7 +1313,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_13_7" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.16, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.16365, 0)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1323,7 +1323,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_0_8" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -0.16, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -0.1637, 1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1333,7 +1333,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_1_8" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.16, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.16375, 1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1343,7 +1343,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_2_8" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.16, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.1638, 1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1353,7 +1353,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_3_8" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16385, 1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1363,7 +1363,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_4_8" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.16, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.1639, 1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1373,7 +1373,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_9_8" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16395, 1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1383,7 +1383,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_10_8" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.16, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.164, 1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1393,7 +1393,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_11_8" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16405, 1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1403,7 +1403,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_12_8" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -0.16, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -0.1641, 1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1413,7 +1413,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_13_8" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.16, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.16415, 1)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1423,7 +1423,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_0_9" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -0.16, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -0.1642, 2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1433,7 +1433,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_1_9" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.16, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.16425, 2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1443,7 +1443,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_2_9" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.16, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.1643, 2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1453,7 +1453,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_3_9" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16435, 2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1463,7 +1463,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_4_9" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.16, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.1644, 2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1473,7 +1473,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_5_9" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.16, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.16445, 2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1483,7 +1483,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_8_9" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.16, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.1645, 2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1493,7 +1493,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_9_9" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16455, 2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1503,7 +1503,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_10_9" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.16, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.1646, 2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1513,7 +1513,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_11_9" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16465, 2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1523,7 +1523,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_12_9" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -0.16, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -0.1647, 2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1533,7 +1533,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_13_9" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.16, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.16475, 2)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1543,7 +1543,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_1_10" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.16, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.1648, 3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1553,7 +1553,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_2_10" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.16, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.16485, 3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1563,7 +1563,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_3_10" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.1649, 3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1573,7 +1573,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_4_10" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.16, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.16495, 3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1583,7 +1583,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_5_10" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.16, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.165, 3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1593,7 +1593,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_6_10" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.16, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.16505, 3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1603,7 +1603,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_7_10" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.16, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1651, 3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1613,7 +1613,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_8_10" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.16, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.16515, 3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1623,7 +1623,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_9_10" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.1652, 3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1633,7 +1633,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_10_10" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.16, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.16525, 3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1643,7 +1643,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_11_10" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.1653, 3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1653,7 +1653,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_12_10" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -0.16, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -0.16535, 3)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1663,7 +1663,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_2_11" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.16, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.1654, 4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1673,7 +1673,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_3_11" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16545, 4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1683,7 +1683,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_4_11" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.16, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.1655, 4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1693,7 +1693,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_5_11" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.16, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.16555, 4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1703,7 +1703,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_6_11" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.16, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.1656, 4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1713,7 +1713,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_7_11" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.16, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.16565, 4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1723,7 +1723,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_8_11" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.16, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.1657, 4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1733,7 +1733,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_9_11" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16575, 4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1743,7 +1743,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_10_11" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.16, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.1658, 4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1753,7 +1753,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_11_11" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.16585, 4)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1763,7 +1763,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_3_12" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.16, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -0.1659, 5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1773,7 +1773,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_4_12" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.16, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.16595, 5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1783,7 +1783,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_5_12" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.16, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.166, 5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1793,7 +1793,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_6_12" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.16, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.16605, 5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1803,7 +1803,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_7_12" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.16, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1661, 5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1813,7 +1813,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_8_12" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.16, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.16615, 5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1823,7 +1823,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_9_12" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.1662, 5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1833,7 +1833,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_10_12" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.16, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.16625, 5)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1843,7 +1843,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_4_13" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.16, 6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.1663, 6)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1853,7 +1853,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_5_13" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.16, 6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.16635, 6)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1863,7 +1863,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_6_13" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.16, 6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.1664, 6)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1873,7 +1873,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_7_13" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.16, 6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.16645, 6)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1883,7 +1883,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("light")
 
 [node name="Under_8_13" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.16, 6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.1665, 6)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
@@ -1893,7 +1893,7 @@ mesh = SubResource("block")
 surface_material_override/0 = SubResource("dark")
 
 [node name="Under_9_13" type="MeshInstance3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16, 6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.16655, 6)
 mesh = SubResource("slab")
 surface_material_override/0 = SubResource("frame")
 
