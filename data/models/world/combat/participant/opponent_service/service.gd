@@ -54,7 +54,7 @@ func chase_nearest_enemy(opponent: Node3D, player_node: Node) -> void:
 			res.curr_pawn.res.selected_move_index = action.move_index
 			if action.move_index < res.curr_pawn.stats.move_slots.size():
 				var move: PokemonMoveResource = res.curr_pawn.stats.move_slots[action.move_index]
-				res.curr_pawn.stats.attack_range = max(1, move.tactical_range_value)
+				res.curr_pawn.stats.attack_range = Targeting.range_distance(res.curr_pawn, move)
 		_apply_charge_lock(res.curr_pawn)
 		var to: TacticsTile = action.move_to_tile
 		if to == null or not is_instance_valid(to):
@@ -82,7 +82,7 @@ func chase_nearest_enemy(opponent: Node3D, player_node: Node) -> void:
 			res.curr_pawn.res.selected_move_index = action.move_index
 			if action.move_index < res.curr_pawn.stats.move_slots.size():
 				var held_move: PokemonMoveResource = res.curr_pawn.stats.move_slots[action.move_index]
-				res.curr_pawn.stats.attack_range = max(1, held_move.tactical_range_value)
+				res.curr_pawn.stats.attack_range = Targeting.range_distance(res.curr_pawn, held_move)
 		if DebugLog.debug_enabled:
 			print_rich("[color=orange]", res.curr_pawn, " cannot move this turn; attacking in place.[/color]")
 		res.stage = res.STAGE_SELECT_LOCATION

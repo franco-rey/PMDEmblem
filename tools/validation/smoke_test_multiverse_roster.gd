@@ -22,6 +22,54 @@ func _run() -> void:
 		for move in SkirmishMoveLoadout.move_pool_for_instance(celebi_instance):
 			pool_ids.append(move.move_id)
 		_assert_true(pool_ids.has("dimensional_hole"), "the lobby move pool offers Dimensional Hole to Celebi")
+	var table: Dictionary = MultiverseRoster.travellers()
+	var legendary_pool: Array[String] = MultiverseRoster.legendary_slugs()
+	var common_pool: Array[String] = MultiverseRoster.common_slugs()
+	_assert_true(not legendary_pool.is_empty() and not common_pool.is_empty(), "the traveller table splits into legendary and non-legendary pools (%d/%d)" % [legendary_pool.size(), common_pool.size()])
+	var every_move_travels: bool = true
+	for slug in table.keys():
+		if not MultiverseController.TRAVEL_MOVES.has(String(table[slug])):
+			every_move_travels = false
+	_assert_true(every_move_travels, "every traveller is mapped to a move that opens or crosses a timeline")
+
+	var plain: Array[String] = [
+		"res://data/models/pokemon/generated/instances/0025_pikachu.tres",
+		"res://data/models/pokemon/generated/instances/0006_charizard.tres",
+		"res://data/models/pokemon/generated/instances/0009_blastoise.tres",
+	]
+	var guaranteed: Array[String] = MultiverseRoster.ensure_traveller_paths(plain, 991)
+	_assert_true(guaranteed.size() == plain.size() and MultiverseRoster.paths_satisfy(guaranteed), "a random roster with no travellers gains one legendary and one non-legendary (%s)" % str(guaranteed))
+	_assert_true(MultiverseRoster.ensure_traveller_paths(plain, 991) == guaranteed, "the traveller substitution is deterministic for a seed")
+	_assert_true(MultiverseRoster.ensure_traveller_paths(guaranteed, 12345) == guaranteed, "a roster that already satisfies the rule is left alone")
+	var solo: Array[String] = MultiverseRoster.ensure_traveller_paths([plain[0]], 991)
+	var solo_slug: String = PortraitLibrary.slug_for_path(solo[0]) if solo.size() == 1 else ""
+	_assert_true(MultiverseRoster.is_traveller(solo_slug) and MultiverseRoster.is_legendary(solo_slug), "a one-slot random team gets the legendary traveller (%s)" % solo_slug)
+
+	var grovyle: PokemonInstanceResource = load("res://data/models/pokemon/generated/instances/0253_grovyle.tres") as PokemonInstanceResource
+	if grovyle != null:
+		var copy: PokemonInstanceResource = SkirmishMoveLoadout.clone_for_side(grovyle, PokemonInstanceResource.Team.PLAYER, PokemonInstanceResource.ControlType.AI)
+		copy.move_slots = [CustomMoves.load_move("leaf_blade"), CustomMoves.load_move("quick_attack")]
+		copy.pp_state = [10, 30]
+		var team: Array[PokemonInstanceResource] = [copy]
+		var changed: int = MultiverseRoster.ensure_traveller_moves(team)
+		var granted: Array[String] = []
+		for move in copy.move_slots:
+			granted.append(move.move_id if move != null else "")
+		_assert_true(changed == 1 and granted.has(MultiverseRoster.travel_move_for("0253_grovyle")), "a traveller that rolled no dimension move is granted one (%s)" % str(granted))
+		_assert_true(SkirmishMoveLoadout.has_resolving_attack(copy.move_slots), "granting the dimension move keeps a usable attack")
+		_assert_true(copy.pp_state.size() == copy.move_slots.size(), "granting the dimension move keeps PP aligned with the slots")
+		_assert_true(MultiverseRoster.ensure_traveller_moves(team) == 0, "a traveller that already carries a dimension move is left alone")
+
+	var built: Dictionary = CustomSkirmishBuilder.build_random(4, "res://data/models/maps/definitions/chessboard.tres", "4242", SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU, true)
+	if bool(built.get("ok", false)):
+		var definition: SkirmishDefinitionResource = built["definition"]
+		MultiverseRoster.ensure_traveller_moves(definition.player_team)
+		MultiverseRoster.ensure_traveller_moves(definition.enemy_team)
+		_assert_true(MultiverseRoster.team_satisfies(definition.player_team), "a generated 5D player team fields a legendary and a non-legendary traveller")
+		_assert_true(MultiverseRoster.team_satisfies(definition.enemy_team), "a generated 5D enemy team fields a legendary and a non-legendary traveller")
+	else:
+		_assert_true(false, "a random 5D skirmish builds (%s)" % String(built.get("error", "")))
+
 	driver = DRIVER.new(self)
 	var ok: bool = await driver._launch("match seed=17 mode=pvp multiverse=1 p=0251_celebi@50:dimensional_hole,psychic:natural_cure|0474_porygon_z@50:dimensional_glitch,tri_attack:adaptability|0493_arceus@50:judgment,recover:multitype e=0483_dialga@50:roar_of_time,dragon_claw:pressure|0720_hoopa@50:hyperspace_fury,psychic:magician|0487_giratina@50:shadow_force,dragon_claw:pressure")
 	_assert_true(ok, "a roster with every multiverse Pokemon and all four custom moves launches")

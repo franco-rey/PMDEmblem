@@ -30,7 +30,6 @@ var full_item_use: bool = false
 var shared_focus: bool = true
 var turn_order_aware: bool = true
 var team_assignment: bool = false
-var consider_travel: bool = false
 var risk_weight: float = 0.35
 var approach_weight: float = 0.8
 
@@ -70,7 +69,6 @@ static func for_level(value: int) -> AIProfile:
 	profile.shared_focus = n >= 2
 	profile.turn_order_aware = n >= 3
 	profile.team_assignment = n >= 4
-	profile.consider_travel = n >= 5
 	profile.risk_weight = RISK_WEIGHTS[n - 1]
 	profile.approach_weight = APPROACH_WEIGHTS[n - 1]
 	return profile

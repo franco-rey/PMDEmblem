@@ -4,6 +4,7 @@ extends RefCounted
 signal line_appended(line: String, index: int)
 
 const OUTPUT_DIR: String = "res://logs/debug/battles"
+const KEEP_TRANSCRIPTS: int = 200
 const INDENT: String = "  "
 const STAT_TOKENS: Dictionary = {
 	"attack": "atk",
@@ -357,14 +358,24 @@ func output_path() -> String:
 	return "%s/%s_seed%d.pmdn" % [OUTPUT_DIR, battle_label.validate_filename(), battle_seed]
 
 
-static func clear_output_dir() -> int:
+static func prune_output_dir(keep_newest: int = KEEP_TRANSCRIPTS) -> int:
 	var dir_path: String = ProjectSettings.globalize_path(OUTPUT_DIR)
 	var dir := DirAccess.open(dir_path)
 	if dir == null:
 		return 0
-	var removed: int = 0
+	var entries: Array[Dictionary] = []
 	for file in dir.get_files():
-		if (file.ends_with(".log") or file.ends_with(".pmdn")) and dir.remove(file) == OK:
+		if file.ends_with(".log") or file.ends_with(".pmdn"):
+			entries.append({"name": file, "time": FileAccess.get_modified_time("%s/%s" % [dir_path, file])})
+	if entries.size() <= maxi(0, keep_newest):
+		return 0
+	entries.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		if int(a["time"]) != int(b["time"]):
+			return int(a["time"]) > int(b["time"])
+		return String(a["name"]) > String(b["name"]))
+	var removed: int = 0
+	for i in range(maxi(0, keep_newest), entries.size()):
+		if dir.remove(String(entries[i]["name"])) == OK:
 			removed += 1
 	return removed
 

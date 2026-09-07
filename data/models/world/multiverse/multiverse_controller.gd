@@ -581,7 +581,7 @@ func commit_travel(choice: int) -> bool:
 		arrival["res"]["has_acted_this_round"] = true
 		if bool(rule.get("lag", false)) or move_id == "roar_of_time" and String(entry["id"]) == traveller_ids[0]:
 			var statuses: Dictionary = arrival["stats"]["battle_statuses"]
-			statuses["recharge"] = {"counter": 1}
+			statuses["recharge"] = {"counter": 2}
 			arrival["stats"]["battle_statuses"] = statuses
 		destination.add_unit(arrival)
 	travels += 1
@@ -596,6 +596,7 @@ func commit_travel(choice: int) -> bool:
 		level.banner.show_notice("%s: %s" % [BattleMessageCatalog.move_label(move_id), "a new timeline opens at %s" % MultiverseState.label(dest_coords.x) if kind != "hop" else "arrival on %s" % MultiverseState.label(dest_coords.x)])
 	if kind != "hop":
 		level.notation.record_branch(destination, arrived_ids)
+	level.notation.record_board_switch(dest_coords.x, dest_coords.y)
 	level.battle_log.append({"kind": "board_switched", "timeline": dest_coords.x, "turn": dest_coords.y, "reason": "travel"})
 	present_refresh()
 	committing = false

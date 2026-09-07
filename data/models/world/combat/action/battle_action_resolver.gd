@@ -647,6 +647,11 @@ func _resolve_one_target(
 		animation_resolver.select_reaction(target, move, "miss", battle_log)
 		intrinsic_service.end_hit()
 		return
+	if move.is_damaging() and effectiveness <= 0.0:
+		_append(battle_log, {"kind": "damage_prevented", "unit": target, "defender": target, "attacker": attacker, "move_id": move.move_id, "source": "type_immunity"})
+		animation_resolver.select_reaction(target, move, "miss", battle_log)
+		intrinsic_service.end_hit()
+		return
 	var stab: bool = type_chart.is_stab(move.type, attacker.stats.types) if type_chart != null else false
 	var damage: int = 0
 	var damage_outcome: Dictionary = {}
@@ -1504,7 +1509,7 @@ func _copy_status_subset(
 
 
 func _apply_status_state(attacker: TacticsPawn, move: PokemonMoveResource, source_event: String, battle_log: BattleLog) -> void:
-	if attacker == null or attacker.stats == null:
+	if attacker == null or attacker.stats == null or attacker.stats.battle_statuses.has(STATUS_RECHARGE):
 		return
 	attacker.stats.apply_battle_status(STATUS_RECHARGE, {"move_id": move.move_id, "source_event": source_event})
 	_append(battle_log, {

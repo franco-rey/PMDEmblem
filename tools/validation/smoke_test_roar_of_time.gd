@@ -69,7 +69,7 @@ func _run() -> void:
 	var actors_round_1: Array[String] = await _play_round_collect()
 	_assert_true(not actors_round_1.has("P1'") and not actors_round_1.has("E1'") and actors_round_1.size() == 4, "arrivals rest during the round they arrived in (%s)" % str(actors_round_1))
 	var actors_round_2: Array[String] = await _play_round_collect()
-	_assert_true(actors_round_2.has("P1'") and actors_round_2.has("E1'"), "arrivals act from the next round on (%s)" % str(actors_round_2))
+	_assert_true(actors_round_2.has("E1'") and not actors_round_2.has("P1'"), "the dragged arrival acts from the next round while the Roar of Time user spends its recharge (%s)" % str(actors_round_2))
 	_assert_true(mv.state.latest(1).turn == 3 and mv.state.present() == 3, "the branch has caught up to T3 (present %d)" % mv.state.present())
 	_assert_true(mv.switches == 1 and mv.state.focus == Vector2i(0, 3) and mv.last_switch_reason == "present", "the moment both boards sit at the present the game returns to timeline 0 first (switches %d, focus %s)" % [mv.switches, str(mv.state.focus)])
 	_assert_true(level.round_index == 3 and level.notation.pawn_for_id("P1") == null and level.notation.pawn_for_id("P2") != null, "timeline 0 resumes its mid-round T3 without the travellers")

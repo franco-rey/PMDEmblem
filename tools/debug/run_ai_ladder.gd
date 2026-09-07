@@ -3,6 +3,7 @@ extends SceneTree
 const MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const OUTPUT_DIR: String = "res://logs/debug/validation"
 const MAX_FRAMES: int = 24000
+const TOLERANCE_SIGMA: float = 2.0
 
 var results: Array[Dictionary] = []
 
@@ -57,19 +58,33 @@ func _run() -> void:
 		var row: Dictionary = wins[level]
 		var played: int = int(row["played"])
 		var rate: float = float(row["won"]) / float(maxi(1, played))
-		table.append({"level": level, "played": played, "won": int(row["won"]), "drawn": int(row["drawn"]), "win_rate": rate})
-		print("ladder: L%d played=%d won=%d drawn=%d win_rate=%.3f" % [level, played, int(row["won"]), int(row["drawn"]), rate])
+		var error: float = sqrt(0.25 / float(maxi(1, played)))
+		table.append({"level": level, "played": played, "won": int(row["won"]), "drawn": int(row["drawn"]), "win_rate": rate, "std_error": error})
+		print("ladder: L%d played=%d won=%d drawn=%d win_rate=%.3f +/-%.3f" % [level, played, int(row["won"]), int(row["drawn"]), rate, error])
 	var monotonic: bool = true
+	var regressions: Array[String] = []
 	for i in range(table.size() - 1):
-		if float(table[i]["win_rate"]) > float(table[i + 1]["win_rate"]):
+		var lower: Dictionary = table[i]
+		var upper: Dictionary = table[i + 1]
+		var margin: float = TOLERANCE_SIGMA * sqrt(pow(float(lower["std_error"]), 2.0) + pow(float(upper["std_error"]), 2.0))
+		if float(lower["win_rate"]) > float(upper["win_rate"]) + margin:
 			monotonic = false
-	print("ladder: monotonic=%s" % str(monotonic))
+			regressions.append("L%d beats L%d by %.3f (tolerance %.3f)" % [int(lower["level"]), int(upper["level"]), float(lower["win_rate"]) - float(upper["win_rate"]), margin])
+	print("ladder: monotonic=%s%s" % [str(monotonic), "" if regressions.is_empty() else " " + ", ".join(regressions)])
+	print("ladder: note a gap smaller than the tolerance is not measurable at this sample size")
+	var separated: bool = true
+	if table.size() >= 2:
+		var lowest: Dictionary = table[0]
+		var highest: Dictionary = table[table.size() - 1]
+		var span_margin: float = TOLERANCE_SIGMA * sqrt(pow(float(lowest["std_error"]), 2.0) + pow(float(highest["std_error"]), 2.0))
+		separated = float(highest["win_rate"]) > float(lowest["win_rate"]) + span_margin
+		print("ladder: span L%d %.3f to L%d %.3f, margin %.3f, separated=%s" % [int(lowest["level"]), float(lowest["win_rate"]), int(highest["level"]), float(highest["win_rate"]), span_margin, str(separated)])
 	var file := FileAccess.open("%s/ai_ladder.json" % OUTPUT_DIR, FileAccess.WRITE)
 	if file != null:
-		file.store_string(JSON.stringify({"generated": Time.get_datetime_string_from_system(), "seeds": seeds, "team_size": team_size, "table": table, "monotonic": monotonic, "battles": results}, "\t"))
+		file.store_string(JSON.stringify({"generated": Time.get_datetime_string_from_system(), "seeds": seeds, "team_size": team_size, "table": table, "monotonic": monotonic, "separated": separated, "regressions": regressions, "battles": results}, "\t"))
 		file.close()
 	print("ladder: done %d battles" % results.size())
-	quit(0 if monotonic else 1)
+	quit(0 if monotonic and separated else 1)
 
 
 func _battle(seed: int, team_size: int, player_level: int, enemy_level: int) -> Dictionary:

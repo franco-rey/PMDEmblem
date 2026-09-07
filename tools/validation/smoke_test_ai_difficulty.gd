@@ -32,52 +32,56 @@ func _run() -> void:
 	_assert_true(low.move_index >= 0 and high.move_index >= 0, "both tiers pick a move (L1 slot %d, L5 slot %d)" % [low.move_index, high.move_index])
 	_assert_true(low.move_index == 0, "level 1 takes the first usable slot")
 
-	var best_pair_damage: float = 0.0
-	var best_pair: String = ""
-	for i in range(charizard.stats.move_slots.size()):
-		var move: PokemonMoveResource = charizard.stats.move_slots[i]
-		if move == null:
-			continue
-		for foe in foes:
-			if not (foe is TacticsPawn) or not (foe as TacticsPawn).is_alive():
-				continue
-			var value: float = ai._expected_damage(charizard, foe, move, chart)
-			if value > best_pair_damage:
-				best_pair_damage = value
-				best_pair = "%d/%s" % [i, (foe as TacticsPawn).name]
-	_assert_true(best_pair_damage > 0.0, "the damage estimator returns a real number for at least one pairing")
-	var chosen_pair: String = "%d/%s" % [high.move_index, high.target_unit.name] if high.target_unit != null else ""
-	_assert_true(chosen_pair == best_pair, "level 5 takes the best move and target pairing available (%s, best %s)" % [chosen_pair, best_pair])
 	_assert_true(high.target_unit != blastoise, "level 5 ignores the nearer resistant target for the one it can hurt")
 	_assert_true(low.target_unit == blastoise, "level 1 just walks at the nearest enemy")
 
 	_assert_true(ai._expected_damage(charizard, blastoise, charizard.stats.move_slots[0], chart) < ai._expected_damage(blastoise, charizard, blastoise.stats.move_slots[0], chart), "the estimator respects type advantage (water beats fire)")
 
-	var kо_target: TacticsPawn = blastoise
-	kо_target.stats.curr_health = 1
+	var finisher_target: TacticsPawn = blastoise
+	finisher_target.stats.curr_health = 1
+	var venusaur: TacticsPawn = level.notation.pawn_for_id("E2")
 	ai.set_level(4)
 	ai.forget(charizard)
 	var finisher: AIAction = ai.choose_action(charizard, allies, foes, chart, level)
-	_assert_true(finisher.target_unit == kо_target, "level 4 goes for the unit it can knock out")
-	kо_target.stats.curr_health = kо_target.stats.max_health
+	_assert_true(finisher.target_unit == finisher_target, "level 4 goes for the unit it can knock out")
+	ai.set_level(3)
+	ai.forget(charizard)
+	var greedy: AIAction = ai.choose_action(charizard, allies, foes, chart, level)
+	_assert_true(greedy.target_unit == finisher_target, "level 3 reaches the same finish through the damage fraction cap, so the knockout bonus is a tie-break rather than a new ordering")
+	finisher_target.stats.curr_health = finisher_target.stats.max_health
 
 	ai.set_level(2)
 	ai.forget(charizard)
 	charizard.stats.curr_health = 1
 	var heal_item: PokemonItemResource = PokemonItemService.load_item("berry_oran")
-	if heal_item != null and charizard.stats.pokemon_instance != null:
-		charizard.stats.pokemon_instance.held_item = heal_item
-		var healing: AIAction = ai.choose_action(charizard, allies, foes, chart, level)
-		_assert_true(healing.intent != null and healing.intent.is_item_action(), "level 2 drinks its berry when badly hurt")
-		ai.set_level(1)
-		ai.forget(charizard)
-		var stubborn: AIAction = ai.choose_action(charizard, allies, foes, chart, level)
-		_assert_true(stubborn.intent == null or not stubborn.intent.is_item_action(), "level 1 never uses items")
-		charizard.stats.pokemon_instance.held_item = null
+	_assert_true(heal_item != null and charizard.stats.pokemon_instance != null, "the heal item and instance needed for the item checks exist")
+	charizard.stats.pokemon_instance.held_item = heal_item
+	var healing: AIAction = ai.choose_action(charizard, allies, foes, chart, level)
+	_assert_true(healing.intent != null and healing.intent.is_item_action(), "level 2 drinks its berry when badly hurt")
+	ai.set_level(1)
+	ai.forget(charizard)
+	var stubborn: AIAction = ai.choose_action(charizard, allies, foes, chart, level)
+	_assert_true(stubborn.intent == null or not stubborn.intent.is_item_action(), "level 1 never uses items")
+	ai.set_level(5)
+	ai.forget(charizard)
+	venusaur.stats.curr_health = 1
+	var lethal_first: AIAction = ai.choose_action(charizard, allies, foes, chart, level)
+	_assert_true(lethal_first.intent == null or not lethal_first.intent.is_item_action(), "a hurt unit takes a guaranteed knockout instead of drinking")
+	venusaur.stats.curr_health = venusaur.stats.max_health
+	charizard.stats.pokemon_instance.held_item = null
 	charizard.stats.curr_health = charizard.stats.max_health
 
-	ai.set_team_levels({PokemonInstanceResource.Team.PLAYER: 5, PokemonInstanceResource.Team.ENEMY: 1})
-	_assert_true(ai.level_for_team(PokemonInstanceResource.Team.PLAYER) == 5 and ai.level_for_team(PokemonInstanceResource.Team.ENEMY) == 1, "each side can run its own skill level")
+	ai.set_team_levels({PokemonInstanceResource.Team.PLAYER: 1, PokemonInstanceResource.Team.ENEMY: 5})
+	ai.forget(charizard)
+	var per_team: AIAction = ai.choose_action(charizard, allies, foes, chart, level)
+	ai.set_level(1)
+	ai.set_team_levels({})
+	ai.forget(charizard)
+	var plain_low: AIAction = ai.choose_action(charizard, allies, foes, chart, level)
+	_assert_true(per_team.move_index == plain_low.move_index and per_team.target_unit == plain_low.target_unit, "a player unit plays at the level assigned to its own team, not the default")
+
+	_assert_true(_setup_headroom_reads_real_stats(charizard), "setup headroom reads the stat stage keys the game actually stores")
+	_assert_true(_range_rules_agree(charizard), "key_in_range agrees with range_from for every range kind")
 
 	_finish()
 
@@ -101,13 +105,51 @@ func _profile_checks() -> void:
 				and _at_least(profile.consider_setup_moves, previous.consider_setup_moves)
 				and _at_least(profile.use_throwables, previous.use_throwables)
 				and _at_least(profile.team_assignment, previous.team_assignment)
-				and _at_least(profile.consider_travel, previous.consider_travel)
+				and _at_least(profile.consider_ability_items, previous.consider_ability_items)
+				and _at_least(profile.turn_order_aware, previous.turn_order_aware)
 			)
 			_assert_true(monotone, "level %d never knows less than level %d" % [level, level - 1])
 		previous = profile
 	_assert_true(AIProfile.for_level(1).risk_weight == 0.0, "level 1 ignores danger entirely")
-	_assert_true(AIProfile.for_level(5).consider_travel, "level 5 considers time travel")
+	_assert_true(AIProfile.for_level(5).consider_ability_items and not AIProfile.for_level(4).consider_ability_items, "only level 5 folds ability effects into its damage estimate")
 	_assert_true(AIProfile.label_for(3) == "Tactical", "levels carry readable names")
+
+
+func _setup_headroom_reads_real_stats(pawn: TacticsPawn) -> bool:
+	var ai := BattleAI.new()
+	ai.set_level(4)
+	var clean: float = ai._setup_headroom(pawn)
+	pawn.stats.stat_stages = {"attack": 4, "evasion": 3, "speed": -2}
+	var boosted: float = ai._setup_headroom(pawn)
+	pawn.stats.stat_stages = {}
+	return is_equal_approx(clean, 1.0) and boosted < 0.5
+
+
+func _range_rules_agree(unit: TacticsPawn) -> bool:
+	var ai := BattleAI.new()
+	var move := PokemonMoveResource.new()
+	for kind in [
+			PokemonMoveResource.TacticalRangeKind.MELEE,
+			PokemonMoveResource.TacticalRangeKind.LINE,
+			PokemonMoveResource.TacticalRangeKind.PROJECTILE,
+			PokemonMoveResource.TacticalRangeKind.AREA,
+			PokemonMoveResource.TacticalRangeKind.SELF,
+	]:
+		move.tactical_range_kind = kind
+		for distance in range(1, 5):
+			move.tactical_range_value = distance
+			for origin in [Vector3i(0, 0, 0), Vector3i(-3, 0, 2)]:
+				var listed: Dictionary = {}
+				for key in Targeting.range_from(origin, unit, move):
+					listed[key] = true
+				var reach: int = distance + 2
+				for x in range(-reach, reach + 1):
+					for z in range(-reach, reach + 1):
+						var probe: Vector3i = origin + Vector3i(x, 0, z)
+						if listed.has(probe) != Targeting.key_in_range(origin, probe, unit, move):
+							push_error("smoke: range mismatch kind=%d distance=%d probe=%s" % [kind, distance, str(probe)])
+							return false
+	return true
 
 
 func _at_least(current: bool, previous: bool) -> bool:

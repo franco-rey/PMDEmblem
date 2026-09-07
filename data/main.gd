@@ -128,7 +128,7 @@ func _ready() -> void:
 	add_child(SoundPlayer.new())
 	add_child(UiSoundHook.new())
 	add_child(MusicPlayer.new())
-	BattleNotation.clear_output_dir()
+	BattleNotation.prune_output_dir()
 	_style_main_menu()
 	_setup_menus()
 	_set_tactics_controls_enabled(false)

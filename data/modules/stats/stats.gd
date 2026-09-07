@@ -28,7 +28,7 @@ const DEFAULT_STATUS_PAYLOADS: Dictionary = {
 	"paused": {"counter": 2},
 	"poison": {"counter": 6, "hp_fraction": 16},
 	"poison_toxic": {"counter": 6, "hp_fraction": 16, "toxic_stage": 1},
-	"recharge": {"counter": 3},
+	"recharge": {"counter": 2},
 	"reflect": {"counter": 10},
 	"safeguard": {"counter": 15},
 	"sleep": {"counter": 5},
