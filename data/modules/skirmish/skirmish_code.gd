@@ -64,6 +64,8 @@ static func encode_definition(definition: SkirmishDefinitionResource) -> String:
 		tokens.append("map=%s" % definition.map.map_id)
 	if definition.multiverse:
 		tokens.append("multiverse=1")
+	if definition.ai_level != AIProfile.DEFAULT_LEVEL:
+		tokens.append("ai=%d" % AIProfile.clamp_level(definition.ai_level))
 	var player: String = _encode_team(definition.player_team)
 	var enemy: String = _encode_team(definition.enemy_team)
 	if not player.is_empty():
@@ -178,6 +180,7 @@ static func _parse_segment(segment: String) -> Dictionary:
 		"player_specs": [],
 		"enemy_specs": [],
 		"multiverse": false,
+		"ai": null,
 		"raw": segment,
 	}
 	var saw_key_value: bool = false
@@ -248,6 +251,13 @@ static func _apply_key_value(raw: Dictionary, key: String, value: String) -> Dic
 			raw["matches"] = match_count
 		"multiverse":
 			raw["multiverse"] = value in ["1", "true", "on", "yes"]
+		"ai":
+			if not value.is_valid_int():
+				return {"ok": false, "error": "ai must be %d-%d" % [AIProfile.MIN_LEVEL, AIProfile.MAX_LEVEL]}
+			var ai_value: int = int(value)
+			if ai_value < AIProfile.MIN_LEVEL or ai_value > AIProfile.MAX_LEVEL:
+				return {"ok": false, "error": "ai must be %d-%d" % [AIProfile.MIN_LEVEL, AIProfile.MAX_LEVEL]}
+			raw["ai"] = ai_value
 		"map":
 			if value.is_empty():
 				return {"ok": false, "error": "map cannot be empty"}
@@ -365,6 +375,8 @@ static func _build_match(match_data: Dictionary, fallback_state: Dictionary, mat
 		return explicit_result
 	SkirmishControlMode.apply_to_definition(definition, mode)
 	definition.multiverse = bool(match_data.get("multiverse", false))
+	var ai_setting: Variant = match_data.get("ai", null)
+	definition.ai_level = AIProfile.clamp_level(int(ai_setting)) if ai_setting != null else AIProfile.DEFAULT_LEVEL
 	var meta: Dictionary = definition.generation_metadata.duplicate(true)
 	meta["skirmish_code"] = String(match_data.get("raw", ""))
 	meta["series_index"] = match_index

@@ -20,3 +20,4 @@ const CONTROL_MODE_CPU_VS_CPU: String = "bots"
 @export var reward_profile: String = ""
 @export var generation_metadata: Dictionary = {}
 @export var multiverse: bool = false
+@export var ai_level: int = AIProfile.DEFAULT_LEVEL

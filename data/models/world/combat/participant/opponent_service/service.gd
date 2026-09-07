@@ -5,7 +5,8 @@ var res: TacticsParticipantResource
 var camera: TacticsCameraResource
 var controls: TacticsControlsResource
 var arena: TacticsArena
-var minimum_viable_ai := MinimumViableAI.new()
+var battle_ai := BattleAI.new()
+var _ai_level: int = -1
 var type_chart: TypeChartResource = load("res://data/models/pokemon/generated/types/type_chart.tres") as TypeChartResource
 
 
@@ -40,11 +41,14 @@ func chase_nearest_enemy(opponent: Node3D, player_node: Node) -> void:
 		arena.process_surrounding_tiles(res.curr_pawn.get_tile(), res.curr_pawn.stats.movement, opponent.get_children())
 		arena.mark_reachable_tiles(res.curr_pawn.get_tile(), res.curr_pawn.stats.movement)
 
-		var action: AIAction = minimum_viable_ai.choose_action(
+		var battle_level: TacticsLevel = _level_for(res.curr_pawn)
+		_sync_ai_level(battle_level)
+		var action: AIAction = battle_ai.choose_action(
 			res.curr_pawn,
 			opponent.get_children(),
 			player_node.get_children(),
-			type_chart
+			type_chart,
+			battle_level
 		)
 		if action.move_index >= 0:
 			res.curr_pawn.res.selected_move_index = action.move_index
@@ -52,8 +56,9 @@ func chase_nearest_enemy(opponent: Node3D, player_node: Node) -> void:
 				var move: PokemonMoveResource = res.curr_pawn.stats.move_slots[action.move_index]
 				res.curr_pawn.stats.attack_range = max(1, move.tactical_range_value)
 		_apply_charge_lock(res.curr_pawn)
-		var to: TacticsTile = arena.get_nearest_target_adjacent_tile(res.curr_pawn, player_node.get_children())
-		var battle_level: TacticsLevel = _level_for(res.curr_pawn)
+		var to: TacticsTile = action.move_to_tile
+		if to == null or not is_instance_valid(to):
+			to = arena.get_nearest_target_adjacent_tile(res.curr_pawn, player_node.get_children())
 		if battle_level != null:
 			battle_level.record_move_intent(res.curr_pawn, to)
 		res.curr_pawn.res.pathfinding_tilestack = arena.get_pathfinding_tilestack(to)
@@ -64,11 +69,14 @@ func chase_nearest_enemy(opponent: Node3D, player_node: Node) -> void:
 			print_rich("[color=cyan]Camera target updated to destination tile.[/color]")
 		res.stage = res.STAGE_SHOW_MOVEMENTS
 	elif res.curr_pawn.is_alive() and res.curr_pawn.res.can_attack:
-		var action: AIAction = minimum_viable_ai.choose_action(
+		var standing_level: TacticsLevel = _level_for(res.curr_pawn)
+		_sync_ai_level(standing_level)
+		var action: AIAction = battle_ai.choose_action(
 			res.curr_pawn,
 			opponent.get_children(),
 			player_node.get_children(),
-			type_chart
+			type_chart,
+			standing_level
 		)
 		if action.move_index >= 0:
 			res.curr_pawn.res.selected_move_index = action.move_index
@@ -100,7 +108,8 @@ func choose_pawn_to_attack() -> void:
 	arena.process_surrounding_tiles(res.curr_pawn.get_tile(), range_value)
 	arena.mark_attackable_tiles(res.curr_pawn.get_tile(), range_value)
 
-	var action: AIAction = minimum_viable_ai.choose_action(
+	_sync_ai_level(_level_for(res.curr_pawn))
+	var action: AIAction = battle_ai.choose_action(
 		res.curr_pawn,
 		res.curr_pawn.get_parent().get_children(),
 		res.targets.get_children(),
@@ -190,3 +199,13 @@ func _log_no_usable_move(pawn: TacticsPawn) -> void:
 			})
 			return
 		node = node.get_parent()
+
+
+func _sync_ai_level(battle_level: TacticsLevel) -> void:
+	if battle_level == null:
+		return
+	if battle_level.ai_level != _ai_level:
+		_ai_level = battle_level.ai_level
+		battle_ai.set_level(_ai_level)
+	if battle_level.ai_team_levels != battle_ai.team_levels:
+		battle_ai.set_team_levels(battle_level.ai_team_levels)

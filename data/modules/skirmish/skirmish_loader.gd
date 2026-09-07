@@ -102,6 +102,7 @@ func load_skirmish(definition: SkirmishDefinitionResource, battle_parent: Node =
 	if parent == null:
 		parent = get_tree().root
 	level.multiverse_enabled = definition.multiverse
+	level.ai_level = AIProfile.clamp_level(definition.ai_level)
 	parent.add_child(level)
 	skirmish_loaded.emit(level)
 	return level

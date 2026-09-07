@@ -109,6 +109,7 @@ var sort_picker: OptionButton
 var map_picker: OptionButton
 var control_mode_picker: OptionButton
 var multiverse_toggle: CheckButton
+var ai_level_spin: SpinBox
 var seed_input: LineEdit
 var difficulty_spin: SpinBox
 var random_enemy_check: CheckBox
@@ -485,6 +486,16 @@ func _create_setup_panel() -> PanelContainer:
 	multiverse_toggle.tooltip_text = "5D chess rules: Roar of Time, Spacial Rend and the other dimension moves open and cross timelines"
 	multiverse_toggle.toggled.connect(func(_pressed: bool) -> void: _refresh_launch_state())
 	column.add_child(_labeled_control("Multiversal Rules", multiverse_toggle))
+
+	ai_level_spin = SpinBox.new()
+	ai_level_spin.name = "AiLevelSpin"
+	ai_level_spin.min_value = AIProfile.MIN_LEVEL
+	ai_level_spin.max_value = AIProfile.MAX_LEVEL
+	ai_level_spin.step = 1
+	ai_level_spin.value = AIProfile.DEFAULT_LEVEL
+	ai_level_spin.tooltip_text = "CPU skill: 1 Wandering, 2 Scrappy, 3 Tactical, 4 Ruthless, 5 Champion"
+	ai_level_spin.value_changed.connect(func(_value: float) -> void: _refresh_launch_state())
+	column.add_child(_labeled_control("CPU Skill", ai_level_spin))
 
 	seed_input = LineEdit.new()
 	seed_input.name = "SeedInput"
@@ -1947,6 +1958,7 @@ func network_state() -> Dictionary:
 		"player_team_size": int(player_size_slider.value) if player_size_slider != null else 3,
 		"enemy_team_size": int(enemy_size_spin.value) if enemy_size_spin != null else 3,
 		"difficulty_tier": int(difficulty_spin.value) if difficulty_spin != null else 0,
+		"ai_level": int(ai_level_spin.value) if ai_level_spin != null else AIProfile.DEFAULT_LEVEL,
 		"paths": paths,
 		"items": _items_for_side(side),
 		"specs": _specs_payload(side),
@@ -1998,6 +2010,8 @@ func _on_remote_lobby(state: Dictionary) -> void:
 			seed_input.text = String(state.get("seed_text", ""))
 		if multiverse_toggle != null:
 			multiverse_toggle.button_pressed = bool(state.get("multiverse", false))
+		if ai_level_spin != null:
+			ai_level_spin.value = AIProfile.clamp_level(int(state.get("ai_level", AIProfile.DEFAULT_LEVEL)))
 		if player_size_slider != null:
 			player_size_slider.value = int(state.get("player_team_size", player_size_slider.value))
 		if enemy_size_spin != null:
@@ -2042,6 +2056,7 @@ func _network_launch_state() -> Dictionary:
 func network_launch_code() -> String:
 	var result: Dictionary = _build_from_state(_network_launch_state())
 	_apply_multiverse(result)
+	_apply_ai_level(result)
 	if not bool(result.get("ok", false)):
 		_set_status(String(result.get("error", "Could not build the match")))
 		return ""
@@ -2126,6 +2141,7 @@ func _build_launch_result(store_state: bool) -> Dictionary:
 	}
 	var result: Dictionary = _build_from_state(state)
 	_apply_multiverse(result)
+	_apply_ai_level(result)
 	if not result.get("ok", false):
 		_set_status(String(result.get("error", "Could not build skirmish")))
 		return result
@@ -2148,6 +2164,16 @@ func _build_launch_result(store_state: bool) -> Dictionary:
 	else:
 		_set_status("Seed: %d" % last_resolved_seed)
 	return result
+
+
+func _apply_ai_level(result: Dictionary) -> void:
+	var wanted: int = AIProfile.clamp_level(int(ai_level_spin.value)) if ai_level_spin != null else AIProfile.DEFAULT_LEVEL
+	var primary: SkirmishDefinitionResource = result.get("definition", null) as SkirmishDefinitionResource
+	if primary != null:
+		primary.ai_level = wanted
+	for definition in result.get("definitions", []):
+		if definition is SkirmishDefinitionResource:
+			(definition as SkirmishDefinitionResource).ai_level = wanted
 
 
 func _apply_multiverse(result: Dictionary) -> void:
