@@ -11,6 +11,7 @@ const DEFAULT_STATUS_PAYLOADS: Dictionary = {
 	"flinch": {"counter": 2},
 	"freeze": {"counter": 5},
 	"heal_block": {"counter": 50},
+	"immobilized": {"counter": 5},
 	"ingrain": {"counter": 10, "hp_fraction": 6},
 	"leech_seed": {"hp_fraction": 8},
 	"bind": {"counter": 5, "hp_fraction": 8},

@@ -16,7 +16,7 @@ const STATUS_TYPE_IMMUNITY: Dictionary = {
 }
 const POWDER_MOVES: Array[String] = ["sleep_powder", "poison_powder", "stun_spore", "spore", "cotton_spore", "rage_powder", "magic_powder"]
 const MAJOR_STATUSES: Array[String] = ["poison", "poison_toxic", "toxic", "burn", "paralyze", "freeze", "sleep"]
-const NON_REAPPLY_STATUSES: Array[String] = ["poison", "poison_toxic", "toxic", "burn", "paralyze", "freeze", "sleep", "leech_seed", "confusion"]
+const NON_REAPPLY_STATUSES: Array[String] = ["poison", "poison_toxic", "toxic", "burn", "paralyze", "freeze", "sleep", "leech_seed", "confuse"]
 
 var battle_level: TacticsLevel = null
 var battle_log: BattleLog = null

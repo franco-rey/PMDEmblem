@@ -499,7 +499,18 @@ func cancel_travel(reason: String = "") -> void:
 
 func pick_random_option() -> int:
 	var options: Array = pending_travel.get("options", [])
-	return level.battle_rng.randi_range(0, options.size() - 1) if not options.is_empty() else -1
+	if options.is_empty():
+		return -1
+	var side: int = int(pending_travel.get("side", MultiverseState.SIDE_PLAYER))
+	var mine: int = state.created_by_player if side == MultiverseState.SIDE_PLAYER else state.created_by_enemy
+	var theirs: int = state.created_by_enemy if side == MultiverseState.SIDE_PLAYER else state.created_by_player
+	var safe: Array[int] = []
+	for i in range(options.size()):
+		if not MultiversePolicy.lands_frozen(String((options[i] as Dictionary).get("kind", "")), mine, theirs):
+			safe.append(i)
+	if safe.is_empty():
+		return level.battle_rng.randi_range(0, options.size() - 1)
+	return safe[level.battle_rng.randi_range(0, safe.size() - 1)]
 
 
 func commit_travel(choice: int) -> bool:

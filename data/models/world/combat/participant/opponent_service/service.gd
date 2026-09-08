@@ -6,6 +6,7 @@ var camera: TacticsCameraResource
 var controls: TacticsControlsResource
 var arena: TacticsArena
 var battle_ai := BattleAI.new()
+var multiverse_policy := MultiversePolicy.new()
 var _ai_level: int = -1
 var type_chart: TypeChartResource = load("res://data/models/pokemon/generated/types/type_chart.tres") as TypeChartResource
 
@@ -209,3 +210,6 @@ func _sync_ai_level(battle_level: TacticsLevel) -> void:
 		battle_ai.set_level(_ai_level)
 	if battle_level.ai_team_levels != battle_ai.team_levels:
 		battle_ai.set_team_levels(battle_level.ai_team_levels)
+	if battle_level.multiverse != null and not battle_level.multiverse.cpu_policy.is_valid():
+		multiverse_policy.setup(battle_level.multiverse)
+		battle_level.multiverse.cpu_policy = multiverse_policy.choose

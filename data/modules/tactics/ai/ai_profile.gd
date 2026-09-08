@@ -19,6 +19,8 @@ var consider_status_moves: bool = true
 var consider_setup_moves: bool = false
 var consider_field_moves: bool = false
 var consider_ability_items: bool = false
+var use_ko_probability: bool = false
+var value_weighted: bool = false
 var avoid_hazards: bool = true
 var threat_aware: bool = true
 var focus_fire_staging: bool = false
@@ -58,6 +60,8 @@ static func for_level(value: int) -> AIProfile:
 	profile.consider_setup_moves = n >= 4
 	profile.consider_field_moves = n >= 4
 	profile.consider_ability_items = n >= 5
+	profile.use_ko_probability = n >= 4
+	profile.value_weighted = n >= 4
 	profile.avoid_hazards = n >= 2
 	profile.threat_aware = n >= 3
 	profile.focus_fire_staging = n >= 4

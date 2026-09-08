@@ -94,6 +94,8 @@ func _battle(seed: int, team_size: int, player_level: int, enemy_level: int) -> 
 		out["result"] = "build_failed"
 		return out
 	var definition: SkirmishDefinitionResource = built["definition"]
+	if _arg("mirror", "1") == "1":
+		_mirror_rosters(definition)
 	definition.skirmish_id = "ai_ladder_%d_%d_%d" % [seed, player_level, enemy_level]
 	var loader := SkirmishLoader.new()
 	root.add_child(loader)
@@ -132,3 +134,15 @@ func _battle(seed: int, team_size: int, player_level: int, enemy_level: int) -> 
 	await process_frame
 	await process_frame
 	return out
+
+
+func _mirror_rosters(definition: SkirmishDefinitionResource) -> void:
+	var copies: Array[PokemonInstanceResource] = []
+	for source in definition.player_team:
+		if source == null:
+			continue
+		var clone: PokemonInstanceResource = source.duplicate(true)
+		clone.team = PokemonInstanceResource.Team.ENEMY
+		clone.control_type = PokemonInstanceResource.ControlType.AI
+		copies.append(clone)
+	definition.enemy_team = copies

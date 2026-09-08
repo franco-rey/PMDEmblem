@@ -4,6 +4,7 @@ extends RefCounted
 const ESTIMATE_SEED: int = 991
 const KO_BONUS: float = 220.0
 const FOCUS_BONUS: float = 45.0
+const FOCUS_GAIN: float = 1.35
 const HAZARD_PENALTY: float = 60.0
 const STATUS_SCORE: float = 40.0
 const SETUP_SCORE: float = 34.0
@@ -15,8 +16,19 @@ const NEAREST_WEIGHT: float = 2.0
 const WEAKEST_WEIGHT: float = 0.25
 const SECURE_WEIGHT: float = 0.15
 const DANGER_WEIGHT: float = 0.25
-const TEMPO_BONUS: float = 40.0
+const TEMPO_BONUS: float = 70.0
+const WINDOW_BONUS: float = 22.0
+const CHIP_RISK: float = 60.0
+const LETHAL_RISK: float = 120.0
+const LETHAL_FLOOR: float = 0.85
+const LETHAL_BAND: float = 0.35
 const SCHEDULER_LOOKAHEAD: int = 12
+const DAMAGE_SAMPLES: int = 11
+const VARIANCE_LOW: float = 0.88
+const VARIANCE_HIGH: float = 1.14
+const CHIP_WEIGHT: float = 0.55
+const VALUE_OFFENCE_WEIGHT: float = 1.0
+const VALUE_DURABILITY_WEIGHT: float = 0.45
 const RETREAT_HP_FRACTION: float = 0.3
 const RETREAT_BONUS: float = 55.0
 const ZONE_BONUS: float = 6.0
@@ -33,7 +45,14 @@ var _damage := DamageResolver.new()
 var _rng := RandomNumberGenerator.new()
 var _plans: Dictionary = {}
 var _chart: TypeChartResource = null
+var _shapes: Dictionary = {}
+var _reference_value: float = 1.0
+var _level_ref: TacticsLevel = null
+var _output_memo: Dictionary = {}
+var _focus_cache: Dictionary = {}
+var _memo_stamp: int = -9999
 var _intrinsics := BattleIntrinsicService.new()
+var _specials := BattleMoveSpecials.new()
 var _scheduler: BattleScheduler = null
 var _profiles: Dictionary = {}
 
@@ -144,7 +163,12 @@ func _build_plan(
 ) -> Dictionary:
 	_use_profile(unit)
 	_chart = type_chart
+	var memo_stamp: int = _turn_stamp(battle_level)
+	if memo_stamp != _memo_stamp:
+		_memo_stamp = memo_stamp
+		_output_memo.clear()
 	_scheduler = battle_level.scheduler if battle_level != null else null
+	_level_ref = battle_level
 	var plan: Dictionary = {"move_index": -1, "target": null, "tile": null, "intent": null}
 	var foes: Array[TacticsPawn] = _living(enemies)
 	var friends: Array[TacticsPawn] = _living(allies)
@@ -153,6 +177,8 @@ func _build_plan(
 
 	var damage_table: Dictionary = _damage_table(unit, foes, type_chart)
 	var retaliation: Dictionary = _retaliation_table(unit, foes, type_chart)
+	_shapes = _shape_table(unit, foes, friends, type_chart)
+	_reference_value = _mean_value(foes, friends)
 
 	if not _has_lethal(unit, foes, damage_table):
 		var heal: Dictionary = _heal_intent(unit)
@@ -183,7 +209,8 @@ func _build_plan(
 			if move == null or not unit.stats.has_pp(i):
 				continue
 			for target in _candidate_targets(unit, move, foes, friends):
-				if not Targeting.key_in_range(key, _key_of(target), unit, move):
+				var aim: Vector3i = key if target == unit else _key_of(target)
+				if not Targeting.key_in_range(key, aim, unit, move):
 					continue
 				var value: float = _action_score(unit, move, i, target, key, damage_table, retaliation, focus, foes, friends)
 				if value <= INVALID_SCORE:
@@ -203,7 +230,7 @@ func _build_plan(
 	var best: Dictionary = {}
 	if not attack_entry.is_empty():
 		best = attack_entry
-	elif not support_entry.is_empty():
+	elif not support_entry.is_empty() and best_support > best_idle:
 		best = support_entry
 	else:
 		best = idle_entry
@@ -276,6 +303,94 @@ func _expected_damage(attacker: TacticsPawn, defender: TacticsPawn, move: Pokemo
 	return float(raw) * accuracy
 
 
+func _damage_profile(attacker: TacticsPawn, defender: TacticsPawn, move: PokemonMoveResource, type_chart: TypeChartResource) -> Dictionary:
+	var empty: Dictionary = {"mean": 0.0, "samples": PackedInt32Array()}
+	if attacker == null or defender == null or move == null:
+		return empty
+	if attacker.stats == null or defender.stats == null or not move.is_damaging():
+		return empty
+	var effectiveness: float = _damage._effectiveness(move, defender.stats, type_chart)
+	if profile.consider_ability_items:
+		effectiveness = _intrinsics.adjust_effectiveness(attacker.stats, defender.stats, move, effectiveness, type_chart)
+	if effectiveness <= 0.0:
+		return empty
+	if _move_unusable(attacker, move):
+		return empty
+	if _target_shielded(defender, move):
+		return empty
+	var stab: bool = _damage._is_stab(move.type, attacker.stats.types)
+	var accuracy: float = _hit_chance(attacker, defender, move)
+	var hits: float = _expected_hits(attacker, move)
+	if _is_charging_move(move) and not _charge_pending(attacker):
+		hits *= 0.5
+	_rng.seed = ESTIMATE_SEED
+	var probe: int = int(round(float(_damage.calculate_damage(attacker.stats, defender.stats, move, effectiveness, stab, 1.0, _rng, {}, true)) * hits))
+	var remaining: float = maxf(1.0, float(defender.stats.curr_health))
+	var lower: float = remaining * VARIANCE_LOW
+	var upper: float = remaining * VARIANCE_HIGH
+	if float(probe) < lower:
+		return {"mean": float(probe), "certain": 0.0, "accuracy": accuracy}
+	if float(probe) > upper:
+		return {"mean": float(probe), "certain": 1.0, "accuracy": accuracy}
+	var samples: PackedInt32Array = PackedInt32Array()
+	var total: float = 0.0
+	for i in range(DAMAGE_SAMPLES):
+		_rng.seed = ESTIMATE_SEED + i * 7919
+		var rolled: int = int(round(float(_damage.calculate_damage(attacker.stats, defender.stats, move, effectiveness, stab, 1.0, _rng, {}, true)) * hits))
+		samples.append(rolled)
+		total += float(rolled)
+	return {"mean": total / float(DAMAGE_SAMPLES), "samples": samples, "accuracy": accuracy}
+
+
+func _shape_table(unit: TacticsPawn, foes: Array[TacticsPawn], friends: Array[TacticsPawn], type_chart: TypeChartResource) -> Dictionary:
+	var table: Dictionary = {}
+	if not profile.use_ko_probability:
+		return table
+	for i in range(unit.stats.move_slots.size()):
+		var move: PokemonMoveResource = unit.stats.move_slots[i]
+		if move == null or not move.is_damaging() or not unit.stats.has_pp(i):
+			continue
+		var row: Dictionary = {}
+		for foe in foes:
+			row[foe] = _damage_profile(unit, foe, move, type_chart)
+		table[i] = row
+	return table
+
+
+func _mean_value(foes: Array[TacticsPawn], friends: Array[TacticsPawn]) -> float:
+	var total: float = 0.0
+	var count: int = 0
+	for pawn in foes:
+		total += _unit_value(pawn)
+		count += 1
+	for pawn in friends:
+		total += _unit_value(pawn)
+		count += 1
+	return maxf(1.0, total / float(maxi(1, count)))
+
+
+func _ko_chance(sample: Dictionary, remaining: float) -> float:
+	var accuracy: float = float(sample.get("accuracy", 1.0))
+	if sample.has("certain"):
+		return float(sample["certain"]) * accuracy
+	var samples: PackedInt32Array = sample.get("samples", PackedInt32Array())
+	if samples.is_empty():
+		return 0.0
+	var hits: int = 0
+	for value in samples:
+		if float(value) >= remaining:
+			hits += 1
+	return accuracy * float(hits) / float(samples.size())
+
+
+func _unit_value(pawn: TacticsPawn) -> float:
+	if pawn == null or pawn.stats == null:
+		return 0.0
+	var offence: float = float(maxi(pawn.stats.attack, pawn.stats.special_attack))
+	var durability: float = float(pawn.stats.max_health)
+	return VALUE_OFFENCE_WEIGHT * offence + VALUE_DURABILITY_WEIGHT * durability
+
+
 func _damage_table(unit: TacticsPawn, foes: Array[TacticsPawn], type_chart: TypeChartResource) -> Dictionary:
 	var table: Dictionary = {}
 	if profile.move_mode != AIProfile.MoveMode.EXPECTED_DAMAGE:
@@ -293,37 +408,57 @@ func _damage_table(unit: TacticsPawn, foes: Array[TacticsPawn], type_chart: Type
 
 func _best_output(attacker: TacticsPawn, defender: TacticsPawn, type_chart: TypeChartResource) -> float:
 	var best: float = 0.0
-	if attacker == null or attacker.stats == null:
+	if attacker == null or attacker.stats == null or defender == null:
 		return best
+	var memo_row: Dictionary = _output_memo.get(attacker.get_instance_id(), {})
+	if memo_row.has(defender.get_instance_id()):
+		return float(memo_row[defender.get_instance_id()])
 	for i in range(attacker.stats.move_slots.size()):
 		var move: PokemonMoveResource = attacker.stats.move_slots[i]
 		if move == null or not attacker.stats.has_pp(i):
 			continue
 		best = maxf(best, _expected_damage(attacker, defender, move, type_chart))
+	memo_row[defender.get_instance_id()] = best
+	_output_memo[attacker.get_instance_id()] = memo_row
 	return best
 
 
-func _reach_of(pawn: TacticsPawn) -> int:
+func _reach_of(pawn: TacticsPawn) -> Dictionary:
 	if pawn == null or pawn.stats == null:
-		return 1
+		return {"reach": 1, "wide": false}
 	var longest: int = 1
+	var wide: bool = false
 	for i in range(pawn.stats.move_slots.size()):
 		var move: PokemonMoveResource = pawn.stats.move_slots[i]
 		if move == null or not pawn.stats.has_pp(i):
 			continue
-		longest = maxi(longest, Targeting.range_distance(pawn, move))
-	return pawn.stats.movement + longest
+		var span: int = Targeting.range_distance(pawn, move)
+		if span >= longest:
+			longest = span
+			wide = Targeting.effective_range_kind(move) == PokemonMoveResource.TacticalRangeKind.PROJECTILE
+	return {"reach": pawn.stats.movement + longest, "wide": wide}
 
 
 func _threat_sources(unit: TacticsPawn, foes: Array[TacticsPawn], type_chart: TypeChartResource) -> Array:
 	var sources: Array = []
 	if not profile.threat_aware:
 		return sources
+	var allies: Array = unit.get_parent().get_children() if unit.get_parent() != null else []
 	for foe in foes:
+		var span: Dictionary = _reach_of(foe)
+		var probe: Dictionary = {"key": _key_of(foe), "reach": int(span["reach"]), "wide": bool(span["wide"])}
+		var covered: int = 0
+		for ally in allies:
+			if not (ally is TacticsPawn) or not (ally as TacticsPawn).is_alive():
+				continue
+			if _covers(_key_of(ally), probe):
+				covered += 1
 		sources.append({
-			"key": _key_of(foe),
-			"reach": _reach_of(foe),
+			"key": probe["key"],
+			"reach": int(probe["reach"]),
+			"wide": bool(probe["wide"]),
 			"damage": _best_output(foe, unit, type_chart),
+			"share": 1.0 / float(maxi(1, covered)),
 		})
 	return sources
 
@@ -331,9 +466,17 @@ func _threat_sources(unit: TacticsPawn, foes: Array[TacticsPawn], type_chart: Ty
 func _threat_at(key: Vector3i, sources: Array) -> float:
 	var total: float = 0.0
 	for source in sources:
-		if _manhattan(key, source["key"]) <= int(source["reach"]):
-			total += float(source["damage"])
+		if _covers(key, source):
+			total += float(source["damage"]) * float(source.get("share", 1.0))
 	return total
+
+
+func _worst_single(key: Vector3i, sources: Array) -> float:
+	var worst: float = 0.0
+	for source in sources:
+		if _covers(key, source):
+			worst = maxf(worst, float(source["damage"]))
+	return worst
 
 
 func _destinations(unit: TacticsPawn, origin: Vector3i, battle_level: TacticsLevel) -> Array:
@@ -380,8 +523,28 @@ func _families(move: PokemonMoveResource) -> Dictionary:
 	if move == null:
 		return out
 	for record in move.effect_records:
-		var family: String = String((record as Dictionary).get("family", ""))
-		var target: String = String((record as Dictionary).get("target", ""))
+		var entry: Dictionary = record
+		var family: String = String(entry.get("family", ""))
+		var target: String = String(entry.get("target", ""))
+		if family == "stat_stage":
+			var stages: Dictionary = entry.get("stages", {})
+			var rises: bool = false
+			var falls: bool = false
+			for stat in stages.keys():
+				if int(stages[stat]) > 0:
+					rises = true
+				elif int(stages[stat]) < 0:
+					falls = true
+			if int(entry.get("delta", 0)) > 0:
+				rises = true
+			elif int(entry.get("delta", 0)) < 0:
+				falls = true
+			if rises:
+				out["stat_raise:%s" % target] = true
+			if falls:
+				out["stat_drop:%s" % target] = true
+			if not rises and not falls:
+				out["stat_drop:%s" % target] = true
 		out["%s:%s" % [family, target]] = true
 		out[family] = true
 	return out
@@ -393,12 +556,12 @@ func _support_score(unit: TacticsPawn, move: PokemonMoveResource, target: Tactic
 	if families.has("status:hit_target") and target != unit and profile.consider_status_moves:
 		if target.stats != null and target.stats.battle_statuses.is_empty():
 			score += STATUS_SCORE
-	if families.has("stat_stage:self") or (families.has("stat_stage") and target == unit):
+	if families.has("stat_raise:self") or (families.has("stat_stage") and target == unit and not families.has("stat_drop:self")):
 		if profile.consider_setup_moves:
 			score += SETUP_SCORE * _setup_headroom(unit)
-	elif families.has("stat_stage:hit_target") and target != unit and profile.consider_status_moves:
+	elif families.has("stat_drop:hit_target") and target != unit and profile.consider_status_moves:
 		score += STATUS_SCORE * 0.6 * _setup_headroom(target)
-	if (families.has("field_condition") or families.has("weather_stat_stage")) and profile.consider_field_moves:
+	if (families.has("field_condition") or families.has("weather_stat_stage")) and profile.consider_field_moves and not _field_already_set(move):
 		score += FIELD_SCORE
 	if families.has("heal") or families.has("cure_statuses") or families.has("status_remove"):
 		if target != null and target.stats != null and target.stats.max_health > 0:
@@ -410,10 +573,10 @@ func _support_score(unit: TacticsPawn, move: PokemonMoveResource, target: Tactic
 func _setup_headroom(pawn: TacticsPawn) -> float:
 	if pawn == null or pawn.stats == null:
 		return 0.0
-	var used: int = 0
+	var highest: int = 0
 	for key in SETUP_STAT_KEYS:
-		used += absi(int(pawn.stats.stat_stages.get(key, 0)))
-	return clampf(1.0 - float(used) / 12.0, 0.0, 1.0)
+		highest = maxi(highest, absi(int(pawn.stats.stat_stages.get(key, 0))))
+	return clampf(1.0 - float(highest) / 6.0, 0.0, 1.0)
 
 
 func _action_score(
@@ -438,9 +601,12 @@ func _action_score(
 			AIProfile.MoveMode.SLOT_ORDER:
 				base = 60.0 - float(index)
 			AIProfile.MoveMode.RAW_POWER:
-				base = float(move.base_power) * _accuracy_of(move)
+				var chart_gain: float = _damage._effectiveness(move, target.stats, _chart) if target.stats != null else 1.0
+				if chart_gain <= 0.0:
+					return INVALID_SCORE
+				base = float(move.base_power) * _accuracy_of(move) * chart_gain
 			AIProfile.MoveMode.EXPECTED_DAMAGE:
-				base = _damage_value(unit, move, index, target, key, damage_table, foes, friends)
+				base = _damage_value(unit, move, index, target, key, damage_table, foes, friends, focus)
 		if base <= 0.0:
 			return INVALID_SCORE
 		if profile.target_mode >= AIProfile.TargetMode.EXPECTED_VALUE and not _is_lethal(unit, move, index, target, damage_table):
@@ -452,7 +618,7 @@ func _action_score(
 			return INVALID_SCORE
 	if hostile:
 		modifiers += _target_preference(unit, target, retaliation)
-		if profile.shared_focus and focus != null and target == focus:
+		if not move.is_damaging() and profile.shared_focus and focus != null and target == focus:
 			modifiers += FOCUS_BONUS
 	return base + modifiers
 
@@ -471,12 +637,12 @@ func _expected_for(unit: TacticsPawn, move: PokemonMoveResource, index: int, tar
 func _is_lethal(unit: TacticsPawn, move: PokemonMoveResource, index: int, target: TacticsPawn, damage_table: Dictionary) -> bool:
 	if target == null or target.stats == null:
 		return false
+	if _survives_lethal(target, move):
+		return false
 	return _expected_for(unit, move, index, target, damage_table) >= maxf(1.0, float(target.stats.curr_health))
 
 
 func _has_lethal(unit: TacticsPawn, foes: Array[TacticsPawn], damage_table: Dictionary) -> bool:
-	if profile.move_mode != AIProfile.MoveMode.EXPECTED_DAMAGE:
-		return false
 	for i in range(unit.stats.move_slots.size()):
 		var move: PokemonMoveResource = unit.stats.move_slots[i]
 		if move == null or not move.is_damaging() or not unit.stats.has_pp(i):
@@ -502,11 +668,6 @@ func _targets_hit(
 	for candidate in foes:
 		if Targeting.key_in_range(key, _key_of(candidate), unit, move) and Targeting.alignment_allows(unit, candidate, move):
 			out.append(candidate)
-	for candidate in friends:
-		if candidate == unit:
-			continue
-		if Targeting.key_in_range(key, _key_of(candidate), unit, move) and Targeting.alignment_allows(unit, candidate, move):
-			out.append(candidate)
 	if out.is_empty():
 		out.append(declared)
 	return out
@@ -520,25 +681,38 @@ func _damage_value(
 		key: Vector3i,
 		damage_table: Dictionary,
 		foes: Array[TacticsPawn],
-		friends: Array[TacticsPawn]
+		friends: Array[TacticsPawn],
+		focus: TacticsPawn
 ) -> float:
 	var total: float = 0.0
 	for hit in _targets_hit(unit, move, key, target, foes, friends):
 		if hit == null or hit.stats == null:
 			continue
-		var expected: float = _expected_for(unit, move, index, hit, damage_table)
-		if expected <= 0.0:
-			continue
 		var remaining: float = maxf(1.0, float(hit.stats.curr_health))
-		var value: float = 100.0 * minf(expected / remaining, 1.0)
-		if expected >= remaining and profile.target_mode >= AIProfile.TargetMode.SECURE_KO:
-			value += KO_BONUS
-			if profile.turn_order_aware and _acts_before(unit, hit):
-				value += TEMPO_BONUS
-		if foes.has(hit):
-			total += value
+		var value: float = 0.0
+		var shape: Dictionary = (_shapes.get(index, {}) as Dictionary).get(hit, {})
+		if profile.use_ko_probability and not shape.is_empty():
+			var chance: float = 0.0 if _survives_lethal(hit, move) else _ko_chance(shape, remaining)
+			var mean: float = float(shape.get("mean", 0.0))
+			if mean <= 0.0:
+				continue
+			var share: float = _unit_value(hit) / _reference_value if profile.value_weighted else 1.0
+			var chip: float = minf(mean / remaining, 1.0)
+			value = 100.0 * share * (chance + (1.0 - chance) * CHIP_WEIGHT * chip)
+			if chance > 0.0 and profile.turn_order_aware and _acts_before(unit, hit):
+				value += TEMPO_BONUS * chance
 		else:
-			total -= value
+			var expected: float = _expected_for(unit, move, index, hit, damage_table)
+			if expected <= 0.0:
+				continue
+			value = 100.0 * minf(expected / remaining, 1.0)
+			if expected >= remaining and profile.target_mode >= AIProfile.TargetMode.SECURE_KO:
+				value += KO_BONUS
+				if profile.turn_order_aware and _acts_before(unit, hit):
+					value += TEMPO_BONUS
+		if profile.shared_focus and focus != null and hit == focus:
+			value *= FOCUS_GAIN
+		total += value
 	return total
 
 
@@ -569,9 +743,7 @@ func _target_preference(unit: TacticsPawn, target: TacticsPawn, retaliation: Dic
 		AIProfile.TargetMode.SECURE_KO:
 			return -100.0 * hp_fraction * SECURE_WEIGHT
 		AIProfile.TargetMode.EXPECTED_VALUE:
-			var pool: float = maxf(1.0, float(unit.stats.max_health))
-			var danger: float = 100.0 * minf(float(retaliation.get(target, 0.0)) / pool, 1.0)
-			return danger * DANGER_WEIGHT - 100.0 * hp_fraction * SECURE_WEIGHT
+			return -100.0 * hp_fraction * SECURE_WEIGHT
 	return 0.0
 
 
@@ -584,22 +756,37 @@ func _focus_target(
 ) -> TacticsPawn:
 	if not profile.shared_focus or foes.is_empty():
 		return null
+	var team: int = _team_of(unit)
+	var round_key: int = _level_ref.round_index if _level_ref != null else -1
+	var held: Dictionary = _focus_cache.get(team, {})
+	if int(held.get("round", -9999)) == round_key:
+		var kept: Variant = held.get("target", null)
+		if kept != null and is_instance_valid(kept) and (kept as TacticsPawn).is_alive() and foes.has(kept):
+			return kept
 	var best: TacticsPawn = null
 	var best_score: float = -INF
 	for foe in foes:
 		var score: float = 0.0
 		if profile.team_assignment:
 			var incoming: float = 0.0
+			var hands: int = 0
 			for friend in friends:
+				if friend == null or not friend.is_alive():
+					continue
+				if not _within_window(friend, foe):
+					continue
+				hands += 1
 				incoming += _best_output(friend, foe, type_chart)
 			var remaining: float = maxf(1.0, float(foe.stats.curr_health))
 			score = 100.0 * minf(incoming / remaining, 1.5)
-			score += float(foe.stats.attack + foe.stats.special_attack) * 0.05
+			score += WINDOW_BONUS * float(hands)
+			score += 100.0 * (_unit_value(foe) / _reference_value) * 0.15
 		else:
 			score = -float(foe.stats.curr_health)
 		if score > best_score:
 			best_score = score
 			best = foe
+	_focus_cache[team] = {"round": round_key, "target": best}
 	return best
 
 
@@ -626,13 +813,17 @@ func _positional_score(
 	var retreating: bool = false
 	if profile.retreat_when_losing and not engaging and unit.stats != null and unit.stats.max_health > 0:
 		retreating = float(unit.stats.curr_health) / float(unit.stats.max_health) < RETREAT_HP_FRACTION
-	var incoming: float = _threat_at(key, threat)
-	if profile.threat_aware:
-		var pool: float = maxf(1.0, float(unit.stats.max_health)) if unit.stats != null else 1.0
-		score -= profile.risk_weight * 100.0 * minf(incoming / pool, 1.5)
-		if retreating and incoming <= 0.0:
+	if profile.threat_aware and engaging:
+		var pool: float = maxf(1.0, float(unit.stats.curr_health)) if unit.stats != null else 1.0
+		var spread: float = _threat_at(key, threat)
+		var worst: float = _worst_single(key, threat)
+		var chip: float = minf(spread / pool, 1.0)
+		var combined: float = maxf(worst, _raw_threat_at(key, threat))
+		var lethal: float = clampf(combined / pool - LETHAL_FLOOR, 0.0, LETHAL_BAND) / LETHAL_BAND
+		score -= profile.risk_weight * (CHIP_RISK * chip + LETHAL_RISK * lethal)
+		if retreating and spread <= 0.0:
 			score += RETREAT_BONUS
-	var anchor: TacticsPawn = focus if (profile.focus_fire_staging and focus != null) else _nearest(unit, foes)
+	var anchor: TacticsPawn = focus if (profile.focus_fire_staging and focus != null and not engaging) else _nearest(unit, foes)
 	if anchor != null:
 		var distance: int = _manhattan(key, _key_of(anchor))
 		if retreating:
@@ -743,3 +934,118 @@ func _retaliation_table(unit: TacticsPawn, foes: Array[TacticsPawn], type_chart:
 	for foe in foes:
 		table[foe] = _best_output(foe, unit, type_chart)
 	return table
+
+
+func _expected_hits(attacker: TacticsPawn, move: PokemonMoveResource) -> float:
+	var count: int = move.strike_count if "strike_count" in move else 1
+	if count <= 1:
+		return 1.0
+	if count >= 5:
+		return 5.0 if _intrinsics.intrinsic_slugs_for(attacker.stats).has("skill_link") else 3.1
+	return float(count)
+
+
+func _is_charging_move(move: PokemonMoveResource) -> bool:
+	return BattleMoveSpecials.CHARGING.has(move.move_id)
+
+
+func _charge_pending(attacker: TacticsPawn) -> bool:
+	return attacker.stats != null and attacker.stats.battle_statuses.has("charging")
+
+
+func _move_unusable(attacker: TacticsPawn, move: PokemonMoveResource) -> bool:
+	if attacker.stats == null:
+		return false
+	var statuses: Dictionary = attacker.stats.battle_statuses
+	if statuses.has("disable") and String((statuses["disable"] as Dictionary).get("move_id", "")) == move.move_id:
+		return true
+	if statuses.has("encore") and String((statuses["encore"] as Dictionary).get("move_id", "")) != move.move_id:
+		return true
+	if statuses.has("taunted") and not move.is_damaging():
+		return true
+	if statuses.has("charging") and String(attacker.stats.last_used_move_id) != move.move_id:
+		return true
+	return false
+
+
+func _target_shielded(defender: TacticsPawn, move: PokemonMoveResource) -> bool:
+	if defender.stats == null:
+		return false
+	for guard in BattleActionResolver.PROTECTION_STATUSES:
+		if defender.stats.battle_statuses.has(guard):
+			return true
+	for hidden in ["airborne", "underground", "underwater", "vanished"]:
+		if defender.stats.battle_statuses.has(hidden):
+			return true
+	if _intrinsics.intrinsic_slugs_for(defender.stats).has("wonder_guard"):
+		var chart_value: float = _damage._effectiveness(move, defender.stats, _chart)
+		if chart_value <= 1.0:
+			return true
+	return false
+
+
+func _hit_chance(attacker: TacticsPawn, defender: TacticsPawn, move: PokemonMoveResource) -> float:
+	if move.accuracy <= 0:
+		return 1.0
+	var base: float = clampf(float(move.accuracy) / 100.0, 0.0, 1.0)
+	var accuracy_stage: int = int(attacker.stats.stat_stages.get("accuracy", 0)) if attacker.stats != null else 0
+	var evasion_stage: int = int(defender.stats.stat_stages.get("evasion", 0)) if defender.stats != null else 0
+	var combined: int = clampi(accuracy_stage - evasion_stage, -6, 6)
+	var scaled: float = base * BattleActionResolver.STAGE_ACCURACY_TABLE[combined + 6]
+	if attacker.stats != null and attacker.stats.battle_statuses.has("confuse"):
+		scaled *= 0.5
+	return clampf(scaled, 0.0, 1.0)
+
+
+func _survives_lethal(defender: TacticsPawn, move: PokemonMoveResource) -> bool:
+	if defender.stats == null or defender.stats.curr_health < defender.stats.max_health:
+		return false
+	if _expected_hits(defender, move) > 1.0:
+		return false
+	if _intrinsics.intrinsic_slugs_for(defender.stats).has("sturdy"):
+		return true
+	var held: PokemonItemResource = PokemonItemService.held_item_for(defender.stats)
+	return held != null and held.item_id == "held_focus_sash"
+
+
+func _field_already_set(move: PokemonMoveResource) -> bool:
+	if _level_ref == null or _level_ref.battle_conditions == null:
+		return false
+	var wanted: String = ""
+	for record in move.effect_records:
+		var entry: Dictionary = record
+		if String(entry.get("family", "")) in ["field_condition", "weather_stat_stage"]:
+			wanted = String(entry.get("condition_id", entry.get("weather", entry.get("terrain", ""))))
+	if wanted.is_empty():
+		return false
+	var live: Variant = _level_ref.battle_conditions
+	if live is Dictionary:
+		for key in (live as Dictionary).keys():
+			if String(key).findn(wanted) >= 0 or wanted.findn(String(key)) >= 0:
+				return true
+	return false
+
+
+func _covers(key: Vector3i, source: Dictionary) -> bool:
+	var origin: Vector3i = source["key"]
+	var reach: int = int(source["reach"])
+	if bool(source.get("wide", false)):
+		return maxi(absi(key.x - origin.x), absi(key.z - origin.z)) <= reach
+	return _manhattan(key, origin) <= reach
+
+
+func _within_window(ally: TacticsPawn, foe: TacticsPawn) -> bool:
+	if ally == null or ally.stats == null or foe == null:
+		return false
+	if ally.res != null and ally.res.has_acted_this_round:
+		return false
+	var span: Dictionary = _reach_of(ally)
+	return _covers(_key_of(foe), {"key": _key_of(ally), "reach": int(span["reach"]), "wide": bool(span["wide"])})
+
+
+func _raw_threat_at(key: Vector3i, sources: Array) -> float:
+	var total: float = 0.0
+	for source in sources:
+		if _covers(key, source):
+			total += float(source["damage"])
+	return total

@@ -30,6 +30,18 @@ const STATUS_SAFEGUARD: String = "safeguard"
 const STATUS_LUCKY_CHANT: String = "lucky_chant"
 const STATUS_MIST: String = "mist"
 const SCREEN_STATUSES: Array[String] = [STATUS_LIGHT_SCREEN, STATUS_REFLECT, STATUS_SAFEGUARD, STATUS_LUCKY_CHANT, STATUS_MIST]
+const CURE_SCOPE_STAT_STAGES: String = "stat_stages"
+const CURE_SCOPE_BAD: String = "bad"
+const CURE_SCOPE_MAJOR: String = "major"
+const CURE_SCOPE_BY_MOVE: Dictionary = {
+	"aromatherapy": CURE_SCOPE_BAD,
+	"clear_smog": CURE_SCOPE_STAT_STAGES,
+	"haze": CURE_SCOPE_STAT_STAGES,
+	"heal_bell": CURE_SCOPE_BAD,
+	"healing_wish": CURE_SCOPE_BAD,
+	"lunar_dance": CURE_SCOPE_BAD,
+	"refresh": CURE_SCOPE_MAJOR,
+}
 const BAD_STATUS_IDS: Array[String] = [
 	"blinker",
 	"burn",
@@ -55,7 +67,6 @@ const BAD_STATUS_IDS: Array[String] = [
 	"poison",
 	"poison_toxic",
 	"rage_powder",
-	"safeguard",
 	"salt_cure",
 	"sand_tomb",
 	"sleep",
@@ -842,8 +853,11 @@ func _apply_effect_record(
 				})
 		"level_damage":
 			var divisor: int = maxi(1, int(record.get("denominator", 1)))
-			var level_damage: int = maxi(1, int(floor(float(attacker.stats.level * int(record.get("numerator", 1))) / float(divisor))))
-			_apply_damage(attacker, recipient, move, level_damage, battle_log, {
+			var level_source: TacticsPawn = attacker if String(record.get("target", "hit_target")) == "self" else target
+			if level_source == null or level_source.stats == null or target == null or target.stats == null:
+				return
+			var level_damage: int = maxi(1, int(floor(float(level_source.stats.level * int(record.get("numerator", 1))) / float(divisor))))
+			_apply_damage(attacker, target, move, level_damage, battle_log, {
 				"kind": "damage_dealt",
 				"source": "level_damage",
 			})
@@ -1160,8 +1174,6 @@ func _apply_runtime_damage_variant_tags(
 		battle_log: BattleLog
 ) -> int:
 	var total: int = 0
-	if BattleMoveSpecials.SELF_FAINT_MOVES.has(move.move_id):
-		return 0
 	for tag in move.unsupported_effect_tags:
 		if not DAMAGE_VARIANT_TAGS.has(tag):
 			continue
@@ -2020,9 +2032,18 @@ func _apply_field_condition(record: Dictionary, attacker: TacticsPawn, move: Pok
 func _cure_statuses(unit: TacticsPawn, move: PokemonMoveResource, battle_log: BattleLog) -> void:
 	if unit == null or unit.stats == null:
 		return
+	var scope: String = String(CURE_SCOPE_BY_MOVE.get(move.move_id if move != null else "", ""))
+	if scope == CURE_SCOPE_STAT_STAGES:
+		_reset_stat_stages(unit, move, battle_log)
+		return
 	var statuses: Array[String] = []
 	for status_id in unit.stats.battle_statuses.keys():
-		statuses.append(String(status_id))
+		var key: String = String(status_id)
+		if scope == CURE_SCOPE_BAD and not BAD_STATUS_IDS.has(key):
+			continue
+		if scope == CURE_SCOPE_MAJOR and not BattleStateOps.MAJOR_STATUSES.has(key):
+			continue
+		statuses.append(key)
 	for status_id in statuses:
 		var removed: Dictionary = _ops(null, battle_log).remove_status(unit, status_id, {"move": move, "source": "cure_statuses"})
 		if removed.is_empty():
@@ -2036,24 +2057,39 @@ func _cure_statuses(unit: TacticsPawn, move: PokemonMoveResource, battle_log: Ba
 		})
 
 
+func _reset_stat_stages(unit: TacticsPawn, move: PokemonMoveResource, battle_log: BattleLog) -> void:
+	if unit == null or unit.stats == null:
+		return
+	var stat_ids: Array[String] = []
+	for stat_id in unit.stats.stat_stages.keys():
+		stat_ids.append(String(stat_id))
+	for stat_id in stat_ids:
+		_log_stat_stage_set(unit, move, "cure_statuses", unit.stats.set_stat_stage(stat_id, 0), battle_log)
+
+
 func _apply_pp_damage(unit: TacticsPawn, move: PokemonMoveResource, amount: int, battle_log: BattleLog) -> void:
 	if unit == null or unit.stats == null or amount <= 0:
 		return
-	for i in range(unit.stats.current_pp.size()):
-		if unit.stats.current_pp[i] <= 0:
-			continue
-		var before: int = unit.stats.current_pp[i]
-		unit.stats.current_pp[i] = maxi(0, before - amount)
+	var slot_index: int = unit.stats.last_used_move_index
+	if slot_index < 0 or slot_index >= unit.stats.current_pp.size() or unit.stats.current_pp[slot_index] <= 0:
 		_append(battle_log, {
-			"kind": "pp_reduced",
+			"kind": "pp_reduce_failed",
 			"unit": unit,
 			"move_id": move.move_id,
-			"slot_index": i,
-			"before": before,
-			"after": unit.stats.current_pp[i],
-			"amount": before - unit.stats.current_pp[i],
+			"reason": "no_last_used_move",
 		})
 		return
+	var before: int = unit.stats.current_pp[slot_index]
+	unit.stats.current_pp[slot_index] = maxi(0, before - amount)
+	_append(battle_log, {
+		"kind": "pp_reduced",
+		"unit": unit,
+		"move_id": move.move_id,
+		"slot_index": slot_index,
+		"before": before,
+		"after": unit.stats.current_pp[slot_index],
+		"amount": before - unit.stats.current_pp[slot_index],
+	})
 
 
 func _records_for_runtime(move: PokemonMoveResource) -> Array[Dictionary]:
@@ -2191,8 +2227,6 @@ func _remove_status_with_log(unit: TacticsPawn, status_id: String, move_id: Stri
 func _should_apply_formula_damage(move: PokemonMoveResource) -> bool:
 	if move == null or not move.is_damaging():
 		return false
-	if BattleMoveSpecials.SELF_FAINT_MOVES.has(move.move_id):
-		return true
 	if _has_damage_variant_tag(move):
 		return false
 	if move.effect_records.is_empty():
@@ -2272,7 +2306,7 @@ func _all_units_for(attacker: TacticsPawn, battle_level: TacticsLevel) -> Array[
 			for child in root.find_children("*", "TacticsPawn", true, false):
 				if child is TacticsPawn:
 					out.append(child)
-	out.sort_custom(func(a: TacticsPawn, b: TacticsPawn) -> bool: return a.name < b.name)
+	out.sort_custom(func(a: TacticsPawn, b: TacticsPawn) -> bool: return String(a.name) < String(b.name))
 	return out
 
 

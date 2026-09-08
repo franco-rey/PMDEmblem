@@ -242,7 +242,7 @@ func legal_targets(move: PokemonMoveResource) -> Array[TacticsPawn]:
 	for candidate in candidates:
 		if candidate != null and candidate.is_alive() and candidate.get_tile() != null and candidate.get_tile().attackable:
 			out.append(candidate)
-	out.sort_custom(func(a: TacticsPawn, b: TacticsPawn) -> bool: return a.name < b.name)
+	out.sort_custom(func(a: TacticsPawn, b: TacticsPawn) -> bool: return String(a.name) < String(b.name))
 	return out
 
 
@@ -756,7 +756,7 @@ func _all_units_for_selection() -> Array[TacticsPawn]:
 		for child: Node in participant.targets.get_children():
 			if child is TacticsPawn and not out.has(child):
 				out.append(child)
-	out.sort_custom(func(a: TacticsPawn, b: TacticsPawn) -> bool: return a.name < b.name)
+	out.sort_custom(func(a: TacticsPawn, b: TacticsPawn) -> bool: return String(a.name) < String(b.name))
 	return out
 
 
