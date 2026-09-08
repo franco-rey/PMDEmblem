@@ -158,6 +158,8 @@ static func is_target_legal(unit: TacticsPawn, target: TacticsPawn, move: Pokemo
 
 static func alignment_allows(unit: TacticsPawn, target: TacticsPawn, move: PokemonMoveResource) -> bool:
 	if unit == target:
+		if move.is_damaging():
+			return false
 		return move.can_target_self()
 	var same_team: bool = _team_key(unit) == _team_key(target)
 	if same_team:

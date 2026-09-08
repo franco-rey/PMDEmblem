@@ -758,7 +758,7 @@ func _apply_effect_record(
 		_apply_field_condition(record, attacker, move, battle_level, battle_log)
 		return
 	var recipient: TacticsPawn = _recipient_for(record, attacker, target)
-	if recipient == null or recipient.stats == null:
+	if recipient == null or recipient.stats == null or not recipient.stats.is_active():
 		return
 	if _screen_blocks_additional_effect(recipient, record, move, battle_level, battle_log):
 		return

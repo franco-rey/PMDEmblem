@@ -9,7 +9,7 @@ const HAZARD_PENALTY: float = 60.0
 const STATUS_SCORE: float = 40.0
 const SETUP_SCORE: float = 34.0
 const FIELD_SCORE: float = 26.0
-const APPROACH_SCALE: float = 12.0
+const APPROACH_SCALE: float = 6.0
 const RETALIATION_WEIGHT: float = 0.45
 const INVALID_SCORE: float = -1000000.0
 const NEAREST_WEIGHT: float = 2.0
@@ -26,7 +26,7 @@ const SCHEDULER_LOOKAHEAD: int = 12
 const DAMAGE_SAMPLES: int = 11
 const VARIANCE_LOW: float = 0.88
 const VARIANCE_HIGH: float = 1.14
-const CHIP_WEIGHT: float = 0.55
+const CHIP_WEIGHT: float = 0.80
 const VALUE_OFFENCE_WEIGHT: float = 1.0
 const VALUE_DURABILITY_WEIGHT: float = 0.45
 const RETREAT_HP_FRACTION: float = 0.3
@@ -550,17 +550,26 @@ func _families(move: PokemonMoveResource) -> Dictionary:
 	return out
 
 
+func _blocked_by_screen(target: TacticsPawn, screen_id: String) -> bool:
+	if target == null or not profile.consider_field_moves:
+		return false
+	if target.stats != null and target.stats.battle_statuses.has(screen_id):
+		return true
+	return _level_ref != null and _level_ref.has_team_battle_condition(screen_id, target)
+
+
 func _support_score(unit: TacticsPawn, move: PokemonMoveResource, target: TacticsPawn) -> float:
 	var families: Dictionary = _families(move)
 	var score: float = 0.0
 	if families.has("status:hit_target") and target != unit and profile.consider_status_moves:
-		if target.stats != null and target.stats.battle_statuses.is_empty():
+		if target.stats != null and target.stats.battle_statuses.is_empty() and not _blocked_by_screen(target, "safeguard"):
 			score += STATUS_SCORE
 	if families.has("stat_raise:self") or (families.has("stat_stage") and target == unit and not families.has("stat_drop:self")):
 		if profile.consider_setup_moves:
 			score += SETUP_SCORE * _setup_headroom(unit)
 	elif families.has("stat_drop:hit_target") and target != unit and profile.consider_status_moves:
-		score += STATUS_SCORE * 0.6 * _setup_headroom(target)
+		if not _blocked_by_screen(target, "mist"):
+			score += STATUS_SCORE * 0.6 * _setup_headroom(target)
 	if (families.has("field_condition") or families.has("weather_stat_stage")) and profile.consider_field_moves and not _field_already_set(move):
 		score += FIELD_SCORE
 	if families.has("heal") or families.has("cure_statuses") or families.has("status_remove"):

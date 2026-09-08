@@ -251,6 +251,8 @@ func record(event: Dictionary) -> void:
 			_action("st %s %s blocked %s" % [_token(event.get("status_id", "")), unit_id(event.get("unit")), _token(event.get("reason", event.get("blocked_by", "")))])
 		"status_tick":
 			_action("tick %s %s -%d %s" % [_token(event.get("status_id", "")), unit_id(event.get("unit")), int(event.get("amount", 0)), hp_ref(event.get("unit"))])
+		"stat_stage_blocked":
+			_action("stat %s %s blocked %s" % [unit_id(event.get("unit")), _stat_token(String(event.get("stat", ""))), _token(event.get("blocked_by", ""))])
 		"stat_stage_changed":
 			_action("stat %s %s %d>%d" % [unit_id(event.get("unit")), _stat_token(String(event.get("stat", ""))), int(event.get("before", 0)), int(event.get("after", 0))])
 		"healed":

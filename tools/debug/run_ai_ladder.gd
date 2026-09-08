@@ -22,6 +22,7 @@ func _arg(key: String, fallback: String = "") -> String:
 
 func _run() -> void:
 	var seeds: int = int(_arg("seeds", "8"))
+	var seed_start: int = int(_arg("seed-start", "1"))
 	var team_size: int = int(_arg("team", "3"))
 	var levels: Array[int] = []
 	for token in _arg("levels", "1,2,3,4,5").split(",", false):
@@ -36,7 +37,7 @@ func _run() -> void:
 				continue
 			var a: int = levels[i]
 			var b: int = levels[j]
-			for seed in range(1, seeds + 1):
+			for seed in range(seed_start, seed_start + seeds):
 				for swap in [false, true]:
 					var outcome: Dictionary = await _battle(seed, team_size, b if swap else a, a if swap else b)
 					var player_level: int = b if swap else a

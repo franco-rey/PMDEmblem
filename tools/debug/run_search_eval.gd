@@ -19,6 +19,11 @@ func _arg(key: String, fallback: String = "") -> String:
 	return fallback
 
 
+func _map_path() -> String:
+	var name: String = _arg("map", "chessboard")
+	return "res://data/models/maps/definitions/%s.tres" % name
+
+
 func _run() -> void:
 	DebugLog.set_debug_enabled(false)
 	var seeds: int = int(_arg("seeds", "12"))
@@ -157,7 +162,7 @@ func _battle(
 		widths: PackedInt32Array
 ) -> Dictionary:
 	var out: Dictionary = {"ok": false, "seed": seed, "side": side, "budget": budget}
-	var built: Dictionary = CustomSkirmishBuilder.build_random(team_size, MAP_PATH, str(seed), SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU)
+	var built: Dictionary = CustomSkirmishBuilder.build_random(team_size, _map_path(), str(seed), SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU)
 	if not bool(built.get("ok", false)):
 		return out
 	var definition: SkirmishDefinitionResource = built["definition"]

@@ -86,6 +86,7 @@ func _run() -> void:
 	await _puzzle_turn_order_denial()
 	await _puzzle_setup_versus_attack()
 	await _puzzle_status_infliction()
+	await _puzzle_screen_awareness()
 	await _puzzle_focus_wounded()
 	await _puzzle_retreat()
 	_finish()
@@ -430,6 +431,34 @@ func _puzzle_status_infliction() -> void:
 	var afflicted: AIAction = _decide(actor, allies, foes, 5)
 	foe.stats.battle_statuses = {}
 	_assert_true(afflicted.move_index < 0, "status infliction: level 5 does not spend a turn re-applying a status the target already carries")
+
+
+func _puzzle_screen_awareness() -> void:
+	_reset_units()
+	await _layout({
+		"P1": Vector3i(0, 0, 0),
+		"E1": Vector3i(0, 0, 3),
+		"P2": Vector3i(3, 0, -4),
+		"P3": Vector3i(2, 0, -4),
+		"E2": Vector3i(-4, 0, 3),
+		"E3": Vector3i(-3, 0, 3),
+		"E4": Vector3i(-2, 0, 3),
+	}, "screen awareness")
+	var actor: TacticsPawn = units["P1"]
+	var foe: TacticsPawn = units["E1"]
+	_equip(actor, ["leer", "dragon_claw"])
+	_disarm(foe)
+	_root(actor)
+	var allies: Array = [actor]
+	var foes: Array = [foe]
+	var clear_board: AIAction = _decide(actor, allies, foes, 5)
+	_assert_true(clear_board.move_index == 0, "screen awareness premise: level 5 lowers defence on an unprotected target it cannot reach with an attack")
+	foe.stats.battle_statuses["mist"] = {}
+	var misted: AIAction = _decide(actor, allies, foes, 5)
+	_assert_true(misted.move_index != 0, "screen awareness: level 5 does not spend a turn lowering a stat through mist")
+	var novice: AIAction = _decide(actor, allies, foes, 3)
+	foe.stats.battle_statuses = {}
+	_assert_true(novice.move_index == 0, "screen awareness: level 3 still walks into mist, so the blind spot stays a difficulty tell")
 
 
 func _puzzle_focus_wounded() -> void:

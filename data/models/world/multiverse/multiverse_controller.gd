@@ -555,7 +555,7 @@ func commit_travel(choice: int) -> bool:
 	clear_travel_preview()
 	if kind != "hop":
 		var branch_from: Vector2i = option["from"]
-		base = state.board(branch_from.x, branch_from.y).duplicate_board()
+		base = state.opening_board(branch_from.x, branch_from.y).duplicate_board()
 	level.scheduler.detach_active()
 	for pawn in travellers:
 		var unit: BattleUnit = by_unit.get(pawn, null)
