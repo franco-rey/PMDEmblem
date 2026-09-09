@@ -11,6 +11,9 @@ const SETUP_SCORE: float = 34.0
 const FIELD_SCORE: float = 26.0
 const APPROACH_SCALE: float = 6.0
 const RETALIATION_WEIGHT: float = 0.45
+const PERCEPTION_STEP: int = 2654435761
+const DROP_SALT: int = 0x5bf03635
+const LAPSE_SALT: int = 0x9e3779b9
 const INVALID_SCORE: float = -1000000.0
 const NEAREST_WEIGHT: float = 2.0
 const WEAKEST_WEIGHT: float = 0.25
@@ -51,6 +54,8 @@ var _level_ref: TacticsLevel = null
 var _output_memo: Dictionary = {}
 var _focus_cache: Dictionary = {}
 var _memo_stamp: int = -9999
+var _perception_seed: int = 0
+var perception_enabled: bool = true
 var _intrinsics := BattleIntrinsicService.new()
 var _specials := BattleMoveSpecials.new()
 var _scheduler: BattleScheduler = null
@@ -169,8 +174,9 @@ func _build_plan(
 		_output_memo.clear()
 	_scheduler = battle_level.scheduler if battle_level != null else null
 	_level_ref = battle_level
+	_seed_perception(unit, battle_level)
 	var plan: Dictionary = {"move_index": -1, "target": null, "tile": null, "intent": null}
-	var foes: Array[TacticsPawn] = _living(enemies)
+	var foes: Array[TacticsPawn] = _perceived_foes(_living(enemies))
 	var friends: Array[TacticsPawn] = _living(allies)
 	if foes.is_empty():
 		return plan
@@ -190,7 +196,7 @@ func _build_plan(
 
 	var focus: TacticsPawn = _focus_target(unit, friends, foes, damage_table, type_chart)
 	var origin: Vector3i = _key_of(unit)
-	var threat: Array = _threat_sources(unit, foes, type_chart)
+	var threat: Array = _perceived_threat(_threat_sources(unit, foes, type_chart))
 	var candidates: Array = _destinations(unit, origin, battle_level)
 
 	var engaging: bool = _can_engage(unit, foes, candidates)
@@ -200,6 +206,7 @@ func _build_plan(
 	var attack_entry: Dictionary = {}
 	var support_entry: Dictionary = {}
 	var idle_entry: Dictionary = {}
+	var options: Array = []
 	for entry in candidates:
 		var key: Vector3i = entry["key"]
 		var tile: TacticsTile = entry["tile"]
@@ -216,6 +223,7 @@ func _build_plan(
 				if value <= INVALID_SCORE:
 					continue
 				var total: float = value + positional
+				options.append({"move_index": i, "target": target, "tile": tile, "key": key, "score": total, "damaging": move.is_damaging(), "salt": _stable_id(target) ^ (i * 31) ^ (key.x * 7 + key.z)})
 				if move.is_damaging():
 					if total > best_attack:
 						best_attack = total
@@ -235,6 +243,11 @@ func _build_plan(
 	else:
 		best = idle_entry
 
+	best = _wobble(best, options)
+
+	if not options.is_empty() and perception_enabled and profile.lapse_rate > 0.0 and _hash01(LAPSE_SALT) < profile.lapse_rate:
+		best = options[int(_hash01(LAPSE_SALT ^ 0x2545f491) * float(options.size())) % options.size()]
+
 	if best.is_empty():
 		plan["tile"] = unit.get_tile()
 		plan["target"] = _nearest(unit, foes)
@@ -251,6 +264,86 @@ func _build_plan(
 			plan["intent"] = thrown.get("intent", null)
 			plan["target"] = thrown.get("target", null)
 	return plan
+
+
+func _wobble(best: Dictionary, options: Array) -> Dictionary:
+	if not perception_enabled or profile.value_noise <= 0.0 or best.is_empty() or options.is_empty():
+		return best
+	var damaging: bool = false
+	for option in options:
+		if option["move_index"] == best.get("move_index", -1) and option["target"] == best.get("target", null):
+			damaging = bool(option["damaging"])
+			break
+	var peers: Array = []
+	for option in options:
+		if bool(option["damaging"]) == damaging:
+			peers.append(option)
+	if peers.size() <= 1:
+		return best
+	peers.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return float(a["score"]) > float(b["score"]))
+	var span: int = mini(profile.wobble_width, peers.size())
+	var chosen: Dictionary = best
+	var top: float = -INF
+	for i in range(span):
+		var option: Dictionary = peers[i]
+		var shaken: float = float(option["score"]) + _noise(int(option["salt"]))
+		if shaken > top:
+			top = shaken
+			chosen = {"move_index": option["move_index"], "target": option["target"], "tile": option["tile"], "key": option["key"]}
+	return chosen
+
+
+func _perceived_foes(foes: Array[TacticsPawn]) -> Array[TacticsPawn]:
+	if not perception_enabled or profile.feature_drop <= 0.0 or foes.size() <= 1:
+		return foes
+	var out: Array[TacticsPawn] = []
+	for foe in foes:
+		if not _overlooked(_stable_id(foe)):
+			out.append(foe)
+	return out if not out.is_empty() else foes
+
+
+func _perceived_threat(sources: Array) -> Array:
+	if not perception_enabled or profile.feature_drop <= 0.0:
+		return sources
+	var out: Array = []
+	for source in sources:
+		var key: Vector3i = source["key"]
+		if _overlooked(key.x * 73856093 ^ key.z * 19349663):
+			continue
+		out.append(source)
+	return out
+
+
+func _stable_id(unit: TacticsPawn) -> int:
+	if unit == null:
+		return 0
+	var key: Vector3i = _key_of(unit)
+	return key.x * 73856093 ^ key.z * 19349663 ^ _team_of(unit) * 83492791
+
+
+func _seed_perception(unit: TacticsPawn, battle_level: TacticsLevel) -> void:
+	var base: int = 0
+	if battle_level != null and battle_level.battle_rng != null:
+		base = int(battle_level.battle_rng.state)
+	_perception_seed = base ^ (_stable_id(unit) * PERCEPTION_STEP)
+
+
+func _hash01(salt: int) -> float:
+	var h: int = (_perception_seed ^ (salt * PERCEPTION_STEP)) & 0x7fffffff
+	h = (h ^ (h >> 13)) * 1274126177
+	h = (h ^ (h >> 16)) & 0x7fffffff
+	return float(h) / 2147483647.0
+
+
+func _noise(salt: int) -> float:
+	if not perception_enabled or profile.value_noise <= 0.0:
+		return 0.0
+	return (_hash01(salt) * 2.0 - 1.0) * profile.value_noise
+
+
+func _overlooked(salt: int) -> bool:
+	return perception_enabled and profile.feature_drop > 0.0 and _hash01(salt ^ DROP_SALT) < profile.feature_drop
 
 
 func _living(source: Array) -> Array[TacticsPawn]:

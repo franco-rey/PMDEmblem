@@ -87,6 +87,7 @@ func _run() -> void:
 	await _puzzle_setup_versus_attack()
 	await _puzzle_status_infliction()
 	await _puzzle_screen_awareness()
+	await _puzzle_perception()
 	await _puzzle_focus_wounded()
 	await _puzzle_retreat()
 	_finish()
@@ -134,17 +135,9 @@ func _puzzle_lethal_blow() -> void:
 	_assert_true(tough_fraction - finish_fraction > 0.25, "lethal blow: the finishable target is also the clearly weaker one by health fraction (%.2f against %.2f)" % [finish_fraction, tough_fraction])
 	var allies: Array = [actor]
 	var foes: Array = [tougher, finishable]
-	for tier in [3, 4, 5]:
+	for tier in [1, 2, 3, 4, 5]:
 		var action: AIAction = _decide(actor, allies, foes, tier)
 		_assert_true(action.target_unit == finishable, "lethal blow: level %d finishes the target it can knock out" % tier)
-	# Level 2 ranks by base power times type effectiveness and owns no knockout detection at
-	# all, so it swings at the neutral target rather than the resisted one it could finish.
-	# Passing up an available knockout is the boundary this puzzle draws: knockout awareness
-	# starts at level 3. Level 2's health-fraction preference is covered by "focus wounded".
-	var scrappy: AIAction = _decide(actor, allies, foes, 2)
-	_assert_true(scrappy.target_unit == tougher, "lethal blow: level 2 owns no knockout detection and swings at the better type matchup instead")
-	var low: AIAction = _decide(actor, allies, foes, 1)
-	_assert_true(low.target_unit == tougher, "lethal blow: level 1 hits the nearer survivor instead of taking the knockout")
 
 
 func _puzzle_type_matchup() -> void:
@@ -171,11 +164,9 @@ func _puzzle_type_matchup() -> void:
 	_assert_true(_estimate(actor, weak, move) > 3.0 * _estimate(actor, resistant, move), "type matchup: the weak target takes far more than the resistant one (%d vs %d)" % [int(_estimate(actor, weak, move)), int(_estimate(actor, resistant, move))])
 	var allies: Array = [actor]
 	var foes: Array = [resistant, weak]
-	for tier in [2, 3, 4, 5]:
+	for tier in [1, 2, 3, 4, 5]:
 		var action: AIAction = _decide(actor, allies, foes, tier)
 		_assert_true(action.target_unit == weak, "type matchup: level %d attacks the target its move is strong against" % tier)
-	var blind: AIAction = _decide(actor, allies, foes, 1)
-	_assert_true(blind.target_unit == resistant, "type matchup: level 1 has no type awareness and walks into the resistant target it stands next to")
 
 
 func _puzzle_threat_range() -> void:
@@ -204,14 +195,10 @@ func _puzzle_threat_range() -> void:
 	var guards: Array = [left, right]
 	var incoming: float = _estimate(left, actor, left.stats.move_slots[0]) + _estimate(right, actor, right.stats.move_slots[0])
 	_assert_true(incoming > float(actor.stats.max_health) * 0.9, "threat range: the two guards together threaten most of the acting unit's health (%d of %d)" % [int(incoming), actor.stats.max_health])
-	for tier in [3, 4, 5]:
+	for tier in [1, 2, 3, 4, 5]:
 		var action: AIAction = _decide(actor, allies, foes, tier)
 		var key: Vector3i = _tile_key(action.move_to_tile)
 		_assert_true(key == Vector3i(0, 0, -1) and not _threatened(key, guards, actor), "threat range: level %d stops on the safe square that still reaches the quarry (%s)" % [tier, str(key)])
-	for tier in [1, 2]:
-		var action: AIAction = _decide(actor, allies, foes, tier)
-		var key: Vector3i = _tile_key(action.move_to_tile)
-		_assert_true(key == Vector3i(0, 0, 1) and _threatened(key, guards, actor), "threat range: level %d walks into the square both guards cover (%s)" % [tier, str(key)])
 
 
 func _puzzle_area_spread() -> void:
@@ -225,14 +212,10 @@ func _puzzle_area_spread() -> void:
 	_assert_true(Targeting.effective_range_kind(move) == PokemonMoveResource.TacticalRangeKind.AREA, "area spread: the acting unit holds an area move")
 	_assert_true(_area_hits(actor, move, AREA_BLAST_KEY, foes) == AREA_BLAST_SIZE and _area_hits(actor, move, AREA_LONE_KEY, foes) == 1, "area spread: one square catches the whole cluster and the other catches the lone foe")
 	_guard_area_premise(actor, move)
-	for tier in [3, 4, 5]:
+	for tier in [1, 2, 3, 4, 5]:
 		var action: AIAction = _decide(actor, allies, foes, tier)
 		var key: Vector3i = _tile_key(action.move_to_tile)
 		_assert_true(_area_hits(actor, move, key, foes) == AREA_BLAST_SIZE, "area spread: level %d takes the square that catches the whole cluster (%s)" % [tier, str(key)])
-	for tier in [1, 2]:
-		var action: AIAction = _decide(actor, allies, foes, tier)
-		var key: Vector3i = _tile_key(action.move_to_tile)
-		_assert_true(_area_hits(actor, move, key, foes) == 1, "area spread: level %d scores the area move as a single hit and takes the lone foe (%s)" % [tier, str(key)])
 
 
 func _puzzle_area_over_ally() -> void:
@@ -281,11 +264,9 @@ func _puzzle_heal_without_lethal() -> void:
 	_assert_true(_estimate(actor, foe, actor.stats.move_slots[0]) < float(foe.stats.curr_health), "heal without lethal: no knockout is available this turn")
 	var allies: Array = [actor]
 	var foes: Array = [foe]
-	for tier in [2, 3, 4, 5]:
+	for tier in [1, 2, 3, 4, 5]:
 		var action: AIAction = _decide(actor, allies, foes, tier)
 		_assert_true(action.intent != null and action.intent.is_item_action(), "heal without lethal: level %d eats its berry below half health" % tier)
-	var low: AIAction = _decide(actor, allies, foes, 1)
-	_assert_true(low.intent == null or not low.intent.is_item_action(), "heal without lethal: level 1 never reaches for an item")
 	actor.stats.pokemon_instance.held_item = null
 
 
@@ -353,14 +334,11 @@ func _puzzle_turn_order_denial() -> void:
 	_assert_true(_acts_before(early, actor) and not _acts_before(late, actor), "turn order denial: one foe is queued ahead of the acting unit and one behind it")
 	var allies: Array = [actor]
 	var foes: Array = [decoy, late, early]
-	for tier in [4, 5]:
+	for tier in [1, 2, 3, 4, 5]:
 		var action: AIAction = _decide(actor, allies, foes, tier)
 		_assert_true(action.target_unit == early, "turn order denial: level %d removes the foe that would act before it" % tier)
-	for tier in [1, 2, 3]:
-		var action: AIAction = _decide(actor, allies, foes, tier)
-		_assert_true(action.target_unit == late, "turn order denial: level %d cannot tell the two knockouts apart and keeps the first it scored" % tier)
 	var contested_foes: Array = [late, early]
-	for tier in [4, 5]:
+	for tier in [1, 2, 3, 4, 5]:
 		var contested: AIAction = _decide(actor, allies, contested_foes, tier)
 		_assert_true(contested.target_unit == early, "turn order denial: level %d spends its tempo bonus to deny the foe that acts first, even against the team focus" % tier)
 
@@ -395,12 +373,9 @@ func _puzzle_setup_versus_attack() -> void:
 		"E3": Vector3i(-3, 0, 3),
 		"E4": Vector3i(-2, 0, 3),
 	}, "setup out of reach")
-	for tier in [4, 5]:
+	for tier in [1, 2, 3, 4, 5]:
 		var action: AIAction = _decide(actor, allies, foes, tier)
 		_assert_true(action.move_index == 0, "setup versus attack: level %d buffs itself when nothing can be attacked" % tier)
-	for tier in [1, 2, 3]:
-		var action: AIAction = _decide(actor, allies, foes, tier)
-		_assert_true(action.move_index < 0, "setup versus attack: level %d has no use for a setup move and idles" % tier)
 
 
 func _puzzle_status_infliction() -> void:
@@ -421,12 +396,9 @@ func _puzzle_status_infliction() -> void:
 	_root(actor)
 	var allies: Array = [actor]
 	var foes: Array = [foe]
-	for tier in [3, 4, 5]:
+	for tier in [1, 2, 3, 4, 5]:
 		var action: AIAction = _decide(actor, allies, foes, tier)
 		_assert_true(action.move_index == 0 and action.target_unit == foe, "status infliction: level %d burns a clean target it cannot reach with an attack" % tier)
-	for tier in [1, 2]:
-		var action: AIAction = _decide(actor, allies, foes, tier)
-		_assert_true(action.move_index < 0, "status infliction: level %d ignores status moves entirely" % tier)
 	foe.stats.battle_statuses["burn"] = {}
 	var afflicted: AIAction = _decide(actor, allies, foes, 5)
 	foe.stats.battle_statuses = {}
@@ -456,9 +428,43 @@ func _puzzle_screen_awareness() -> void:
 	foe.stats.battle_statuses["mist"] = {}
 	var misted: AIAction = _decide(actor, allies, foes, 5)
 	_assert_true(misted.move_index != 0, "screen awareness: level 5 does not spend a turn lowering a stat through mist")
-	var novice: AIAction = _decide(actor, allies, foes, 3)
+	var novice: AIAction = _decide(actor, allies, foes, 1)
 	foe.stats.battle_statuses = {}
-	_assert_true(novice.move_index == 0, "screen awareness: level 3 still walks into mist, so the blind spot stays a difficulty tell")
+	_assert_true(novice.move_index != 0, "screen awareness: every tier reads mist, because the ladder differs by perception rather than by rules")
+
+
+func _puzzle_perception() -> void:
+	_reset_units()
+	var actor: TacticsPawn = units["P1"]
+	var noises: Array[float] = []
+	for tier in [1, 2, 3, 4, 5]:
+		noises.append(AIProfile.for_level(tier).value_noise)
+	var descending: bool = true
+	for i in range(1, noises.size()):
+		if noises[i] > noises[i - 1]:
+			descending = false
+	_assert_true(descending and noises[4] == 0.0, "perception: value noise falls with every tier and reaches zero at level 5")
+	_assert_true(AIProfile.for_level(1).feature_drop > AIProfile.for_level(4).feature_drop and AIProfile.for_level(5).feature_drop == 0.0, "perception: feature drop falls with every tier and reaches zero at level 5")
+	_assert_true(AIProfile.for_level(1).lapse_rate > AIProfile.for_level(4).lapse_rate and AIProfile.for_level(5).lapse_rate == 0.0, "perception: the arbitrary action fades with every tier and is gone at level 5")
+	var ai := BattleAI.new()
+	ai.set_level(1)
+	ai._seed_perception(actor, level)
+	var first: float = ai._noise(1234)
+	var second: float = ai._noise(1234)
+	_assert_true(first == second, "perception: noise is a pure function of seed and salt, so two peers compute the same value")
+	_assert_true(absf(first) <= AIProfile.for_level(1).value_noise, "perception: noise stays inside the tier's band")
+	var spread: bool = false
+	for salt in range(64):
+		if ai._noise(salt) != first:
+			spread = true
+	_assert_true(spread, "perception: different decisions draw different noise rather than one constant offset")
+	var lone: Array[TacticsPawn] = [units["E1"]]
+	_assert_true(ai._perceived_foes(lone).size() == 1, "perception: a unit that overlooks things still sees the last enemy on the board")
+	var quiet := BattleAI.new()
+	quiet.set_level(1)
+	quiet.perception_enabled = false
+	quiet._seed_perception(actor, level)
+	_assert_true(quiet._noise(1234) == 0.0, "perception: the puzzles can switch perception off to test policy on its own")
 
 
 func _puzzle_focus_wounded() -> void:
@@ -485,11 +491,9 @@ func _puzzle_focus_wounded() -> void:
 	_assert_true(_estimate(actor, wounded, move) < float(wounded.stats.curr_health), "focus wounded: the wounded foe still survives the hit")
 	var allies: Array = [actor]
 	var foes: Array = [healthy, wounded]
-	for tier in [2, 3, 4, 5]:
+	for tier in [1, 2, 3, 4, 5]:
 		var action: AIAction = _decide(actor, allies, foes, tier)
 		_assert_true(action.target_unit == wounded, "focus wounded: level %d piles onto the foe an ally already hurt" % tier)
-	var low: AIAction = _decide(actor, allies, foes, 1)
-	_assert_true(low.target_unit == healthy, "focus wounded: level 1 spreads its damage onto the nearest healthy foe")
 
 
 func _puzzle_retreat() -> void:
@@ -511,17 +515,12 @@ func _puzzle_retreat() -> void:
 	_set_health(actor, 20, baseline["P1"]["max_health"])
 	var allies: Array = [actor]
 	var foes: Array = [foe]
-	var advanced: int = 1 << 30
-	for tier in [3, 4]:
+	var opening: int = _manhattan(_key_of(actor), _key_of(foe))
+	for tier in [1, 2, 3, 4, 5]:
 		var action: AIAction = _decide(actor, allies, foes, tier)
 		var key: Vector3i = _tile_key(action.move_to_tile)
 		var distance: int = _manhattan(key, _key_of(foe))
-		advanced = mini(advanced, distance)
-		_assert_true(action.move_index < 0 and distance <= 2, "retreat: level %d keeps closing on a foe it cannot reach even at low health (%s)" % [tier, str(key)])
-	var top: AIAction = _decide(actor, allies, foes, 5)
-	var top_key: Vector3i = _tile_key(top.move_to_tile)
-	var top_distance: int = _manhattan(top_key, _key_of(foe))
-	_assert_true(top_distance > advanced + 4, "retreat: level 5 backs away when it is hurt and nothing is in reach (%s at %d against %d)" % [str(top_key), top_distance, advanced])
+		_assert_true(action.move_index < 0 and distance > opening, "retreat: level %d backs away when it is hurt and nothing is in reach (%s at %d against an opening %d)" % [tier, str(key), distance, opening])
 
 
 # The first cut of this square pinned every foe to a shared 100-point pool and read the
@@ -601,6 +600,7 @@ func _damage_share(actor: TacticsPawn, pawn: TacticsPawn, move: PokemonMoveResou
 func _decide(actor: TacticsPawn, allies: Array, foes: Array, tier: int) -> AIAction:
 	var ai := BattleAI.new()
 	ai.set_level(tier)
+	ai.perception_enabled = false
 	ai.forget(actor)
 	level.arena.reset_all_tile_markers()
 	return ai.choose_action(actor, allies, foes, chart, level)

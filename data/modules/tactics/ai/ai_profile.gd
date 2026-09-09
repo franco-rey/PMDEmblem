@@ -9,8 +9,14 @@ const MAX_LEVEL: int = 5
 const DEFAULT_LEVEL: int = 3
 
 const LABELS: Array[String] = ["Wandering", "Scrappy", "Tactical", "Ruthless", "Champion"]
-const RISK_WEIGHTS: Array[float] = [0.0, 0.0, 0.30, 0.40, 0.50]
-const APPROACH_WEIGHTS: Array[float] = [1.0, 1.0, 0.8, 0.7, 0.6]
+const RISK_WEIGHT: float = 0.40
+const APPROACH_WEIGHT: float = 0.7
+const COMPETENCE: Array[float] = [0.0, 0.25, 0.5, 0.75, 1.0]
+const FLOOR_DROP: float = 0.65
+const FLOOR_NOISE: float = 90.0
+const FLOOR_LAPSE: float = 0.15
+const CEILING_PLIES: int = 6
+const CEILING_NODES: int = 200
 
 var level: int = DEFAULT_LEVEL
 var target_mode: int = TargetMode.MATCHUP
@@ -34,6 +40,14 @@ var turn_order_aware: bool = true
 var team_assignment: bool = false
 var risk_weight: float = 0.35
 var approach_weight: float = 0.8
+var competence: float = 1.0
+var shortfall: float = 0.0
+var wobble_width: int = 2
+var plan_depth: int = 0
+var node_budget: int = 0
+var feature_drop: float = 0.0
+var value_noise: float = 0.0
+var lapse_rate: float = 0.0
 
 
 static func clamp_level(value: int) -> int:
@@ -48,31 +62,35 @@ static func for_level(value: int) -> AIProfile:
 	var profile := AIProfile.new()
 	var n: int = clamp_level(value)
 	profile.level = n
-	profile.target_mode = [
-		TargetMode.NEAREST,
-		TargetMode.WEAKEST,
-		TargetMode.MATCHUP,
-		TargetMode.SECURE_KO,
-		TargetMode.EXPECTED_VALUE,
-	][n - 1]
-	profile.move_mode = MoveMode.SLOT_ORDER if n <= 1 else (MoveMode.RAW_POWER if n == 2 else MoveMode.EXPECTED_DAMAGE)
-	profile.consider_status_moves = n >= 3
-	profile.consider_setup_moves = n >= 4
-	profile.consider_field_moves = n >= 4
-	profile.consider_ability_items = n >= 5
-	profile.use_ko_probability = n >= 4
-	profile.value_weighted = n >= 4
-	profile.avoid_hazards = n >= 2
-	profile.threat_aware = n >= 3
-	profile.focus_fire_staging = n >= 4
-	profile.zone_control = n >= 5
-	profile.retreat_when_losing = n >= 5
-	profile.use_heal_items = n >= 2
-	profile.use_throwables = n >= 4
-	profile.full_item_use = n >= 5
-	profile.shared_focus = n >= 2
-	profile.turn_order_aware = n >= 3
-	profile.team_assignment = n >= 4
-	profile.risk_weight = RISK_WEIGHTS[n - 1]
-	profile.approach_weight = APPROACH_WEIGHTS[n - 1]
+	profile.target_mode = TargetMode.EXPECTED_VALUE
+	profile.move_mode = MoveMode.EXPECTED_DAMAGE
+	profile.consider_status_moves = true
+	profile.consider_setup_moves = true
+	profile.consider_field_moves = true
+	profile.consider_ability_items = true
+	profile.use_ko_probability = true
+	profile.value_weighted = true
+	profile.avoid_hazards = true
+	profile.threat_aware = true
+	profile.focus_fire_staging = true
+	profile.zone_control = true
+	profile.retreat_when_losing = true
+	profile.use_heal_items = true
+	profile.use_throwables = true
+	profile.full_item_use = true
+	profile.shared_focus = true
+	profile.turn_order_aware = true
+	profile.team_assignment = true
+	profile.risk_weight = RISK_WEIGHT
+	profile.approach_weight = APPROACH_WEIGHT
+	var competence: float = COMPETENCE[n - 1]
+	var shortfall: float = sqrt(1.0 - competence)
+	profile.competence = competence
+	profile.shortfall = shortfall
+	profile.plan_depth = int(round(float(CEILING_PLIES) * competence))
+	profile.node_budget = int(round(float(CEILING_NODES) * pow(competence, 1.5)))
+	profile.feature_drop = FLOOR_DROP * shortfall
+	profile.value_noise = FLOOR_NOISE * shortfall
+	profile.lapse_rate = FLOOR_LAPSE * shortfall
+	profile.wobble_width = maxi(2, int(round(2.0 + 10.0 * shortfall)))
 	return profile

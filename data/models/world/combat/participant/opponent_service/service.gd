@@ -5,7 +5,7 @@ var res: TacticsParticipantResource
 var camera: TacticsCameraResource
 var controls: TacticsControlsResource
 var arena: TacticsArena
-var battle_ai := BattleAI.new()
+var battle_ai: BattleAI = BattleSearch.new()
 var multiverse_policy := MultiversePolicy.new()
 var _ai_level: int = -1
 var type_chart: TypeChartResource = load("res://data/models/pokemon/generated/types/type_chart.tres") as TypeChartResource

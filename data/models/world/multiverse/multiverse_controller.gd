@@ -553,7 +553,9 @@ func commit_travel(choice: int) -> bool:
 	for pawn in travellers:
 		from_locals[level.notation.unit_id(pawn)] = pawn.global_position
 	clear_travel_preview()
-	if kind != "hop":
+	if kind == "new":
+		base = capture(true)
+	elif kind != "hop":
 		var branch_from: Vector2i = option["from"]
 		base = state.opening_board(branch_from.x, branch_from.y).duplicate_board()
 	level.scheduler.detach_active()

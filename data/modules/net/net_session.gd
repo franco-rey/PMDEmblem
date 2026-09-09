@@ -609,7 +609,7 @@ func _auto_turn(pawn: TacticsPawn) -> void:
 
 func _auto_brain() -> BattleAI:
 	if _auto_ai == null:
-		_auto_ai = BattleAI.new()
+		_auto_ai = BattleSearch.new()
 	if level != null:
 		_auto_ai.set_level(level.ai_level)
 	return _auto_ai

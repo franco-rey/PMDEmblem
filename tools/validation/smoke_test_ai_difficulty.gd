@@ -60,8 +60,10 @@ func _run() -> void:
 	_assert_true(healing.intent != null and healing.intent.is_item_action(), "level 2 drinks its berry when badly hurt")
 	ai.set_level(1)
 	ai.forget(charizard)
+	ai.perception_enabled = false
 	var stubborn: AIAction = ai.choose_action(charizard, allies, foes, chart, level)
-	_assert_true(stubborn.intent == null or not stubborn.intent.is_item_action(), "level 1 never uses items")
+	ai.perception_enabled = true
+	_assert_true(stubborn.intent != null and stubborn.intent.is_item_action(), "level 1 reaches for the same berry, because every tier carries the whole AI")
 	ai.set_level(5)
 	ai.forget(charizard)
 	venusaur.stats.curr_health = 1
@@ -110,8 +112,9 @@ func _profile_checks() -> void:
 			)
 			_assert_true(monotone, "level %d never knows less than level %d" % [level, level - 1])
 		previous = profile
-	_assert_true(AIProfile.for_level(1).risk_weight == 0.0, "level 1 ignores danger entirely")
-	_assert_true(AIProfile.for_level(5).consider_ability_items and not AIProfile.for_level(4).consider_ability_items, "only level 5 folds ability effects into its damage estimate")
+	_assert_true(AIProfile.for_level(1).risk_weight == AIProfile.for_level(5).risk_weight, "every tier weighs danger the same, because the ladder differs by perception rather than by rules")
+	_assert_true(AIProfile.for_level(1).consider_ability_items and AIProfile.for_level(5).consider_ability_items, "every tier folds ability effects into its damage estimate")
+	_assert_true(AIProfile.for_level(1).value_noise > AIProfile.for_level(5).value_noise and AIProfile.for_level(5).value_noise == 0.0, "the tiers separate on perception noise instead")
 	_assert_true(AIProfile.label_for(3) == "Tactical", "levels carry readable names")
 
 

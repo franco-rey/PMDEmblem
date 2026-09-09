@@ -17,6 +17,7 @@ const STAB_MULTIPLIER: float = 1.5
 const VARIANCE_MEAN: float = 0.95
 const SEED_STEP: int = 2654435761
 const QUEUE_PEEK: int = 24
+const SEARCH_NOISE: float = 60.0
 const UNSET: float = -1.0
 
 var node_budget: int = DEFAULT_NODE_BUDGET
@@ -27,6 +28,8 @@ var deep_width: int = DEEP_WIDTH
 var use_quiescence: bool = true
 var deviation_margin: float = 0.0
 var search_teams: PackedInt32Array = PackedInt32Array()
+var search_min_level: int = AIProfile.MAX_LEVEL
+var profile_driven: bool = true
 var nodes_searched: int = 0
 var plies_reached: int = 0
 var last_usec: int = 0
@@ -115,6 +118,15 @@ func _build_plan(
 		return greedy
 	if not search_teams.is_empty() and search_teams.find(_team_of(unit)) < 0:
 		return greedy
+	if profile_driven:
+		if profile.plan_depth <= 0 or profile.node_budget <= 0:
+			return greedy
+		max_plies = profile.plan_depth
+		node_budget = profile.node_budget
+		var reach: float = profile.competence if perception_enabled else 1.0
+		root_width = maxi(2, int(round(float(ROOT_WIDTH) * reach)))
+		inner_width = maxi(2, int(round(float(INNER_WIDTH) * reach)))
+		deep_width = maxi(1, int(round(float(DEEP_WIDTH) * reach)))
 	if not _ensure_sim(battle_level):
 		fallbacks += 1
 		return greedy
@@ -436,6 +448,12 @@ func _terminal(d: PackedInt32Array) -> float:
 	return WIN_SCORE if winner == _root_team else -WIN_SCORE
 
 
+func _shake() -> float:
+	if not perception_enabled or profile.competence >= 1.0:
+		return 0.0
+	return (_hash01(nodes_searched) * 2.0 - 1.0) * SEARCH_NOISE * profile.shortfall
+
+
 func _eval(d: PackedInt32Array) -> float:
 	var total: float = 0.0
 	var count: int = _sim.unit_count
@@ -479,7 +497,7 @@ func _eval(d: PackedInt32Array) -> float:
 		if d[queued + BattleSim.U_ALIVE] != 1:
 			continue
 		total += TEMPO_WEIGHT if d[queued + BattleSim.U_TEAM] == _root_team else -TEMPO_WEIGHT
-	return total
+	return total + _shake()
 
 
 func _candidates(d: PackedInt32Array, unit: int, width: int, allowed: Dictionary, killers: bool) -> PackedInt32Array:

@@ -119,16 +119,18 @@ func _level_checks() -> void:
 	var context: Dictionary = _mixed_context()
 	var branch: Array = [_branch_option(6, _good_board())]
 	var hop: Array = [_hop_option(_needy_board())]
-	for value in [1, 2]:
+	for value in [1, 2, 3, 4, 5]:
 		context["level"] = value
-		_assert_true(MultiversePolicy.decide(branch, context) == -1, "level %d never branches" % value)
-		_assert_true(MultiversePolicy.decide(hop, context) == -1, "level %d plays linear warfare and declines even a free hop" % value)
-	context["level"] = 3
-	_assert_true(MultiversePolicy.decide(branch, context) == -1, "level 3 hops but never opens a timeline")
-	_assert_true(MultiversePolicy.decide(hop, context) == 0, "level 3 still takes the free hop")
-	context["level"] = 5
-	_assert_true(MultiversePolicy.decide(branch, context) == 0, "level 5 uses the full policy")
-	_assert_true(MultiversePolicy.LINEAR_LEVEL == 2 and MultiversePolicy.BRANCH_LEVEL == 4, "the ladder gates read 1-2 linear, 3 hops, 4-5 branches")
+		context["noise"] = 0.0
+		_assert_true(MultiversePolicy.decide(branch, context) == 0, "level %d opens a timeline when the branch is clearly good" % value)
+		_assert_true(MultiversePolicy.decide(hop, context) == 0, "level %d takes a free hop" % value)
+	var noisy: Dictionary = _mixed_context()
+	noisy["level"] = 1
+	noisy["noise"] = AIProfile.for_level(1).value_noise * MultiversePolicy.TRAVEL_NOISE_SCALE
+	_assert_true(noisy["noise"] > 0.0, "the lowest tier carries travel judgement noise")
+	_assert_true(AIProfile.for_level(5).value_noise == 0.0, "the top tier judges travel without noise")
+	_assert_true(MultiversePolicy.judgement(noisy, 0) != 0.0, "noise actually moves a low tier's travel score")
+	_assert_true(MultiversePolicy.judgement(noisy, 0) == MultiversePolicy.judgement(noisy, 0), "travel judgement noise is a pure function of seed and option, so peers agree")
 
 
 func _determinism_checks() -> void:

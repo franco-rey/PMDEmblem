@@ -183,6 +183,7 @@ func _battle(
 	var brain: BattleSearch = null
 	if budget > 0 and level.opponent != null and level.opponent.opponent_serv != null:
 		brain = BattleSearch.new()
+		brain.profile_driven = false
 		brain.node_budget = budget
 		brain.use_quiescence = quiescence
 		if widths.size() >= 3:

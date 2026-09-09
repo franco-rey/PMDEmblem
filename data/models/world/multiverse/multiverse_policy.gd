@@ -10,6 +10,8 @@ const LINEAR_LEVEL: int = 2
 const BRANCH_LEVEL: int = 4
 const RELUCTANT_LEVEL: int = 4
 const RELUCTANT_SCALE: float = 1.5
+const TRAVEL_NOISE_SCALE: float = 0.25
+const NOISE_STEP: int = 2654435761
 const HOP_FLOOR: float = 1.0
 const STRIKE_WEIGHT: float = 0.5
 const SUSPENSION_WEIGHT: float = 0.05
@@ -68,6 +70,8 @@ func context_for(pending: Dictionary) -> Dictionary:
 			standing_records.append_array(board_records(state.latest(l)))
 	return {
 		"level": _level_for(side),
+		"noise": AIProfile.for_level(_level_for(side)).value_noise * TRAVEL_NOISE_SCALE,
+		"seed": int(mv.level.battle_rng.state) if mv.level.battle_rng != null else 0,
 		"side": side,
 		"mine": mine,
 		"theirs": theirs,
@@ -110,7 +114,7 @@ func _option_cost(records: Array, side: int) -> float:
 			strongest = maxf(strongest, unit_value(record))
 	var standing: int = mv.state.standing_total(PokemonInstanceResource.Team.PLAYER) + mv.state.standing_total(PokemonInstanceResource.Team.ENEMY)
 	var scale: float = clampf(float(standing) / float(_initial_total()), 0.0, 1.0)
-	var reluctance: float = RELUCTANT_SCALE if _level_for(side) == RELUCTANT_LEVEL else 1.0
+	var reluctance: float = 1.0
 	return strongest * scale * reluctance
 
 
@@ -122,15 +126,20 @@ func _initial_total() -> int:
 	return maxi(1, root.standing(PokemonInstanceResource.Team.PLAYER) + root.standing(PokemonInstanceResource.Team.ENEMY))
 
 
+static func judgement(context: Dictionary, index: int) -> float:
+	var noise: float = float(context.get("noise", 0.0))
+	if noise <= 0.0:
+		return 0.0
+	var h: int = (int(context.get("seed", 0)) ^ ((index + 1) * NOISE_STEP)) & 0x7fffffff
+	h = (h ^ (h >> 13)) * 1274126177
+	h = (h ^ (h >> 16)) & 0x7fffffff
+	return (float(h) / 2147483647.0 * 2.0 - 1.0) * noise
+
+
 static func decide(options: Array, context: Dictionary) -> int:
-	var level_value: int = AIProfile.clamp_level(int(context.get("level", AIProfile.DEFAULT_LEVEL)))
-	if level_value <= LINEAR_LEVEL:
-		return -1
 	var hop: int = best_hop(options, context)
 	if hop >= 0:
 		return hop
-	if level_value < BRANCH_LEVEL:
-		return -1
 	return best_branch(options, context)
 
 
@@ -151,7 +160,7 @@ static func best_hop(options: Array, context: Dictionary) -> int:
 		var arrived: Array[Dictionary] = []
 		arrived.append_array(dest)
 		arrived.append_array(travellers)
-		var score: float = origin_swing + risk(dest, side) - risk(arrived, side)
+		var score: float = origin_swing + risk(dest, side) - risk(arrived, side) + judgement(context, i)
 		if strike:
 			score += STRIKE_WEIGHT * (strike_value(dest, side) - strike_value(origin_post, side))
 		if score > best_score:
@@ -196,7 +205,7 @@ static func best_branch(options: Array, context: Dictionary) -> int:
 		var relief: float = SUSPENSION_WEIGHT * distance * maxf(0.0, -margin_origin)
 		var share: float = clampf(float(standing(dest, team_of(side))) / float(maxi(1, int(context.get("standing_mine", 0)))), 0.0, SURVIVAL_CAP)
 		var survival: float = SURVIVAL_WEIGHT * maxf(0.0, -global_margin) * share
-		var score: float = margin(dest, side) + unfreeze - global_margin + relief + survival - option_cost
+		var score: float = margin(dest, side) + unfreeze - global_margin + relief + survival - option_cost + judgement(context, i)
 		scores[i] = score
 		turns[i] = dest_turn
 		best_score = maxf(best_score, score)
