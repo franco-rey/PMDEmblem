@@ -10,6 +10,8 @@ const LAYER_INDEX: int = 25
 const PORTRAIT_SIZE: float = 64.0
 const BUTTON_HEIGHT: float = 52.0
 const PANEL_WIDTH: float = 900.0
+const ROSTER_CHROME: float = 260.0
+const ROSTER_MIN_HEIGHT: float = 200.0
 
 var result_code: int = 0
 var _center: CenterContainer = null
@@ -17,6 +19,7 @@ var _panel: PanelContainer = null
 var _title: Label = null
 var _subtitle: Label = null
 var _columns: HBoxContainer = null
+var _scroll: ScrollContainer = null
 var _buttons: Dictionary = {}
 var _level: TacticsLevel = null
 var _copy_button: Button = null
@@ -59,7 +62,12 @@ func _ready() -> void:
 	column.add_child(_subtitle)
 	_columns = HBoxContainer.new()
 	_columns.add_theme_constant_override("separation", 24)
-	column.add_child(_columns)
+	_scroll = ScrollContainer.new()
+	_scroll.name = "RosterScroll"
+	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_scroll.add_child(_columns)
+	column.add_child(_scroll)
 	var buttons := HBoxContainer.new()
 	buttons.add_theme_constant_override("separation", 12)
 	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -96,6 +104,9 @@ func show_result(result: int, definition: SkirmishDefinitionResource, level: Tac
 	var viewport_width: float = _center.size.x if _center != null else 0.0
 	if viewport_width > 0.0:
 		_panel.custom_minimum_size.x = minf(PANEL_WIDTH, viewport_width - 40.0)
+	var viewport_height: float = _center.size.y if _center != null else 0.0
+	if viewport_height > 0.0 and _scroll != null:
+		_scroll.custom_minimum_size.y = maxf(ROSTER_MIN_HEIGHT, viewport_height - ROSTER_CHROME)
 	var series: bool = not next_label.is_empty()
 	for node_name in ["PlayAgainButton", "LobbyButton", "MainMenuButton"]:
 		(_buttons[node_name] as Button).visible = not series

@@ -1,5 +1,5 @@
 class_name MultiplayerMenu
-extends Control
+extends CenterContainer
 
 signal closed
 signal host_requested(port: int)
