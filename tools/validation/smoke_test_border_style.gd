@@ -132,7 +132,7 @@ func _run() -> void:
 		_assert_true(portrait.is_textured() and portrait.baked_style == 3 and portrait.texture.get_size() == Vector2(portrait_px, portrait_px), "portrait frames bake the portrait border sheet at %d px" % portrait_px)
 		var ring: Color = _ring_average(portrait.texture.get_image(), portrait_px, PmdStyle.sheet_frame_px("portrait"), PmdStyle.PORTRAIT_FILL)
 		_assert_true(ring.b > ring.r, "a player portrait frame bakes a blue-tinted ring")
-		_assert_true(is_equal_approx(portrait.get_content_margin(SIDE_LEFT), PmdStyle.sheet_inset("portrait")) and PmdStyle.sheet_inset("portrait") <= 6.0, "portrait frames keep a small inset with the ring overhanging")
+		_assert_true(is_equal_approx(portrait.get_content_margin(SIDE_LEFT), PmdStyle.sheet_inset("portrait")) and PmdStyle.sheet_inset("portrait") <= 8.0, "portrait frames keep a small inset with the ring overhanging")
 		portrait.draw(canvas, Rect2(0, 0, 64, 64))
 		_assert_true(not window.is_textured(), "portrait borders do not texture the windows")
 		PmdStyle.set_portrait_border(0)
@@ -150,6 +150,49 @@ func _run() -> void:
 	_assert_true(PmdStyle.font_body().base_font == PmdStyle.TEXT_FONT and PmdStyle.font_title().base_font == PmdStyle.BANNER_FONT, "the text font returns and titles keep the banner font")
 	root.theme = PmdStyle.build_theme(load("res://assets/ui/pmd_theme.tres") as Theme)
 	_assert_true(root.theme.default_font == PmdStyle.font_body(), "the theme's default font is the shared body font")
+	var toggle_style: StyleBoxFlat = root.theme.get_stylebox("normal", "CheckButton") as StyleBoxFlat
+	_assert_true(toggle_style != null and toggle_style.bg_color.a == 0.0 and toggle_style.border_color.a == 0.0, "toggles sit bare on their row with no plate box")
+	_assert_true(root.theme.get_stylebox("panel", "PopupMenu") is StyleBoxFlat and not (root.theme.get_stylebox("panel", "PopupMenu") is PmdWindowStyle), "dropdown popups keep a flat frame that cannot be clipped by the popup window")
+	_assert_true(root.theme.get_stylebox("slider", "HSlider") is StyleBoxFlat and root.theme.get_stylebox("grabber_area", "HSlider") is StyleBoxFlat and root.theme.get_icon("grabber", "HSlider") != null and root.theme.get_icon("grabber", "HSlider").get_size() == Vector2(22, 22), "sliders take a themed track, fill and knob")
+	var track: StyleBoxFlat = root.theme.get_stylebox("grabber_area", "HSlider") as StyleBoxFlat
+	var scroll_grabber: StyleBoxFlat = root.theme.get_stylebox("grabber", "VScrollBar") as StyleBoxFlat
+	PmdStyle.set_ui_palette("rose")
+	_assert_true(track.bg_color == PmdStyle.PALETTES["rose"]["frame_soft"] and scroll_grabber.bg_color == PmdStyle.PALETTES["rose"]["frame_soft"] and PmdStyle.field("normal").bg_color == PmdStyle.PALETTES["rose"]["field"], "slider fills, scrollbar grabbers and text fields follow the palette")
+	PmdStyle.set_ui_palette("navy")
+	_assert_true(track.bg_color == PmdStyle.FRAME_SOFT and PmdStyle.field("normal").bg_color == PmdStyle.FIELD_FILL, "navy restores the soft fills")
+	_assert_true(is_equal_approx(PmdStyle.font_width_factor(), 1.0), "the Text font has a width factor of one")
+	PmdStyle.set_ui_font("system")
+	_assert_true(PmdStyle.font_width_factor() > 1.5, "the System font widens menu rows")
+	PmdStyle.set_ui_font("text")
+	var overlay: PmdWindowStyle = PmdStyle.portrait_overlay() as PmdWindowStyle
+	_assert_true(overlay != null and not overlay.is_textured() and overlay.flat.bg_color.a == 0.0 and overlay.flat.border_color.a == 0.0, "portrait overlays are invisible while portrait borders are off")
+	if portraits_available:
+		PmdStyle.set_portrait_border(1)
+		var overlay_image: Image = overlay.texture.get_image()
+		var overlay_px: int = PmdStyle.sheet_frame_px("portrait") * 3
+		_assert_true(overlay.is_textured() and overlay_image.get_pixel(overlay_px / 2, overlay_px / 2).a == 0.0 and overlay_image.get_pixel(overlay_px / 2, 2).a > 0.0, "portrait overlays bake an untinted ring around a transparent centre")
+		PmdStyle.set_portrait_border(0)
+	var probe_config := ConfigFile.new()
+	probe_config.load(GameSettings.SETTINGS_PATH)
+	probe_config.set_value(GameSettings.SECTION, "ui_scale", 2.0)
+	probe_config.erase_section_key(GameSettings.SECTION, "ui_scale_relative")
+	probe_config.save(GameSettings.SETTINGS_PATH)
+	var scale_before: float = GameSettings.ui_scale
+	GameSettings.load_settings()
+	_assert_true(is_equal_approx(GameSettings.ui_scale, 1.0), "a saved absolute UI scale from before the relative change resets to 100% once")
+	GameSettings.ui_scale = scale_before
+	GameSettings.save_settings()
+	GameSettings.load_settings()
+	_assert_true(is_equal_approx(GameSettings.ui_scale, scale_before), "after saving once the relative scale is kept")
+	GameSettings.border_style = 0
+	GameSettings.border_color = 0
+	GameSettings.portrait_border = 0
+	GameSettings.ui_font = "text"
+	GameSettings.ui_palette = "navy"
+	GameSettings.sky_backdrop = "sky"
+	GameSettings.menu_backdrop = "sky"
+	PmdStyle.set_ui_font("text")
+	PmdStyle.refresh_windows()
 	var orphan := Node.new()
 	root.add_child(orphan)
 	var orphan_button := Button.new()

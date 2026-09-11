@@ -8,6 +8,7 @@ var scroll: ScrollContainer = null
 var _pad: MarginContainer = null
 var _fit_pending: bool = false
 var _fit_passes: int = 0
+var _row_widths: Dictionary = {}
 
 const FIT_PASSES: int = 4
 const FOCUS_PAD: int = 4
@@ -88,7 +89,8 @@ func add_row(caption: String, control: Control, control_width: float = 0.0) -> H
 	row.add_child(label)
 	control.custom_minimum_size.y = maxf(control.custom_minimum_size.y, PmdStyle.ROW_HEIGHT)
 	if control_width > 0.0:
-		control.custom_minimum_size.x = control_width
+		_row_widths[control] = control_width
+		control.custom_minimum_size.x = control_width * PmdStyle.font_width_factor()
 	else:
 		control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(control)
@@ -128,7 +130,7 @@ func _fit_once() -> void:
 	if not is_inside_tree() or get_viewport() == null or body == null:
 		return
 	var view: Vector2 = get_viewport().get_visible_rect().size
-	custom_minimum_size.x = minf(PmdStyle.PANEL_WIDTH, maxf(320.0, view.x - 40.0))
+	custom_minimum_size.x = minf(PmdStyle.PANEL_WIDTH * PmdStyle.font_width_factor(), maxf(320.0, view.x - 40.0))
 	var natural: float = _pad.get_combined_minimum_size().y
 	var panel_style: StyleBox = get_theme_stylebox("panel")
 	var chrome: float = title_label.get_combined_minimum_size().y + footer.get_combined_minimum_size().y + float(PmdStyle.PANEL_MARGIN * 2 + PmdStyle.PANEL_GAP * 2) + (panel_style.get_minimum_size().y if panel_style != null else 16.0)
@@ -146,3 +148,12 @@ func _fit_once() -> void:
 func _fit_again() -> void:
 	_fit_pending = false
 	_fit_once()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_THEME_CHANGED and is_inside_tree() and body != null:
+		var factor: float = PmdStyle.font_width_factor()
+		for control in _row_widths.keys():
+			if control != null and is_instance_valid(control):
+				(control as Control).custom_minimum_size.x = float(_row_widths[control]) * factor
+		fit_to_viewport()

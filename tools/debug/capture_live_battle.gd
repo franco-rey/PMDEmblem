@@ -36,8 +36,17 @@ func _run() -> void:
 		idx[String(entries[i].get("slug", ""))] = i
 	lobby.add_roster_index(int(idx["0006_charizard"]))
 	lobby.set_held_item(SkirmishLobby.SIDE_PLAYER, 0, "seed_blast")
+	var full: bool = _arg("full") == "1"
+	if full:
+		for slug in ["0002_ivysaur", "0003_venusaur", "0005_charmeleon", "0008_wartortle", "0009_blastoise"]:
+			if idx.has(slug):
+				lobby.add_roster_index(int(idx[slug]))
 	lobby.activate_enemy_team()
 	lobby.add_roster_index(int(idx["0001_bulbasaur"]))
+	if full:
+		for slug in ["0010_caterpie", "0011_metapod", "0012_butterfree", "0013_weedle", "0014_kakuna"]:
+			if idx.has(slug):
+				lobby.add_roster_index(int(idx[slug]))
 	lobby.set_random_enemy_enabled(false)
 	var mode_picker: OptionButton = lobby.find_child("ControlModePicker", true, false)
 	for i in range(mode_picker.item_count):

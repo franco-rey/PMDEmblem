@@ -173,7 +173,7 @@ func _build_queue_bar() -> void:
 	_queue_row = HBoxContainer.new()
 	_queue_row.name = "QueueRow"
 	_queue_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	_queue_row.add_theme_constant_override("separation", 6)
+	_queue_row.add_theme_constant_override("separation", int(BattleHudLayout.TILE_GAP))
 	_queue_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	inner.add_child(_queue_row)
 	_round_label = Label.new()

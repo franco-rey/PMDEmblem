@@ -40,7 +40,7 @@ const REMOTE_CHOOSING_MS: int = 3000
 const GRID_GAP: float = 8.0
 const LAYOUT_MARGIN_X: float = 20.0
 const PANEL_MARGIN_X: float = 10.0
-const MIDDLE_GAP: float = 12.0
+const MIDDLE_GAP: float = 20.0
 const COMPACT_LAYOUT_WIDTH: float = 1600.0
 const SETUP_PANEL_WIDTH: float = 320.0
 const SETUP_PANEL_COMPACT_WIDTH: float = 260.0
@@ -333,7 +333,7 @@ func _build_ui() -> void:
 	outer.name = "LobbyLayout"
 	outer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	outer.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	outer.add_theme_constant_override("separation", 12)
+	outer.add_theme_constant_override("separation", int(MIDDLE_GAP))
 	margin.add_child(outer)
 
 	player_tray = _create_team_tray("PlayerTeamTray", "Player Team", SIDE_PLAYER)
@@ -1462,6 +1462,16 @@ func _create_roster_cell(entry: Dictionary) -> Button:
 	button.add_to_group(UiSoundHook.OPT_OUT_GROUP)
 	button.pressed.connect(_on_roster_pressed.bind(String(entry.get("path", ""))))
 
+	var frame := Panel.new()
+	frame.name = "PortraitFrame"
+	frame.set_anchors_preset(Control.PRESET_FULL_RECT)
+	frame.offset_left = 2
+	frame.offset_top = 2
+	frame.offset_right = -2
+	frame.offset_bottom = -2
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.add_theme_stylebox_override("panel", PmdStyle.portrait_overlay())
+	button.add_child(frame)
 	var texture_rect := TextureRect.new()
 	texture_rect.name = "Portrait"
 	texture_rect.texture = RosterProvider.texture_for_entry(entry)
@@ -1608,6 +1618,17 @@ func _create_slot_button(path: String, index: int, side: String) -> Button:
 	content.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	button.add_child(content)
 
+	var frame := Panel.new()
+	frame.name = "PortraitFrame"
+	frame.anchor_top = 0.5
+	frame.anchor_bottom = 0.5
+	frame.offset_left = 0
+	frame.offset_top = -SLOT_PORTRAIT_SIZE.y * 0.5
+	frame.offset_right = SLOT_PORTRAIT_SIZE.x
+	frame.offset_bottom = SLOT_PORTRAIT_SIZE.y * 0.5
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.add_theme_stylebox_override("panel", PmdStyle.portrait_overlay())
+	content.add_child(frame)
 	var portrait := TextureRect.new()
 	portrait.name = "Portrait"
 	portrait.anchor_top = 0.5
@@ -1639,6 +1660,7 @@ func _create_slot_button(path: String, index: int, side: String) -> Button:
 
 	if path.is_empty():
 		portrait.visible = false
+		frame.visible = false
 		label.offset_left = 0
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		label.text = "%d" % (index + 1)

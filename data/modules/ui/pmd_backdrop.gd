@@ -70,6 +70,8 @@ func refresh() -> void:
 	_sky_tile = _sky.texture.get_size() if _sky.texture != null else Vector2(320, 240)
 	_sky.visible = scene_texture == null
 	_clouds.visible = scene_texture == null and CLOUDY_SKIES.has(GameSettings.sky_backdrop)
+	if _tint != null:
+		_tint.color = PmdStyle.active_palette().get("tint", _tint.color)
 	_layout()
 
 

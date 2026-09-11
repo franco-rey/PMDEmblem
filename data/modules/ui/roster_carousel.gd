@@ -75,6 +75,9 @@ func _size_row(row: Control) -> void:
 	var portrait: TextureRect = row.get_node("Portrait") as TextureRect
 	portrait.position = Vector2(8.0 * _zoom, (row_height() - portrait_size()) * 0.5)
 	portrait.size = Vector2(portrait_size(), portrait_size())
+	var frame: Panel = row.get_node("PortraitFrame") as Panel
+	frame.position = portrait.position
+	frame.size = portrait.size
 	var label: Label = row.get_node("Name") as Label
 	label.position = Vector2(portrait_size() + 18.0 * _zoom, 0.0)
 	label.size = Vector2(row_width() - portrait_size() - 26.0 * _zoom, row_height())
@@ -119,6 +122,11 @@ func _build_row() -> Control:
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	row.add_child(panel)
+	var frame := Panel.new()
+	frame.name = "PortraitFrame"
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.add_theme_stylebox_override("panel", PmdStyle.portrait_overlay())
+	row.add_child(frame)
 	var portrait := TextureRect.new()
 	portrait.name = "Portrait"
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -205,6 +213,7 @@ func _paint_row(row: Control, entry: Dictionary, is_selected: bool) -> void:
 	var portrait: TextureRect = row.get_node("Portrait") as TextureRect
 	var slug: String = String(entry.get("slug", ""))
 	portrait.visible = not slug.is_empty()
+	(row.get_node("PortraitFrame") as Panel).visible = portrait.visible
 	label.position.x = portrait_size() + 18.0 * _zoom if portrait.visible else 18.0 * _zoom
 	label.size.x = row_width() - label.position.x - 8.0 * _zoom
 	if portrait.visible:

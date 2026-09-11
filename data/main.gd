@@ -969,6 +969,29 @@ func _style_main_menu() -> void:
 		control.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
 	skirmish_picker.fit_to_longest_item = false
 	skirmish_picker.clip_text = true
+	_scale_main_menu()
+	get_viewport().size_changed.connect(_scale_main_menu)
+
+
+func menu_zoom() -> float:
+	var height: float = RosterCarousel.DESIGN_HEIGHT
+	if is_inside_tree() and get_viewport() != null:
+		height = get_viewport().get_visible_rect().size.y
+	return clampf(height / RosterCarousel.DESIGN_HEIGHT, 1.0, RosterCarousel.MAX_ZOOM)
+
+
+func _scale_main_menu() -> void:
+	var menu: VBoxContainer = get_node_or_null("UI/MapSelector/SkirmishMenu") as VBoxContainer
+	if menu == null:
+		return
+	var zoom: float = menu_zoom()
+	menu.add_theme_constant_override("separation", int(round(PmdStyle.PANEL_GAP * zoom)))
+	for child in menu.get_children():
+		var control: Control = child as Control
+		if control == null or not (control is Button or control is OptionButton):
+			continue
+		control.custom_minimum_size = MENU_CONTROL_SIZE * zoom
+		control.add_theme_font_size_override("font_size", int(round(MENU_FONT_SIZE * zoom)))
 
 
 func _build_roster_showcase() -> void:

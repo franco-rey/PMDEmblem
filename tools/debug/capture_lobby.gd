@@ -30,6 +30,9 @@ func _run() -> void:
 	var color_arg: String = _arg("color")
 	if color_arg.is_valid_int():
 		PmdStyle.set_border_color(int(color_arg))
+	var portrait_arg: String = _arg("portrait")
+	if portrait_arg.is_valid_int():
+		PmdStyle.set_portrait_border(int(portrait_arg))
 	main.get_node("UI/MapSelector/SkirmishMenu/CustomToggleButton").emit_signal("pressed")
 	await process_frame
 	await process_frame

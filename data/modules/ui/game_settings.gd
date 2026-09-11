@@ -55,6 +55,8 @@ static func load_settings() -> void:
 		if stored is Vector2i:
 			resolution = stored
 		ui_scale = float(config.get_value(SECTION, "ui_scale", ui_scale))
+		if not bool(config.get_value(SECTION, "ui_scale_relative", false)):
+			ui_scale = 1.0
 		vsync = bool(config.get_value(SECTION, "vsync", vsync))
 		camera_track = bool(config.get_value(SECTION, "camera_track", camera_track))
 		cpu_battle_report = bool(config.get_value(SECTION, "cpu_battle_report", cpu_battle_report))
@@ -107,6 +109,7 @@ static func save_settings() -> bool:
 	config.set_value(SECTION, "window_mode", window_mode)
 	config.set_value(SECTION, "resolution", resolution)
 	config.set_value(SECTION, "ui_scale", ui_scale)
+	config.set_value(SECTION, "ui_scale_relative", true)
 	config.set_value(SECTION, "vsync", vsync)
 	config.set_value(SECTION, "camera_track", camera_track)
 	config.set_value(SECTION, "cpu_battle_report", cpu_battle_report)

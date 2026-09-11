@@ -2,13 +2,13 @@ class_name BattleHudLayout
 extends RefCounted
 
 const MARGIN: float = 16.0
-const GAP: float = 8.0
+const GAP: float = 14.0
 const PANEL_WIDTH: float = 440.0
 const PANEL_HEIGHT: float = 196.0
 const QUEUE_TILE: float = 64.0
 const ACTIVE_TILE: float = 80.0
 const TILE_FRAME: float = 8.0
-const TILE_GAP: float = 6.0
+const TILE_GAP: float = 10.0
 const DIVIDER_WIDTH: float = 12.0
 const MIN_TILE_SCALE: float = 0.6
 const STATUS_HEIGHT: float = 104.0

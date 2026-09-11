@@ -68,15 +68,17 @@ const BORDER_COLOR_COUNT: int = 3
 const BORDER_COLOR_NAMES: Array[String] = ["Green", "Blue", "Pink"]
 const SHEETS: Dictionary = {
 	"menu": {"path": BORDER_SHEET_PATH, "cell": BORDER_CELL_PX, "scale": BORDER_SCALE, "overhang": BORDER_OVERHANG_PX, "pad": BORDER_INNER_PAD, "styles": BORDER_STYLE_COUNT},
-	"portrait": {"path": PORTRAIT_SHEET_PATH, "cell": 4, "scale": 2, "overhang": 4, "pad": 0, "styles": PORTRAIT_STYLE_COUNT},
+	"portrait": {"path": PORTRAIT_SHEET_PATH, "cell": 4, "scale": 2, "overhang": 3, "pad": 0, "styles": PORTRAIT_STYLE_COUNT},
 }
 const PORTRAIT_FILL: Color = Color(0.02, 0.03, 0.08, 1.0)
+const FIELD_FILL: Color = Color(0.03, 0.04, 0.10, 1.0)
+const CLEAR: Color = Color(0, 0, 0, 0)
 const PALETTES: Dictionary = {
-	"navy": {"window": NAVY, "deep": NAVY_DEEP, "light": NAVY_LIGHT, "pressed": PLATE_PRESSED, "frame": FRAME, "frame_soft": FRAME_SOFT},
-	"forest": {"window": Color(0.06, 0.16, 0.10, 0.94), "deep": Color(0.03, 0.10, 0.06, 0.97), "light": Color(0.11, 0.26, 0.16, 0.96), "pressed": Color(0.16, 0.34, 0.22, 1.0), "frame": Color(0.80, 0.96, 0.84, 1.0), "frame_soft": Color(0.42, 0.66, 0.50, 1.0)},
-	"ocean": {"window": Color(0.04, 0.10, 0.24, 0.94), "deep": Color(0.02, 0.06, 0.16, 0.97), "light": Color(0.08, 0.20, 0.42, 0.96), "pressed": Color(0.12, 0.28, 0.55, 1.0), "frame": Color(0.78, 0.90, 1.0, 1.0), "frame_soft": Color(0.38, 0.58, 0.90, 1.0)},
-	"rose": {"window": Color(0.18, 0.06, 0.14, 0.94), "deep": Color(0.11, 0.03, 0.09, 0.97), "light": Color(0.30, 0.11, 0.24, 0.96), "pressed": Color(0.40, 0.16, 0.32, 1.0), "frame": Color(1.0, 0.86, 0.94, 1.0), "frame_soft": Color(0.80, 0.48, 0.66, 1.0)},
-	"slate": {"window": Color(0.10, 0.10, 0.12, 0.94), "deep": Color(0.06, 0.06, 0.07, 0.97), "light": Color(0.18, 0.18, 0.22, 0.96), "pressed": Color(0.24, 0.24, 0.29, 1.0), "frame": Color(0.88, 0.88, 0.90, 1.0), "frame_soft": Color(0.52, 0.52, 0.58, 1.0)},
+	"navy": {"window": NAVY, "deep": NAVY_DEEP, "light": NAVY_LIGHT, "pressed": PLATE_PRESSED, "frame": FRAME, "frame_soft": FRAME_SOFT, "field": FIELD_FILL, "tint": Color(0.03, 0.05, 0.14, 0.42)},
+	"forest": {"window": Color(0.06, 0.16, 0.10, 0.94), "deep": Color(0.03, 0.10, 0.06, 0.97), "light": Color(0.11, 0.26, 0.16, 0.96), "pressed": Color(0.16, 0.34, 0.22, 1.0), "frame": Color(0.80, 0.96, 0.84, 1.0), "frame_soft": Color(0.42, 0.66, 0.50, 1.0), "field": Color(0.02, 0.06, 0.04, 1.0), "tint": Color(0.02, 0.08, 0.04, 0.42)},
+	"ocean": {"window": Color(0.04, 0.10, 0.24, 0.94), "deep": Color(0.02, 0.06, 0.16, 0.97), "light": Color(0.08, 0.20, 0.42, 0.96), "pressed": Color(0.12, 0.28, 0.55, 1.0), "frame": Color(0.78, 0.90, 1.0, 1.0), "frame_soft": Color(0.38, 0.58, 0.90, 1.0), "field": Color(0.01, 0.03, 0.09, 1.0), "tint": Color(0.02, 0.05, 0.14, 0.42)},
+	"rose": {"window": Color(0.18, 0.06, 0.14, 0.94), "deep": Color(0.11, 0.03, 0.09, 0.97), "light": Color(0.30, 0.11, 0.24, 0.96), "pressed": Color(0.40, 0.16, 0.32, 1.0), "frame": Color(1.0, 0.86, 0.94, 1.0), "frame_soft": Color(0.80, 0.48, 0.66, 1.0), "field": Color(0.07, 0.02, 0.05, 1.0), "tint": Color(0.10, 0.03, 0.08, 0.42)},
+	"slate": {"window": Color(0.10, 0.10, 0.12, 0.94), "deep": Color(0.06, 0.06, 0.07, 0.97), "light": Color(0.18, 0.18, 0.22, 0.96), "pressed": Color(0.24, 0.24, 0.29, 1.0), "frame": Color(0.88, 0.88, 0.90, 1.0), "frame_soft": Color(0.52, 0.52, 0.58, 1.0), "field": Color(0.04, 0.04, 0.05, 1.0), "tint": Color(0.05, 0.05, 0.06, 0.42)},
 }
 const PALETTE_LABELS: Dictionary = {"navy": "Navy", "forest": "Forest", "ocean": "Ocean", "rose": "Rose", "slate": "Slate"}
 const FONT_FILES: Dictionary = {
@@ -103,6 +105,7 @@ static var _windows: Array[WeakRef] = []
 static var _flats: Array[Dictionary] = []
 static var _body_font: FontVariation = null
 static var _title_font: FontVariation = null
+static var _knob_icons: Dictionary = {}
 
 
 static func window(fill: Color = NAVY, frame: Color = FRAME, width: int = 3, radius: int = 6) -> StyleBox:
@@ -184,7 +187,7 @@ static func control_button(text: String, node_name: String, callback: Callable) 
 
 static func field(state: String) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.03, 0.04, 0.10, 1.0)
+	style.bg_color = effective_fill(FIELD_FILL)
 	style.border_color = CURSOR if state == "focus" else FRAME_SOFT
 	style.set_border_width_all(PLATE_FRAME)
 	style.set_corner_radius_all(RADIUS)
@@ -192,8 +195,54 @@ static func field(state: String) -> StyleBoxFlat:
 	style.content_margin_right = 8
 	style.content_margin_top = 4
 	style.content_margin_bottom = 4
-	_register_flat(style, style.border_color, Color(0, 0, 0, 0))
+	_register_flat(style, style.border_color, FIELD_FILL)
 	return style
+
+
+static func slider_track() -> StyleBoxFlat:
+	var style := window_flat(FIELD_FILL, FRAME_SOFT, 1, 4)
+	style.shadow_size = 0
+	style.content_margin_left = 2
+	style.content_margin_right = 2
+	style.content_margin_top = 4
+	style.content_margin_bottom = 4
+	return style
+
+
+static func slider_fill() -> StyleBoxFlat:
+	var style := window_flat(FRAME_SOFT, FRAME_SOFT, 0, 4)
+	style.shadow_size = 0
+	style.content_margin_left = 2
+	style.content_margin_right = 2
+	style.content_margin_top = 4
+	style.content_margin_bottom = 4
+	return style
+
+
+static func slider_knob(alpha: float = 1.0) -> ImageTexture:
+	var key: String = "%.2f" % alpha
+	if _knob_icons.has(key):
+		return _knob_icons[key]
+	var size: int = 22
+	var image: Image = Image.create(size, size, false, Image.FORMAT_RGBA8)
+	var centre: float = float(size) * 0.5 - 0.5
+	for y in range(size):
+		for x in range(size):
+			var distance: float = Vector2(float(x) - centre, float(y) - centre).length()
+			if distance <= 7.5:
+				image.set_pixel(x, y, Color(FRAME.r, FRAME.g, FRAME.b, alpha))
+			elif distance <= 9.5:
+				image.set_pixel(x, y, Color(NAVY_DEEP.r, NAVY_DEEP.g, NAVY_DEEP.b, alpha))
+	var texture: ImageTexture = ImageTexture.create_from_image(image)
+	_knob_icons[key] = texture
+	return texture
+
+
+static func font_width_factor() -> float:
+	var sample: String = "Battle report after CPU battles"
+	var base: float = TEXT_FONT.get_string_size(sample, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_BODY).x
+	var now: float = font_body().get_string_size(sample, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_BODY).x
+	return clampf(now / maxf(base, 1.0), 1.0, 1.8)
 
 
 static func type_color(type_id: String) -> Color:
@@ -229,9 +278,9 @@ static func build_theme(base: Theme) -> Theme:
 				theme.set_font(font_name, type_name, font_body())
 	theme.set_stylebox("panel", "Panel", window())
 	theme.set_stylebox("panel", "PanelContainer", window())
-	theme.set_stylebox("panel", "PopupMenu", window(NAVY_DEEP, FRAME, 2, 4))
+	theme.set_stylebox("panel", "PopupMenu", window_flat(NAVY_DEEP, FRAME, 2, 4))
 	theme.set_stylebox("hover", "PopupMenu", button("hover"))
-	theme.set_stylebox("panel", "PopupPanel", window(NAVY_DEEP, FRAME, 2, 4))
+	theme.set_stylebox("panel", "PopupPanel", window_flat(NAVY_DEEP, FRAME, 2, 4))
 	theme.set_stylebox("panel", "TooltipPanel", chip(NAVY_DEEP, FRAME))
 	theme.set_color("font_color", "TooltipLabel", TEXT)
 	theme.set_stylebox("panel", "ScrollContainer", StyleBoxEmpty.new())
@@ -249,6 +298,14 @@ static func build_theme(base: Theme) -> Theme:
 	theme.set_stylebox("normal", "CheckBox", chip(Color(0, 0, 0, 0), Color(0, 0, 0, 0)))
 	theme.set_stylebox("hover", "CheckBox", chip(Color(0, 0, 0, 0), Color(0, 0, 0, 0)))
 	theme.set_stylebox("pressed", "CheckBox", chip(Color(0, 0, 0, 0), Color(0, 0, 0, 0)))
+	for state in ["normal", "hover", "pressed", "disabled", "hover_pressed"]:
+		theme.set_stylebox(state, "CheckButton", chip(Color(0, 0, 0, 0), Color(0, 0, 0, 0)))
+	theme.set_stylebox("slider", "HSlider", slider_track())
+	theme.set_stylebox("grabber_area", "HSlider", slider_fill())
+	theme.set_stylebox("grabber_area_highlight", "HSlider", slider_fill())
+	theme.set_icon("grabber", "HSlider", slider_knob())
+	theme.set_icon("grabber_highlight", "HSlider", slider_knob())
+	theme.set_icon("grabber_disabled", "HSlider", slider_knob(0.5))
 	theme.set_stylebox("normal", "LineEdit", field("normal"))
 	theme.set_stylebox("focus", "LineEdit", field("focus"))
 	theme.set_stylebox("read_only", "LineEdit", field("normal"))
@@ -386,9 +443,9 @@ static func sheet_inset(sheet: String) -> float:
 	return float(sheet_frame_px(sheet) - sheet_overhang_px(sheet) + sheet_guard_px(sheet) + sheet_param(sheet, "pad"))
 
 
-static func portrait_flat(color: Color, width: int = 2) -> StyleBoxFlat:
+static func portrait_flat(color: Color, width: int = 2, fill: Color = PORTRAIT_FILL) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = PORTRAIT_FILL
+	style.bg_color = fill
 	style.border_color = color
 	style.set_border_width_all(width)
 	style.set_corner_radius_all(3)
@@ -400,11 +457,15 @@ static func portrait_flat(color: Color, width: int = 2) -> StyleBoxFlat:
 	return style
 
 
-static func portrait_frame(color: Color, width: int = 2) -> StyleBox:
-	var flat: StyleBoxFlat = portrait_flat(color, width)
-	var style: PmdWindowStyle = PmdWindowStyle.create(flat, PORTRAIT_FILL, color, "portrait")
+static func portrait_frame(color: Color, width: int = 2, fill: Color = PORTRAIT_FILL) -> StyleBox:
+	var flat: StyleBoxFlat = portrait_flat(color, width, fill)
+	var style: PmdWindowStyle = PmdWindowStyle.create(flat, fill, color, "portrait")
 	_windows.append(weakref(style))
 	return style
+
+
+static func portrait_overlay() -> StyleBox:
+	return portrait_frame(CLEAR, 0, CLEAR)
 
 
 static func palette_label(id: String) -> String:
@@ -424,17 +485,24 @@ static func fill_role(color: Color) -> String:
 		return "light"
 	if color == PLATE_PRESSED:
 		return "pressed"
+	if color == FIELD_FILL:
+		return "field"
+	if color == FRAME_SOFT:
+		return "frame_soft"
 	return ""
 
 
 static func effective_fill(color: Color) -> Color:
 	var role: String = fill_role(color)
+	if role == "frame_soft":
+		return accent_for_frame(FRAME_SOFT)
 	return active_palette()[role] if role != "" else color
 
 
 static func set_ui_palette(id: String) -> void:
 	GameSettings.ui_palette = id if PALETTES.has(id) else "navy"
 	refresh_windows()
+	PmdBackdrop.refresh_all()
 
 
 static func font_body() -> FontVariation:
@@ -507,9 +575,9 @@ static func refresh_windows() -> void:
 		var flat: StyleBoxFlat = (entry["ref"] as WeakRef).get_ref() as StyleBoxFlat
 		if flat == null:
 			continue
-		var role: String = String(entry["fill_role"])
-		if role != "":
-			flat.bg_color = active_palette()[role]
+		var fill: Color = entry["fill"]
+		if fill_role(fill) != "":
+			flat.bg_color = effective_fill(fill)
 		flat.border_color = accent_for_frame(entry["frame"])
 		keep_flats.append(entry)
 	_flats = keep_flats
@@ -521,9 +589,9 @@ static func _register_flat(style: StyleBoxFlat, frame: Color, fill: Color) -> vo
 	var follows_frame: bool = frame == FRAME or frame == FRAME_SOFT
 	if not follows_frame and role == "":
 		return
-	_flats.append({"ref": weakref(style), "frame": frame, "fill_role": role})
+	_flats.append({"ref": weakref(style), "frame": frame, "fill": fill})
 	if role != "":
-		style.bg_color = active_palette()[role]
+		style.bg_color = effective_fill(fill)
 	if follows_frame:
 		style.border_color = accent_for_frame(frame)
 
@@ -565,7 +633,7 @@ static func bake_window_texture(index: int, row: int, fill: Color, tint: Color =
 
 
 static func bake_sheet_texture(sheet: String, index: int, row: int, fill: Color, tint: Color = FRAME) -> ImageTexture:
-	var tinted: bool = tint != FRAME and tint != FRAME_SOFT
+	var tinted: bool = tint.a > 0.0 and tint != FRAME and tint != FRAME_SOFT
 	var key: String = "%s:%d:%d:%s:%s" % [sheet, index, row, fill.to_html(true), tint.to_html(true) if tinted else "-"]
 	if _window_textures.has(key):
 		return _window_textures[key]

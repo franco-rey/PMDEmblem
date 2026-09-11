@@ -174,6 +174,10 @@ func _side_column(caption: String, parent: Node, color: Color, level: TacticsLev
 func _unit_row(pawn: TacticsPawn, level: TacticsLevel) -> HBoxContainer:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
+	var frame := PanelContainer.new()
+	frame.name = "PortraitFrame"
+	frame.add_theme_stylebox_override("panel", PmdStyle.portrait_overlay())
+	frame.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var portrait := TextureRect.new()
 	portrait.custom_minimum_size = Vector2(PORTRAIT_SIZE, PORTRAIT_SIZE)
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -183,7 +187,8 @@ func _unit_row(pawn: TacticsPawn, level: TacticsLevel) -> HBoxContainer:
 	portrait.texture = PortraitLibrary.texture_for(PortraitLibrary.slug_for_pawn(pawn), expression)
 	if not pawn.is_alive():
 		portrait.modulate = Color(0.55, 0.55, 0.55, 1.0)
-	row.add_child(portrait)
+	frame.add_child(portrait)
+	row.add_child(frame)
 	var text := VBoxContainer.new()
 	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(text)
