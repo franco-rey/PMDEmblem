@@ -3,11 +3,11 @@ extends Control
 
 signal picked(entry: Dictionary)
 
-const ROW_HEIGHT: float = 62.0
-const ROW_WIDTH: float = 264.0
-const PORTRAIT_SIZE: float = 50.0
-const VISIBLE_ROWS: int = 7
-const CURVE_DEPTH: float = 86.0
+const ROW_HEIGHT: float = 76.0
+const ROW_WIDTH: float = 330.0
+const PORTRAIT_SIZE: float = 62.0
+const VISIBLE_ROWS: int = 9
+const CURVE_DEPTH: float = 96.0
 const GLIDE_SPEED: float = 14.0
 const WHEEL_STEP: float = 1.0
 const HAPPY: String = "Happy"
@@ -90,7 +90,8 @@ func _layout_rows() -> void:
 		return
 	var span: float = maxf(size.y, custom_minimum_size.y)
 	var centre: float = span * 0.5 - ROW_HEIGHT * 0.5
-	var first: int = int(floor(_offset)) - int(_rows.size() / 2)
+	var view: float = _view_offset()
+	var first: int = int(floor(view)) - int(_rows.size() / 2)
 	for i in range(_rows.size()):
 		var index: int = first + i
 		var row: Control = _rows[i]
@@ -98,13 +99,17 @@ func _layout_rows() -> void:
 			row.visible = false
 			continue
 		row.visible = true
+		var y: float = centre + (float(index) - view) * ROW_HEIGHT
 		var distance: float = float(index) - _offset
-		var y: float = centre + distance * ROW_HEIGHT
 		var recede: float = clampf(absf(distance) / float(VISIBLE_ROWS / 2), 0.0, 1.0)
 		var x: float = CURVE_DEPTH * (1.0 - recede * recede)
 		row.position = Vector2(x, y)
 		row.modulate.a = lerpf(1.0, 0.45, recede)
 		_paint_row(row, entries[index], index == _selected)
+
+
+func _view_offset() -> float:
+	return _offset
 
 
 func _paint_row(row: Control, entry: Dictionary, is_selected: bool) -> void:
@@ -165,5 +170,5 @@ func _row_at(point: Vector2) -> int:
 		if not row.visible:
 			continue
 		if Rect2(row.position, Vector2(ROW_WIDTH, ROW_HEIGHT)).has_point(point):
-			return int(floor(_offset)) - int(_rows.size() / 2) + i
+			return int(floor(_view_offset())) - int(_rows.size() / 2) + i
 	return -1

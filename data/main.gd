@@ -61,7 +61,7 @@ const MANUAL_SKIRMISHES: Array[Dictionary] = [
 	},
 ]
 const MENU_CONTROL_SIZE: Vector2 = Vector2(360, 64)
-const MENU_FONT_SIZE: int = 28
+const MENU_FONT_SIZE: int = 36
 
 const MIN_WINDOW_SIZE: Vector2i = Vector2i(1280, 720)
 
@@ -787,29 +787,6 @@ func _style_main_menu() -> void:
 	var menu := $UI/MapSelector/SkirmishMenu as VBoxContainer
 	if menu != null:
 		menu.add_theme_constant_override("separation", 10)
-	var selector := $UI/MapSelector as Control
-	if selector != null and selector.get_node_or_null("Banner") == null:
-		var banner := VBoxContainer.new()
-		banner.name = "Banner"
-		banner.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
-		banner.grow_horizontal = Control.GROW_DIRECTION_BOTH
-		banner.offset_top = 80.0
-		banner.add_theme_constant_override("separation", 6)
-		banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		selector.add_child(banner)
-		selector.move_child(banner, 0)
-		var title := Label.new()
-		title.name = "Title"
-		title.text = "PMD Emblem"
-		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		PmdStyle.apply_title(title, 72)
-		banner.add_child(title)
-		var subtitle := Label.new()
-		subtitle.name = "Subtitle"
-		subtitle.text = "Tactical skirmishes"
-		subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		subtitle.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
-		banner.add_child(subtitle)
 	_build_roster_showcase()
 	for control in [skirmish_picker, launch_button, custom_toggle_button]:
 		control.custom_minimum_size = MENU_CONTROL_SIZE
@@ -823,20 +800,20 @@ func _build_roster_showcase() -> void:
 	var selector := $UI/MapSelector as Control
 	if selector == null or selector.get_node_or_null("RosterShowcase") != null:
 		return
+	showcase_pedestal = ShowcasePedestal.new()
+	showcase_pedestal.name = "ShowcasePedestal"
+	showcase_pedestal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	selector.add_child(showcase_pedestal)
+	selector.move_child(showcase_pedestal, 0)
 	var holder := HBoxContainer.new()
 	holder.name = "RosterShowcase"
 	holder.set_anchors_and_offsets_preset(Control.PRESET_CENTER_LEFT)
 	holder.grow_vertical = Control.GROW_DIRECTION_BOTH
 	holder.offset_left = 24.0
-	holder.add_theme_constant_override("separation", 18)
 	selector.add_child(holder)
 	roster_carousel = RosterCarousel.new()
 	roster_carousel.name = "RosterCarousel"
 	holder.add_child(roster_carousel)
-	showcase_pedestal = ShowcasePedestal.new()
-	showcase_pedestal.name = "ShowcasePedestal"
-	showcase_pedestal.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	holder.add_child(showcase_pedestal)
 	roster_carousel.picked.connect(_on_roster_picked)
 	var entries: Array[Dictionary] = SkirmishRosterProvider.entries()
 	var playable: Array[Dictionary] = []
