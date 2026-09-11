@@ -19,6 +19,7 @@ enum ControlType {
 
 @export var species: PokemonSpeciesResource
 @export var form_index: int = 0
+@export var shiny: bool = false
 @export var level: int = 1
 @export var experience: int = 0
 @export var current_hp: int = CURRENT_HP_AUTO

@@ -20,7 +20,7 @@ func _run() -> void:
 	var saved_speed: float = GameSettings.cpu_speed
 	GameSettings.window_mode = "borderless"
 	GameSettings.resolution = Vector2i(1600, 900)
-	GameSettings.ui_scale = 2.0
+	GameSettings.ui_scale = 1.5
 	GameSettings.vsync = false
 	GameSettings.camera_track = false
 	GameSettings.cpu_battle_report = false
@@ -34,7 +34,7 @@ func _run() -> void:
 	GameSettings.cpu_battle_report = true
 	GameSettings.cpu_speed = 2.0
 	GameSettings.load_settings()
-	_assert_true(GameSettings.window_mode == "borderless" and GameSettings.resolution == Vector2i(1600, 900) and is_equal_approx(GameSettings.ui_scale, 2.0) and not GameSettings.vsync and not GameSettings.camera_track and not GameSettings.cpu_battle_report and is_equal_approx(GameSettings.cpu_speed, 5.0), "settings load back the saved values including camera track, CPU report and CPU speed")
+	_assert_true(GameSettings.window_mode == "borderless" and GameSettings.resolution == Vector2i(1600, 900) and is_equal_approx(GameSettings.ui_scale, 1.5) and not GameSettings.vsync and not GameSettings.camera_track and not GameSettings.cpu_battle_report and is_equal_approx(GameSettings.cpu_speed, 5.0), "settings load back the saved values including camera track, CPU report and CPU speed")
 	GameSettings.camera_track = saved_track
 	GameSettings.cpu_battle_report = saved_report
 	GameSettings.cpu_speed = saved_speed
@@ -65,9 +65,33 @@ func _run() -> void:
 		if pause._buttons.has(node_name):
 			buttons.append(node_name)
 	_assert_true(buttons.size() == 6, "pause menu offers resume, restart, lobby, main menu, graphics and quit")
+	pause.close()
+	pause.network_battle = true
+	pause.resign_visible = true
+	pause.open()
+	_assert_true(not pause._buttons["RestartButton"].visible and not pause._buttons["LobbyButton"].visible and pause._buttons["ResignButton"].visible, "a network battle hides Restart and Return to Lobby and shows Resign")
+	var resigned: Array = []
+	pause.resign_requested.connect(func() -> void: resigned.append(true))
+	pause._buttons["ResignButton"].pressed.emit()
+	_assert_true(pause._confirm.visible and not pause._menu.visible and resigned.is_empty(), "Resign in a network battle asks for confirmation first")
+	pause._buttons["ConfirmNoButton"].pressed.emit()
+	_assert_true(not pause._confirm.visible and pause._menu.visible and resigned.is_empty(), "No returns to the pause menu without resigning")
+	pause._buttons["ResignButton"].pressed.emit()
+	pause._buttons["ConfirmYesButton"].pressed.emit()
+	_assert_true(resigned.size() == 1 and not pause.is_open, "Yes resigns and closes the pause menu")
+	pause.network_battle = false
+	pause.resign_visible = false
+	pause.open()
+	_assert_true(pause._buttons["RestartButton"].visible and pause._buttons["LobbyButton"].visible and not pause._buttons["ResignButton"].visible, "a local battle keeps Restart and Return to Lobby without Resign")
+	var restarted: Array = []
+	pause.restart_requested.connect(func() -> void: restarted.append(true))
+	pause._buttons["RestartButton"].pressed.emit()
+	_assert_true(pause._confirm.visible and restarted.is_empty(), "Restart Skirmish asks for confirmation in local play too")
+	pause._buttons["ConfirmNoButton"].pressed.emit()
+	_assert_true(not pause._confirm.visible and pause._menu.visible and restarted.is_empty(), "declining the restart returns to the pause menu")
 	pause._show_graphics()
 	var panel: GraphicsSettingsPanel = pause._graphics
-	_assert_true(panel.visible and panel.mode_picker.item_count == 3 and panel.resolution_picker.item_count == 5 and panel.scale_picker.item_count == 4 and panel.camera_track_toggle != null and panel.cpu_report_toggle != null and panel.cpu_speed_picker.item_count == 6, "options panel lists window modes, resolutions, UI scales, camera track, CPU report and CPU speeds")
+	_assert_true(panel.visible and panel.mode_picker.item_count == 3 and panel.find_child("ResolutionPicker", true, false) == null and panel.scale_picker.item_count == 11 and panel.scale_picker.get_item_text(0) == "50%" and panel.scale_picker.get_item_text(5) == "100%" and panel.scale_picker.get_item_text(10) == "150%" and panel.camera_track_toggle != null and panel.cpu_report_toggle != null and panel.cpu_speed_picker.item_count == 6, "options panel lists window modes, no resolution row, UI scales from 50% to 150% of automatic in steps of 10, camera track, CPU report and CPU speeds")
 	var camera_node_early: TacticsCamera = main.find_child("TacticsCamera", true, false)
 	GameSettings.camera_track = false
 	camera_node_early.res.target = level.notation.pawn_for_id("E1")
@@ -96,8 +120,15 @@ func _run() -> void:
 	main._sync_turn_speed()
 	_assert_true(not main.speed_bar.visible, "the speed bar leaves once the player is acting again")
 	hud_early._refresh_target_panel()
-	panel._on_scale_selected(2)
-	_assert_true(is_equal_approx(GameSettings.ui_scale, 2.0) and is_equal_approx(UiScale.override_factor, 2.0), "picking a UI scale applies it")
+	panel._on_scale_selected(GameSettings.ui_scale_index(1.5))
+	_assert_true(is_equal_approx(GameSettings.ui_scale, 1.5) and is_equal_approx(UiScale.override_factor, 1.5) and panel.scale_picker.selected == GameSettings.ui_scale_index(1.5), "picking a UI scale applies it")
+	panel._on_scale_selected(GameSettings.ui_scale_index(1.3))
+	_assert_true(is_equal_approx(GameSettings.ui_scale, 1.3) and is_equal_approx(UiScale.override_factor, 1.3), "the dropdown offers scales in steps of ten percent")
+	panel._on_scale_selected(GameSettings.ui_scale_index(1.0))
+	_assert_true(is_equal_approx(GameSettings.ui_scale, 1.0) and is_equal_approx(UiScale.override_factor, 1.0) and is_equal_approx(UiScale.compute(Vector2(1920, 1080)), 1.0) and is_equal_approx(UiScale.compute(Vector2(3840, 2160)), 2.0), "100% is the automatic scale for the window, 1x at 1080p and 2x at 4K")
+	GameSettings.ui_scale = 1.5
+	UiScale.override_factor = 1.5
+	_assert_true(is_equal_approx(UiScale.compute(Vector2(3840, 2160)), 3.0), "150% multiplies the automatic scale")
 	GameSettings.ui_scale = saved_scale
 	UiScale.override_factor = saved_scale
 	GameSettings.save_settings()
@@ -129,8 +160,8 @@ func _run() -> void:
 	_assert_true(TacticsConfig.hover_controls.size() >= 2 and TacticsConfig.hover_controls_contain(log_dock._toggle.get_global_rect().get_center()), "dock toggles register for the click-through guard")
 	var override_before: float = UiScale.override_factor
 	UiScale.override_factor = 0.0
-	_assert_true(is_equal_approx(UiScale.compute(Vector2(1920, 1080), 2.0), 1.0) and is_equal_approx(UiScale.compute(Vector2(2560, 1440), 1.0), 1.5), "UI scale snaps to half steps")
-	_assert_true(is_equal_approx(UiScale.compute(Vector2(1080, 1920), 1.0), 0.75) and is_equal_approx(UiScale.compute(Vector2(1080, 1080), 1.0), 0.75) and is_equal_approx(UiScale.compute(Vector2(1600, 1600), 1.0), 1.0) and is_equal_approx(UiScale.compute(Vector2(1280, 720), 1.0), 1.0), "portrait, square and narrow windows scale so the logical width never drops below 1280")
+	_assert_true(is_equal_approx(UiScale.compute(Vector2(1920, 1080), 2.0), 1.0) and is_equal_approx(UiScale.compute(Vector2(2560, 1440), 1.0), 1.3) and is_equal_approx(UiScale.compute(Vector2(2924, 1834), 2.0), 1.7), "automatic UI scale follows the window height in tenth steps with no HiDPI bonus, so the design height always fits")
+	_assert_true(is_equal_approx(UiScale.compute(Vector2(1080, 1920), 1.0), 0.8) and is_equal_approx(UiScale.compute(Vector2(1080, 1080), 1.0), 0.8) and is_equal_approx(UiScale.compute(Vector2(1600, 1600), 1.0), 1.2) and is_equal_approx(UiScale.compute(Vector2(1280, 720), 1.0), 0.8), "portrait, square and narrow windows scale so the logical width never drops below 1280")
 	UiScale.override_factor = override_before
 	_assert_true(not hud.stacked_layout_for(1920.0) and hud.stacked_layout_for(1000.0), "the HUD stacks the queue under the panels when the top row cannot fit even with the smallest tiles")
 	hud._apply_layout(Vector2(1000.0, 1920.0))

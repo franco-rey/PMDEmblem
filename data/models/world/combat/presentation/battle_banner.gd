@@ -61,7 +61,7 @@ func _ready() -> void:
 	_root.add_child(_notice_chip)
 	_notice_label = Label.new()
 	_notice_label.name = "NoticeLabel"
-	_notice_label.add_theme_font_size_override("font_size", 24)
+	_notice_label.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
 	_notice_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_notice_chip.add_child(_notice_label)
 
@@ -161,13 +161,13 @@ func show_intro(battle_level: TacticsLevel, definition: SkirmishDefinitionResour
 	sides.add_theme_constant_override("separation", 24)
 	sides.alignment = BoxContainer.ALIGNMENT_CENTER
 	column.add_child(sides)
-	sides.add_child(_team_column("Player", level.player, PmdStyle.TEAM_PLAYER))
+	sides.add_child(_team_column("Player", level.player, PmdStyle.player_color()))
 	var versus := Label.new()
 	versus.text = "VS"
 	versus.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	PmdStyle.apply_title(versus, 24)
 	sides.add_child(versus)
-	sides.add_child(_team_column("Enemy", level.opponent, PmdStyle.TEAM_ENEMY))
+	sides.add_child(_team_column("Enemy", level.opponent, PmdStyle.enemy_color()))
 	var hint := Label.new()
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)

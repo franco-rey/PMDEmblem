@@ -20,9 +20,19 @@ func _run() -> void:
 	label_prefix = _arg("label")
 	root.content_scale_size = Vector2i(0, 0)
 	await process_frame
+	GameSettings.remember_window_size = false
 	var main: Node = (load(MAIN_SCENE_PATH) as PackedScene).instantiate()
 	root.add_child(main)
 	await process_frame
+	var border_arg: String = _arg("border")
+	if border_arg.is_valid_int():
+		PmdStyle.set_border_style(int(border_arg))
+	var color_arg: String = _arg("color")
+	if color_arg.is_valid_int():
+		PmdStyle.set_border_color(int(color_arg))
+	var portrait_arg: String = _arg("portrait")
+	if portrait_arg.is_valid_int():
+		PmdStyle.set_portrait_border(int(portrait_arg))
 	main.get_node("UI/MapSelector/SkirmishMenu/CustomToggleButton").emit_signal("pressed")
 	await process_frame
 	await process_frame
@@ -43,9 +53,14 @@ func _run() -> void:
 	var idx: Dictionary = {}
 	for i in range(entries.size()):
 		idx[String(entries[i].get("slug", ""))] = i
-	lobby.add_roster_index(int(idx["0001_bulbasaur"]))
+	var first_slug: String = _arg("first") if idx.has(_arg("first")) else "0001_bulbasaur"
+	lobby.add_roster_index(int(idx[first_slug]))
 	lobby.add_roster_index(int(idx["0007_squirtle"]))
 	lobby.set_held_item(SkirmishLobby.SIDE_PLAYER, 0, "seed_blast")
+	if _arg("form").is_valid_int():
+		lobby.set_slot_form(SkirmishLobby.SIDE_PLAYER, 0, _arg("form"))
+	if not _arg("gender").is_empty():
+		lobby.set_slot_gender(SkirmishLobby.SIDE_PLAYER, 0, _arg("gender"))
 	lobby._on_team_slot_pressed(SkirmishLobby.SIDE_PLAYER, 0)
 	for i in range(4):
 		await process_frame

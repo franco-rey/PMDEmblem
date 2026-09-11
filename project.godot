@@ -14,12 +14,12 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 [application]
 
-config/name="Poke"
+config/name="PMD Emblem"
 config/description="A project by @ramaureirac and @mbusson"
 config/version="4.3"
 run/main_scene="res://assets/scene/main.tscn"
 config/features=PackedStringArray("4.7", "Mobile")
-config/icon="res://assets/textures/ui/icons/icon.png"
+config/icon="res://assets/textures/ui/icons/app_icon.png"
 
 [debug]
 
@@ -27,6 +27,11 @@ gdscript/warnings/untyped_declaration=1
 gdscript/warnings/inferred_declaration=1
 gdscript/warnings/unsafe_cast=1
 gdscript/warnings/unsafe_call_argument=1
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
 
 [dotnet]
 
@@ -111,6 +116,21 @@ toggle_danger_zone={
 toggle_timeline_map={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":77,"physical_keycode":0,"key_label":0,"unicode":109,"location":0,"echo":false,"script":null)
+]
+}
+board_prev={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":44,"physical_keycode":0,"key_label":0,"unicode":44,"location":0,"echo":false,"script":null)
+]
+}
+board_next={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":46,"physical_keycode":0,"key_label":0,"unicode":46,"location":0,"echo":false,"script":null)
+]
+}
+board_present={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":47,"physical_keycode":0,"key_label":0,"unicode":47,"location":0,"echo":false,"script":null)
 ]
 }
 toggle_interface={
@@ -239,5 +259,7 @@ look_down={
 }
 
 [rendering]
+
+textures/canvas_textures/default_texture_filter=0
 
 textures/vram_compression/import_etc2_astc=true

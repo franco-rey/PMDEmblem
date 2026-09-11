@@ -96,6 +96,35 @@ func _run() -> void:
 	await driver._end_turn(later.pawn)
 	await physics_frame
 	_assert_true(mv.pending_travel.is_empty() and not mv.preview_active and stage._preview_root == null, "ending the turn without choosing cancels the travel and removes its preview")
+	var latest_boards: Array[Vector2i] = mv.latest_boards()
+	_assert_true(latest_boards.size() >= 2 and latest_boards.has(mv.state.focus), "every timeline offers a latest board for browsing (%d)" % latest_boards.size())
+	var other: Vector2i = latest_boards[0] if latest_boards[0] != mv.state.focus else latest_boards[1]
+	var world_stage: MultiverseStage = level.multiverse_stage
+	var live_camera: Vector3 = camera.global_position
+	_assert_true(mv.browse_board(other) and mv.browsing and mv.viewing() == other, "browsing another timeline's latest board changes the view")
+	var expected: Vector3 = world_stage.offset_for(other)
+	_assert_true(camera.global_position.distance_to(Vector3(world_stage.board_centre.x + expected.x, live_camera.y, world_stage.board_centre.z + expected.z)) < 0.01 and not world_stage.is_browsing_past(), "looking at a latest board pans the camera onto it without a replica")
+	var past: Vector2i = Vector2i(mv.state.focus.x, mv.state.first_turn(mv.state.focus.x))
+	var past_is_past: bool = mv.state.latest(past.x) != null and mv.state.latest(past.x).turn != past.y
+	_assert_true(past_is_past and mv.browse_board(past) and world_stage.is_browsing_past() and world_stage.get_node_or_null("BoardBrowser") != null and world_stage.get_node("BoardBrowser").get_child_count() == 1, "browsing a past board materialises a translucent replica on its marker")
+	mv.browse_step(1)
+	_assert_true(mv.viewing() != past and latest_boards.has(mv.viewing()), "stepping moves the view to the next latest board (%s)" % str(mv.viewing()))
+	mv.browse_present()
+	_assert_true(not mv.browsing and mv.viewing() == mv.state.focus and not world_stage.is_browsing_past() and camera.global_position.distance_to(live_camera) < 0.01, "returning to the present clears the replica and pans the camera back")
+	level.timeline_map.refresh()
+	var past_cell: Button = level.timeline_map.find_child("Board_L%d_T%d" % [past.x, past.y], true, false) as Button
+	_assert_true(past_cell != null and not past_cell.disabled and past_cell.flat, "the timeline map lets past boards be clicked")
+	past_cell.pressed.emit()
+	_assert_true(mv.browsing and mv.viewing() == past and not level.timeline_map.visible, "clicking a timeline map board looks at it and closes the map")
+	mv.browse_present()
+	minimap.refresh()
+	await process_frame
+	_assert_true(minimap.last_rects.size() == mv.state.board_count(), "the mini map remembers a card rect per board (%d)" % minimap.last_rects.size())
+	var target_rect: Rect2 = minimap.last_rects[other]
+	_assert_true(minimap.click_at(target_rect.get_center()) and mv.viewing() == other, "clicking a mini map card looks at that board")
+	mv.browse_present()
+	var summary: String = mv.timeline_summary()
+	_assert_true(summary.contains("in play") and summary.count("T") >= 2 and summary.contains(" v E"), "the timeline summary names every timeline with its standing (%s)" % summary)
 	var grown: float = minimap.fit_scale(mv.state, mv.state.timeline_ids())
 	_assert_true(grown <= minimap.fit_scale(mv.state, [0]) and grown > 0.0 and grown <= MultiverseMinimap.CELL / MultiverseStage.pitch, "the mini map's fit never grows as the multiverse widens and never passes the cell size (%.2f)" % grown)
 	var fov_saved: float = camera.res.current_fov

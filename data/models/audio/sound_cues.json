@@ -40,7 +40,8 @@
   "rejected": "Menu/Error",
   "end_turn": "Menu/Skip",
   "time_travel": "Battle/EVT_Dimensional_Scream",
-  "board_switch": "Battle/DUN_Warp"
+  "board_switch": "Battle/DUN_Warp",
+  "shiny": "Battle/EVT_CH14_Eye_Glint"
  },
  "status": {
   "paralyze": "Battle/DUN_Paralyzed",

@@ -13,8 +13,8 @@ func _run() -> void:
 	var main: Node = (load(MAIN_SCENE_PATH) as PackedScene).instantiate()
 	root.add_child(main)
 	await process_frame
-	_assert_true(root.theme != null and root.theme.get_stylebox("panel", "PanelContainer") is StyleBoxFlat and root.theme.default_font == PmdStyle.TEXT_FONT, "root theme is the PMD skin with the PMD font")
-	_assert_true(main.get_node_or_null("UI/Backdrop") is PmdBackdrop and main.get_node_or_null("UI/MapSelector/SkirmishMenu/Title") is Label, "main menu has the sky backdrop and a banner title")
+	_assert_true(root.theme != null and root.theme.get_stylebox("panel", "PanelContainer") is PmdWindowStyle and root.theme.default_font == PmdStyle.font_body() and PmdStyle.font_body().base_font == PmdStyle.font_file_for(GameSettings.ui_font), "root theme is the PMD skin with the PMD font")
+	_assert_true(main.get_node_or_null("UI/Backdrop") is PmdBackdrop and main.get_node_or_null("UI/MapSelector/RosterShowcase/RosterCarousel") is RosterCarousel, "main menu has the sky backdrop and the roster carousel")
 	main.get_node("UI/MapSelector/SkirmishMenu/CustomToggleButton").emit_signal("pressed")
 	await process_frame
 	await process_frame

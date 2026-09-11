@@ -222,9 +222,17 @@ static func random_item_id(seed: int, side_key: String, slot_index: int) -> Stri
 static func apply_slot_specs(team: Array[PokemonInstanceResource], specs: Array, seed: int, side_key: String) -> String:
 	for i in range(team.size()):
 		var instance: PokemonInstanceResource = team[i]
-		if instance == null or i >= specs.size() or not (specs[i] is Dictionary):
+		if instance == null:
 			continue
-		var spec: Dictionary = specs[i]
+		var spec: Dictionary = specs[i] if i < specs.size() and specs[i] is Dictionary else {}
+		var form_error: String = apply_form(instance, String(spec.get("form", "")), seed, side_key, i)
+		if not form_error.is_empty():
+			return "%s slot %d: %s" % [side_key.capitalize(), i + 1, form_error]
+		var gender_error: String = apply_gender(instance, String(spec.get("gender", "")), seed, side_key, i)
+		if not gender_error.is_empty():
+			return "%s slot %d: %s" % [side_key.capitalize(), i + 1, gender_error]
+		if spec.is_empty():
+			continue
 		var moves: Variant = spec.get("moves", [])
 		if moves is Array and not (moves as Array).is_empty():
 			var move_error: String = SkirmishMoveLoadout.apply_explicit_loadout(instance, moves)
@@ -238,6 +246,64 @@ static func apply_slot_specs(team: Array[PokemonInstanceResource], specs: Array,
 				return "%s slot %d: %s is not an ability of this Pokemon" % [side_key.capitalize(), i + 1, ability]
 			instance.ability_override = ability
 	return ""
+
+
+static func apply_form(instance: PokemonInstanceResource, choice: String, seed: int, side_key: String, slot_index: int) -> String:
+	var species: PokemonSpeciesResource = instance.species
+	var text: String = choice.strip_edges().to_lower()
+	if species == null or text.is_empty():
+		return ""
+	var wanted: int = instance.form_index
+	if text == RANDOM_CHOICE:
+		if instance.form_index != FormRules.default_index(species):
+			return ""
+		wanted = FormRules.roll(species, seed, side_key, slot_index)
+	elif text.is_valid_int():
+		wanted = int(text)
+		var error: String = FormRules.choice_error(species, wanted, instance.display_name())
+		if not error.is_empty():
+			return error
+	else:
+		return "%s is not a form number" % choice
+	set_form(instance, wanted)
+	return ""
+
+
+static func set_form(instance: PokemonInstanceResource, index: int) -> void:
+	if instance == null or instance.form_index == index:
+		return
+	instance.form_index = index
+	instance.experience = PokemonExperienceService.xp_for_level(instance.resolved_form(), instance.level)
+	if not instance.ability_override.is_empty() and not available_ability_ids(instance).has(instance.ability_override):
+		instance.ability_override = ""
+
+
+static func random_form_specs(size: int) -> Array:
+	var out: Array = []
+	for i in range(size):
+		out.append({"form": RANDOM_CHOICE})
+	return out
+
+
+static func apply_gender(instance: PokemonInstanceResource, choice: String, seed: int, side_key: String, slot_index: int) -> String:
+	var form: PokemonFormResource = instance.resolved_form()
+	var text: String = choice.strip_edges().to_lower()
+	if text.is_empty() or text == RANDOM_CHOICE:
+		if instance.gender == GenderRules.UNKNOWN or not GenderRules.options(form).has(instance.gender):
+			instance.gender = GenderRules.roll(form, seed, side_key, slot_index)
+		return ""
+	var wanted: int = GenderRules.parse_id(text)
+	if wanted == GenderRules.UNKNOWN:
+		return "%s is not a gender" % choice
+	var error: String = GenderRules.choice_error(form, wanted, instance.display_name())
+	if not error.is_empty():
+		return error
+	instance.gender = wanted
+	return ""
+
+
+static func random_gender(instance: PokemonInstanceResource, seed: int, side_key: String, slot_index: int) -> int:
+	return GenderRules.roll(instance.resolved_form() if instance != null else null, seed, side_key, slot_index)
 
 
 static func available_ability_ids(instance: PokemonInstanceResource) -> Array[String]:
@@ -333,6 +399,7 @@ static func build_random(
 	)
 	if result.get("ok", false):
 		var definition: SkirmishDefinitionResource = result["definition"]
+		apply_slot_specs(definition.player_team, random_form_specs(definition.player_team.size()), seed, "player")
 		definition.skirmish_id = "random_%dv%d_%d" % [team_size, team_size, seed]
 		definition.display_name = "Random %dv%d" % [team_size, team_size]
 		var meta: Dictionary = definition.generation_metadata.duplicate(true)
@@ -437,7 +504,10 @@ static func _load_team_for_side(paths: Array[String], team: int, control_type: i
 		if instance == null:
 			push_error("CustomSkirmishBuilder: could not load instance %s" % path)
 			continue
-		out.append(SkirmishMoveLoadout.clone_with_loadout(instance, team, control_type, seed, side_key, slot_index))
+		var clone: PokemonInstanceResource = SkirmishMoveLoadout.clone_with_loadout(instance, team, control_type, seed, side_key, slot_index)
+		if clone.gender == GenderRules.UNKNOWN:
+			clone.gender = GenderRules.roll(clone.resolved_form(), seed, side_key, slot_index)
+		out.append(clone)
 		slot_index += 1
 	return out
 

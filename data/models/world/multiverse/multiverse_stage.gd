@@ -58,6 +58,8 @@ var _pulse: float = 0.0
 var _camera: TacticsCamera = null
 var _pan_tween: Tween = null
 var _preview_root: Node3D = null
+var _browse_root: Node3D = null
+var browsed: Vector2i = Vector2i(2147483647, 2147483647)
 var _preview_groups: Array[Array] = []
 var _preview_overview: float = -1.0
 var preview_option_count: int = 0
@@ -170,6 +172,7 @@ func refresh() -> void:
 
 
 func _hide_field() -> void:
+	clear_browse()
 	for coords in boards.keys():
 		(boards[coords]["node"] as Node3D).queue_free()
 	boards.clear()
@@ -198,6 +201,61 @@ func recentre_camera(old_focus: Vector2i, new_focus: Vector2i) -> void:
 		return
 	_pan_tween = create_tween()
 	_pan_tween.tween_property(camera, "global_position", Vector3(board_centre.x, camera.global_position.y, board_centre.z), 0.8).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+
+func look_at_board(coords: Vector2i) -> void:
+	var camera: TacticsCamera = camera_node()
+	if camera == null:
+		return
+	var offset: Vector3 = offset_for(coords)
+	var target := Vector3(board_centre.x + offset.x, camera.global_position.y, board_centre.z + offset.z)
+	if _pan_tween != null and _pan_tween.is_valid():
+		_pan_tween.kill()
+	if level.presentation_runner != null and level.presentation_runner.immediate_mode:
+		camera.global_position = target
+		return
+	_pan_tween = create_tween()
+	_pan_tween.tween_property(camera, "global_position", target, 0.8).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+
+func browse(coords: Vector2i) -> void:
+	clear_browse()
+	if level == null or level.multiverse == null:
+		return
+	var state: MultiverseState = level.multiverse.state
+	var board: BoardSnapshot = state.board(coords.x, coords.y)
+	if board == null:
+		return
+	browsed = coords
+	var latest: BoardSnapshot = state.latest(coords.x)
+	if latest == null or latest.turn != coords.y or not field_visible:
+		_browse_root = Node3D.new()
+		_browse_root.name = "BoardBrowser"
+		add_child(_browse_root)
+		var replica: Node3D = _build_board(coords, board)
+		replica.name = "Browsed_L%d_T%d" % [coords.x, coords.y]
+		replica.position = offset_for(coords)
+		var halo: MeshInstance3D = replica.get_node_or_null("Halo") as MeshInstance3D
+		if halo != null:
+			halo.material_override = _flat_material(Color(1.0, 1.0, 1.0, 0.85), true)
+		var units: Node3D = replica.get_node_or_null("Units") as Node3D
+		if units != null:
+			for ghost in units.get_children():
+				if ghost is TacticsPawn and (ghost as TacticsPawn).character != null:
+					(ghost as TacticsPawn).character.modulate.a = 0.55
+		_browse_root.add_child(replica)
+	look_at_board(coords)
+
+
+func clear_browse() -> void:
+	browsed = Vector2i(2147483647, 2147483647)
+	if _browse_root != null and is_instance_valid(_browse_root):
+		_browse_root.queue_free()
+	_browse_root = null
+
+
+func is_browsing_past() -> bool:
+	return _browse_root != null and is_instance_valid(_browse_root)
 
 
 func camera_node() -> TacticsCamera:

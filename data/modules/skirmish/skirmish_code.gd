@@ -84,7 +84,8 @@ static func _encode_team(team: Array[PokemonInstanceResource]) -> String:
 		for move in instance.move_slots:
 			if move != null and not moves.has(move.move_id):
 				moves.append(move.move_id)
-		var fields: Array[String] = ["%s@%d" % [instance.species.species_id, instance.level], ",".join(moves), instance.ability_override, instance.held_item.item_id if instance.held_item != null else ""]
+		var gender_mark: String = GenderRules.code_suffix(instance.gender) if GenderRules.is_choice(instance.resolved_form()) else ""
+		var fields: Array[String] = ["%s%s@%d%s" % [instance.species.species_id, FormRules.code_suffix(instance), instance.level, gender_mark], ",".join(moves), instance.ability_override, instance.held_item.item_id if instance.held_item != null else ""]
 		while fields.size() > 1 and String(fields[fields.size() - 1]).is_empty():
 			fields.remove_at(fields.size() - 1)
 		entries.append(":".join(fields))
@@ -303,15 +304,27 @@ static func _parse_pokemon_list(value: String) -> Dictionary:
 			item_part = ""
 		var slug: String = base_part
 		var level: int = 0
+		var gender: String = ""
 		if base_part.contains("@"):
 			slug = base_part.get_slice("@", 0)
-			var level_text: String = base_part.substr(slug.length() + 1)
-			if not level_text.is_valid_int():
-				return {"ok": false, "error": "Pokemon level must be 1-100"}
-			level = int(level_text)
-			if level < 1 or level > 100:
-				return {"ok": false, "error": "Pokemon level must be 1-100"}
+			var level_text: String = base_part.substr(slug.length() + 1).strip_edges()
+			var tail: String = level_text.right(1).to_lower()
+			if tail == "m" or tail == "f":
+				gender = "male" if tail == "m" else "female"
+				level_text = level_text.left(level_text.length() - 1)
+			if not level_text.is_empty() or gender.is_empty():
+				if not level_text.is_valid_int():
+					return {"ok": false, "error": "Pokemon level must be 1-100 (slug@level, slug@levelm or slug@levelf)"}
+				level = int(level_text)
+				if level < 1 or level > 100:
+					return {"ok": false, "error": "Pokemon level must be 1-100"}
 		slug = slug.strip_edges()
+		var form: String = ""
+		if slug.contains(FormRules.CODE_MARK):
+			form = slug.get_slice(FormRules.CODE_MARK, 1).strip_edges()
+			slug = slug.get_slice(FormRules.CODE_MARK, 0).strip_edges()
+			if not form.is_valid_int():
+				return {"ok": false, "error": "Pokemon form must be a number (slug~N)"}
 		if slug.is_empty():
 			return {"ok": false, "error": "Pokemon slug cannot be empty"}
 		var moves: Array[String] = []
@@ -329,6 +342,8 @@ static func _parse_pokemon_list(value: String) -> Dictionary:
 			"moves": moves,
 			"ability": ability_part,
 			"item": item_part,
+			"gender": gender,
+			"form": form,
 		})
 	return {"ok": true, "specs": out}
 
@@ -494,7 +509,7 @@ static func _apply_side_specs(team: Array[PokemonInstanceResource], specs: Array
 	var any_item: bool = false
 	for i in range(team.size()):
 		var spec: Dictionary = specs[i] as Dictionary if i < specs.size() else {}
-		slot_specs.append({"ability": String(spec.get("ability", ""))})
+		slot_specs.append({"ability": String(spec.get("ability", "")), "gender": String(spec.get("gender", "")), "form": String(spec.get("form", ""))})
 		var item_id: String = String(spec.get("item", ""))
 		item_ids.append(item_id)
 		if not item_id.is_empty():

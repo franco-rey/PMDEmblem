@@ -160,7 +160,7 @@ func _build_queue_bar() -> void:
 	_root.add_child(_queue_column)
 	_queue_strip = PanelContainer.new()
 	_queue_strip.name = "QueueStrip"
-	var strip_style: StyleBoxFlat = PmdStyle.window()
+	var strip_style: StyleBox = PmdStyle.window()
 	_queue_strip.add_theme_stylebox_override("panel", strip_style)
 	_queue_strip.custom_minimum_size = Vector2(0, TILE_HOLDER_HEIGHT + strip_style.get_margin(SIDE_TOP) + strip_style.get_margin(SIDE_BOTTOM))
 	_queue_strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -173,7 +173,7 @@ func _build_queue_bar() -> void:
 	_queue_row = HBoxContainer.new()
 	_queue_row.name = "QueueRow"
 	_queue_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	_queue_row.add_theme_constant_override("separation", 6)
+	_queue_row.add_theme_constant_override("separation", int(BattleHudLayout.TILE_GAP))
 	_queue_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	inner.add_child(_queue_row)
 	_round_label = Label.new()
@@ -181,7 +181,7 @@ func _build_queue_bar() -> void:
 	_round_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_round_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 	_round_label.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-	_round_label.add_theme_font_size_override("font_size", 24)
+	_round_label.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
 	_round_label.add_theme_color_override("font_color", PmdStyle.TEXT_GOLD)
 	_round_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	inner.add_child(_round_label)
@@ -271,7 +271,7 @@ func _build_unit_panel_content(panel: PanelContainer, mirrored: bool) -> Diction
 	column.add_child(hp)
 	var meta := Label.new()
 	meta.horizontal_alignment = align
-	meta.add_theme_font_size_override("font_size", 24)
+	meta.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
 	meta.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
 	meta.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(meta)
@@ -290,7 +290,7 @@ func _build_unit_panel_content(panel: PanelContainer, mirrored: bool) -> Diction
 	detail_row.add_child(item_icon)
 	var detail := Label.new()
 	detail.horizontal_alignment = align
-	detail.add_theme_font_size_override("font_size", 24)
+	detail.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
 	detail.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
 	detail.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	detail_row.add_child(detail)
@@ -340,7 +340,7 @@ func _build_weather_chip() -> void:
 	_root.add_child(_weather_chip)
 	_weather_label = Label.new()
 	_weather_label.name = "WeatherLabel"
-	_weather_label.add_theme_font_size_override("font_size", 24)
+	_weather_label.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
 	_weather_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_weather_chip.add_child(_weather_label)
 	_weather_chip.visible = false
@@ -380,7 +380,7 @@ func _build_status_dock() -> void:
 	_danger_button.toggle_mode = true
 	_danger_button.focus_mode = Control.FOCUS_NONE
 	_danger_button.custom_minimum_size = Vector2(0, 30)
-	_danger_button.add_theme_font_size_override("font_size", 24)
+	_danger_button.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
 	_danger_button.tooltip_text = "Tint every square an enemy can reach and hit next turn"
 	_danger_button.toggled.connect(set_danger_enabled)
 	_status_header.add_child(_danger_button)
@@ -453,7 +453,7 @@ func _build_inspector() -> void:
 	_inspector_meta.name = "InspectorMeta"
 	_inspector_meta.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_inspector_meta.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_inspector_meta.add_theme_font_size_override("font_size", 24)
+	_inspector_meta.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
 	_inspector_meta.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
 	_inspector_meta.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	meta_row.add_child(_inspector_meta)
@@ -463,7 +463,7 @@ func _build_inspector() -> void:
 	_inspector_close.custom_minimum_size = Vector2(30, 30)
 	_inspector_close.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	_inspector_close.focus_mode = Control.FOCUS_NONE
-	_inspector_close.add_theme_font_size_override("font_size", 24)
+	_inspector_close.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
 	_inspector_close.tooltip_text = "Close and unlock"
 	_inspector_close.visible = false
 	_inspector_close.pressed.connect(unpin)
@@ -493,7 +493,7 @@ func _build_inspector() -> void:
 func _inspector_label(node_name: String, color: Color) -> Label:
 	var label := Label.new()
 	label.name = node_name
-	label.add_theme_font_size_override("font_size", 24)
+	label.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
 	label.add_theme_color_override("font_color", color)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -512,7 +512,7 @@ func inspect(pawn: TacticsPawn) -> void:
 	var team: int = stats.pokemon_instance.team if stats.pokemon_instance != null else 0
 	_inspector_frame.add_theme_stylebox_override("panel", _frame_style(PmdStyle.CURSOR if pawn == pinned_pawn else PmdStyle.team_color(team), 2))
 	_inspector_portrait.texture = PortraitLibrary.texture_for(PortraitLibrary.slug_for_pawn(pawn), expression_for(pawn))
-	_inspector_name.text = "%s  Lv %d" % [level.notation.unit_name(pawn), stats.level]
+	_inspector_name.text = "%s%s  Lv %d" % [FormRules.decorate(level.notation.unit_name(pawn), stats), GenderRules.suffix(stats.gender), stats.level]
 	_inspector_name.add_theme_color_override("font_color", PmdStyle.team_color(team))
 	_fill_type_icons(_inspector_types, stats.types)
 	var ability_id: String = _ability_id(stats)
@@ -611,7 +611,7 @@ func _fill_type_icons(container: HBoxContainer, types: Array) -> void:
 		if texture == null:
 			var badge := Label.new()
 			badge.text = PmdStyle.type_abbreviation(String(type_id))
-			badge.add_theme_font_size_override("font_size", 24)
+			badge.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
 			badge.add_theme_color_override("font_color", PmdStyle.type_color(String(type_id)))
 			badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			container.add_child(badge)
@@ -847,7 +847,7 @@ func _refresh_status_dock(force: bool = false) -> void:
 		var empty := Label.new()
 		empty.name = "StatusText"
 		empty.text = "No status effects"
-		empty.add_theme_font_size_override("font_size", 24)
+		empty.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
 		empty.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
 		empty.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_status_rows.add_child(empty)
@@ -866,7 +866,7 @@ func _refresh_status_dock(force: bool = false) -> void:
 		var label := Label.new()
 		label.name = "StatusText"
 		label.text = String(entry["text"])
-		label.add_theme_font_size_override("font_size", 24)
+		label.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
 		label.add_theme_color_override("font_color", entry.get("color", PmdStyle.TEXT))
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		row.add_child(label)
@@ -891,17 +891,8 @@ func _portrait_frame(px: float) -> PanelContainer:
 	return frame
 
 
-func _frame_style(color: Color, width: int = 2) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.02, 0.03, 0.08, 1.0)
-	style.border_color = color
-	style.set_border_width_all(width)
-	style.set_corner_radius_all(3)
-	style.content_margin_left = 2
-	style.content_margin_right = 2
-	style.content_margin_top = 2
-	style.content_margin_bottom = 2
-	return style
+func _frame_style(color: Color, width: int = 2) -> StyleBox:
+	return PmdStyle.portrait_frame(color, width)
 
 
 func _on_round_started() -> void:
@@ -991,7 +982,7 @@ func _make_tile(pawn: TacticsPawn, active: bool) -> Control:
 	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if active:
 		var arrow := EmoticonIcon.new()
-		arrow.set_sheet(ARROW_SHEET, ARROW_PX)
+		arrow.set_sheet(PmdStyle.arrow_sheet(), ARROW_PX)
 		arrow.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		holder.add_child(arrow)
 	var frame := _portrait_frame(px)
@@ -1061,7 +1052,7 @@ func refresh_active_panel() -> void:
 	var team: int = stats.pokemon_instance.team if stats.pokemon_instance != null else 0
 	_active_frame.add_theme_stylebox_override("panel", _frame_style(PmdStyle.team_color(team), 3))
 	_active_portrait.texture = PortraitLibrary.texture_for(PortraitLibrary.slug_for_pawn(pawn), expression_for(pawn))
-	_active_name.text = "%s  Lv %d" % [level.notation.unit_name(pawn), stats.level]
+	_active_name.text = "%s%s  Lv %d" % [FormRules.decorate(level.notation.unit_name(pawn), stats), GenderRules.suffix(stats.gender), stats.level]
 	_active_name.add_theme_color_override("font_color", PmdStyle.team_color(team))
 	_active_hp.set_values(stats.curr_health, stats.max_health)
 	_active_meta.text = _meta_text(stats)
@@ -1127,7 +1118,7 @@ func _refresh_target_panel() -> void:
 	_target_frame.add_theme_stylebox_override("panel", _frame_style(PmdStyle.team_color(team), 3))
 	var mood: String = mood_for(target)
 	_target_portrait.texture = PortraitLibrary.texture_for(PortraitLibrary.slug_for_pawn(target), mood if not mood.is_empty() else "Worried")
-	_target_name.text = "%s  Lv %d" % [level.notation.unit_name(target), target.stats.level]
+	_target_name.text = "%s%s  Lv %d" % [FormRules.decorate(level.notation.unit_name(target), target.stats), GenderRules.suffix(target.stats.gender), target.stats.level]
 	_target_name.add_theme_color_override("font_color", PmdStyle.team_color(team))
 	_target_hp.set_values(target.stats.curr_health, target.stats.max_health)
 	_target_meta.text = _meta_text(target.stats)

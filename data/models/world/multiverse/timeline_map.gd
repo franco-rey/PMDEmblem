@@ -58,6 +58,14 @@ func setup(battle_level: TacticsLevel) -> void:
 	level = battle_level
 
 
+func _look_at(coords: Vector2i) -> void:
+	if level == null or level.multiverse == null:
+		return
+	if level.multiverse.browse_board(coords):
+		SoundPlayer.cue("ui.confirm")
+		visible = false
+
+
 func toggle() -> void:
 	if visible:
 		visible = false
@@ -77,7 +85,10 @@ func refresh() -> void:
 	var max_turn: int = maxi(state.max_turn(), 1)
 	var now: int = state.present()
 	_grid.columns = max_turn + 1
-	_title.text = "Timelines: %d   Present: T%d   Focus: %s" % [ids.size(), now, level.multiverse.board_label()]
+	var viewing: Vector2i = level.multiverse.viewing()
+	_title.text = "Timelines: %d   Present: T%d   In play: %s" % [ids.size(), now, level.multiverse.board_label()]
+	if level.multiverse.browsing:
+		_title.text += "   Viewing: %s T%d" % [MultiverseState.label(viewing.x), viewing.y]
 	var corner := Label.new()
 	corner.custom_minimum_size = CELL_SIZE
 	_grid.add_child(corner)
@@ -109,11 +120,14 @@ func refresh() -> void:
 				cell.flat = true
 			else:
 				cell.text = "P %d\nE %d" % [board.standing(0), board.standing(1)]
-				cell.disabled = board != latest
 				cell.flat = board != latest
 				if not state.is_active(l):
 					cell.modulate = Color(0.6, 0.6, 0.6, 1.0)
 				if board.coords() == state.focus:
 					cell.add_theme_color_override("font_color", PmdStyle.TEXT_GOLD)
-				cell.tooltip_text = "%s T%d%s%s" % [MultiverseState.label(l), t, ", latest" if board == latest else "", ", in play" if board.coords() == state.focus else ""]
+				elif board.coords() == viewing and level.multiverse.browsing:
+					cell.add_theme_color_override("font_color", PmdStyle.CURSOR)
+				cell.tooltip_text = "%s T%d%s%s. Click to look at this board." % [MultiverseState.label(l), t, ", latest" if board == latest else ", past", ", in play" if board.coords() == state.focus else ""]
+				var coords: Vector2i = board.coords()
+				cell.pressed.connect(func() -> void: _look_at(coords))
 			_grid.add_child(cell)

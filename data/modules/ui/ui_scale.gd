@@ -6,18 +6,17 @@ const MIN_DESIGN_WIDTH: float = 1280.0
 const MIN_FACTOR: float = 0.75
 const MAX_FACTOR: float = 3.0
 const HIDPI_THRESHOLD: float = 1.5
-const HIDPI_BONUS: float = 1.1
-const SNAP_STEP: float = 0.5
+const HIDPI_BONUS: float = 1.0
+const SNAP_STEP: float = 0.1
 
 static var override_factor: float = 0.0
 static var _watched: Dictionary = {}
 
 
 static func compute(window_size: Vector2, screen_scale: float = 1.0) -> float:
-	if override_factor > 0.0:
-		return override_factor
+	var multiplier: float = override_factor if override_factor > 0.0 else 1.0
 	if window_size.y <= 1.0:
-		return 1.0
+		return multiplier
 	var bonus: float = HIDPI_BONUS if screen_scale >= HIDPI_THRESHOLD else 1.0
 	var by_height: float = window_size.y / DESIGN_HEIGHT * bonus
 	var by_width: float = window_size.x / MIN_DESIGN_WIDTH * bonus if window_size.x > 1.0 else by_height
@@ -25,7 +24,7 @@ static func compute(window_size: Vector2, screen_scale: float = 1.0) -> float:
 	var snapped: float = maxf(MIN_FACTOR, snappedf(raw, SNAP_STEP))
 	while snapped > MIN_FACTOR and window_size.x / snapped < MIN_DESIGN_WIDTH:
 		snapped = maxf(MIN_FACTOR, snapped - SNAP_STEP)
-	return snapped
+	return snapped * multiplier
 
 
 static func screen_scale_for(window: Window) -> float:

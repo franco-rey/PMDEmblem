@@ -41,6 +41,8 @@ static func clone_for_side(template: PokemonInstanceResource, team: int, control
 	instance.runtime_modifiers = template.runtime_modifiers.duplicate(true)
 	instance.temporary_statuses = template.temporary_statuses.duplicate()
 	instance.ability_override = template.ability_override
+	instance.gender = template.gender
+	instance.shiny = template.shiny
 	instance.loadout_locked = template.loadout_locked
 	return instance
 

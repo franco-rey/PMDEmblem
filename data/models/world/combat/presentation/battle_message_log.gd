@@ -3,7 +3,7 @@ extends CanvasLayer
 
 const MAX_VISIBLE: int = 60
 const HISTORY_LIMIT: int = 300
-const FONT_SIZE: int = 24
+const FONT_SIZE: int = PmdStyle.FONT_CAPTION
 const FLASH_TIME: float = 0.8
 const DOCK_SIZE: Vector2 = Vector2(640, 236)
 const MIN_DOCK_HEIGHT: float = 96.0
@@ -56,7 +56,7 @@ func _ready() -> void:
 	_header.add_child(title)
 	_count_label = Label.new()
 	_count_label.name = "LogCount"
-	_count_label.add_theme_font_size_override("font_size", 24)
+	_count_label.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
 	_count_label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
 	_count_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_header.add_child(_count_label)

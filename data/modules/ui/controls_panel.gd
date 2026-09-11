@@ -1,36 +1,45 @@
 class_name ControlsPanel
-extends PanelContainer
+extends MenuPanel
 
 signal closed
 
-const ROW_HEIGHT: float = 34.0
-const PANEL_WIDTH: float = 760.0
-const KEY_FONT: int = 24
-const KEY_NAMES: Dictionary = {"BracketLeft": "[", "BracketRight": "]", "Equal": "=", "Plus": "+", "Minus": "-", "Kp Add": "Numpad +", "Kp Subtract": "Numpad -", "Kp Enter": "Numpad Enter", "Escape": "Esc", "Left": "Left arrow", "Right": "Right arrow", "Up": "Up arrow", "Down": "Down arrow"}
+const LABEL_WIDTH: float = 420.0
+const KEY_FONT: int = PmdStyle.FONT_CAPTION
+const KEY_HEIGHT: float = 38.0
+const KEY_MIN_WIDTH: float = 38.0
+const KEY_GAP: int = 6
+const ROW_GAP: int = 4
+const KEY_NAMES: Dictionary = {"Comma": ",", "Period": ".", "Slash": "/", "BracketLeft": "[", "BracketRight": "]", "Equal": "=", "Plus": "+", "Minus": "-", "Kp Add": "Numpad +", "Kp Subtract": "Numpad -", "Kp Enter": "Numpad Enter", "Escape": "Esc", "Left": "Left arrow", "Right": "Right arrow", "Up": "Up arrow", "Down": "Down arrow"}
 const JOY_NAMES: Dictionary = {0: "Pad A", 1: "Pad B", 2: "Pad X", 3: "Pad Y", 4: "Pad Back", 5: "Pad Guide", 6: "Pad Start", 7: "Left stick click", 8: "Right stick click", 9: "Pad LB", 10: "Pad RB", 11: "D-pad up", 12: "D-pad down", 13: "D-pad left", 14: "D-pad right"}
 const SECTIONS: Array = [
 	["Camera", [
 		["Move the camera", ["camera_forward", "camera_left", "camera_backwards", "camera_right"], []],
 		["Turn 45 degrees", ["camera_rotate_left", "camera_rotate_right"], []],
-		["Slow orbit, press again to stop", ["camera_orbit_left", "camera_orbit_right"], []],
+		["Slow orbit (toggle)", ["camera_orbit_left", "camera_orbit_right"], []],
 		["Zoom", ["camera_zoom_in", "camera_zoom_out"], ["Mouse wheel"]],
-		["Top-down or angled view", ["camera_perspective"], []],
+		["Top-down / angled view", ["camera_perspective"], []],
 		["Free look", ["camera_free_look"], ["Hold and drag"]],
-		["Edge panning on or off", ["toggle_edge_pan"], []],
+		["Edge panning (toggle)", ["toggle_edge_pan"], []],
 	]],
 	["Battle", [
 		["Confirm", ["ui_accept"], []],
-		["Cancel, or open the pause menu", ["ui_cancel"], []],
+		["Cancel / pause menu", ["ui_cancel"], []],
 		["Choose a square", ["ui_up", "ui_down", "ui_left", "ui_right"], []],
 		["Choose a target", ["camera_left", "camera_right"], ["Left arrow", "Right arrow"]],
 		["Danger zones", ["toggle_danger_zone"], ["Danger button"]],
-		["Battle speed, 0.5x to 20x", ["battle_speed_1", "battle_speed_2", "battle_speed_3", "battle_speed_4", "battle_speed_5", "battle_speed_6"], []],
+		["Battle speed", ["battle_speed_1", "battle_speed_2", "battle_speed_3", "battle_speed_4", "battle_speed_5", "battle_speed_6"], []],
+	]],
+	["Multiverse", [
+		["Timeline map", ["toggle_timeline_map"], []],
+		["Previous / next board", ["board_prev", "board_next"], []],
+		["Back to the board in play", ["board_present"], []],
+		["Look at a board", [], ["Click it on the mini map or the timeline map"]],
 	]],
 	["Interface", [
-		["Hide or show the interface", ["toggle_interface"], []],
-		["Timeline map (multiverse battles)", ["toggle_timeline_map"], []],
+		["Hide / show interface", ["toggle_interface"], []],
+		["Lobby setup pages", ["camera_rotate_left", "camera_rotate_right"], []],
 		["Inspect a unit", [], ["Hover", "Click to lock", "x to unlock"]],
-		["Shrink or grow a dock", [], ["- and + on the dock header"]],
+		["Shrink / grow a dock", [], ["- and + on the dock header"]],
 	]],
 ]
 
@@ -38,76 +47,62 @@ var close_button: Button = null
 var _rows: Array[Dictionary] = []
 var _scroll: ScrollContainer = null
 var _grid: VBoxContainer = null
-var _fit_pending: bool = false
 
 
 func _ready() -> void:
+	super()
 	name = "ControlsPanel"
-	custom_minimum_size = Vector2(PANEL_WIDTH, 0)
-	add_theme_stylebox_override("panel", PmdStyle.window())
-	var margin := MarginContainer.new()
-	for side in ["left", "top", "right", "bottom"]:
-		margin.add_theme_constant_override("margin_%s" % side, 18)
-	add_child(margin)
-	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 8)
-	margin.add_child(column)
-	var title := Label.new()
-	title.text = "Controls"
-	PmdStyle.apply_heading(title, 36)
-	column.add_child(title)
-	_scroll = ScrollContainer.new()
-	_scroll.name = "RowsScroll"
-	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	column.add_child(_scroll)
-	_grid = VBoxContainer.new()
-	_grid.name = "Rows"
-	_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_grid.add_theme_constant_override("separation", 4)
-	_scroll.add_child(_grid)
+	set_title("Controls")
+	_scroll = scroll
+	_grid = body
+	_grid.add_theme_constant_override("separation", ROW_GAP)
 	for section in SECTIONS:
-		var heading := Label.new()
-		heading.text = String(section[0])
-		heading.add_theme_font_size_override("font_size", 24)
-		heading.add_theme_color_override("font_color", PmdStyle.TEXT_GOLD)
-		_grid.add_child(heading)
-		for entry in section[1]:
+		add_heading(String(section[0]))
+		var entries: Array = section[1]
+		for i in range(entries.size()):
+			var entry: Array = entries[i]
 			_grid.add_child(_row(String(entry[0]), _keys_for(entry[1], entry[2])))
-	close_button = Button.new()
-	close_button.name = "CloseButton"
-	close_button.text = "Back"
-	close_button.custom_minimum_size.y = 48
-	close_button.pressed.connect(func() -> void: closed.emit())
-	column.add_child(close_button)
+			if i < entries.size() - 1:
+				add_divider()
+	close_button = add_footer_button("Back", "CloseButton", func() -> void: closed.emit())
 
 
 func _row(caption: String, keys: Array[String]) -> HBoxContainer:
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 12)
+	row.add_theme_constant_override("separation", PmdStyle.PANEL_GAP)
 	var label := Label.new()
 	label.text = caption
-	label.custom_minimum_size = Vector2(300, ROW_HEIGHT)
-	label.add_theme_font_size_override("font_size", KEY_FONT)
+	label.custom_minimum_size = Vector2(LABEL_WIDTH * PmdStyle.font_width_factor(), PmdStyle.ROW_HEIGHT)
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	row.add_child(label)
 	var flow := HFlowContainer.new()
 	flow.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	flow.add_theme_constant_override("h_separation", 6)
-	flow.add_theme_constant_override("v_separation", 4)
+	flow.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	flow.add_theme_constant_override("h_separation", KEY_GAP)
+	flow.add_theme_constant_override("v_separation", KEY_GAP)
 	row.add_child(flow)
 	for key in keys:
 		flow.add_child(_key_chip(key))
 	return row
 
 
+static func _is_pad_key(text: String) -> bool:
+	return text.begins_with("Pad ") or text.begins_with("D-pad") or text.ends_with("stick") or text.ends_with("stick click")
+
+
 func _key_chip(text: String) -> PanelContainer:
+	var pad: bool = _is_pad_key(text)
 	var chip := PanelContainer.new()
-	chip.add_theme_stylebox_override("panel", PmdStyle.chip(PmdStyle.NAVY_LIGHT, PmdStyle.FRAME_SOFT))
+	chip.add_theme_stylebox_override("panel", PmdStyle.keycap(pad))
+	chip.custom_minimum_size = Vector2(KEY_MIN_WIDTH, KEY_HEIGHT)
+	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var label := Label.new()
 	label.text = text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.add_theme_font_size_override("font_size", KEY_FONT)
-	label.add_theme_color_override("font_color", PmdStyle.TEXT_GOLD)
+	label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM if pad else PmdStyle.TEXT_GOLD)
 	chip.add_child(label)
 	return chip
 
@@ -116,31 +111,6 @@ func focus_first() -> void:
 	fit_to_viewport()
 	if close_button != null and close_button.is_inside_tree():
 		close_button.grab_focus()
-
-
-func fit_to_viewport() -> void:
-	if not is_inside_tree() or get_viewport() == null:
-		return
-	var view: Vector2 = get_viewport().get_visible_rect().size
-	custom_minimum_size.x = minf(PANEL_WIDTH, maxf(320.0, view.x - 40.0))
-	var natural: float = maxf(_grid.get_combined_minimum_size().y, _grid.size.y)
-	_scroll.custom_minimum_size.y = minf(natural, maxf(120.0, view.y - 200.0))
-	reset_size()
-	if not _fit_pending:
-		_fit_pending = true
-		call_deferred("_fit_again")
-
-
-func _fit_again() -> void:
-	_fit_pending = false
-	if not is_inside_tree() or _grid == null:
-		return
-	var view: Vector2 = get_viewport().get_visible_rect().size
-	var natural: float = maxf(_grid.get_combined_minimum_size().y, _grid.size.y)
-	var wanted: float = minf(natural, maxf(120.0, view.y - 200.0))
-	if not is_equal_approx(_scroll.custom_minimum_size.y, wanted):
-		_scroll.custom_minimum_size.y = wanted
-		reset_size()
 
 
 func rows() -> Array[Dictionary]:
@@ -157,7 +127,7 @@ func _keys_for(actions: Array, extra: Array) -> Array[String]:
 	var pads: Array[String] = []
 	for action in actions:
 		for text in _action_keys(String(action)):
-			var is_pad: bool = text.begins_with("Pad ") or text.begins_with("D-pad") or text.ends_with("stick") or text.ends_with("stick click")
+			var is_pad: bool = _is_pad_key(text)
 			if is_pad and not pads.has(text):
 				pads.append(text)
 			elif not is_pad and not names.has(text):

@@ -81,6 +81,7 @@ func _play(scenario: Dictionary, port: int) -> void:
 	if level == null:
 		_stop(pid, main)
 		return
+	_assert_true(session.latency_ms() >= 0, "%s: the ENet link reports a round-trip time (%d ms)" % [label, session.latency_ms()])
 	var host_text: Array[String] = []
 	level.battle_ended.connect(func(_r: int) -> void: host_text.append(level.notation.text()))
 	frames = 0

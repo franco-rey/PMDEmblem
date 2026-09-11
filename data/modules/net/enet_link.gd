@@ -115,6 +115,15 @@ func close(reason: String = "closed") -> void:
 		closed.emit(reason)
 
 
+func round_trip_ms() -> int:
+	if peer == null or not open or remote_id == 0 or _connecting:
+		return -1
+	var remote: ENetPacketPeer = peer.get_peer(remote_id)
+	if remote == null:
+		return -1
+	return int(remote.get_statistic(ENetPacketPeer.PEER_ROUND_TRIP_TIME))
+
+
 func local_addresses() -> PackedStringArray:
 	var out: PackedStringArray = []
 	for entry in IP.get_local_addresses():

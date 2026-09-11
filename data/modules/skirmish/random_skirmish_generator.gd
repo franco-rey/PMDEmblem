@@ -12,11 +12,11 @@ const TRAVELLER_SEED_SALT: int = 0x2C1D5E7B
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
 
 const DIFFICULTY_TIERS: Array[Dictionary] = [
-	{"tier": 0, "min_team_size": 2, "max_team_size": 3, "min_level": 1, "max_level": 5, "enemy_budget": 3},
-	{"tier": 1, "min_team_size": 3, "max_team_size": 4, "min_level": 5, "max_level": 15, "enemy_budget": 5},
-	{"tier": 2, "min_team_size": 3, "max_team_size": 4, "min_level": 15, "max_level": 25, "enemy_budget": 7},
-	{"tier": 3, "min_team_size": 4, "max_team_size": 4, "min_level": 25, "max_level": 40, "enemy_budget": 9},
-	{"tier": 4, "min_team_size": 4, "max_team_size": 4, "min_level": 40, "max_level": 50, "enemy_budget": 12},
+	{"tier": 0, "min_level": 1, "max_level": 5, "enemy_budget": 3},
+	{"tier": 1, "min_level": 5, "max_level": 15, "enemy_budget": 5},
+	{"tier": 2, "min_level": 15, "max_level": 25, "enemy_budget": 7},
+	{"tier": 3, "min_level": 25, "max_level": 40, "enemy_budget": 9},
+	{"tier": 4, "min_level": 40, "max_level": 50, "enemy_budget": 12},
 ]
 
 
@@ -147,12 +147,9 @@ static func _is_map_less_than(a: MapDefinitionResource, b: MapDefinitionResource
 static func _resolve_enemy_size(inputs: GeneratorInputs, tier: Dictionary, map: MapDefinitionResource, rng: RandomNumberGenerator) -> int:
 	if inputs.enemy_team_size > 0:
 		return clampi(inputs.enemy_team_size, MIN_TEAM_SIZE, maxi(MIN_TEAM_SIZE, inputs.max_team_size))
-	var min_size: int = int(tier["min_team_size"])
-	var max_size: int = int(tier["max_team_size"])
-	var recommended: int = clampi(map.recommended_team_size, min_size, max_size)
-	if recommended > 0:
-		return clampi(recommended, MIN_TEAM_SIZE, MAX_TEAM_SIZE)
-	return clampi(int(rng.randi_range(min_size, max_size)), MIN_TEAM_SIZE, MAX_TEAM_SIZE)
+	if map.recommended_team_size > 0:
+		return clampi(map.recommended_team_size, MIN_TEAM_SIZE, MAX_TEAM_SIZE)
+	return clampi(inputs.player_party.size(), MIN_TEAM_SIZE, MAX_TEAM_SIZE)
 
 
 static func _build_enemy_team(roster_templates: Array[PokemonInstanceResource], enemy_size: int, tier: Dictionary, rng: RandomNumberGenerator, require_travellers: bool = false) -> Array[PokemonInstanceResource]:
@@ -204,6 +201,8 @@ static func _make_enemy_instance(template: PokemonInstanceResource, tier: Dictio
 	var instance := PokemonInstanceResource.new()
 	instance.species = template.species
 	instance.form_index = template.form_index
+	if template.form_index == FormRules.default_index(template.species) and FormRules.is_choice(template.species):
+		instance.form_index = FormRules.roll(template.species, int(rng.seed), "enemy", slot_index)
 	instance.level = int(rng.randi_range(int(tier["min_level"]), int(tier["max_level"])))
 	instance.experience = PokemonExperienceService.xp_for_level(instance.resolved_form(), instance.level)
 	instance.current_hp = PokemonInstanceResource.CURRENT_HP_AUTO
@@ -216,6 +215,7 @@ static func _make_enemy_instance(template: PokemonInstanceResource, tier: Dictio
 	instance.held_item = template.held_item
 	instance.runtime_modifiers = {}
 	instance.temporary_statuses = []
+	instance.gender = template.gender if template.gender != GenderRules.UNKNOWN else GenderRules.roll(instance.resolved_form(), int(rng.seed), "enemy", slot_index)
 	instance.move_slots = _moves_for_level(template, instance.level)
 	instance.pp_state = []
 	for move in instance.move_slots:

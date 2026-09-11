@@ -1,8 +1,4 @@
 .godot/
-.import/
-export.cfg
-export_presets.cfg
-
 assets/visuals/raw_asset/**/*.import
 assets/textures/actor/pokemon/**/*.import
 assets/textures/pokemon/portraits/**/*.import
@@ -10,44 +6,22 @@ data/models/pokemon/generated/
 data/models/pokemon/import_reports/
 data/models/visuals/generated/
 data/models/visuals/import_reports/
+data/models/audio/generated/
+data/models/audio/import_reports/
 assets/textures/pokemon/
 assets/textures/actor/pokemon/
-
-*.translation
-
-.mono/
-data_*/
 
 .vscode/
 .claude/
 .cursor/
 .DS_Store
 
-docs/img/*.import
-docs/img/tutorials/how-to-create-maps/img/*.import
-
-addons/code_fold_unfold/
-addons/collapse_folders/collapse-all.svg
-addons/collapse_folders/collapse-all.svg.import
-addons/collapse_folders/plugin.cfg
-addons/collapse_folders/plugin.gd
-addons/debug_menu/debug_menu.gd
-addons/debug_menu/debug_menu.tscn
-addons/debug_menu/LICENSE.md
-addons/debug_menu/plugin.cfg
-addons/debug_menu/plugin.gd
-addons/script-tabs/LICENSE
-addons/script-tabs/plugin.cfg
-addons/script-tabs/plugin.gd
-
 plan/
 unfiled/
-logs.txt
 logs/
 
 __pycache__/
 *.py[cod]
-tools/importers/local_sources.json
 
 assets/visuals/raw_asset/*
 !assets/visuals/raw_asset/Object/
@@ -66,4 +40,3 @@ assets/audio/pmdo/*
 !assets/audio/pmdo/.gdignore
 assets/audio/cries/*
 !assets/audio/cries/.gdignore
-data/models/audio/generated/

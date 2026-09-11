@@ -23,6 +23,8 @@ extends Resource
 @export var exp_yield: int = 0
 @export var join_rate: int = 0
 @export var temporary: bool = false
+@export var released: bool = true
+@export var form_name: String = ""
 
 @export var sprite_set: PokemonSpriteSetResource
 

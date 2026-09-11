@@ -60,8 +60,9 @@ const MANUAL_SKIRMISHES: Array[Dictionary] = [
 		"code": "series team=6 matches=10 -bots",
 	},
 ]
-const MENU_CONTROL_SIZE: Vector2 = Vector2(520, 72)
-const MENU_FONT_SIZE: int = 36
+const MENU_CONTROL_SIZE: Vector2 = Vector2(PmdStyle.CONTROL_WIDTH, PmdStyle.CONTROL_HEIGHT)
+const MENU_FONT_SIZE: int = PmdStyle.FONT_BODY
+const PRESET_PLACEHOLDER: String = "Choose Preset..."
 
 const MIN_WINDOW_SIZE: Vector2i = Vector2i(1280, 720)
 
@@ -69,16 +70,26 @@ var level_instance: TacticsLevel
 var skirmish_loader: SkirmishLoader
 var pause_menu: PauseMenu = null
 var net_session: NetSession = null
+var net_suspend_panel: NetSuspendPanel = null
+var _net_previous_state: int = NetSession.IDLE
 var multiplayer_menu: MultiplayerMenu = null
 var net_beacon: LanBeacon = null
 var multiplayer_button: Button = null
+var roster_carousel: RosterCarousel = null
+var showcase_pedestal: ShowcasePedestal = null
 var results_screen: BattleResultsScreen = null
 var speed_bar: SpectatorSpeedBar = null
 var interface_visible: bool = true
 var _controls_enabled: bool = true
 var menu_graphics_panel: GraphicsSettingsPanel = null
 var menu_controls_panel: ControlsPanel = null
+var menu_customize_panel: CustomizePanel = null
+var _window_size_seen: Vector2i = Vector2i.ZERO
+var _window_size_changed_at: float = -1.0
 var controls_button: Button = null
+var attack_button: Button = null
+var random_pokemon_button: Button = null
+var _controls_from_options: bool = false
 var options_button: Button = null
 var quit_button: Button = null
 var _relaunch: Callable = Callable()
@@ -116,6 +127,11 @@ func _ready() -> void:
 	net_session.desynced.connect(_on_net_desync)
 	net_session.state_changed.connect(_on_net_state_changed)
 	add_child(net_session)
+	net_suspend_panel = NetSuspendPanel.new()
+	net_suspend_panel.rejoin_requested.connect(_on_net_rejoin_pressed)
+	net_suspend_panel.claim_requested.connect(func() -> void: net_session.claim_win())
+	net_suspend_panel.main_menu_requested.connect(_on_main_menu_requested)
+	add_child(net_suspend_panel)
 	net_beacon = LanBeacon.new()
 	add_child(net_beacon)
 	skirmish_loader = SkirmishLoader.new()
@@ -136,9 +152,30 @@ func _process(_delta: float) -> void:
 	_poll_interface_toggle()
 	_sync_turn_speed()
 	UiScale.apply(get_tree().root)
+	_remember_window_size()
 	var backdrop: Control = $UI.get_node_or_null("Backdrop") as Control
 	if backdrop != null:
-		backdrop.visible = $UI/MapSelector.visible or (skirmish_lobby != null and skirmish_lobby.visible)
+		var overlay: Control = $UI.get_node_or_null("OptionsOverlay") as Control
+		backdrop.visible = $UI/MapSelector.visible or (skirmish_lobby != null and skirmish_lobby.visible) or (overlay != null and overlay.visible and level_instance == null)
+
+
+func _remember_window_size() -> void:
+	if not GameSettings.remember_window_size or DisplayServer.get_name() == "headless" or GameSettings.window_mode != "windowed":
+		return
+	var window_id: int = get_tree().root.get_window_id()
+	if DisplayServer.window_get_mode(window_id) != DisplayServer.WINDOW_MODE_WINDOWED:
+		return
+	var current: Vector2i = DisplayServer.window_get_size(window_id)
+	var now: float = float(Time.get_ticks_msec()) / 1000.0
+	if current != _window_size_seen:
+		_window_size_seen = current
+		_window_size_changed_at = now
+		return
+	if _window_size_changed_at >= 0.0 and now - _window_size_changed_at > 0.75:
+		_window_size_changed_at = -1.0
+		if current != GameSettings.resolution and current.x > 0 and current.y > 0:
+			GameSettings.resolution = current
+			GameSettings.save_settings()
 
 
 func _on_multiplayer_pressed() -> void:
@@ -173,6 +210,11 @@ func _on_net_join_requested(address: String, port: int) -> void:
 
 
 func _on_net_state_changed(state: int) -> void:
+	if state == NetSession.SUSPENDED:
+		SoundPlayer.cue("ui.error")
+	elif state == NetSession.IN_BATTLE and _net_previous_state == NetSession.SUSPENDED:
+		SoundPlayer.cue("lobby.join")
+	_net_previous_state = state
 	if state == NetSession.LOBBY and skirmish_lobby != null and not skirmish_lobby.visible and level_instance == null:
 		_open_network_lobby()
 	if state == NetSession.IDLE:
@@ -203,10 +245,13 @@ func _poll_net_ready() -> void:
 	if net_session == null:
 		return
 	if pause_menu != null:
-		pause_menu.pauses_tree = not net_session.in_battle()
-		pause_menu.resign_visible = net_session.in_battle()
+		pause_menu.pauses_tree = not net_session.battle_live()
+		pause_menu.resign_visible = net_session.battle_live()
+		pause_menu.network_battle = net_session.battle_live()
 	if level_instance != null and is_instance_valid(level_instance) and level_instance.hud != null:
 		level_instance.hud.set_network_text(_net_chip_text())
+	if net_suspend_panel != null:
+		net_suspend_panel.show_status(net_session if level_instance != null and is_instance_valid(level_instance) else null)
 	if not net_session.in_battle():
 		return
 	if level_instance == null or not is_instance_valid(level_instance):
@@ -216,11 +261,19 @@ func _poll_net_ready() -> void:
 
 
 func _net_chip_text() -> String:
-	if net_session == null or not net_session.in_battle():
+	if net_session == null:
 		return ""
-	if not net_session.ready_to_play():
-		return "Waiting for %s" % net_session.remote_name
-	return "Waiting for %s" % net_session.remote_name if net_session.remote_turn_active() else "Your turn"
+	if net_session.suspended():
+		if net_session.rejoining():
+			return "Reconnecting"
+		return "Opponent did not return" if net_session.suspend_expired() else "Connection lost, %d s" % int(ceil(net_session.suspend_remaining()))
+	if not net_session.in_battle():
+		return ""
+	var text: String = "Waiting for %s" % net_session.remote_name
+	if net_session.ready_to_play() and not net_session.remote_turn_active():
+		text = "Your turn"
+	var ping: int = net_session.latency_ms()
+	return "%s  %d ms" % [text, ping] if ping >= 0 else text
 
 
 func _on_net_start_requested(code: String, _battle_id: String) -> void:
@@ -244,9 +297,28 @@ func _on_net_start_requested(code: String, _battle_id: String) -> void:
 		net_session.attach_level(level_instance)
 
 
-func _on_net_battle_over(_result: int, reason: String) -> void:
-	if level_instance != null and is_instance_valid(level_instance) and level_instance.banner != null:
-		level_instance.banner.show_notice("Battle ended: %s" % reason)
+func _on_net_battle_over(result: int, reason: String) -> void:
+	if level_instance == null or not is_instance_valid(level_instance) or level_instance.banner == null:
+		return
+	var won: bool = result == TacticsLevel.RESULT_PLAYER_WIN if net_session.local_side == PokemonInstanceResource.Team.PLAYER else result == TacticsLevel.RESULT_PLAYER_LOSS
+	var remote: String = net_session.remote_name if not net_session.remote_name.is_empty() else "The other player"
+	var text: String = "Battle ended: %s" % reason
+	match reason:
+		"resign":
+			text = "%s resigned." % remote if won else "You resigned."
+		"abandon":
+			text = "%s did not return. You win." % remote
+		"desync":
+			text = "The two games fell out of step."
+	level_instance.banner.show_notice(text)
+
+
+func _on_net_rejoin_pressed() -> void:
+	if net_session == null:
+		return
+	var error: String = net_session.rejoin()
+	if not error.is_empty():
+		_on_net_notice(error)
 
 
 func _on_net_desync(reason: String) -> void:
@@ -285,10 +357,17 @@ func _setup_menus() -> void:
 	add_child(speed_bar)
 	var menu := $UI/MapSelector/SkirmishMenu as VBoxContainer
 	if menu != null:
+		attack_button = _menu_button("Attack", "AttackButton", _on_attack_pressed)
+		menu.add_child(attack_button)
+		menu.move_child(attack_button, 0)
+		random_pokemon_button = _menu_button("Random Pokemon", "RandomPokemonButton", _on_random_pokemon_pressed)
+		menu.add_child(random_pokemon_button)
+		menu.move_child(random_pokemon_button, 1)
 		multiplayer_button = Button.new()
 		multiplayer_button.name = "MultiplayerButton"
 		multiplayer_button.text = "Multiplayer"
 		multiplayer_button.custom_minimum_size = MENU_CONTROL_SIZE
+		multiplayer_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 		multiplayer_button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
 		multiplayer_button.pressed.connect(_on_multiplayer_pressed)
 		menu.add_child(multiplayer_button)
@@ -296,6 +375,7 @@ func _setup_menus() -> void:
 		options_button.name = "OptionsButton"
 		options_button.text = "Options"
 		options_button.custom_minimum_size = MENU_CONTROL_SIZE
+		options_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 		options_button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
 		options_button.pressed.connect(_on_options_pressed)
 		menu.add_child(options_button)
@@ -303,6 +383,7 @@ func _setup_menus() -> void:
 		controls_button.name = "ControlsButton"
 		controls_button.text = "Controls"
 		controls_button.custom_minimum_size = MENU_CONTROL_SIZE
+		controls_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 		controls_button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
 		controls_button.pressed.connect(_on_controls_pressed)
 		menu.add_child(controls_button)
@@ -310,6 +391,7 @@ func _setup_menus() -> void:
 		quit_button.name = "QuitButton"
 		quit_button.text = "Quit"
 		quit_button.custom_minimum_size = MENU_CONTROL_SIZE
+		quit_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 		quit_button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
 		quit_button.pressed.connect(_on_quit_requested)
 		menu.add_child(quit_button)
@@ -326,13 +408,15 @@ func _setup_menus() -> void:
 		if options_button != null:
 			options_button.grab_focus())
 	overlay.add_child(menu_graphics_panel)
-	menu_graphics_panel.controls_requested.connect(_on_controls_pressed)
+	menu_graphics_panel.controls_requested.connect(_on_controls_from_options)
+	menu_customize_panel = CustomizePanel.new()
+	menu_customize_panel.visible = false
+	menu_customize_panel.closed.connect(_on_customize_closed)
+	overlay.add_child(menu_customize_panel)
+	menu_graphics_panel.customize_requested.connect(_on_customize_from_options)
 	menu_controls_panel = ControlsPanel.new()
 	menu_controls_panel.visible = false
-	menu_controls_panel.closed.connect(func() -> void:
-		menu_controls_panel.visible = false
-		menu_graphics_panel.visible = true
-		menu_graphics_panel.focus_first())
+	menu_controls_panel.closed.connect(_on_controls_closed)
 	overlay.add_child(menu_controls_panel)
 	multiplayer_menu = MultiplayerMenu.new()
 	multiplayer_menu.visible = false
@@ -367,12 +451,59 @@ func _on_options_pressed() -> void:
 	$UI/MapSelector.visible = false
 	overlay.visible = true
 	menu_controls_panel.visible = false
+	menu_customize_panel.visible = false
 	menu_graphics_panel.visible = true
 	menu_graphics_panel.refresh()
 	menu_graphics_panel.focus_first()
 
 
+func _menu_button(text: String, node_name: String, callback: Callable) -> Button:
+	var button := Button.new()
+	button.name = node_name
+	button.text = text
+	button.custom_minimum_size = MENU_CONTROL_SIZE
+	button.size_flags_horizontal = Control.SIZE_SHRINK_END
+	button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
+	button.pressed.connect(callback)
+	return button
+
+
+func _on_attack_pressed() -> void:
+	if showcase_pedestal != null:
+		showcase_pedestal.play_attack()
+
+
+func _on_random_pokemon_pressed() -> void:
+	if roster_carousel != null:
+		roster_carousel.spin_to_random()
+
+
 func _on_controls_pressed() -> void:
+	_controls_from_options = false
+	_show_controls_panel()
+
+
+func _on_controls_from_options() -> void:
+	_controls_from_options = true
+	_show_controls_panel()
+
+
+func _on_customize_from_options() -> void:
+	menu_graphics_panel.visible = false
+	menu_controls_panel.visible = false
+	menu_customize_panel.visible = true
+	menu_customize_panel.refresh()
+	menu_customize_panel.focus_first()
+
+
+func _on_customize_closed() -> void:
+	menu_customize_panel.visible = false
+	menu_graphics_panel.visible = true
+	menu_graphics_panel.refresh()
+	menu_graphics_panel.focus_first()
+
+
+func _show_controls_panel() -> void:
 	var overlay: Control = $UI.get_node_or_null("OptionsOverlay") as Control
 	if overlay == null:
 		return
@@ -381,6 +512,48 @@ func _on_controls_pressed() -> void:
 	menu_graphics_panel.visible = false
 	menu_controls_panel.visible = true
 	menu_controls_panel.focus_first()
+
+
+func _on_controls_closed() -> void:
+	menu_controls_panel.visible = false
+	if _controls_from_options:
+		menu_graphics_panel.visible = true
+		menu_graphics_panel.focus_first()
+		return
+	var overlay: Control = $UI.get_node_or_null("OptionsOverlay") as Control
+	if overlay != null:
+		overlay.visible = false
+	$UI/MapSelector.visible = true
+	if controls_button != null:
+		controls_button.grab_focus()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not event.is_action_pressed("ui_cancel"):
+		return
+	if event is InputEventKey and (event as InputEventKey).echo:
+		return
+	if level_instance != null and is_instance_valid(level_instance):
+		return
+	if _close_menu_overlay():
+		SoundPlayer.cue("ui.cancel")
+		get_viewport().set_input_as_handled()
+
+
+func _close_menu_overlay() -> bool:
+	if menu_controls_panel != null and menu_controls_panel.visible:
+		menu_controls_panel.closed.emit()
+		return true
+	if menu_graphics_panel != null and menu_graphics_panel.visible:
+		menu_graphics_panel.closed.emit()
+		return true
+	if multiplayer_menu != null and multiplayer_menu.visible:
+		multiplayer_menu.closed.emit()
+		return true
+	if skirmish_lobby != null and skirmish_lobby.visible:
+		skirmish_lobby.request_close()
+		return true
+	return false
 
 
 func _on_restart_requested() -> void:
@@ -397,6 +570,8 @@ func _on_return_to_lobby_requested() -> void:
 
 
 func _on_main_menu_requested() -> void:
+	if net_session != null and net_session.active():
+		net_session.leave("left")
 	unload_level()
 	_set_tactics_controls_enabled(false)
 	if skirmish_lobby != null:
@@ -407,6 +582,8 @@ func _on_main_menu_requested() -> void:
 
 
 func _on_quit_requested() -> void:
+	if net_session != null and net_session.active():
+		net_session.leave("quit")
 	_set_battle_speed(1.0)
 	get_tree().quit()
 
@@ -542,7 +719,7 @@ func load_level(level_name: String) -> void:
 
 
 func load_selected_skirmish() -> void:
-	var idx: int = skirmish_picker.selected
+	var idx: int = skirmish_picker.selected - 1
 	if idx < 0 or idx >= MANUAL_SKIRMISHES.size():
 		push_error("Main: no manual skirmish selected")
 		return
@@ -612,8 +789,18 @@ func _build_random_skirmish(entry: Dictionary) -> SkirmishDefinitionResource:
 
 func _populate_skirmish_picker() -> void:
 	skirmish_picker.clear()
+	skirmish_picker.add_item(PRESET_PLACEHOLDER)
 	for entry in MANUAL_SKIRMISHES:
 		skirmish_picker.add_item(_label_for_picker_entry(entry))
+	skirmish_picker.select(0)
+	if not skirmish_picker.item_selected.is_connected(_on_preset_selected):
+		skirmish_picker.item_selected.connect(_on_preset_selected)
+	_on_preset_selected(0)
+
+
+func _on_preset_selected(index: int) -> void:
+	if launch_button != null:
+		launch_button.disabled = index <= 0
 
 
 func _label_for_picker_entry(entry: Dictionary) -> String:
@@ -762,7 +949,7 @@ func _on_skirmish_ended(result: int, definition: SkirmishDefinitionResource) -> 
 		var networked: bool = net_session != null and net_session.active()
 		results_screen.show_result(result, definition, ended_level, "", net_session.local_side if networked else PokemonInstanceResource.Team.PLAYER)
 		if networked:
-			results_screen.set_play_again_label("Rematch" if net_session.host_role else "Waiting for the host", net_session.host_role)
+			results_screen.set_play_again_label("Rematch" if net_session.host_role else "Waiting for %s" % (net_session.remote_name if not net_session.remote_name.is_empty() else "the host"), net_session.host_role)
 		return
 	if skirmish_loader != null:
 		skirmish_loader.unload_current()
@@ -773,6 +960,8 @@ func _on_skirmish_ended(result: int, definition: SkirmishDefinitionResource) -> 
 
 func _style_main_menu() -> void:
 	get_tree().root.theme = PmdStyle.build_theme(load("res://assets/ui/pmd_theme.tres") as Theme)
+	TacticsConfig.apply_highlight_set(GameSettings.highlight_set)
+	PmdCursor.ensure(get_tree().root)
 	var ui: Control = $UI as Control
 	var backdrop := PmdBackdrop.new()
 	backdrop.name = "Backdrop"
@@ -780,24 +969,75 @@ func _style_main_menu() -> void:
 	ui.move_child(backdrop, 0)
 	var menu := $UI/MapSelector/SkirmishMenu as VBoxContainer
 	if menu != null:
-		menu.add_theme_constant_override("separation", 10)
-		var title := Label.new()
-		title.name = "Title"
-		title.text = "PMD Emblem"
-		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		PmdStyle.apply_title(title, 72)
-		menu.add_child(title)
-		menu.move_child(title, 0)
-		var subtitle := Label.new()
-		subtitle.name = "Subtitle"
-		subtitle.text = "Tactical skirmishes"
-		subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		subtitle.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
-		menu.add_child(subtitle)
-		menu.move_child(subtitle, 1)
+		menu.add_theme_constant_override("separation", PmdStyle.PANEL_GAP)
+	_build_roster_showcase()
 	for control in [skirmish_picker, launch_button, custom_toggle_button]:
 		control.custom_minimum_size = MENU_CONTROL_SIZE
+		control.size_flags_horizontal = Control.SIZE_SHRINK_END
 		control.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
+	skirmish_picker.fit_to_longest_item = false
+	skirmish_picker.clip_text = true
+	_scale_main_menu()
+	get_viewport().size_changed.connect(_scale_main_menu)
+
+
+func menu_zoom() -> float:
+	var height: float = RosterCarousel.DESIGN_HEIGHT
+	if is_inside_tree() and get_viewport() != null:
+		height = get_viewport().get_visible_rect().size.y
+	return clampf(height / RosterCarousel.DESIGN_HEIGHT, 1.0, RosterCarousel.MAX_ZOOM)
+
+
+func _scale_main_menu() -> void:
+	var menu: VBoxContainer = get_node_or_null("UI/MapSelector/SkirmishMenu") as VBoxContainer
+	if menu == null:
+		return
+	var zoom: float = menu_zoom()
+	menu.add_theme_constant_override("separation", int(round(PmdStyle.PANEL_GAP * zoom)))
+	for child in menu.get_children():
+		var control: Control = child as Control
+		if control == null or not (control is Button or control is OptionButton):
+			continue
+		control.custom_minimum_size = MENU_CONTROL_SIZE * zoom
+		control.add_theme_font_size_override("font_size", int(round(MENU_FONT_SIZE * zoom)))
+
+
+func _build_roster_showcase() -> void:
+	var selector := $UI/MapSelector as Control
+	if selector == null or selector.get_node_or_null("RosterShowcase") != null:
+		return
+	showcase_pedestal = ShowcasePedestal.new()
+	showcase_pedestal.name = "ShowcasePedestal"
+	showcase_pedestal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	selector.add_child(showcase_pedestal)
+	selector.move_child(showcase_pedestal, 0)
+	var holder := HBoxContainer.new()
+	holder.name = "RosterShowcase"
+	holder.set_anchors_and_offsets_preset(Control.PRESET_CENTER_LEFT)
+	holder.grow_vertical = Control.GROW_DIRECTION_BOTH
+	holder.offset_left = 24.0
+	selector.add_child(holder)
+	roster_carousel = RosterCarousel.new()
+	roster_carousel.name = "RosterCarousel"
+	holder.add_child(roster_carousel)
+	roster_carousel.picked.connect(_on_roster_picked)
+	roster_carousel.selection_changed.connect(_on_roster_picked)
+	var entries: Array[Dictionary] = SkirmishRosterProvider.entries()
+	var playable: Array[Dictionary] = []
+	for entry in entries:
+		if bool(entry.get("battle_ready", false)):
+			playable.append(entry)
+	var listed: Array[Dictionary] = playable if not playable.is_empty() else entries
+	listed.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return int(a.get("dex_number", 0)) < int(b.get("dex_number", 0)))
+	roster_carousel.set_entries(listed)
+	if not listed.is_empty():
+		roster_carousel.select_index(randi_range(0, listed.size() - 1), false)
+	_on_roster_picked(roster_carousel.selected_entry())
+
+
+func _on_roster_picked(entry: Dictionary) -> void:
+	if showcase_pedestal != null and not entry.is_empty():
+		showcase_pedestal.show_entry(entry)
 
 
 func _set_tactics_controls_enabled(enabled: bool) -> void:

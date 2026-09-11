@@ -54,6 +54,7 @@ func _setup_lobby() -> void:
 	if mode_picker != null:
 		_assert_true(String(mode_picker.get_item_metadata(mode_picker.selected)) == SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU, "ControlModePicker defaults to Player vs CPU")
 	_check_responsive_layout("small", false)
+	_check_setup_pages()
 	await _resize_lobby(Vector2(1980, 1200))
 	_check_responsive_layout("wide", true)
 
@@ -117,7 +118,11 @@ func _check_responsive_layout(label: String, expect_wide: bool) -> void:
 	_assert_true(roster_grid.columns == expected_columns, "%s roster grid columns use available width (%d vs %d)" % [label, roster_grid.columns, expected_columns])
 	_assert_true(roster_grid.columns == SkirmishLobby.ROSTER_COLUMNS, "%s roster keeps %d columns (%d)" % [label, SkirmishLobby.ROSTER_COLUMNS, roster_grid.columns])
 	_assert_true(is_equal_approx(cell_px, float(expected_layout["cell"])) and cell_px >= SkirmishLobby.ROSTER_MIN_CELL, "%s roster cells fill the row at %.0f px" % [label, cell_px])
-	_assert_true((cell_px > 90.0) == expect_wide, "%s roster cell size matches layout mode (%.0f px)" % [label, cell_px])
+	_assert_true((cell_px >= 80.0) == expect_wide, "%s roster cell size matches layout mode (%.0f px)" % [label, cell_px])
+	var setup_panel := lobby.find_child("SetupPanel", true, false) as Control
+	var roster_panel := lobby.find_child("RosterPanel", true, false) as Control
+	if expect_wide and setup_panel != null and roster_panel != null:
+		_assert_true(absf(setup_panel.size.x - roster_panel.size.x) <= 2.0, "%s setup and roster panels split the row evenly (%.0f vs %.0f)" % [label, setup_panel.size.x, roster_panel.size.x])
 	_assert_true(float(roster_grid.columns) * cell_px + SkirmishLobby.GRID_GAP * float(roster_grid.columns - 1) <= available_width + 1.0, "%s roster cells fit the available width" % label)
 	var first_cell: Button = roster_grid.get_child(0) as Button
 	_assert_true(first_cell != null and first_cell.flat and first_cell.find_child("NameLabel", true, false) == null and not first_cell.tooltip_text.is_empty(), "%s roster cells are flat portraits with name tooltips" % label)
@@ -132,6 +137,30 @@ func _check_responsive_layout(label: String, expect_wide: bool) -> void:
 	var grid_right: float = roster_grid.global_position.x + roster_grid.size.x
 	var scroll_right: float = roster_scroll.global_position.x + roster_scroll.size.x
 	_assert_true(grid_right <= scroll_right + 1.0, "%s roster grid stays inside scroll width" % label)
+
+
+func _check_setup_pages() -> void:
+	if lobby == null:
+		return
+	var match_tab: Button = lobby.find_child("MatchTab", true, false) as Button
+	var player_tab: Button = lobby.find_child("PlayerTab", true, false) as Button
+	var enemy_tab: Button = lobby.find_child("EnemyTab", true, false) as Button
+	_assert_true(match_tab != null and player_tab != null and enemy_tab != null and match_tab.button_pressed, "the setup panel opens on the Match page with three tabs")
+	var match_page: Control = lobby.find_child("MatchPage", true, false) as Control
+	var details: Control = lobby.find_child("DetailsPanel", true, false) as Control
+	_assert_true(match_page != null and match_page.visible and details != null and not details.visible, "the Match page shows the settings and hides the editor")
+	_assert_true(lobby.find_child("MatchGrid", true, false) != null and lobby.find_child("EditorGrid", true, false) != null, "settings and editor lay out in two-column grids")
+	player_tab.pressed.emit()
+	_assert_true(lobby.setup_page == "player" and details.visible and not match_page.visible and lobby.active_side == SkirmishLobby.SIDE_PLAYER, "the Player Team tab shows the editor for the player side")
+	lobby._on_team_slot_pressed(SkirmishLobby.SIDE_ENEMY, 0)
+	_assert_true(lobby.setup_page == "enemy" and enemy_tab.button_pressed and lobby.active_side == SkirmishLobby.SIDE_ENEMY, "clicking an enemy tray slot switches to the Enemy Team tab")
+	lobby._step_setup_page(1)
+	_assert_true(lobby.setup_page == "match" and match_tab.button_pressed and match_page.visible, "stepping past the last page wraps to Match")
+	lobby._show_setup_page("match")
+	lobby._set_active_side(SkirmishLobby.SIDE_PLAYER)
+	lobby._refresh_team_trays()
+	lobby._refresh_details()
+	lobby._refresh_slot_section()
 
 
 func _assert_control_inside_lobby(node_name: String, label: String) -> void:
@@ -306,7 +335,7 @@ func _check_random_enemy_build() -> void:
 	_assert_true(String(definition.generation_metadata.get("source", "")) == "random_generator", "random enemy setup routes through RandomSkirmishGenerator")
 	_assert_true(definition.enemy_team.size() == 3, "random enemy setup honors the enemy team slider")
 	_assert_true(_loader_accepts(definition), "random enemy lobby definition is loader-ready")
-	_assert_true(lobby.random_player_check != null and lobby.random_player_check.text == "Random Team 1" and lobby.random_enemy_check.text == "Random Team 2" and lobby.random_player_check.get_index() == lobby.random_enemy_check.get_index() - 1, "the lobby offers Random Team 1 right above Random Team 2")
+	_assert_true(lobby.random_player_check != null and lobby.random_player_check.text == "Random player team" and lobby.random_enemy_check.text == "Random enemy team" and lobby.random_player_check.get_index() == lobby.random_enemy_check.get_index() - 1, "the lobby offers the random player team toggle right above the enemy one")
 	var tray_before: int = lobby.get_player_team_paths().size()
 	lobby.set_random_player_enabled(true)
 	lobby.player_size_slider.value = 5

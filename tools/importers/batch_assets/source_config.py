@@ -8,7 +8,7 @@ from typing import Any
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
-LOCAL_CONFIG_PATH = PROJECT_ROOT / "tools" / "importers" / "local_sources.json"
+LOCAL_CONFIG_PATH = PROJECT_ROOT / "logs" / "local_sources.json"
 
 
 DEFAULT_SIBLING_ROOT = PROJECT_ROOT.parent

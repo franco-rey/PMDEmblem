@@ -6,6 +6,7 @@ const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
 
 var captured: Array[String] = []
 var main: Node = null
+var label_prefix: String = ""
 
 
 func _init() -> void:
@@ -16,11 +17,14 @@ func _run() -> void:
 	DisplayServer.window_set_size(Vector2i(1920, 1080))
 	root.content_scale_size = Vector2i(0, 0)
 	UiScale.override_factor = UiScale.compute(Vector2(1920, 1080))
+	label_prefix = _arg("label")
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUTPUT_DIR))
+	GameSettings.remember_window_size = false
 	var scene: PackedScene = load(MAIN_SCENE_PATH)
 	main = scene.instantiate()
 	root.add_child(main)
 	await process_frame
+	_apply_border_args()
 	var lobby: SkirmishLobby = main.get_node("UI/SkirmishLobby")
 	var toggle: Button = main.get_node("UI/MapSelector/SkirmishMenu/CustomToggleButton")
 	toggle.emit_signal("pressed")
@@ -32,8 +36,17 @@ func _run() -> void:
 		idx[String(entries[i].get("slug", ""))] = i
 	lobby.add_roster_index(int(idx["0006_charizard"]))
 	lobby.set_held_item(SkirmishLobby.SIDE_PLAYER, 0, "seed_blast")
+	var full: bool = _arg("full") == "1"
+	if full:
+		for slug in ["0002_ivysaur", "0003_venusaur", "0005_charmeleon", "0008_wartortle", "0009_blastoise"]:
+			if idx.has(slug):
+				lobby.add_roster_index(int(idx[slug]))
 	lobby.activate_enemy_team()
 	lobby.add_roster_index(int(idx["0001_bulbasaur"]))
+	if full:
+		for slug in ["0010_caterpie", "0011_metapod", "0012_butterfree", "0013_weedle", "0014_kakuna"]:
+			if idx.has(slug):
+				lobby.add_roster_index(int(idx[slug]))
 	lobby.set_random_enemy_enabled(false)
 	var mode_picker: OptionButton = lobby.find_child("ControlModePicker", true, false)
 	for i in range(mode_picker.item_count):
@@ -51,7 +64,7 @@ func _run() -> void:
 		quit(1)
 		return
 	var frames: int = 0
-	while not level._scheduler_started and frames < 300:
+	while not level._scheduler_started and frames < 1800:
 		await process_frame
 		frames += 1
 	var player_pawn: TacticsPawn = level.player.get_child(0)
@@ -63,6 +76,14 @@ func _run() -> void:
 	await process_frame
 	await _snap("live_00_start")
 	var participant: TacticsParticipantResource = level.participant.res
+	var waited: int = 0
+	while level.scheduler.get_active_unit() == null and waited < 1800:
+		await process_frame
+		waited += 1
+	if level.scheduler.get_active_unit() == null:
+		print("live: no active unit after %d frames" % waited)
+		quit(1)
+		return
 	var first: TacticsPawn = level.scheduler.get_active_unit().pawn
 	var second: TacticsPawn = enemy_pawn if first == player_pawn else player_pawn
 	print("live: first actor %s (team %d), target %s" % [first.name, level.scheduler.get_active_unit().team, second.name])
@@ -189,6 +210,26 @@ func _snap(label: String) -> void:
 	var image: Image = root.get_viewport().get_texture().get_image()
 	if image == null:
 		return
-	var path: String = "%s/%s.png" % [OUTPUT_DIR, label]
+	var path: String = "%s/%s%s.png" % [OUTPUT_DIR, label_prefix, label]
 	image.save_png(ProjectSettings.globalize_path(path))
 	captured.append(path)
+
+
+func _apply_border_args() -> void:
+	var border_arg: String = _arg("border")
+	if border_arg.is_valid_int():
+		PmdStyle.set_border_style(int(border_arg))
+	var color_arg: String = _arg("color")
+	if color_arg.is_valid_int():
+		PmdStyle.set_border_color(int(color_arg))
+	var portrait_arg: String = _arg("portrait")
+	if portrait_arg.is_valid_int():
+		PmdStyle.set_portrait_border(int(portrait_arg))
+
+
+func _arg(name: String) -> String:
+	for arg in OS.get_cmdline_user_args():
+		var text: String = String(arg)
+		if text.begins_with("--%s=" % name):
+			return text.substr(name.length() + 3)
+	return ""
