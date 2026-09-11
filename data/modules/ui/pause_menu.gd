@@ -18,6 +18,7 @@ var _center: CenterContainer = null
 var _menu: PanelContainer = null
 var _graphics: GraphicsSettingsPanel = null
 var _controls: ControlsPanel = null
+var _customize: CustomizePanel = null
 var _buttons: Dictionary = {}
 
 
@@ -73,10 +74,15 @@ func _ready() -> void:
 	_graphics.visible = false
 	_graphics.closed.connect(_hide_graphics)
 	_graphics.controls_requested.connect(_show_controls)
+	_graphics.customize_requested.connect(_show_customize)
 	_center.add_child(_graphics)
 	_controls = ControlsPanel.new()
 	_controls.visible = false
 	_controls.closed.connect(_hide_controls)
+	_customize = CustomizePanel.new()
+	_customize.visible = false
+	_customize.closed.connect(_hide_customize)
+	_center.add_child(_customize)
 	_center.add_child(_controls)
 	visible = false
 
@@ -114,6 +120,7 @@ func open() -> void:
 	_menu.visible = true
 	_graphics.visible = false
 	_controls.visible = false
+	_customize.visible = false
 	_confirm.visible = false
 	if pauses_tree:
 		get_tree().paused = true
@@ -227,6 +234,7 @@ func _show_controls() -> void:
 
 func _hide_controls() -> void:
 	_controls.visible = false
+	_customize.visible = false
 	_menu.visible = true
 	var button: Button = _buttons.get("ControlsButton", null)
 	if button != null:
@@ -239,6 +247,21 @@ func _hide_graphics() -> void:
 	var button: Button = _buttons.get("GraphicsButton", null)
 	if button != null:
 		button.grab_focus()
+
+
+func _show_customize() -> void:
+	_menu.visible = false
+	_graphics.visible = false
+	_customize.visible = true
+	_customize.refresh()
+	_customize.focus_first()
+
+
+func _hide_customize() -> void:
+	_customize.visible = false
+	_graphics.visible = true
+	_graphics.refresh()
+	_graphics.focus_first()
 
 
 func _add_button(column: VBoxContainer, text: String, node_name: String, callback: Callable) -> void:

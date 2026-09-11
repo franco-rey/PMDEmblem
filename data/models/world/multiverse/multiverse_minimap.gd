@@ -161,7 +161,7 @@ func _draw_field(field: Control) -> void:
 	var present_a: Vector2 = project(MultiverseStage.slot(Vector2i(ids.max(), now)) - focus - Vector3(MultiverseStage.pitch * 0.5, 0.0, MultiverseStage.pitch * 0.6), centre, scale)
 	var present_b: Vector2 = project(MultiverseStage.slot(Vector2i(ids.min(), now)) - focus - Vector3(MultiverseStage.pitch * 0.5, 0.0, -MultiverseStage.pitch * 0.6), centre, scale)
 	field.draw_line(present_a, present_b, COLOR_PRESENT, maxf(2.0, band * 0.9), true)
-	var font: Font = PmdStyle.TEXT_FONT
+	var font: Font = PmdStyle.font_body()
 	var font_size: int = int(clampf(card * 0.72, 7.0, 40.0))
 	for l in ids:
 		for board in state.boards(l):

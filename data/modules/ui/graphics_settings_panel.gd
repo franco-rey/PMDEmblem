@@ -3,11 +3,11 @@ extends MenuPanel
 
 signal closed
 signal controls_requested
+signal customize_requested
 
 const PICKER_WIDTH: float = 340.0
 
 var mode_picker: OptionButton = null
-var resolution_picker: OptionButton = null
 var scale_picker: OptionButton = null
 var vsync_toggle: CheckButton = null
 var camera_track_toggle: CheckButton = null
@@ -19,6 +19,7 @@ var sfx_slider: HSlider = null
 var music_slider: HSlider = null
 var _volume_labels: Dictionary = {}
 var controls_button: Button = null
+var customize_button: Button = null
 var close_button: Button = null
 
 
@@ -29,11 +30,8 @@ func _ready() -> void:
 	mode_picker = _picker("Window mode", "WindowModePicker")
 	for mode in GameSettings.WINDOW_MODES:
 		mode_picker.add_item(GameSettings.window_mode_label(mode))
-	resolution_picker = _picker("Resolution", "ResolutionPicker")
-	for size in GameSettings.RESOLUTIONS:
-		resolution_picker.add_item(GameSettings.resolution_label(size))
 	scale_picker = _picker("UI scale", "UIscalePicker")
-	for value in GameSettings.UI_SCALES:
+	for value in GameSettings.ui_scale_options():
 		scale_picker.add_item(GameSettings.ui_scale_label(value))
 	vsync_toggle = _toggle("VSync", "VsyncToggle")
 	camera_track_toggle = _toggle("Camera track", "CameraTrackToggle")
@@ -45,10 +43,10 @@ func _ready() -> void:
 	master_slider = _slider("Master volume", "MasterVolumeSlider")
 	sfx_slider = _slider("Effects volume", "EffectsVolumeSlider")
 	music_slider = _slider("Music volume", "MusicVolumeSlider")
+	customize_button = add_body_button("Customize", "CustomizeButton", func() -> void: customize_requested.emit())
 	controls_button = add_footer_button("Controls", "ControlsButton", func() -> void: controls_requested.emit())
 	close_button = add_footer_button("Back", "CloseButton", func() -> void: closed.emit())
 	mode_picker.item_selected.connect(_on_mode_selected)
-	resolution_picker.item_selected.connect(_on_resolution_selected)
 	scale_picker.item_selected.connect(_on_scale_selected)
 	vsync_toggle.toggled.connect(_on_vsync_toggled)
 	camera_track_toggle.toggled.connect(_on_camera_track_toggled)
@@ -63,8 +61,7 @@ func _ready() -> void:
 
 func refresh() -> void:
 	mode_picker.select(maxi(0, GameSettings.WINDOW_MODES.find(GameSettings.window_mode)))
-	resolution_picker.select(maxi(0, GameSettings.RESOLUTIONS.find(GameSettings.resolution)))
-	scale_picker.select(maxi(0, GameSettings.UI_SCALES.find(GameSettings.ui_scale)))
+	scale_picker.select(GameSettings.ui_scale_index(GameSettings.ui_scale))
 	vsync_toggle.set_pressed_no_signal(GameSettings.vsync)
 	camera_track_toggle.set_pressed_no_signal(GameSettings.camera_track)
 	cpu_report_toggle.set_pressed_no_signal(GameSettings.cpu_battle_report)
@@ -73,7 +70,6 @@ func refresh() -> void:
 	_show_volume(master_slider, GameSettings.master_volume)
 	_show_volume(sfx_slider, GameSettings.sfx_volume)
 	_show_volume(music_slider, GameSettings.music_volume)
-	resolution_picker.disabled = GameSettings.window_mode != "windowed"
 
 
 func focus_first() -> void:
@@ -100,7 +96,7 @@ func _toggle(caption: String, node_name: String) -> CheckButton:
 	return toggle
 
 
-func _slider(caption: String, node_name: String) -> HSlider:
+func _slider(caption: String, node_name: String, min_value: float = 0.0, max_value: float = 1.0, step: float = 0.05) -> HSlider:
 	var group := HBoxContainer.new()
 	group.add_theme_constant_override("separation", PmdStyle.PANEL_GAP)
 	var value_label := Label.new()
@@ -110,9 +106,9 @@ func _slider(caption: String, node_name: String) -> HSlider:
 	group.add_child(value_label)
 	var slider := HSlider.new()
 	slider.name = node_name
-	slider.min_value = 0.0
-	slider.max_value = 1.0
-	slider.step = 0.05
+	slider.min_value = min_value
+	slider.max_value = max_value
+	slider.step = step
 	slider.custom_minimum_size = Vector2(PICKER_WIDTH - 84.0 - PmdStyle.PANEL_GAP, PmdStyle.ROW_HEIGHT)
 	slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	group.add_child(slider)
@@ -177,16 +173,15 @@ func _on_mode_selected(index: int) -> void:
 	_apply_and_save()
 
 
-func _on_resolution_selected(index: int) -> void:
-	GameSettings.resolution = GameSettings.RESOLUTIONS[clampi(index, 0, GameSettings.RESOLUTIONS.size() - 1)]
-	_apply_and_save()
-
-
 func _on_scale_selected(index: int) -> void:
-	GameSettings.ui_scale = GameSettings.UI_SCALES[clampi(index, 0, GameSettings.UI_SCALES.size() - 1)]
-	_apply_and_save()
+	var options: Array[float] = GameSettings.ui_scale_options()
+	GameSettings.ui_scale = options[clampi(index, 0, options.size() - 1)]
+	GameSettings.apply_ui_scale(get_window())
+	_save()
+
 
 
 func _on_vsync_toggled(pressed: bool) -> void:
 	GameSettings.vsync = pressed
-	_apply_and_save()
+	GameSettings.apply_vsync(get_window())
+	_save()

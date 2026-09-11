@@ -82,6 +82,9 @@ var interface_visible: bool = true
 var _controls_enabled: bool = true
 var menu_graphics_panel: GraphicsSettingsPanel = null
 var menu_controls_panel: ControlsPanel = null
+var menu_customize_panel: CustomizePanel = null
+var _window_size_seen: Vector2i = Vector2i.ZERO
+var _window_size_changed_at: float = -1.0
 var controls_button: Button = null
 var attack_button: Button = null
 var random_pokemon_button: Button = null
@@ -148,9 +151,30 @@ func _process(_delta: float) -> void:
 	_poll_interface_toggle()
 	_sync_turn_speed()
 	UiScale.apply(get_tree().root)
+	_remember_window_size()
 	var backdrop: Control = $UI.get_node_or_null("Backdrop") as Control
 	if backdrop != null:
-		backdrop.visible = $UI/MapSelector.visible or (skirmish_lobby != null and skirmish_lobby.visible)
+		var overlay: Control = $UI.get_node_or_null("OptionsOverlay") as Control
+		backdrop.visible = $UI/MapSelector.visible or (skirmish_lobby != null and skirmish_lobby.visible) or (overlay != null and overlay.visible and level_instance == null)
+
+
+func _remember_window_size() -> void:
+	if not GameSettings.remember_window_size or DisplayServer.get_name() == "headless" or GameSettings.window_mode != "windowed":
+		return
+	var window_id: int = get_tree().root.get_window_id()
+	if DisplayServer.window_get_mode(window_id) != DisplayServer.WINDOW_MODE_WINDOWED:
+		return
+	var current: Vector2i = DisplayServer.window_get_size(window_id)
+	var now: float = float(Time.get_ticks_msec()) / 1000.0
+	if current != _window_size_seen:
+		_window_size_seen = current
+		_window_size_changed_at = now
+		return
+	if _window_size_changed_at >= 0.0 and now - _window_size_changed_at > 0.75:
+		_window_size_changed_at = -1.0
+		if current != GameSettings.resolution and current.x > 0 and current.y > 0:
+			GameSettings.resolution = current
+			GameSettings.save_settings()
 
 
 func _on_multiplayer_pressed() -> void:
@@ -379,6 +403,11 @@ func _setup_menus() -> void:
 			options_button.grab_focus())
 	overlay.add_child(menu_graphics_panel)
 	menu_graphics_panel.controls_requested.connect(_on_controls_from_options)
+	menu_customize_panel = CustomizePanel.new()
+	menu_customize_panel.visible = false
+	menu_customize_panel.closed.connect(_on_customize_closed)
+	overlay.add_child(menu_customize_panel)
+	menu_graphics_panel.customize_requested.connect(_on_customize_from_options)
 	menu_controls_panel = ControlsPanel.new()
 	menu_controls_panel.visible = false
 	menu_controls_panel.closed.connect(_on_controls_closed)
@@ -416,6 +445,7 @@ func _on_options_pressed() -> void:
 	$UI/MapSelector.visible = false
 	overlay.visible = true
 	menu_controls_panel.visible = false
+	menu_customize_panel.visible = false
 	menu_graphics_panel.visible = true
 	menu_graphics_panel.refresh()
 	menu_graphics_panel.focus_first()
@@ -450,6 +480,21 @@ func _on_controls_pressed() -> void:
 func _on_controls_from_options() -> void:
 	_controls_from_options = true
 	_show_controls_panel()
+
+
+func _on_customize_from_options() -> void:
+	menu_graphics_panel.visible = false
+	menu_controls_panel.visible = false
+	menu_customize_panel.visible = true
+	menu_customize_panel.refresh()
+	menu_customize_panel.focus_first()
+
+
+func _on_customize_closed() -> void:
+	menu_customize_panel.visible = false
+	menu_graphics_panel.visible = true
+	menu_graphics_panel.refresh()
+	menu_graphics_panel.focus_first()
 
 
 func _show_controls_panel() -> void:
@@ -945,6 +990,7 @@ func _build_roster_showcase() -> void:
 	roster_carousel.name = "RosterCarousel"
 	holder.add_child(roster_carousel)
 	roster_carousel.picked.connect(_on_roster_picked)
+	roster_carousel.selection_changed.connect(_on_roster_picked)
 	var entries: Array[Dictionary] = SkirmishRosterProvider.entries()
 	var playable: Array[Dictionary] = []
 	for entry in entries:

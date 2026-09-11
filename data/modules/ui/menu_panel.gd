@@ -17,7 +17,9 @@ func _ready() -> void:
 	custom_minimum_size = Vector2(PmdStyle.PANEL_WIDTH, 0)
 	size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	add_theme_stylebox_override("panel", PmdStyle.window())
+	var panel_style: StyleBox = PmdStyle.window()
+	add_theme_stylebox_override("panel", panel_style)
+	panel_style.changed.connect(fit_to_viewport)
 	var margin := MarginContainer.new()
 	margin.name = "Margin"
 	for side in ["left", "top", "right", "bottom"]:
@@ -128,7 +130,8 @@ func _fit_once() -> void:
 	var view: Vector2 = get_viewport().get_visible_rect().size
 	custom_minimum_size.x = minf(PmdStyle.PANEL_WIDTH, maxf(320.0, view.x - 40.0))
 	var natural: float = _pad.get_combined_minimum_size().y
-	var chrome: float = title_label.get_combined_minimum_size().y + footer.get_combined_minimum_size().y + float(PmdStyle.PANEL_MARGIN * 2 + PmdStyle.PANEL_GAP * 2) + 16.0
+	var panel_style: StyleBox = get_theme_stylebox("panel")
+	var chrome: float = title_label.get_combined_minimum_size().y + footer.get_combined_minimum_size().y + float(PmdStyle.PANEL_MARGIN * 2 + PmdStyle.PANEL_GAP * 2) + (panel_style.get_minimum_size().y if panel_style != null else 16.0)
 	var wanted: float = minf(natural, maxf(120.0, view.y - chrome - 24.0))
 	var changed: bool = not is_equal_approx(scroll.custom_minimum_size.y, wanted)
 	scroll.custom_minimum_size.y = wanted

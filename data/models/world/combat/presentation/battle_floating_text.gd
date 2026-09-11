@@ -121,7 +121,7 @@ func show_text(pawn: TacticsPawn, text: String, color: Color, size: int, height:
 	var popup := FloatingPopup.new()
 	popup.name = "Popup_%d" % spawned_total
 	popup.text = text
-	popup.font = PmdStyle.TEXT_FONT
+	popup.font = PmdStyle.font_body()
 	popup.font_size = size
 	popup.pixel_size = PIXEL_SIZE
 	popup.billboard = BaseMaterial3D.BILLBOARD_ENABLED

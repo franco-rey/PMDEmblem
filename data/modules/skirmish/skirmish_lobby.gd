@@ -804,7 +804,7 @@ func _create_selected_box() -> HBoxContainer:
 	selected_portrait_frame = PanelContainer.new()
 	selected_portrait_frame.name = "SelectedPortraitFrame"
 	selected_portrait_frame.custom_minimum_size = Vector2(SELECTED_PORTRAIT_PX + 8.0, SELECTED_PORTRAIT_PX + 8.0)
-	selected_portrait_frame.add_theme_stylebox_override("panel", PmdStyle.window(Color(0.02, 0.03, 0.08, 1.0), PmdStyle.FRAME_SOFT, 2, 4))
+	selected_portrait_frame.add_theme_stylebox_override("panel", PmdStyle.portrait_frame(PmdStyle.FRAME_SOFT, 2))
 	box.add_child(selected_portrait_frame)
 	selected_portrait = TextureRect.new()
 	selected_portrait.name = "SelectedPortrait"
@@ -1344,7 +1344,7 @@ func _type_badge(type_id: String, category: int) -> Control:
 	badge.offset_right = CHOOSER_ICON_SIZE.x
 	badge.offset_bottom = CHOOSER_ICON_SIZE.y * 0.5
 	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	badge.add_theme_stylebox_override("panel", PmdStyle.window(PmdStyle.type_color(type_id), PmdStyle.FRAME, 2, 8))
+	badge.add_theme_stylebox_override("panel", PmdStyle.window_flat(PmdStyle.type_color(type_id), PmdStyle.FRAME, 2, 8))
 	var column := VBoxContainer.new()
 	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_theme_constant_override("separation", 0)
@@ -2572,11 +2572,13 @@ func _set_status(text: String) -> void:
 		status_label.text = text
 
 
-func _style_box(color: Color, border: Color, border_width: int) -> StyleBoxFlat:
+func _style_box(color: Color, border: Color, border_width: int) -> StyleBox:
 	var fill: Color = PmdStyle.NAVY_LIGHT if color == ACTIVE_COLOR else (PmdStyle.NAVY_DEEP if border_width == 0 else PmdStyle.NAVY)
 	var frame: Color = PmdStyle.CURSOR if border == BORDER_COLOR else PmdStyle.FRAME_SOFT
-	var style: StyleBoxFlat = PmdStyle.window(fill, frame, maxi(border_width, 1), 6)
-	style.shadow_size = 3 if border_width > 0 else 0
+	var style: StyleBox = PmdStyle.window(fill, frame, maxi(border_width, 1), 6)
+	var flat: StyleBoxFlat = (style as PmdWindowStyle).flat if style is PmdWindowStyle else style as StyleBoxFlat
+	if flat != null:
+		flat.shadow_size = 3 if border_width > 0 else 0
 	return style
 
 
@@ -2608,7 +2610,7 @@ func _apply_font_step() -> void:
 
 
 func _apply_title_font(control: Control) -> void:
-	control.add_theme_font_override("font", PmdStyle.BANNER_FONT)
+	control.add_theme_font_override("font", PmdStyle.font_title())
 	control.add_theme_font_size_override("font_size", title_font_size)
 	control.add_theme_color_override("font_color", PmdStyle.TEXT_GOLD)
 	control.add_to_group(TITLE_FONT_GROUP, true)

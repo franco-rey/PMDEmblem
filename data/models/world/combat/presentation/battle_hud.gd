@@ -160,7 +160,7 @@ func _build_queue_bar() -> void:
 	_root.add_child(_queue_column)
 	_queue_strip = PanelContainer.new()
 	_queue_strip.name = "QueueStrip"
-	var strip_style: StyleBoxFlat = PmdStyle.window()
+	var strip_style: StyleBox = PmdStyle.window()
 	_queue_strip.add_theme_stylebox_override("panel", strip_style)
 	_queue_strip.custom_minimum_size = Vector2(0, TILE_HOLDER_HEIGHT + strip_style.get_margin(SIDE_TOP) + strip_style.get_margin(SIDE_BOTTOM))
 	_queue_strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -891,17 +891,8 @@ func _portrait_frame(px: float) -> PanelContainer:
 	return frame
 
 
-func _frame_style(color: Color, width: int = 2) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.02, 0.03, 0.08, 1.0)
-	style.border_color = color
-	style.set_border_width_all(width)
-	style.set_corner_radius_all(3)
-	style.content_margin_left = 2
-	style.content_margin_right = 2
-	style.content_margin_top = 2
-	style.content_margin_bottom = 2
-	return style
+func _frame_style(color: Color, width: int = 2) -> StyleBox:
+	return PmdStyle.portrait_frame(color, width)
 
 
 func _on_round_started() -> void:

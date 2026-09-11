@@ -47,7 +47,19 @@ func _run() -> void:
 	var actions: Control = main.get_node("TacticsControls/HBox/Actions")
 	var tactics_controls: Control = main.get_node("TacticsControls")
 	var checked: int = 0
-	for size in SIZES:
+	var passes: Array = []
+	for style in [0, 3]:
+		for size in SIZES:
+			passes.append([style, size])
+	var current_style: int = -1
+	for entry in passes:
+		var style_index: int = int(entry[0])
+		var size: Vector2i = entry[1]
+		if style_index != current_style:
+			current_style = style_index
+			PmdStyle.set_border_style(style_index)
+			for i in range(3):
+				await process_frame
 		for pass_index in range(2):
 			var cpu_pass: bool = pass_index == 1
 			tactics_controls.visible = not cpu_pass
@@ -77,7 +89,7 @@ func _run() -> void:
 				"active panel": hud._active_panel.visible, "target panel": hud._target_panel.visible, "queue box": hud._queue_strip.visible,
 				"inspector": hud._inspector.visible, "status dock": true, "weather chip": hud._weather_chip.visible, "battle log": true, "speed bar": cpu_pass, "action menu": not cpu_pass and actions.visible,
 			}
-			var pass_label: String = "cpu turn" if cpu_pass else "human turn"
+			var pass_label: String = ("cpu turn" if cpu_pass else "human turn") + (" border %d" % style_index)
 			var settled_top: float = hud._queue_column.offset_top
 			var settled_scale: float = hud.queue_tile_scale
 			var settled_width: float = hud._queue_strip.size.x
@@ -106,6 +118,7 @@ func _run() -> void:
 			checked += 1
 	tactics_controls.visible = true
 	main.speed_bar.visible = false
+	PmdStyle.set_border_style(0)
 	print("smoke: sweep checked %d size passes, %d problems" % [checked, problems.size()])
 	for problem in problems:
 		print("smoke: layout - %s" % problem)

@@ -4,15 +4,18 @@ extends Control
 signal picked(entry: Dictionary)
 signal selection_changed(entry: Dictionary)
 
-const ROW_HEIGHT: float = 76.0
-const ROW_WIDTH: float = 330.0
-const PORTRAIT_SIZE: float = 62.0
+const ROW_HEIGHT: float = 92.0
+const ROW_WIDTH: float = 440.0
+const PORTRAIT_SIZE: float = 76.0
 const VISIBLE_ROWS: int = 9
-const CURVE_DEPTH: float = 96.0
+const CURVE_DEPTH: float = 128.0
+const NAME_FONT_SIZE: int = 40
 const GLIDE_SPEED: float = 14.0
 const SPIN_SECONDS: float = 1.2
 const WHEEL_STEP: float = 1.0
 const HAPPY: String = "Happy"
+const DESIGN_HEIGHT: float = 1080.0
+const MAX_ZOOM: float = 2.5
 
 var entries: Array[Dictionary] = []
 
@@ -22,14 +25,60 @@ var _target: float = 0.0
 var _selected: int = -1
 var _spin_from: float = 0.0
 var _spin_elapsed: float = -1.0
+var _zoom: float = 1.0
 
 
 func _ready() -> void:
 	clip_contents = true
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	custom_minimum_size = Vector2(ROW_WIDTH + CURVE_DEPTH, ROW_HEIGHT * float(VISIBLE_ROWS))
+	_apply_zoom()
 	resized.connect(_layout_rows)
+	if get_viewport() != null:
+		get_viewport().size_changed.connect(_apply_zoom)
 	set_process(true)
+
+
+func zoom() -> float:
+	return _zoom
+
+
+func row_height() -> float:
+	return ROW_HEIGHT * _zoom
+
+
+func row_width() -> float:
+	return ROW_WIDTH * _zoom
+
+
+func portrait_size() -> float:
+	return PORTRAIT_SIZE * _zoom
+
+
+func curve_depth() -> float:
+	return CURVE_DEPTH * _zoom
+
+
+func _apply_zoom() -> void:
+	var height: float = DESIGN_HEIGHT
+	if is_inside_tree() and get_viewport() != null:
+		height = get_viewport().get_visible_rect().size.y
+	_zoom = clampf(height / DESIGN_HEIGHT, 1.0, MAX_ZOOM)
+	custom_minimum_size = Vector2(row_width() + curve_depth(), row_height() * float(VISIBLE_ROWS))
+	for row in _rows:
+		_size_row(row)
+	_layout_rows()
+
+
+func _size_row(row: Control) -> void:
+	row.custom_minimum_size = Vector2(row_width(), row_height())
+	row.size = row.custom_minimum_size
+	var portrait: TextureRect = row.get_node("Portrait") as TextureRect
+	portrait.position = Vector2(8.0 * _zoom, (row_height() - portrait_size()) * 0.5)
+	portrait.size = Vector2(portrait_size(), portrait_size())
+	var label: Label = row.get_node("Name") as Label
+	label.position = Vector2(portrait_size() + 18.0 * _zoom, 0.0)
+	label.size = Vector2(row_width() - portrait_size() - 26.0 * _zoom, row_height())
+	label.add_theme_font_size_override("font_size", int(round(NAME_FONT_SIZE * _zoom)))
 
 
 func set_entries(source: Array[Dictionary]) -> void:
@@ -65,7 +114,6 @@ func selected_entry() -> Dictionary:
 func _build_row() -> Control:
 	var row := Control.new()
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.custom_minimum_size = Vector2(ROW_WIDTH, ROW_HEIGHT)
 	var panel := Panel.new()
 	panel.name = "Plate"
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -76,17 +124,14 @@ func _build_row() -> Control:
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	portrait.position = Vector2(8.0, (ROW_HEIGHT - PORTRAIT_SIZE) * 0.5)
-	portrait.size = Vector2(PORTRAIT_SIZE, PORTRAIT_SIZE)
 	row.add_child(portrait)
 	var label := Label.new()
 	label.name = "Name"
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	label.position = Vector2(PORTRAIT_SIZE + 18.0, 0.0)
-	label.size = Vector2(ROW_WIDTH - PORTRAIT_SIZE - 26.0, ROW_HEIGHT)
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.clip_text = true
 	row.add_child(label)
+	_size_row(row)
 	return row
 
 
@@ -128,7 +173,7 @@ func _layout_rows() -> void:
 	if entries.is_empty() or _rows.is_empty():
 		return
 	var span: float = maxf(size.y, custom_minimum_size.y)
-	var centre: float = span * 0.5 - ROW_HEIGHT * 0.5
+	var centre: float = span * 0.5 - row_height() * 0.5
 	var view: float = _view_offset()
 	var first: int = int(floor(view)) - int(_rows.size() / 2)
 	for i in range(_rows.size()):
@@ -138,10 +183,10 @@ func _layout_rows() -> void:
 			row.visible = false
 			continue
 		row.visible = true
-		var y: float = centre + (float(index) - view) * ROW_HEIGHT
+		var y: float = centre + (float(index) - view) * row_height()
 		var distance: float = float(index) - _offset
 		var recede: float = clampf(absf(distance) / float(VISIBLE_ROWS / 2), 0.0, 1.0)
-		var x: float = CURVE_DEPTH * (1.0 - recede * recede)
+		var x: float = curve_depth() * (1.0 - recede * recede)
 		row.position = Vector2(x, y)
 		row.modulate.a = lerpf(1.0, 0.45, recede)
 		_paint_row(row, entries[index], index == _selected)
@@ -160,8 +205,8 @@ func _paint_row(row: Control, entry: Dictionary, is_selected: bool) -> void:
 	var portrait: TextureRect = row.get_node("Portrait") as TextureRect
 	var slug: String = String(entry.get("slug", ""))
 	portrait.visible = not slug.is_empty()
-	label.position.x = PORTRAIT_SIZE + 18.0 if portrait.visible else 18.0
-	label.size.x = ROW_WIDTH - label.position.x - 8.0
+	label.position.x = portrait_size() + 18.0 * _zoom if portrait.visible else 18.0 * _zoom
+	label.size.x = row_width() - label.position.x - 8.0 * _zoom
 	if portrait.visible:
 		var mood: String = HAPPY if is_selected and PortraitLibrary.has_expression(slug, HAPPY) else PortraitLibrary.NORMAL
 		portrait.texture = PortraitLibrary.texture_for(slug, mood)
@@ -215,6 +260,6 @@ func _row_at(point: Vector2) -> int:
 		var row: Control = _rows[i]
 		if not row.visible:
 			continue
-		if Rect2(row.position, Vector2(ROW_WIDTH, ROW_HEIGHT)).has_point(point):
+		if Rect2(row.position, Vector2(row_width(), row_height())).has_point(point):
 			return int(floor(_view_offset())) - int(_rows.size() / 2) + i
 	return -1

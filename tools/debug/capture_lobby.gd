@@ -20,9 +20,16 @@ func _run() -> void:
 	label_prefix = _arg("label")
 	root.content_scale_size = Vector2i(0, 0)
 	await process_frame
+	GameSettings.remember_window_size = false
 	var main: Node = (load(MAIN_SCENE_PATH) as PackedScene).instantiate()
 	root.add_child(main)
 	await process_frame
+	var border_arg: String = _arg("border")
+	if border_arg.is_valid_int():
+		PmdStyle.set_border_style(int(border_arg))
+	var color_arg: String = _arg("color")
+	if color_arg.is_valid_int():
+		PmdStyle.set_border_color(int(color_arg))
 	main.get_node("UI/MapSelector/SkirmishMenu/CustomToggleButton").emit_signal("pressed")
 	await process_frame
 	await process_frame
