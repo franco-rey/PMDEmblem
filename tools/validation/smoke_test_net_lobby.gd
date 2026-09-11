@@ -62,6 +62,13 @@ func _run() -> void:
 	guest_lobby.net_ready_check.button_pressed = true
 	await _settle(20)
 	_assert_true(host_session.both_ready() and guest_session.both_ready(), "both ready flags cross the link")
+	_assert_true(host_lobby.remote_ready_cues == 1 and guest_lobby.remote_ready_cues == 1, "each side hears one cue when the other readies up (%d/%d)" % [host_lobby.remote_ready_cues, guest_lobby.remote_ready_cues])
+	_assert_true(host_lobby.copy_code_button != null and host_lobby.copy_code_button.disabled and host_lobby.copy_address_button != null and not host_lobby.copy_address_button.visible, "the copy buttons wait for a code and a public address")
+	host_session.port_opener.port = GameSettings.net_port
+	host_session.port_opener.state = NetPortOpener.STATE_WORKING
+	host_session.port_opener._apply_result({"ok": true, "port": GameSettings.net_port, "address": "203.0.113.9"})
+	host_lobby._update_net_status()
+	_assert_true(host_lobby.copy_address_button.visible and host_lobby.net_status_label.text.contains("203.0.113.9"), "a mapped port shows the public address and its copy button on the host")
 	_assert_true(host_lobby.remote_activity_label() == "Ready" and host_lobby.enemy_tray_title.text.ends_with("Ready"), "the guest's tray shows Ready once they ready up")
 	_assert_true(guest_lobby.player_tray_title.text.ends_with("Ready"), "the host's tray shows Ready on the guest's side")
 	_assert_true(not host_lobby.launch_button.disabled, "the host can launch once both are ready")

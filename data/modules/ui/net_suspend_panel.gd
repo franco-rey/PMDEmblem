@@ -89,7 +89,7 @@ func show_status(session: NetSession) -> void:
 		_status.text = "Waiting for %s to rejoin: %d s. You can keep playing your turns." % [remote, remaining]
 	else:
 		_title.text = "Connection lost"
-		_status.text = "The link to %s dropped. Rejoin within %d s to continue." % [remote, remaining]
+		_status.text = "The link to %s dropped. Retrying every few seconds, %d s left." % [remote, remaining] if session.auto_rejoin else "The link to %s dropped. Rejoin within %d s to continue." % [remote, remaining]
 	_rejoin.visible = not session.host_role and not expired
 	_rejoin.disabled = not session.can_rejoin()
 	_claim.visible = expired

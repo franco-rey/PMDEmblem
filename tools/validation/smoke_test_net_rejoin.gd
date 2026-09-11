@@ -16,7 +16,7 @@ func _init() -> void:
 
 func _run() -> void:
 	var scenarios: Array[Dictionary] = [
-		{"seed": 3201, "team": 2, "multiverse": false, "drop": 5, "label": "plain"},
+		{"seed": 3201, "team": 2, "multiverse": false, "drop": 5, "label": "plain", "auto": true},
 		{"seed": 3202, "team": 3, "multiverse": true, "drop": 9, "label": "multiverse"},
 	]
 	var index: int = 0
@@ -46,7 +46,7 @@ func _play(scenario: Dictionary, port: int) -> void:
 		"--headless", "--path", ProjectSettings.globalize_path("res://"), "--log-file", guest_log,
 		"--script", GUEST_SCRIPT, "--",
 		"--port=%d" % port, "--address=127.0.0.1", "--name=guest", "--out=%s" % guest_out,
-		"--drop_at_turn=%d" % int(scenario["drop"]), "--rejoin_after=90",
+		"--drop_at_turn=%d" % int(scenario["drop"]), "--rejoin_after=90", "--auto_rejoin=%s" % ("1" if bool(scenario.get("auto", false)) else "0"),
 	])
 	_assert_true(pid > 0, "%s: the guest process starts" % label)
 	if pid <= 0:
@@ -90,7 +90,7 @@ func _play(scenario: Dictionary, port: int) -> void:
 	for i in range(states.size() - 1):
 		if states[i] == NetSession.SUSPENDED and states[i + 1] == NetSession.IN_BATTLE:
 			resumed = true
-	_assert_true(resumed, "%s: the host resumed after the guest caught up (%s)" % [label, str(states)])
+	_assert_true(resumed, "%s: the host resumed after the guest %s (%s)" % [label, "reconnected on its own" if bool(scenario.get("auto", false)) else "caught up", str(states)])
 	_assert_true(session.desync_reason.is_empty(), "%s: the peers never diverge after the rejoin (%s)" % [label, session.desync_reason])
 	_assert_true(not host_text.is_empty(), "%s: the battle reaches a result on the host" % label)
 	var waited: int = 0

@@ -92,6 +92,10 @@ var _last_launch_state: Dictionary = {}
 var net_session: NetSession = null
 var net_ready_check: CheckButton = null
 var net_status_label: Label = null
+var copy_address_button: Button = null
+var copy_code_button: Button = null
+var remote_ready_cues: int = 0
+var _remote_ready_seen: bool = false
 var _net_syncing: bool = false
 var _net_sent: Dictionary = {}
 var _net_push_timer: float = 0.0
@@ -685,6 +689,13 @@ func _create_setup_panel() -> PanelContainer:
 	net_status_label.visible = false
 	_apply_body_font(net_status_label)
 	column.add_child(net_status_label)
+	copy_address_button = Button.new()
+	copy_address_button.name = "CopyAddressButton"
+	copy_address_button.text = "Copy public address"
+	copy_address_button.custom_minimum_size.y = CONTROL_HEIGHT
+	copy_address_button.visible = false
+	copy_address_button.pressed.connect(_on_copy_address_pressed)
+	column.add_child(copy_address_button)
 
 	net_ready_check = CheckButton.new()
 	net_ready_check.name = "NetReadyCheck"
@@ -729,7 +740,20 @@ func _create_setup_panel() -> PanelContainer:
 	code_output.placeholder_text = "skirmish code appears after launch"
 	code_output.tooltip_text = "Select all and copy, then paste into the seed box to replay this exact setup"
 	code_output.custom_minimum_size.y = CONTROL_HEIGHT
-	column.add_child(code_output)
+	code_output.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var code_row := HBoxContainer.new()
+	code_row.name = "CodeRow"
+	code_row.add_theme_constant_override("separation", 8)
+	code_row.add_child(code_output)
+	copy_code_button = Button.new()
+	copy_code_button.name = "CopyCodeButton"
+	copy_code_button.text = "Copy"
+	copy_code_button.custom_minimum_size = Vector2(110, CONTROL_HEIGHT)
+	copy_code_button.disabled = true
+	copy_code_button.tooltip_text = "Copy the skirmish code to the clipboard"
+	copy_code_button.pressed.connect(_on_copy_code_pressed)
+	code_row.add_child(copy_code_button)
+	column.add_child(code_row)
 	seed_input = LineEdit.new()
 	seed_input.name = "SeedInput"
 	seed_input.placeholder_text = "seed or skirmish code"
@@ -2370,10 +2394,31 @@ func _update_net_titles() -> void:
 		enemy_tray_title.text = mine
 
 
+func _on_copy_address_pressed() -> void:
+	if net_session == null or net_session.public_address().is_empty():
+		return
+	DisplayServer.clipboard_set("%s:%d" % [net_session.public_address(), GameSettings.net_port])
+	SoundPlayer.cue("ui.confirm")
+	_set_status("Public address copied.")
+
+
+func _on_copy_code_pressed() -> void:
+	var code: String = code_output.text if code_output != null else ""
+	if code.is_empty():
+		return
+	DisplayServer.clipboard_set(code)
+	SoundPlayer.cue("ui.confirm")
+	_set_status("Skirmish code copied.")
+
+
 func _update_net_status() -> void:
 	_update_net_titles()
 	_refresh_tab_labels()
+	if copy_address_button != null:
+		copy_address_button.visible = network_mode() and net_session.host_role and not net_session.public_address().is_empty()
 	if net_status_label == null or not network_mode():
+		if copy_address_button != null:
+			copy_address_button.visible = false
 		return
 	var lines: Array[String] = []
 	match net_session.state:
@@ -2448,6 +2493,11 @@ func _on_remote_lobby(state: Dictionary) -> void:
 	if not network_mode():
 		return
 	_net_syncing = true
+	var remote_ready_now: bool = bool(state.get("ready", false))
+	if remote_ready_now and not _remote_ready_seen:
+		remote_ready_cues += 1
+		SoundPlayer.cue("lobby.item")
+	_remote_ready_seen = remote_ready_now
 	var fingerprint: String = var_to_str([state.get("paths", []), state.get("specs", []), state.get("items", []), state.get("random", false)])
 	if fingerprint != _remote_fingerprint:
 		_remote_fingerprint = fingerprint
@@ -2668,6 +2718,8 @@ func _build_launch_result(store_state: bool) -> Dictionary:
 		last_launch_code = SkirmishCode.encode_definition(definitions[0])
 		if code_output != null:
 			code_output.text = last_launch_code
+		if copy_code_button != null:
+			copy_code_button.disabled = last_launch_code.is_empty()
 		_set_status("Seed %d. Copy the full code from the box below to replay this setup." % last_resolved_seed)
 	else:
 		_set_status("Seed: %d" % last_resolved_seed)

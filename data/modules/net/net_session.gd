@@ -22,6 +22,8 @@ enum {
 
 const STALL_FRAMES: int = 3600
 const SUSPEND_SECONDS: float = 120.0
+const AUTO_REJOIN_FIRST_SECONDS: float = 2.0
+const AUTO_REJOIN_SECONDS: float = 5.0
 
 var link: NetLink = null
 var state: int = IDLE
@@ -56,7 +58,10 @@ var _auto_busy: bool = false
 var _stall_frames: int = 0
 var _stall_header: String = ""
 var suspend_seconds: float = SUSPEND_SECONDS
+var auto_rejoin: bool = true
+var rejoin_attempts: int = 0
 var _suspend_remaining: float = -1.0
+var _auto_rejoin_wait: float = 0.0
 var _listen_port: int = 0
 var _join_address: String = ""
 var _join_port: int = 0
@@ -169,6 +174,7 @@ func rejoin() -> String:
 	if not error.is_empty():
 		return error
 	_rejoining = true
+	rejoin_attempts += 1
 	_use_link(enet)
 	notice.emit("Reconnecting to %s..." % _remote_label())
 	return ""
@@ -257,6 +263,8 @@ func _suspend(reason: String) -> void:
 	_suspend_remaining = suspend_seconds
 	_rejoining = false
 	_catchup_wanted = false
+	rejoin_attempts = 0
+	_auto_rejoin_wait = AUTO_REJOIN_FIRST_SECONDS
 	notice.emit("Connection to %s lost (%s). Waiting up to %d s." % [_remote_label(), reason, int(ceil(suspend_seconds))])
 	suspension_tick.emit(int(ceil(suspend_seconds)))
 	if host_role:
@@ -275,6 +283,11 @@ func _relisten() -> void:
 
 
 func _tick_suspension(delta: float) -> void:
+	if auto_rejoin and not host_role and not rejoining():
+		_auto_rejoin_wait -= delta
+		if _auto_rejoin_wait <= 0.0 and can_rejoin():
+			_auto_rejoin_wait = AUTO_REJOIN_SECONDS
+			rejoin()
 	if _suspend_remaining > 0.0:
 		var before: int = int(ceil(_suspend_remaining))
 		_suspend_remaining = maxf(_suspend_remaining - delta, 0.0)

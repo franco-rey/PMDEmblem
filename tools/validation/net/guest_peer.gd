@@ -7,6 +7,7 @@ var session: NetSession = null
 var out_path: String = ""
 var drop_at_turn: int = 0
 var rejoin_after: int = 0
+var auto_rejoin: bool = false
 var dropped: bool = false
 var rejoined: bool = false
 var drop_frame: int = 0
@@ -32,6 +33,7 @@ func _run() -> void:
 	out_path = _arg("out", "res://logs/debug/net/guest.pmdn")
 	drop_at_turn = int(_arg("drop_at_turn", "0"))
 	rejoin_after = int(_arg("rejoin_after", "0"))
+	auto_rejoin = _arg("auto_rejoin", "0") == "1"
 	var player_name: String = _arg("name", "guest")
 	GameSettings.load_settings()
 	main = (load(MAIN_SCENE_PATH) as PackedScene).instantiate()
@@ -41,6 +43,7 @@ func _run() -> void:
 	session = main.net_session
 	session.local_name = player_name
 	session.auto_play = _arg("auto_play", "1") == "1"
+	session.auto_rejoin = auto_rejoin
 	var error: String = session.join(address, port)
 	if not error.is_empty():
 		print("guest: %s" % error)
@@ -69,7 +72,7 @@ func _run() -> void:
 					_saved_text = level.notation.text())
 		if drop_at_turn > 0 and not dropped and level != null and is_instance_valid(level) and level.notation.turn_index >= drop_at_turn:
 			dropped = true
-			if rejoin_after <= 0:
+			if rejoin_after <= 0 and not auto_rejoin:
 				print("guest: dropping at turn %d" % level.notation.turn_index)
 				_saved_text = level.notation.text()
 				break
@@ -77,7 +80,7 @@ func _run() -> void:
 			drop_frame = frames
 			if session.link != null:
 				session.link.close("cable")
-		if dropped and not rejoined and rejoin_after > 0 and frames - drop_frame >= rejoin_after:
+		if dropped and not rejoined and not auto_rejoin and rejoin_after > 0 and frames - drop_frame >= rejoin_after:
 			rejoined = true
 			var back: String = session.rejoin()
 			print("guest: rejoining (%s)" % ("ok" if back.is_empty() else back))
