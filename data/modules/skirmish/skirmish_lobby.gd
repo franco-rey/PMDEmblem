@@ -37,6 +37,8 @@ const COMPACT_SLOT_HEIGHT: float = 50.0
 const CONTROL_HEIGHT: float = PmdStyle.ROW_HEIGHT
 const MAP_PREVIEW_LABEL: String = "Preview..."
 const SCROLL_PAD_RIGHT: int = 12
+const PAGE_MATCH: String = "match"
+const PAGES: Array[String] = ["match", "player", "enemy"]
 const REMOTE_CHOOSING_MS: int = 3000
 const GRID_GAP: float = 8.0
 const LAYOUT_MARGIN_X: float = 20.0
@@ -110,6 +112,11 @@ var enemy_slots: GridContainer
 var setup_panel: PanelContainer
 var details_panel: Control
 var setup_grid: GridContainer = null
+var match_page: VBoxContainer = null
+var match_grid: GridContainer = null
+var editor_grid: GridContainer = null
+var setup_tabs: Dictionary = {}
+var setup_page: String = PAGE_MATCH
 var roster_grid: GridContainer
 var roster_scroll: ScrollContainer
 var search_input: LineEdit
@@ -164,6 +171,7 @@ var play_again_button: Button
 func _ready() -> void:
 	if not _built:
 		_build_ui()
+		_show_setup_page(PAGE_MATCH)
 	_load_data()
 	_refresh_all()
 	_queue_update_grid_columns()
@@ -528,11 +536,22 @@ func _create_setup_panel() -> PanelContainer:
 	outer.add_theme_constant_override("separation", 8)
 	margin.add_child(outer)
 
-	var title := Label.new()
-	title.name = "SetupTitle"
-	title.text = "Match Setup"
-	_apply_title_font(title)
-	outer.add_child(title)
+	var tabs := HBoxContainer.new()
+	tabs.name = "SetupTabs"
+	tabs.add_theme_constant_override("separation", int(PmdStyle.PANEL_GAP))
+	outer.add_child(tabs)
+	var group := ButtonGroup.new()
+	for page in PAGES:
+		var tab := Button.new()
+		tab.name = "%sTab" % page.capitalize()
+		tab.text = _tab_label(page)
+		tab.toggle_mode = true
+		tab.button_group = group
+		tab.custom_minimum_size.y = PmdStyle.ROW_HEIGHT
+		tab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		tab.pressed.connect(_show_setup_page.bind(page))
+		tabs.add_child(tab)
+		setup_tabs[page] = tab
 
 	var setup_scroll := ScrollContainer.new()
 	setup_scroll.name = "SetupScroll"
@@ -543,18 +562,36 @@ func _create_setup_panel() -> PanelContainer:
 
 	setup_grid = GridContainer.new()
 	setup_grid.name = "SetupGrid"
-	setup_grid.columns = 2
+	setup_grid.columns = 1
 	setup_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	setup_grid.add_theme_constant_override("h_separation", int(MIDDLE_GAP))
-	setup_grid.add_theme_constant_override("v_separation", 12)
 	setup_scroll.add_child(_scroll_pad(setup_grid))
 
 	var column := VBoxContainer.new()
-	column.name = "SettingsColumn"
+	column.name = "MatchPage"
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	column.add_theme_constant_override("separation", 8)
 	setup_grid.add_child(column)
+	match_page = column
+	match_grid = GridContainer.new()
+	match_grid.name = "MatchGrid"
+	match_grid.columns = 2
+	match_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	match_grid.add_theme_constant_override("h_separation", int(MIDDLE_GAP))
+	match_grid.add_theme_constant_override("v_separation", 8)
+	column.add_child(match_grid)
+	var left := VBoxContainer.new()
+	left.name = "MatchLeft"
+	left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	left.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	left.add_theme_constant_override("separation", 8)
+	match_grid.add_child(left)
+	var right := VBoxContainer.new()
+	right.name = "MatchRight"
+	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	right.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	right.add_theme_constant_override("separation", 8)
+	match_grid.add_child(right)
 	setup_grid.add_child(_create_details_panel())
 
 	var footer := VBoxContainer.new()
@@ -567,14 +604,14 @@ func _create_setup_panel() -> PanelContainer:
 	close_button.text = "Back"
 	close_button.custom_minimum_size.y = CONTROL_HEIGHT
 	close_button.pressed.connect(_on_close_pressed)
-	column.add_child(_section_header("Match"))
+	left.add_child(_section_header("Match"))
 
 
 	map_picker = OptionButton.new()
 	map_picker.name = "MapPicker"
 	map_picker.fit_to_longest_item = false
 	map_picker.item_selected.connect(_on_map_changed)
-	column.add_child(_labeled_control("Map", map_picker))
+	left.add_child(_labeled_control("Map", map_picker))
 
 	control_mode_picker = OptionButton.new()
 	control_mode_picker.name = "ControlModePicker"
@@ -583,14 +620,14 @@ func _create_setup_panel() -> PanelContainer:
 	_add_control_mode_item("Player vs Player", SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_PLAYER)
 	_add_control_mode_item("CPU vs CPU", SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU)
 	control_mode_picker.item_selected.connect(_on_control_mode_selected)
-	column.add_child(_labeled_control("Control", control_mode_picker))
+	left.add_child(_labeled_control("Control", control_mode_picker))
 
 	multiverse_toggle = CheckButton.new()
 	multiverse_toggle.name = "MultiverseToggle"
 	multiverse_toggle.button_pressed = false
 	multiverse_toggle.tooltip_text = "5D chess rules: Roar of Time, Spacial Rend and the other dimension moves open and cross timelines"
 	multiverse_toggle.toggled.connect(func(_pressed: bool) -> void: _refresh_launch_state())
-	column.add_child(_labeled_control("Multiversal Rules", multiverse_toggle))
+	left.add_child(_labeled_control("Multiversal Rules", multiverse_toggle))
 
 	ai_level_spin = SpinBox.new()
 	ai_level_spin.name = "AiLevelSpin"
@@ -600,7 +637,7 @@ func _create_setup_panel() -> PanelContainer:
 	ai_level_spin.value = AIProfile.DEFAULT_LEVEL
 	ai_level_spin.tooltip_text = "CPU skill: 1 Wandering, 2 Scrappy, 3 Tactical, 4 Ruthless, 5 Champion"
 	ai_level_spin.value_changed.connect(func(_value: float) -> void: _refresh_launch_state())
-	column.add_child(_labeled_control("Difficulty", ai_level_spin))
+	left.add_child(_labeled_control("Difficulty", ai_level_spin))
 
 	reroll_seed_check = CheckButton.new()
 	reroll_seed_check.name = "RerollSeedCheck"
@@ -609,7 +646,7 @@ func _create_setup_panel() -> PanelContainer:
 	reroll_seed_check.custom_minimum_size.y = CONTROL_HEIGHT
 	reroll_seed_check.tooltip_text = "Roll a fresh seed on every launch and on Play Again, so the seed box does not have to be cleared between matches"
 	reroll_seed_check.toggled.connect(func(_pressed: bool) -> void: _refresh_launch_state())
-	column.add_child(reroll_seed_check)
+	right.add_child(reroll_seed_check)
 
 	difficulty_spin = SpinBox.new()
 	difficulty_spin.name = "DifficultySpin"
@@ -617,16 +654,17 @@ func _create_setup_panel() -> PanelContainer:
 	difficulty_spin.max_value = 4
 	difficulty_spin.step = 1
 	difficulty_spin.value = CustomSkirmishBuilder.DEFAULT_RANDOM_DIFFICULTY_TIER
-	column.add_child(_labeled_control("CPU Quality", difficulty_spin))
+	left.add_child(_labeled_control("CPU Quality", difficulty_spin))
 
-	column.add_child(_section_header("Teams"))
+	right.add_child(_section_header("Teams"))
+	right.move_child(right.get_child(right.get_child_count() - 1), 0)
 	random_player_check = CheckButton.new()
 	random_player_check.name = "RandomPlayerCheck"
 	random_player_check.text = "Random player team"
 	random_player_check.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	random_player_check.custom_minimum_size.y = CONTROL_HEIGHT
 	random_player_check.toggled.connect(_on_random_player_toggled)
-	column.add_child(random_player_check)
+	right.add_child(random_player_check)
 
 	random_enemy_check = CheckButton.new()
 	random_enemy_check.name = "RandomEnemyCheck"
@@ -634,12 +672,12 @@ func _create_setup_panel() -> PanelContainer:
 	random_enemy_check.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	random_enemy_check.custom_minimum_size.y = CONTROL_HEIGHT
 	random_enemy_check.toggled.connect(_on_random_enemy_toggled)
-	column.add_child(random_enemy_check)
+	right.add_child(random_enemy_check)
 
 	player_size_slider = _team_size_slider("PlayerSizeSlider", 3)
-	column.add_child(_labeled_control("Player team", _slider_row(player_size_slider, "PlayerSizeValue")))
+	right.add_child(_labeled_control("Player team", _slider_row(player_size_slider, "PlayerSizeValue")))
 	enemy_size_spin = _team_size_slider("EnemySizeSlider", 3)
-	column.add_child(_labeled_control("Enemy team", _slider_row(enemy_size_spin, "EnemySizeValue")))
+	right.add_child(_labeled_control("Enemy team", _slider_row(enemy_size_spin, "EnemySizeValue")))
 
 	net_status_label = Label.new()
 	net_status_label.name = "NetStatus"
@@ -809,6 +847,7 @@ func _create_details_panel() -> VBoxContainer:
 	target_label.name = "TargetLabel"
 	_apply_title_font(target_label)
 	target_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	target_label.visible = false
 	column.add_child(target_label)
 	column.add_child(_create_selected_box())
 
@@ -825,10 +864,30 @@ func _create_details_panel() -> VBoxContainer:
 	slot_title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(slot_title_label)
 
-	column.add_child(_section_header("Form"))
+	editor_grid = GridContainer.new()
+	editor_grid.name = "EditorGrid"
+	editor_grid.columns = 2
+	editor_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	editor_grid.add_theme_constant_override("h_separation", int(MIDDLE_GAP))
+	editor_grid.add_theme_constant_override("v_separation", 8)
+	column.add_child(editor_grid)
+	var edit_left := VBoxContainer.new()
+	edit_left.name = "EditorLeft"
+	edit_left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	edit_left.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	edit_left.add_theme_constant_override("separation", 8)
+	editor_grid.add_child(edit_left)
+	var edit_right := VBoxContainer.new()
+	edit_right.name = "EditorRight"
+	edit_right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	edit_right.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	edit_right.add_theme_constant_override("separation", 8)
+	editor_grid.add_child(edit_right)
+
+	edit_left.add_child(_section_header("Form"))
 	var form_row := HBoxContainer.new()
 	form_row.add_theme_constant_override("separation", 6)
-	column.add_child(form_row)
+	edit_left.add_child(form_row)
 	random_form_check = CheckButton.new()
 	random_form_check.name = "RandomFormCheck"
 	random_form_check.text = "Random"
@@ -844,12 +903,12 @@ func _create_details_panel() -> VBoxContainer:
 	form_picker.item_selected.connect(_on_form_picked)
 	form_row.add_child(form_picker)
 	form_value_label = _section_value("FormValueLabel")
-	column.add_child(form_value_label)
+	edit_left.add_child(form_value_label)
 
-	column.add_child(_section_header("Gender"))
+	edit_left.add_child(_section_header("Gender"))
 	var gender_row := HBoxContainer.new()
 	gender_row.add_theme_constant_override("separation", 6)
-	column.add_child(gender_row)
+	edit_left.add_child(gender_row)
 	random_gender_check = CheckButton.new()
 	random_gender_check.name = "RandomGenderCheck"
 	random_gender_check.text = "Random"
@@ -866,12 +925,12 @@ func _create_details_panel() -> VBoxContainer:
 	gender_picker.item_selected.connect(_on_gender_picked)
 	gender_row.add_child(gender_picker)
 	gender_value_label = _section_value("GenderValueLabel")
-	column.add_child(gender_value_label)
+	edit_left.add_child(gender_value_label)
 
-	column.add_child(_section_header("Moves"))
+	edit_right.add_child(_section_header("Moves"))
 	var moves_row := HBoxContainer.new()
 	moves_row.add_theme_constant_override("separation", 6)
-	column.add_child(moves_row)
+	edit_right.add_child(moves_row)
 	random_moves_check = CheckButton.new()
 	random_moves_check.name = "RandomMovesCheck"
 	random_moves_check.text = "Random"
@@ -886,12 +945,12 @@ func _create_details_panel() -> VBoxContainer:
 	choose_moves_button.pressed.connect(_open_chooser.bind(CHOOSER_MOVES))
 	moves_row.add_child(choose_moves_button)
 	moves_value_label = _section_value("MovesValueLabel")
-	column.add_child(moves_value_label)
+	edit_right.add_child(moves_value_label)
 
-	column.add_child(_section_header("Ability"))
+	edit_right.add_child(_section_header("Ability"))
 	var ability_row := HBoxContainer.new()
 	ability_row.add_theme_constant_override("separation", 6)
-	column.add_child(ability_row)
+	edit_right.add_child(ability_row)
 	random_ability_check = CheckButton.new()
 	random_ability_check.name = "RandomAbilityCheck"
 	random_ability_check.text = "Random"
@@ -906,12 +965,12 @@ func _create_details_panel() -> VBoxContainer:
 	choose_ability_button.pressed.connect(_open_chooser.bind(CHOOSER_ABILITY))
 	ability_row.add_child(choose_ability_button)
 	ability_value_label = _section_value("AbilityValueLabel")
-	column.add_child(ability_value_label)
+	edit_right.add_child(ability_value_label)
 
-	column.add_child(_section_header("Held item"))
+	edit_right.add_child(_section_header("Held item"))
 	var held_row := HBoxContainer.new()
 	held_row.add_theme_constant_override("separation", 6)
-	column.add_child(held_row)
+	edit_right.add_child(held_row)
 	random_item_check = CheckButton.new()
 	random_item_check.name = "RandomItemCheck"
 	random_item_check.text = "Random"
@@ -931,7 +990,7 @@ func _create_details_panel() -> VBoxContainer:
 	clear_item_button.pressed.connect(_on_clear_item_pressed)
 	held_row.add_child(clear_item_button)
 	item_value_label = _section_value("ItemValueLabel")
-	column.add_child(item_value_label)
+	edit_right.add_child(item_value_label)
 	return column
 
 
@@ -1009,6 +1068,65 @@ func _flash_portrait(texture_rect: TextureRect, slug: String, expression: String
 	get_tree().create_timer(PORTRAIT_FLASH_SECONDS).timeout.connect(func() -> void:
 		if is_instance_valid(texture_rect) and texture_rect.texture == happy:
 			texture_rect.texture = normal)
+
+
+func _tab_label(page: String) -> String:
+	if page == PAGE_MATCH:
+		return "Match"
+	var side: String = SIDE_PLAYER if page == "player" else SIDE_ENEMY
+	if network_mode() and net_session.state != NetSession.HOSTING and net_session.state != NetSession.CONNECTING:
+		var mine: bool = side == local_side_key()
+		var who: String = (net_session.local_name if not net_session.local_name.is_empty() else "You") if mine else (net_session.remote_name if not net_session.remote_name.is_empty() else "Opponent")
+		return "%s (you)" % who if mine else "%s  %s" % [who, remote_activity_label()]
+	return "Player Team" if side == SIDE_PLAYER else "Enemy Team"
+
+
+func _refresh_tab_labels() -> void:
+	for page in setup_tabs.keys():
+		(setup_tabs[page] as Button).text = _tab_label(String(page))
+
+
+func _show_setup_page(page: String) -> void:
+	if not PAGES.has(page):
+		page = PAGE_MATCH
+	setup_page = page
+	if match_page != null:
+		match_page.visible = page == PAGE_MATCH
+	if details_panel != null:
+		details_panel.visible = page != PAGE_MATCH
+	for key in setup_tabs.keys():
+		(setup_tabs[key] as Button).set_pressed_no_signal(String(key) == page)
+	if page != PAGE_MATCH:
+		var side: String = SIDE_PLAYER if page == "player" else SIDE_ENEMY
+		if active_side != side:
+			_set_active_side(side)
+			_refresh_team_trays()
+		_refresh_details()
+		_refresh_slot_section()
+
+
+func _page_for_side(side: String) -> String:
+	return "player" if side == SIDE_PLAYER else "enemy"
+
+
+func _step_setup_page(direction: int) -> void:
+	var index: int = PAGES.find(setup_page)
+	_show_setup_page(PAGES[posmod(index + direction, PAGES.size())])
+	SoundPlayer.cue("ui.cursor")
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not visible or not _built or (map_preview != null and map_preview.visible) or (summary_panel != null and summary_panel.visible):
+		return
+	var owner: Control = get_viewport().gui_get_focus_owner()
+	if owner is LineEdit or owner is SpinBox:
+		return
+	if event.is_action_pressed("camera_rotate_left"):
+		_step_setup_page(-1)
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("camera_rotate_right"):
+		_step_setup_page(1)
+		get_viewport().set_input_as_handled()
 
 
 func _scroll_pad(content: Control) -> MarginContainer:
@@ -1251,8 +1369,9 @@ func _refresh_slot_section() -> void:
 	var team: Array[String] = player_team_paths if active_side == SIDE_PLAYER else enemy_team_paths
 	var index: int = _selected_index_for(active_side)
 	var has_slot: bool = index >= 0 and index < team.size()
+	var editable: bool = has_slot and (not network_mode() or active_side == local_side_key())
 	for control in [random_moves_check, choose_moves_button, random_ability_check, choose_ability_button, random_item_check, choose_item_button, clear_item_button, random_gender_check, gender_picker, random_form_check, form_picker]:
-		control.disabled = not has_slot
+		control.disabled = not editable
 	if not has_slot:
 		slot_title_label.text = "Select a %s slot" % _side_label(active_side).to_lower()
 		moves_value_label.text = ""
@@ -2035,6 +2154,8 @@ func _add_to_active_team(path: String) -> bool:
 
 func _on_team_slot_pressed(side: String, index: int) -> void:
 	_set_active_side(side)
+	if setup_page != _page_for_side(side):
+		_show_setup_page(_page_for_side(side))
 	var team: Array[String] = player_team_paths if side == SIDE_PLAYER else enemy_team_paths
 	if index >= team.size():
 		if side == SIDE_PLAYER:
@@ -2251,6 +2372,7 @@ func _update_net_titles() -> void:
 
 func _update_net_status() -> void:
 	_update_net_titles()
+	_refresh_tab_labels()
 	if net_status_label == null or not network_mode():
 		return
 	var lines: Array[String] = []
@@ -2701,8 +2823,9 @@ func _apply_responsive_layout() -> void:
 	for pad in _scroll_pads:
 		pad.add_theme_constant_override("margin_left", 0 if compact else 2)
 		pad.add_theme_constant_override("margin_right", 0 if compact else SCROLL_PAD_RIGHT)
-	if setup_grid != null:
-		setup_grid.columns = 1 if compact else 2
+	for grid in [match_grid, editor_grid]:
+		if grid != null:
+			grid.columns = 1 if compact else 2
 	if setup_panel != null:
 		setup_panel.custom_minimum_size.x = SETUP_PANEL_COMPACT_WIDTH if compact else SETUP_PANEL_WIDTH
 	if details_panel != null:

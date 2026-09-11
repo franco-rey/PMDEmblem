@@ -16,6 +16,7 @@ var _character: Node3D = null
 var _pawn_scene: PackedScene = null
 var _expertise_scene: PackedScene = null
 var _action_playing: bool = false
+var _attack_index: int = 0
 
 
 func _ready() -> void:
@@ -77,22 +78,28 @@ func show_entry(entry: Dictionary) -> void:
 	_pawn = pawn
 	_character = pawn.get_node_or_null("Character") as Node3D
 	_action_playing = false
+	_attack_index = 0
 
 
 func play_attack() -> void:
 	if _character == null or not is_instance_valid(_character):
 		return
+	var available: Array[String] = []
 	for state in ATTACK_STATES:
-		if _character.can_play_state(state):
-			_character.play_action(state)
-			_action_playing = true
-			var phases: Dictionary = _character.state_phase_seconds(state)
-			var hit_at: float = clampf(float(phases.get("hit", 0.0)), 0.0, float(phases.get("total", 0.0)))
-			if hit_at <= 0.01:
-				SoundPlayer.cue(HIT_CUE)
-			else:
-				get_tree().create_timer(hit_at).timeout.connect(func() -> void: SoundPlayer.cue(HIT_CUE))
-			return
+		if _character.can_play_state(state) and not available.has(state):
+			available.append(state)
+	if available.is_empty():
+		return
+	var state: String = available[_attack_index % available.size()]
+	_attack_index = (_attack_index + 1) % available.size()
+	_character.play_action(state)
+	_action_playing = true
+	var phases: Dictionary = _character.state_phase_seconds(state)
+	var hit_at: float = clampf(float(phases.get("hit", 0.0)), 0.0, float(phases.get("total", 0.0)))
+	if hit_at <= 0.01:
+		SoundPlayer.cue(HIT_CUE)
+	else:
+		get_tree().create_timer(hit_at).timeout.connect(func() -> void: SoundPlayer.cue(HIT_CUE))
 
 
 func _after_frame() -> void:

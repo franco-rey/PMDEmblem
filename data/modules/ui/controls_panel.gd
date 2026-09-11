@@ -37,6 +37,7 @@ const SECTIONS: Array = [
 	]],
 	["Interface", [
 		["Hide / show interface", ["toggle_interface"], []],
+		["Lobby setup pages", ["camera_rotate_left", "camera_rotate_right"], []],
 		["Inspect a unit", [], ["Hover", "Click to lock", "x to unlock"]],
 		["Shrink / grow a dock", [], ["- and + on the dock header"]],
 	]],

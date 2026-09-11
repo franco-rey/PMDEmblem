@@ -129,11 +129,33 @@ func _refresh_host_list(hosts: Array) -> void:
 		host_list.add_child(none)
 		return
 	for entry in hosts:
-		var button := Button.new()
-		button.text = "%s at %s" % [String(entry.get("name", "Player")), String(entry.get("address", ""))]
-		button.custom_minimum_size.y = PmdStyle.ROW_HEIGHT
 		var address: String = String(entry.get("address", ""))
 		var port: int = int(entry.get("port", EnetLink.DEFAULT_PORT))
+		var button := Button.new()
+		button.name = "Host_%s" % address.replace(".", "_")
+		button.custom_minimum_size.y = PmdStyle.ROW_HEIGHT
+		button.tooltip_text = "Fill in %s:%d" % [address, port]
+		var row := HBoxContainer.new()
+		row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		row.offset_left = 14.0
+		row.offset_right = -14.0
+		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		row.add_theme_constant_override("separation", PmdStyle.PANEL_GAP)
+		var who := Label.new()
+		who.text = String(entry.get("name", "Player"))
+		who.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		who.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		who.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		who.add_theme_color_override("font_color", PmdStyle.TEXT_GOLD)
+		row.add_child(who)
+		var where := Label.new()
+		where.text = "%s : %d" % [address, port]
+		where.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		where.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		where.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
+		where.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
+		row.add_child(where)
+		button.add_child(row)
 		button.pressed.connect(func() -> void:
 			address_input.text = address
 			join_port_input.text = str(port))

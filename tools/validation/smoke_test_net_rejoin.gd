@@ -41,8 +41,9 @@ func _play(scenario: Dictionary, port: int) -> void:
 		return
 	var guest_out: String = "res://logs/debug/net/rejoin_%s.pmdn" % label
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(guest_out))
+	var guest_log: String = ProjectSettings.globalize_path("res://logs/debug/net/rejoin_%s_guest.log" % label)
 	var pid: int = OS.create_process(OS.get_executable_path(), [
-		"--headless", "--path", ProjectSettings.globalize_path("res://"),
+		"--headless", "--path", ProjectSettings.globalize_path("res://"), "--log-file", guest_log,
 		"--script", GUEST_SCRIPT, "--",
 		"--port=%d" % port, "--address=127.0.0.1", "--name=guest", "--out=%s" % guest_out,
 		"--drop_at_turn=%d" % int(scenario["drop"]), "--rejoin_after=90",

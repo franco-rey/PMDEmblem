@@ -54,6 +54,7 @@ func _setup_lobby() -> void:
 	if mode_picker != null:
 		_assert_true(String(mode_picker.get_item_metadata(mode_picker.selected)) == SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU, "ControlModePicker defaults to Player vs CPU")
 	_check_responsive_layout("small", false)
+	_check_setup_pages()
 	await _resize_lobby(Vector2(1980, 1200))
 	_check_responsive_layout("wide", true)
 
@@ -136,6 +137,30 @@ func _check_responsive_layout(label: String, expect_wide: bool) -> void:
 	var grid_right: float = roster_grid.global_position.x + roster_grid.size.x
 	var scroll_right: float = roster_scroll.global_position.x + roster_scroll.size.x
 	_assert_true(grid_right <= scroll_right + 1.0, "%s roster grid stays inside scroll width" % label)
+
+
+func _check_setup_pages() -> void:
+	if lobby == null:
+		return
+	var match_tab: Button = lobby.find_child("MatchTab", true, false) as Button
+	var player_tab: Button = lobby.find_child("PlayerTab", true, false) as Button
+	var enemy_tab: Button = lobby.find_child("EnemyTab", true, false) as Button
+	_assert_true(match_tab != null and player_tab != null and enemy_tab != null and match_tab.button_pressed, "the setup panel opens on the Match page with three tabs")
+	var match_page: Control = lobby.find_child("MatchPage", true, false) as Control
+	var details: Control = lobby.find_child("DetailsPanel", true, false) as Control
+	_assert_true(match_page != null and match_page.visible and details != null and not details.visible, "the Match page shows the settings and hides the editor")
+	_assert_true(lobby.find_child("MatchGrid", true, false) != null and lobby.find_child("EditorGrid", true, false) != null, "settings and editor lay out in two-column grids")
+	player_tab.pressed.emit()
+	_assert_true(lobby.setup_page == "player" and details.visible and not match_page.visible and lobby.active_side == SkirmishLobby.SIDE_PLAYER, "the Player Team tab shows the editor for the player side")
+	lobby._on_team_slot_pressed(SkirmishLobby.SIDE_ENEMY, 0)
+	_assert_true(lobby.setup_page == "enemy" and enemy_tab.button_pressed and lobby.active_side == SkirmishLobby.SIDE_ENEMY, "clicking an enemy tray slot switches to the Enemy Team tab")
+	lobby._step_setup_page(1)
+	_assert_true(lobby.setup_page == "match" and match_tab.button_pressed and match_page.visible, "stepping past the last page wraps to Match")
+	lobby._show_setup_page("match")
+	lobby._set_active_side(SkirmishLobby.SIDE_PLAYER)
+	lobby._refresh_team_trays()
+	lobby._refresh_details()
+	lobby._refresh_slot_section()
 
 
 func _assert_control_inside_lobby(node_name: String, label: String) -> void:

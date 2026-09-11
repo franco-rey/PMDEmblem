@@ -202,6 +202,7 @@ def _plan(context: Context, args: argparse.Namespace) -> list[Step]:
     steps = [
         Step("raw_visuals", "PMDO particles, beams, tiles, backgrounds and fonts into assets/visuals/raw_asset (about 30 s)", [py, str(BATCH / "raw_visual_packager.py"), "--write"]),
         Step("ui_sheets", "PMDO interface sheets and the seven hub scenes (instant)", [py, str(BATCH / "ui_sheet_packager.py"), "--write"]),
+        Step("fonts", "PMD bitmap fonts packed into assets/fonts/pmd (instant)", [py, str(BATCH / "font_packager.py")]),
         Step("board_skins", "24 board floor and wall tiles plus the decoration sheets from the imported dungeon sets (instant)", [py, str(BATCH / "board_skin_packager.py"), "--write"]),
         Step("roster", "686 Pokemon with shiny, female and form variants (about 16 min)", [py, str(BATCH / "pokemon_batch_packager.py"), "--dex-range", DEX_RANGE, "--write", "--replace-manifest", "--source-revision", context.source_revision]),
         Step("import", "Godot import of the copied textures (about 2 min)", godot + ["--import"]),
@@ -209,6 +210,7 @@ def _plan(context: Context, args: argparse.Namespace) -> list[Step]:
         Step("reimport", "Godot import of the generated resources and class cache", godot + ["--import"]),
         Step("presentation", "move and item presentation manifest (about 1 min)", [py, str(BATCH / "action_presentation_packager.py"), "--dex-range", DEX_RANGE, "--max-level", str(MAX_LEVEL), "--write"]),
         Step("sounds", "PMDO sound effects and music into assets/audio (about 1 min)", [py, str(BATCH / "sound_packager.py"), "--write"]),
+        Step("app_icon", "application icon rendered from the imported portraits (instant)", godot + ["--script", "tools/debug/render_app_icon.gd"]),
         Step("final_import", "Godot import after the manifests landed", godot + ["--import"]),
         Step("verify", "every smoke test under tools/validation (about 45 min)" if args.verify == "full" else "quick smoke tests (" + ", ".join(QUICK_SMOKES) + ")", []),
     ]
