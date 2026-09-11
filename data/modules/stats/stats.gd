@@ -61,7 +61,7 @@ var modifiers: Dictionary = {}
 var override_name: String
 var last_hit_move_type: String = ""
 var same_move_streak: int = 0
-var gender: int = 2
+var gender: int = GenderRules.GENDERLESS
 var weight_kg: float = 0.0
 var transformed: bool = false
 var last_attacker: Variant = null
@@ -218,18 +218,7 @@ func first_usable_move_index(require_damaging: bool = false) -> int:
 
 
 func _roll_gender(form: PokemonFormResource, instance: PokemonInstanceResource) -> int:
-	var weights: Vector3i = form.gender_weights
-	var total: int = weights.x + weights.y + weights.z
-	if total <= 0:
-		return 2
-	var rng := RandomNumberGenerator.new()
-	rng.seed = hash("%s:%d:%s:%d:%d" % [instance.species.species_id if instance.species != null else "", instance.form_index, instance.nickname, instance.level, instance.team])
-	var roll: int = rng.randi_range(1, total)
-	if roll <= weights.x:
-		return 0
-	if roll <= weights.x + weights.y:
-		return 1
-	return 2
+	return GenderRules.roll_for_instance(form, instance)
 
 
 func change_form(form_index: int) -> bool:

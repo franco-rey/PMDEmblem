@@ -196,7 +196,7 @@ func _unit_row(pawn: TacticsPawn, level: TacticsLevel) -> HBoxContainer:
 	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(text)
 	var name_label := Label.new()
-	name_label.text = "%s  Lv %d" % [level.notation.unit_name(pawn), pawn.stats.level if pawn.stats != null else 0]
+	name_label.text = "%s%s  Lv %d" % [level.notation.unit_name(pawn), GenderRules.suffix(pawn.stats.gender) if pawn.stats != null else "", pawn.stats.level if pawn.stats != null else 0]
 	text.add_child(name_label)
 	var bar := PmdHpBar.new()
 	bar.custom_minimum_size = Vector2(160, 14)

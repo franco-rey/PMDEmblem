@@ -58,6 +58,9 @@ func show_entry(entry: Dictionary) -> void:
 	pawn.name = "ShowcasePawn"
 	var expertise: Expertise = _expertise_scene.instantiate() as Expertise
 	expertise.name = "Expertise"
+	if instance.gender == GenderRules.UNKNOWN and GenderRules.is_choice(instance.resolved_form()):
+		instance = instance.duplicate() as PokemonInstanceResource
+		instance.gender = GenderRules.roll(instance.resolved_form(), randi(), "showcase", 0)
 	expertise.pokemon_instance = instance
 	pawn.add_child(expertise)
 	pawn.collision_layer = 0

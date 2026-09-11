@@ -727,6 +727,7 @@ static func font_body() -> FontVariation:
 	if _body_font == null:
 		_body_font = FontVariation.new()
 		_body_font.base_font = font_file_for(GameSettings.ui_font)
+		_body_font.fallbacks = [TEXT_FONT]
 	return _body_font
 
 
@@ -734,6 +735,7 @@ static func font_title() -> FontVariation:
 	if _title_font == null:
 		_title_font = FontVariation.new()
 		_title_font.base_font = BANNER_FONT
+		_title_font.fallbacks = [TEXT_FONT]
 	return _title_font
 
 

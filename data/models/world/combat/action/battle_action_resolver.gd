@@ -785,6 +785,9 @@ func _apply_effect_record(
 			var status_id: String = String(record.get("status_id", ""))
 			if status_id.is_empty():
 				return
+			if status_id == "in_love" and recipient != attacker and not GenderRules.opposite(attacker.stats.gender, recipient.stats.gender):
+				_append(battle_log, {"kind": "status_blocked", "unit": recipient, "move_id": move.move_id, "status_id": status_id, "reason": "gender"})
+				return
 			var payload: Dictionary = {"move_id": move.move_id, "source_event": record.get("source_event", ""), "source_unit": attacker}
 			if status_id == "sure_shot" and target != attacker:
 				payload["target_unit"] = target
@@ -806,6 +809,9 @@ func _apply_effect_record(
 				return
 			_ops(battle_level, battle_log).remove_status(recipient, remove_id, {"move": move})
 		"stat_stage":
+			if move.move_id == "captivate" and recipient != attacker and not GenderRules.opposite(attacker.stats.gender, recipient.stats.gender):
+				_append(battle_log, {"kind": "effect_blocked", "unit": recipient, "move_id": move.move_id, "reason": "gender"})
+				return
 			_ops(battle_level, battle_log).change_stat_stage(recipient, String(record.get("stat", "")), int(record.get("delta", 0)), {"kind": "move", "attacker": attacker, "move": move})
 		"weather_stat_stage":
 			var weather_id: String = String(record.get("weather_id", ""))

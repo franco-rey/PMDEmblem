@@ -1104,9 +1104,11 @@ func _log_intrinsic_changed(payload: Dictionary, battle_log: BattleLog) -> void:
 
 func _damage_multiplier_for_slug(slug: String, attacker: Stats, move: PokemonMoveResource, battle_level: TacticsLevel = null, effectiveness: float = 1.0, target: TacticsPawn = null) -> float:
 	if slug == "rivalry" and target != null and target.stats != null and move.is_damaging():
-		if attacker.gender == 2 or target.stats.gender == 2:
-			return 1.0
-		return 1.25 if attacker.gender == target.stats.gender else 0.75
+		if GenderRules.same(attacker.gender, target.stats.gender):
+			return 1.25
+		if GenderRules.opposite(attacker.gender, target.stats.gender):
+			return 0.75
+		return 1.0
 	if slug == "stall" and target != null and target.stats != null and move.is_damaging() and target.stats.last_attacker is TacticsPawn and (target.stats.last_attacker as TacticsPawn).stats == attacker:
 		return 1.25
 	if slug == "flower_gift" and move.category == PokemonMoveResource.CATEGORY_PHYSICAL and battle_level != null and battle_level.effective_weather() in ["sunny", "desolate_land"]:
@@ -1482,9 +1484,7 @@ func _chance(rng: RandomNumberGenerator, percent: int) -> bool:
 func _genders_attract(a: Stats, b: Stats) -> bool:
 	if a == null or b == null:
 		return false
-	if a.gender == 2 or b.gender == 2:
-		return false
-	return a.gender != b.gender
+	return GenderRules.opposite(a.gender, b.gender)
 
 
 func _grid_distance_between(a: TacticsPawn, b: TacticsPawn) -> int:

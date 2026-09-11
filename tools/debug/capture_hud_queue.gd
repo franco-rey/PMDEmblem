@@ -20,7 +20,10 @@ func _run() -> void:
 	if _arg("shiny") == "1":
 		ShinyRules.force_all = true
 	var driver = DRIVER.new(self)
-	var ok: bool = await driver._launch("match seed=42 mode=pvp team=6 map=chessboard")
+	var code: String = _arg("code")
+	if code.is_empty():
+		code = "match seed=42 mode=pvp team=6 map=chessboard"
+	var ok: bool = await driver._launch(code)
 	if not ok:
 		print("queue: launch failed")
 		quit(1)

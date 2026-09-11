@@ -213,6 +213,7 @@ static func _make_enemy_instance(template: PokemonInstanceResource, tier: Dictio
 	instance.held_item = template.held_item
 	instance.runtime_modifiers = {}
 	instance.temporary_statuses = []
+	instance.gender = template.gender if template.gender != GenderRules.UNKNOWN else GenderRules.roll(instance.resolved_form(), int(rng.seed), "enemy", slot_index)
 	instance.move_slots = _moves_for_level(template, instance.level)
 	instance.pp_state = []
 	for move in instance.move_slots:

@@ -135,6 +135,9 @@ var slot_title_label: Label
 var random_moves_check: CheckButton
 var choose_moves_button: Button
 var moves_value_label: Label
+var random_gender_check: CheckButton
+var gender_picker: OptionButton
+var gender_value_label: Label
 var random_ability_check: CheckButton
 var choose_ability_button: Button
 var ability_value_label: Label
@@ -273,6 +276,34 @@ func set_slot_ability(side: String, index: int, ability_id: String) -> bool:
 	var spec: Dictionary = _specs_for_side(side)[index]
 	spec["ability"] = "" if ability_id == CustomSkirmishBuilder.RANDOM_CHOICE else ability_id
 	spec["random_ability"] = ability_id.is_empty() or ability_id == CustomSkirmishBuilder.RANDOM_CHOICE
+	_refresh_details()
+	_refresh_slot_section()
+	return true
+
+
+func set_slot_gender(side: String, index: int, gender_id: String) -> bool:
+	var team: Array[String] = player_team_paths if side == SIDE_PLAYER else enemy_team_paths
+	if index < 0 or index >= team.size():
+		_set_status("Pick a team slot first")
+		return false
+	_sync_specs(side)
+	var spec: Dictionary = _specs_for_side(side)[index]
+	if gender_id.is_empty() or gender_id == CustomSkirmishBuilder.RANDOM_CHOICE:
+		spec["gender"] = ""
+		spec["random_gender"] = true
+	else:
+		var wanted: int = GenderRules.parse_id(gender_id)
+		if wanted == GenderRules.UNKNOWN:
+			_set_status("Unknown gender %s" % gender_id)
+			return false
+		var entry: Dictionary = _entry_for_path(team[index])
+		var error: String = GenderRules.choice_error(_form_for_entry(entry), wanted, String(entry.get("label", "")))
+		if not error.is_empty():
+			_set_status(error)
+			return false
+		spec["gender"] = GenderRules.id(wanted)
+		spec["random_gender"] = false
+	_set_status("")
 	_refresh_details()
 	_refresh_slot_section()
 	return true
@@ -764,6 +795,28 @@ func _create_details_panel() -> VBoxContainer:
 	slot_title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(slot_title_label)
 
+	column.add_child(_section_header("Gender"))
+	var gender_row := HBoxContainer.new()
+	gender_row.add_theme_constant_override("separation", 6)
+	column.add_child(gender_row)
+	random_gender_check = CheckButton.new()
+	random_gender_check.name = "RandomGenderCheck"
+	random_gender_check.text = "Random"
+	random_gender_check.button_pressed = true
+	random_gender_check.toggled.connect(_on_random_gender_toggled)
+	gender_row.add_child(random_gender_check)
+	gender_picker = OptionButton.new()
+	gender_picker.name = "GenderPicker"
+	gender_picker.custom_minimum_size.y = CONTROL_HEIGHT
+	gender_picker.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	gender_picker.fit_to_longest_item = false
+	gender_picker.add_item("%s %s" % [GenderRules.label(GenderRules.MALE), GenderRules.glyph(GenderRules.MALE)])
+	gender_picker.add_item("%s %s" % [GenderRules.label(GenderRules.FEMALE), GenderRules.glyph(GenderRules.FEMALE)])
+	gender_picker.item_selected.connect(_on_gender_picked)
+	gender_row.add_child(gender_picker)
+	gender_value_label = _section_value("GenderValueLabel")
+	column.add_child(gender_value_label)
+
 	column.add_child(_section_header("Moves"))
 	var moves_row := HBoxContainer.new()
 	moves_row.add_theme_constant_override("separation", 6)
@@ -1090,7 +1143,7 @@ func _specs_for_side(side: String) -> Array[Dictionary]:
 
 
 func _default_spec() -> Dictionary:
-	return {"moves": [], "random_moves": true, "ability": "", "random_ability": true, "item": "", "random_item": false}
+	return {"moves": [], "random_moves": true, "ability": "", "random_ability": true, "item": "", "random_item": false, "gender": "", "random_gender": true}
 
 
 func _spec_for(side: String, index: int) -> Dictionary:
@@ -1115,7 +1168,8 @@ func _specs_payload(side: String) -> Array:
 	for spec in _specs_for_side(side):
 		var moves: Array = [] if bool(spec.get("random_moves", true)) else (spec.get("moves", []) as Array).duplicate()
 		var ability: String = CustomSkirmishBuilder.RANDOM_CHOICE if bool(spec.get("random_ability", true)) else String(spec.get("ability", ""))
-		out.append({"moves": moves, "ability": ability})
+		var gender: String = CustomSkirmishBuilder.RANDOM_CHOICE if bool(spec.get("random_gender", true)) else String(spec.get("gender", ""))
+		out.append({"moves": moves, "ability": ability, "gender": gender})
 	return out
 
 
@@ -1145,18 +1199,34 @@ func _refresh_slot_section() -> void:
 	var team: Array[String] = player_team_paths if active_side == SIDE_PLAYER else enemy_team_paths
 	var index: int = _selected_index_for(active_side)
 	var has_slot: bool = index >= 0 and index < team.size()
-	for control in [random_moves_check, choose_moves_button, random_ability_check, choose_ability_button, random_item_check, choose_item_button, clear_item_button]:
+	for control in [random_moves_check, choose_moves_button, random_ability_check, choose_ability_button, random_item_check, choose_item_button, clear_item_button, random_gender_check, gender_picker]:
 		control.disabled = not has_slot
 	if not has_slot:
 		slot_title_label.text = "Select a %s slot" % _side_label(active_side).to_lower()
 		moves_value_label.text = ""
 		ability_value_label.text = ""
 		item_value_label.text = ""
+		gender_value_label.text = ""
 		return
 	_sync_specs(active_side)
 	var spec: Dictionary = _spec_for(active_side, index)
 	var entry: Dictionary = _entry_for_path(team[index])
 	slot_title_label.text = "%s slot %d: %s" % [_side_label(active_side), index + 1, String(entry.get("label", ""))]
+	var form: PokemonFormResource = _form_for_entry(entry)
+	var gender_choice: bool = GenderRules.is_choice(form)
+	var random_gender: bool = bool(spec.get("random_gender", true)) or not gender_choice
+	var chosen_gender: int = GenderRules.parse_id(String(spec.get("gender", "")))
+	random_gender_check.disabled = not gender_choice
+	random_gender_check.set_pressed_no_signal(random_gender)
+	gender_picker.disabled = random_gender
+	if gender_choice:
+		gender_picker.select(1 if chosen_gender == GenderRules.FEMALE else 0)
+		gender_value_label.text = ("Rolled from the species ratio (%s)" % GenderRules.ratio_label(form)) if random_gender else (GenderRules.label(chosen_gender) + GenderRules.suffix(chosen_gender))
+		if not random_gender and chosen_gender != GenderRules.UNKNOWN:
+			slot_title_label.text += GenderRules.suffix(chosen_gender)
+	else:
+		gender_picker.select(-1)
+		gender_value_label.text = GenderRules.ratio_label(form)
 	random_moves_check.set_pressed_no_signal(bool(spec.get("random_moves", true)))
 	choose_moves_button.disabled = bool(spec.get("random_moves", true))
 	var move_labels: Array[String] = []
@@ -1189,6 +1259,28 @@ func _on_random_moves_toggled(enabled: bool) -> void:
 	_refresh_slot_section()
 	if not enabled and (spec.get("moves", []) as Array).is_empty():
 		_open_chooser(CHOOSER_MOVES)
+
+
+func _on_random_gender_toggled(enabled: bool) -> void:
+	var index: int = _selected_index_for(active_side)
+	if index < 0:
+		return
+	_sync_specs(active_side)
+	var spec: Dictionary = _spec_for(active_side, index)
+	spec["random_gender"] = enabled
+	if not enabled and GenderRules.parse_id(String(spec.get("gender", ""))) == GenderRules.UNKNOWN:
+		spec["gender"] = GenderRules.id(GenderRules.MALE)
+	_refresh_details()
+	_refresh_slot_section()
+
+
+func _on_gender_picked(item_index: int) -> void:
+	set_slot_gender(active_side, _selected_index_for(active_side), GenderRules.id(GenderRules.FEMALE if item_index == 1 else GenderRules.MALE))
+
+
+func _form_for_entry(entry: Dictionary) -> PokemonFormResource:
+	var instance: PokemonInstanceResource = entry.get("instance", null) as PokemonInstanceResource
+	return instance.resolved_form() if instance != null else null
 
 
 func _on_random_ability_toggled(enabled: bool) -> void:

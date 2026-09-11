@@ -512,7 +512,7 @@ func inspect(pawn: TacticsPawn) -> void:
 	var team: int = stats.pokemon_instance.team if stats.pokemon_instance != null else 0
 	_inspector_frame.add_theme_stylebox_override("panel", _frame_style(PmdStyle.CURSOR if pawn == pinned_pawn else PmdStyle.team_color(team), 2))
 	_inspector_portrait.texture = PortraitLibrary.texture_for(PortraitLibrary.slug_for_pawn(pawn), expression_for(pawn))
-	_inspector_name.text = "%s  Lv %d" % [level.notation.unit_name(pawn), stats.level]
+	_inspector_name.text = "%s%s  Lv %d" % [level.notation.unit_name(pawn), GenderRules.suffix(stats.gender), stats.level]
 	_inspector_name.add_theme_color_override("font_color", PmdStyle.team_color(team))
 	_fill_type_icons(_inspector_types, stats.types)
 	var ability_id: String = _ability_id(stats)
@@ -1052,7 +1052,7 @@ func refresh_active_panel() -> void:
 	var team: int = stats.pokemon_instance.team if stats.pokemon_instance != null else 0
 	_active_frame.add_theme_stylebox_override("panel", _frame_style(PmdStyle.team_color(team), 3))
 	_active_portrait.texture = PortraitLibrary.texture_for(PortraitLibrary.slug_for_pawn(pawn), expression_for(pawn))
-	_active_name.text = "%s  Lv %d" % [level.notation.unit_name(pawn), stats.level]
+	_active_name.text = "%s%s  Lv %d" % [level.notation.unit_name(pawn), GenderRules.suffix(stats.gender), stats.level]
 	_active_name.add_theme_color_override("font_color", PmdStyle.team_color(team))
 	_active_hp.set_values(stats.curr_health, stats.max_health)
 	_active_meta.text = _meta_text(stats)
@@ -1118,7 +1118,7 @@ func _refresh_target_panel() -> void:
 	_target_frame.add_theme_stylebox_override("panel", _frame_style(PmdStyle.team_color(team), 3))
 	var mood: String = mood_for(target)
 	_target_portrait.texture = PortraitLibrary.texture_for(PortraitLibrary.slug_for_pawn(target), mood if not mood.is_empty() else "Worried")
-	_target_name.text = "%s  Lv %d" % [level.notation.unit_name(target), target.stats.level]
+	_target_name.text = "%s%s  Lv %d" % [level.notation.unit_name(target), GenderRules.suffix(target.stats.gender), target.stats.level]
 	_target_name.add_theme_color_override("font_color", PmdStyle.team_color(team))
 	_target_hp.set_values(target.stats.curr_health, target.stats.max_health)
 	_target_meta.text = _meta_text(target.stats)

@@ -29,7 +29,7 @@ func _ability_checks() -> void:
 	var blastoise: TacticsPawn = setup["defender"]
 	var ops: BattleStateOps = level._ops()
 	var service: BattleIntrinsicService = resolver.intrinsic_service
-	_assert_true(charizard.stats.gender != 2 and charizard.stats.weight_kg > 50.0, "instances roll a gender and carry the form weight (%d, %.1f)" % [charizard.stats.gender, charizard.stats.weight_kg])
+	_assert_true(charizard.stats.gender != GenderRules.GENDERLESS and charizard.stats.weight_kg > 50.0, "instances roll a gender and carry the form weight (%d, %.1f)" % [charizard.stats.gender, charizard.stats.weight_kg])
 	_set_ability(blastoise, "arena_trap")
 	_execute_until_hit(charizard, blastoise, 0, level)
 	_assert_true(not charizard.stats.battle_statuses.has("rooted"), "Arena Trap does not root a Flying attacker")
@@ -50,10 +50,10 @@ func _ability_checks() -> void:
 	var revenge: int = _hit_damage(level, charizard, blastoise, 0)
 	_assert_true(revenge > baseline, "Stall hits harder against the foe that last attacked it (%d vs %d)" % [revenge, baseline])
 	_set_ability(charizard, "rivalry")
-	charizard.stats.gender = 0
-	blastoise.stats.gender = 0
+	charizard.stats.gender = GenderRules.MALE
+	blastoise.stats.gender = GenderRules.MALE
 	var same: int = _hit_damage(level, charizard, blastoise, 0)
-	blastoise.stats.gender = 1
+	blastoise.stats.gender = GenderRules.FEMALE
 	var opposite: int = _hit_damage(level, charizard, blastoise, 0)
 	_assert_true(same > opposite, "Rivalry deals more to the same gender than to the opposite (%d vs %d)" % [same, opposite])
 	_set_ability(charizard, "natural_cure")
@@ -77,8 +77,8 @@ func _ability_checks() -> void:
 	_settle_on_tile(blastoise, keys[blastoise_key])
 	_set_ability(charizard, "blaze")
 	_set_ability(blastoise, "cute_charm")
-	blastoise.stats.gender = 1
-	charizard.stats.gender = 0
+	blastoise.stats.gender = GenderRules.FEMALE
+	charizard.stats.gender = GenderRules.MALE
 	var charmed: bool = false
 	for attempt in range(40):
 		blastoise.stats.curr_health = blastoise.stats.max_health
