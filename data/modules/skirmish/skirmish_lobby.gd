@@ -36,6 +36,7 @@ const SLOT_COLUMNS: int = 8
 const COMPACT_SLOT_HEIGHT: float = 50.0
 const CONTROL_HEIGHT: float = PmdStyle.ROW_HEIGHT
 const MAP_PREVIEW_LABEL: String = "Preview..."
+const REMOTE_CHOOSING_MS: int = 3000
 const GRID_GAP: float = 8.0
 const LAYOUT_MARGIN_X: float = 20.0
 const PANEL_MARGIN_X: float = 10.0
@@ -97,6 +98,11 @@ var _remote_random: bool = false
 
 var player_tray: PanelContainer
 var enemy_tray: PanelContainer
+var player_tray_title: Label = null
+var enemy_tray_title: Label = null
+var _remote_changed_at: int = 0
+var _remote_fingerprint: String = ""
+var _net_title_timer: float = 0.0
 var player_slots: GridContainer
 var enemy_slots: GridContainer
 var setup_panel: PanelContainer
@@ -331,6 +337,7 @@ func _build_ui() -> void:
 	margin.add_child(outer)
 
 	player_tray = _create_team_tray("PlayerTeamTray", "Player Team", SIDE_PLAYER)
+	player_tray_title = player_tray.find_child("%sTitle" % SIDE_PLAYER.capitalize(), true, false) as Label
 	outer.add_child(player_tray)
 
 	var middle := HBoxContainer.new()
@@ -345,6 +352,7 @@ func _build_ui() -> void:
 	middle.add_child(_create_details_panel())
 
 	enemy_tray = _create_team_tray("EnemyTeamTray", "Enemy Team", SIDE_ENEMY)
+	enemy_tray_title = enemy_tray.find_child("%sTitle" % SIDE_ENEMY.capitalize(), true, false) as Label
 	outer.add_child(enemy_tray)
 	add_child(_create_chooser_panel())
 	resized.connect(_queue_update_grid_columns)
@@ -1947,7 +1955,37 @@ func _apply_network_mode() -> void:
 	_update_net_status()
 
 
+func remote_activity_label() -> String:
+	if net_session == null or not is_instance_valid(net_session):
+		return ""
+	if net_session.remote_ready:
+		return "Ready"
+	if _remote_changed_at > 0 and Time.get_ticks_msec() - _remote_changed_at < REMOTE_CHOOSING_MS:
+		return "Choosing..."
+	return "Not ready"
+
+
+func _update_net_titles() -> void:
+	if player_tray_title == null or enemy_tray_title == null:
+		return
+	if not network_mode() or net_session.state == NetSession.HOSTING or net_session.state == NetSession.CONNECTING:
+		player_tray_title.text = "Player Team"
+		enemy_tray_title.text = "Enemy Team"
+		return
+	var local_name: String = net_session.local_name if not net_session.local_name.is_empty() else "You"
+	var remote_name: String = net_session.remote_name if not net_session.remote_name.is_empty() else "Opponent"
+	var mine: String = "%s (you)  Team %d" % [local_name, 1 if net_session.host_role else 2]
+	var theirs: String = "%s  Team %d  %s" % [remote_name, 2 if net_session.host_role else 1, remote_activity_label()]
+	if local_side_key() == SIDE_PLAYER:
+		player_tray_title.text = mine
+		enemy_tray_title.text = theirs
+	else:
+		player_tray_title.text = theirs
+		enemy_tray_title.text = mine
+
+
 func _update_net_status() -> void:
+	_update_net_titles()
 	if net_status_label == null or not network_mode():
 		return
 	var lines: Array[String] = []
@@ -1961,7 +1999,11 @@ func _update_net_status() -> void:
 			lines.append("Connecting...")
 		NetSession.LOBBY, NetSession.STARTING, NetSession.ENDED:
 			lines.append("%s with %s." % ["Hosting" if net_session.host_role else "Joined", net_session.remote_name])
-			lines.append("You play Team %d. %s" % [1 if net_session.host_role else 2, "They are ready." if net_session.remote_ready else "Waiting for them to ready up."])
+			var activity: String = remote_activity_label()
+			lines.append("You play Team %d. %s" % [1 if net_session.host_role else 2, "They are ready." if net_session.remote_ready else ("They are choosing." if activity == "Choosing..." else "Waiting for them to ready up.")])
+			var ping: int = net_session.latency_ms()
+			if ping >= 0:
+				lines.append("Ping %d ms" % ping)
 	net_status_label.text = "\n".join(lines)
 
 
@@ -1994,6 +2036,10 @@ func network_state() -> Dictionary:
 func _process(delta: float) -> void:
 	if not network_mode() or _net_syncing or not visible:
 		return
+	_net_title_timer += delta
+	if _net_title_timer >= 0.5:
+		_net_title_timer = 0.0
+		_update_net_status()
 	_net_push_timer += delta
 	if _net_push_timer < 0.25:
 		return
@@ -2010,6 +2056,10 @@ func _on_remote_lobby(state: Dictionary) -> void:
 	if not network_mode():
 		return
 	_net_syncing = true
+	var fingerprint: String = var_to_str([state.get("paths", []), state.get("specs", []), state.get("items", []), state.get("random", false)])
+	if fingerprint != _remote_fingerprint:
+		_remote_fingerprint = fingerprint
+		_remote_changed_at = Time.get_ticks_msec()
 	var remote: String = remote_side_key()
 	var paths: Array[String] = []
 	for entry in state.get("paths", []):

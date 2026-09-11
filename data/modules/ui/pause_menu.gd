@@ -23,6 +23,10 @@ var _buttons: Dictionary = {}
 
 var pauses_tree: bool = true
 var resign_visible: bool = false
+var network_battle: bool = false
+var _confirm: PanelContainer = null
+var _confirm_label: Label = null
+var _confirm_action: Callable = Callable()
 
 
 func _ready() -> void:
@@ -58,12 +62,13 @@ func _ready() -> void:
 	column.add_child(title)
 	_add_button(column, "Resume", "ResumeButton", close)
 	_add_button(column, "Restart Skirmish", "RestartButton", func() -> void: _leave(restart_requested))
-	_add_button(column, "Resign", "ResignButton", func() -> void: _leave(resign_requested))
+	_add_button(column, "Resign", "ResignButton", func() -> void: _guarded_leave(resign_requested, "Resign this battle?"))
 	_add_button(column, "Return to Lobby", "LobbyButton", func() -> void: _leave(lobby_requested))
-	_add_button(column, "Main Menu", "MainMenuButton", func() -> void: _leave(main_menu_requested))
+	_add_button(column, "Main Menu", "MainMenuButton", func() -> void: _guarded_leave(main_menu_requested, "Leave the battle? Your opponent takes the win."))
 	_add_button(column, "Options", "GraphicsButton", _show_graphics)
 	_add_button(column, "Controls", "ControlsButton", _show_controls)
-	_add_button(column, "Quit Game", "QuitButton", func() -> void: _leave(quit_requested))
+	_add_button(column, "Quit Game", "QuitButton", func() -> void: _guarded_leave(quit_requested, "Quit the game? Your opponent takes the win."))
+	_build_confirm()
 	_graphics = GraphicsSettingsPanel.new()
 	_graphics.visible = false
 	_graphics.closed.connect(_hide_graphics)
@@ -84,7 +89,9 @@ func _input(event: InputEvent) -> void:
 		return
 	if is_open:
 		SoundPlayer.cue("ui.cancel")
-		if _graphics.visible:
+		if _confirm.visible:
+			_hide_confirm()
+		elif _graphics.visible:
 			_hide_graphics()
 		elif _controls.visible:
 			_hide_controls()
@@ -107,11 +114,16 @@ func open() -> void:
 	_menu.visible = true
 	_graphics.visible = false
 	_controls.visible = false
+	_confirm.visible = false
 	if pauses_tree:
 		get_tree().paused = true
 	var resign: Button = _buttons.get("ResignButton", null)
 	if resign != null:
 		resign.visible = resign_visible
+	for node_name in ["RestartButton", "LobbyButton"]:
+		var button: Button = _buttons.get(node_name, null)
+		if button != null:
+			button.visible = not network_battle
 	var resume: Button = _buttons.get("ResumeButton", null)
 	if resume != null:
 		resume.grab_focus()
@@ -130,6 +142,73 @@ func close() -> void:
 func _leave(signal_to_emit: Signal) -> void:
 	close()
 	signal_to_emit.emit()
+
+
+func _guarded_leave(signal_to_emit: Signal, question: String) -> void:
+	if not network_battle:
+		_leave(signal_to_emit)
+		return
+	_ask(question, func() -> void: _leave(signal_to_emit))
+
+
+func _ask(question: String, action: Callable) -> void:
+	_confirm_action = action
+	_confirm_label.text = question
+	_menu.visible = false
+	_confirm.visible = true
+	var no: Button = _buttons.get("ConfirmNoButton", null)
+	if no != null:
+		no.grab_focus()
+
+
+func _hide_confirm() -> void:
+	_confirm.visible = false
+	_confirm_action = Callable()
+	_menu.visible = true
+	var resume: Button = _buttons.get("ResumeButton", null)
+	if resume != null:
+		resume.grab_focus()
+
+
+func _confirm_yes() -> void:
+	var action: Callable = _confirm_action
+	_confirm_action = Callable()
+	_confirm.visible = false
+	if action.is_valid():
+		action.call()
+
+
+func _build_confirm() -> void:
+	_confirm = PanelContainer.new()
+	_confirm.name = "Confirm"
+	_confirm.custom_minimum_size = Vector2(MENU_WIDTH + 120.0, 0)
+	_confirm.add_theme_stylebox_override("panel", PmdStyle.window())
+	_confirm.visible = false
+	_center.add_child(_confirm)
+	var margin := MarginContainer.new()
+	for side in ["left", "top", "right", "bottom"]:
+		margin.add_theme_constant_override("margin_%s" % side, PmdStyle.PANEL_MARGIN)
+	_confirm.add_child(margin)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", PmdStyle.PANEL_GAP)
+	margin.add_child(column)
+	_confirm_label = Label.new()
+	_confirm_label.name = "Question"
+	_confirm_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_confirm_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	PmdStyle.apply_heading(_confirm_label, PmdStyle.FONT_BODY)
+	column.add_child(_confirm_label)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", PmdStyle.PANEL_GAP)
+	column.add_child(row)
+	var yes := PmdStyle.control_button("Yes", "ConfirmYesButton", _confirm_yes)
+	yes.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(yes)
+	_buttons["ConfirmYesButton"] = yes
+	var no := PmdStyle.control_button("No", "ConfirmNoButton", _hide_confirm)
+	no.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(no)
+	_buttons["ConfirmNoButton"] = no
 
 
 func _show_graphics() -> void:

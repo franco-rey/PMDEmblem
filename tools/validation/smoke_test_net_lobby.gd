@@ -53,10 +53,17 @@ func _run() -> void:
 	_assert_true(guest_lobby.seed_input.text == "4242", "the host's seed mirrors to the guest")
 	_assert_true(int(guest_lobby.player_size_slider.value) == 2 and int(guest_lobby.enemy_size_spin.value) == 2, "the host's team sizes mirror to the guest")
 	_assert_true(host_lobby.launch_button.disabled, "the host cannot launch before both players are ready")
+	_assert_true(host_lobby.player_tray_title.text.begins_with("host (you)") and host_lobby.player_tray_title.text.contains("Team 1"), "the host's own tray says who they are and their side (%s)" % host_lobby.player_tray_title.text)
+	_assert_true(host_lobby.enemy_tray_title.text.begins_with("guest") and host_lobby.enemy_tray_title.text.contains("Team 2"), "the host's enemy tray names the guest and their side (%s)" % host_lobby.enemy_tray_title.text)
+	_assert_true(guest_lobby.player_tray_title.text.begins_with("host") and guest_lobby.enemy_tray_title.text.begins_with("guest (you)"), "the guest sees the host on team 1 and themselves on team 2")
+	_assert_true(host_lobby.remote_activity_label() == "Choosing..." and host_lobby.enemy_tray_title.text.ends_with("Choosing..."), "a fresh pick shows the guest as choosing (%s)" % host_lobby.remote_activity_label())
+	_assert_true(host_session.latency_ms() == -1 and guest_session.latency_ms() == -1, "loopback links report no latency")
 	host_lobby.net_ready_check.button_pressed = true
 	guest_lobby.net_ready_check.button_pressed = true
 	await _settle(20)
 	_assert_true(host_session.both_ready() and guest_session.both_ready(), "both ready flags cross the link")
+	_assert_true(host_lobby.remote_activity_label() == "Ready" and host_lobby.enemy_tray_title.text.ends_with("Ready"), "the guest's tray shows Ready once they ready up")
+	_assert_true(guest_lobby.player_tray_title.text.ends_with("Ready"), "the host's tray shows Ready on the guest's side")
 	_assert_true(not host_lobby.launch_button.disabled, "the host can launch once both are ready")
 	var code: String = host_lobby.network_launch_code()
 	_assert_true(code.contains("mode=pvp"), "the launch code is a player versus player match")

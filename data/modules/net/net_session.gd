@@ -103,6 +103,10 @@ func rejoining() -> bool:
 	return _rejoining or _catching_up
 
 
+func latency_ms() -> int:
+	return link.round_trip_ms() if link != null and link.is_open() else -1
+
+
 func can_rejoin() -> bool:
 	return state == SUSPENDED and not host_role and not suspend_expired() and not rejoining() and not _join_address.is_empty()
 

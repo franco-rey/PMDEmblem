@@ -24,5 +24,9 @@ func is_open() -> bool:
 	return open
 
 
+func round_trip_ms() -> int:
+	return -1
+
+
 func describe() -> String:
 	return "link"

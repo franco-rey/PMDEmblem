@@ -65,6 +65,24 @@ func _run() -> void:
 		if pause._buttons.has(node_name):
 			buttons.append(node_name)
 	_assert_true(buttons.size() == 6, "pause menu offers resume, restart, lobby, main menu, graphics and quit")
+	pause.close()
+	pause.network_battle = true
+	pause.resign_visible = true
+	pause.open()
+	_assert_true(not pause._buttons["RestartButton"].visible and not pause._buttons["LobbyButton"].visible and pause._buttons["ResignButton"].visible, "a network battle hides Restart and Return to Lobby and shows Resign")
+	var resigned: Array = []
+	pause.resign_requested.connect(func() -> void: resigned.append(true))
+	pause._buttons["ResignButton"].pressed.emit()
+	_assert_true(pause._confirm.visible and not pause._menu.visible and resigned.is_empty(), "Resign in a network battle asks for confirmation first")
+	pause._buttons["ConfirmNoButton"].pressed.emit()
+	_assert_true(not pause._confirm.visible and pause._menu.visible and resigned.is_empty(), "No returns to the pause menu without resigning")
+	pause._buttons["ResignButton"].pressed.emit()
+	pause._buttons["ConfirmYesButton"].pressed.emit()
+	_assert_true(resigned.size() == 1 and not pause.is_open, "Yes resigns and closes the pause menu")
+	pause.network_battle = false
+	pause.resign_visible = false
+	pause.open()
+	_assert_true(pause._buttons["RestartButton"].visible and pause._buttons["LobbyButton"].visible and not pause._buttons["ResignButton"].visible, "a local battle keeps Restart and Return to Lobby without Resign")
 	pause._show_graphics()
 	var panel: GraphicsSettingsPanel = pause._graphics
 	_assert_true(panel.visible and panel.mode_picker.item_count == 3 and panel.resolution_picker.item_count == 5 and panel.scale_picker.item_count == 4 and panel.camera_track_toggle != null and panel.cpu_report_toggle != null and panel.cpu_speed_picker.item_count == 6, "options panel lists window modes, resolutions, UI scales, camera track, CPU report and CPU speeds")

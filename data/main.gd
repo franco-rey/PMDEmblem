@@ -217,6 +217,7 @@ func _poll_net_ready() -> void:
 	if pause_menu != null:
 		pause_menu.pauses_tree = not net_session.battle_live()
 		pause_menu.resign_visible = net_session.battle_live()
+		pause_menu.network_battle = net_session.battle_live()
 	if level_instance != null and is_instance_valid(level_instance) and level_instance.hud != null:
 		level_instance.hud.set_network_text(_net_chip_text())
 	if net_suspend_panel != null:
@@ -238,9 +239,11 @@ func _net_chip_text() -> String:
 		return "Opponent did not return" if net_session.suspend_expired() else "Connection lost, %d s" % int(ceil(net_session.suspend_remaining()))
 	if not net_session.in_battle():
 		return ""
-	if not net_session.ready_to_play():
-		return "Waiting for %s" % net_session.remote_name
-	return "Waiting for %s" % net_session.remote_name if net_session.remote_turn_active() else "Your turn"
+	var text: String = "Waiting for %s" % net_session.remote_name
+	if net_session.ready_to_play() and not net_session.remote_turn_active():
+		text = "Your turn"
+	var ping: int = net_session.latency_ms()
+	return "%s  %d ms" % [text, ping] if ping >= 0 else text
 
 
 func _on_net_start_requested(code: String, _battle_id: String) -> void:
@@ -528,6 +531,8 @@ func _on_main_menu_requested() -> void:
 
 
 func _on_quit_requested() -> void:
+	if net_session != null and net_session.active():
+		net_session.leave("quit")
 	_set_battle_speed(1.0)
 	get_tree().quit()
 
@@ -893,7 +898,7 @@ func _on_skirmish_ended(result: int, definition: SkirmishDefinitionResource) -> 
 		var networked: bool = net_session != null and net_session.active()
 		results_screen.show_result(result, definition, ended_level, "", net_session.local_side if networked else PokemonInstanceResource.Team.PLAYER)
 		if networked:
-			results_screen.set_play_again_label("Rematch" if net_session.host_role else "Waiting for the host", net_session.host_role)
+			results_screen.set_play_again_label("Rematch" if net_session.host_role else "Waiting for %s" % (net_session.remote_name if not net_session.remote_name.is_empty() else "the host"), net_session.host_role)
 		return
 	if skirmish_loader != null:
 		skirmish_loader.unload_current()
