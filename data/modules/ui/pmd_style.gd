@@ -148,6 +148,26 @@ static func chip(fill: Color = NAVY_DEEP, frame: Color = FRAME_SOFT) -> StyleBox
 	return style
 
 
+static func keycap(pad: bool = false) -> StyleBoxFlat:
+	var style := window_flat(NAVY_LIGHT, FRAME_SOFT if pad else FRAME, PLATE_FRAME, RADIUS)
+	style.shadow_size = 0
+	style.border_width_bottom = PLATE_FRAME * 2
+	style.content_margin_left = 10
+	style.content_margin_right = 10
+	style.content_margin_top = 3
+	style.content_margin_bottom = 3
+	return style
+
+
+static func rule(alpha: float = 0.35) -> ColorRect:
+	var line := ColorRect.new()
+	line.color = Color(FRAME_SOFT.r, FRAME_SOFT.g, FRAME_SOFT.b, alpha)
+	line.custom_minimum_size = Vector2(0, 1)
+	line.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return line
+
+
 static func plate(state: String) -> StyleBoxFlat:
 	var style: StyleBoxFlat
 	match state:

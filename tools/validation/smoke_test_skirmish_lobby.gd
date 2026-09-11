@@ -306,7 +306,7 @@ func _check_random_enemy_build() -> void:
 	_assert_true(String(definition.generation_metadata.get("source", "")) == "random_generator", "random enemy setup routes through RandomSkirmishGenerator")
 	_assert_true(definition.enemy_team.size() == 3, "random enemy setup honors the enemy team slider")
 	_assert_true(_loader_accepts(definition), "random enemy lobby definition is loader-ready")
-	_assert_true(lobby.random_player_check != null and lobby.random_player_check.text == "Random Team 1" and lobby.random_enemy_check.text == "Random Team 2" and lobby.random_player_check.get_index() == lobby.random_enemy_check.get_index() - 1, "the lobby offers Random Team 1 right above Random Team 2")
+	_assert_true(lobby.random_player_check != null and lobby.random_player_check.text == "Random player team" and lobby.random_enemy_check.text == "Random enemy team" and lobby.random_player_check.get_index() == lobby.random_enemy_check.get_index() - 1, "the lobby offers the random player team toggle right above the enemy one")
 	var tray_before: int = lobby.get_player_team_paths().size()
 	lobby.set_random_player_enabled(true)
 	lobby.player_size_slider.value = 5

@@ -12,6 +12,8 @@ var _row_widths: Dictionary = {}
 
 const FIT_PASSES: int = 4
 const FOCUS_PAD: int = 4
+const HEADING_SPACE: int = 8
+const HEADING_RULE_ALPHA: float = 0.6
 
 
 func _ready() -> void:
@@ -109,11 +111,28 @@ func add_caption(text: String, color: Color = PmdStyle.TEXT_DIM) -> Label:
 
 
 func add_heading(text: String) -> Label:
+	if body.get_child_count() > 0:
+		var spacer := Control.new()
+		spacer.custom_minimum_size = Vector2(0, HEADING_SPACE)
+		spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		body.add_child(spacer)
+	var block := VBoxContainer.new()
+	block.add_theme_constant_override("separation", 4)
 	var label := Label.new()
 	label.text = text
 	PmdStyle.apply_heading(label, PmdStyle.FONT_BODY)
-	body.add_child(label)
+	block.add_child(label)
+	var rule := PmdStyle.rule(HEADING_RULE_ALPHA)
+	rule.custom_minimum_size.y = 2
+	block.add_child(rule)
+	body.add_child(block)
 	return label
+
+
+func add_divider() -> ColorRect:
+	var rule := PmdStyle.rule()
+	body.add_child(rule)
+	return rule
 
 
 func _on_panel_visibility_changed() -> void:

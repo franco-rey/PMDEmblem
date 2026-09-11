@@ -3,33 +3,37 @@ extends MenuPanel
 
 signal closed
 
-const LABEL_WIDTH: float = 380.0
+const LABEL_WIDTH: float = 420.0
 const KEY_FONT: int = PmdStyle.FONT_CAPTION
+const KEY_HEIGHT: float = 38.0
+const KEY_MIN_WIDTH: float = 38.0
+const KEY_GAP: int = 6
+const ROW_GAP: int = 4
 const KEY_NAMES: Dictionary = {"BracketLeft": "[", "BracketRight": "]", "Equal": "=", "Plus": "+", "Minus": "-", "Kp Add": "Numpad +", "Kp Subtract": "Numpad -", "Kp Enter": "Numpad Enter", "Escape": "Esc", "Left": "Left arrow", "Right": "Right arrow", "Up": "Up arrow", "Down": "Down arrow"}
 const JOY_NAMES: Dictionary = {0: "Pad A", 1: "Pad B", 2: "Pad X", 3: "Pad Y", 4: "Pad Back", 5: "Pad Guide", 6: "Pad Start", 7: "Left stick click", 8: "Right stick click", 9: "Pad LB", 10: "Pad RB", 11: "D-pad up", 12: "D-pad down", 13: "D-pad left", 14: "D-pad right"}
 const SECTIONS: Array = [
 	["Camera", [
 		["Move the camera", ["camera_forward", "camera_left", "camera_backwards", "camera_right"], []],
 		["Turn 45 degrees", ["camera_rotate_left", "camera_rotate_right"], []],
-		["Slow orbit, press again to stop", ["camera_orbit_left", "camera_orbit_right"], []],
+		["Slow orbit (toggle)", ["camera_orbit_left", "camera_orbit_right"], []],
 		["Zoom", ["camera_zoom_in", "camera_zoom_out"], ["Mouse wheel"]],
-		["Top-down or angled view", ["camera_perspective"], []],
+		["Top-down / angled view", ["camera_perspective"], []],
 		["Free look", ["camera_free_look"], ["Hold and drag"]],
-		["Edge panning on or off", ["toggle_edge_pan"], []],
+		["Edge panning (toggle)", ["toggle_edge_pan"], []],
 	]],
 	["Battle", [
 		["Confirm", ["ui_accept"], []],
-		["Cancel, or open the pause menu", ["ui_cancel"], []],
+		["Cancel / pause menu", ["ui_cancel"], []],
 		["Choose a square", ["ui_up", "ui_down", "ui_left", "ui_right"], []],
 		["Choose a target", ["camera_left", "camera_right"], ["Left arrow", "Right arrow"]],
 		["Danger zones", ["toggle_danger_zone"], ["Danger button"]],
-		["Battle speed, 0.5x to 20x", ["battle_speed_1", "battle_speed_2", "battle_speed_3", "battle_speed_4", "battle_speed_5", "battle_speed_6"], []],
+		["Battle speed", ["battle_speed_1", "battle_speed_2", "battle_speed_3", "battle_speed_4", "battle_speed_5", "battle_speed_6"], []],
 	]],
 	["Interface", [
-		["Hide or show the interface", ["toggle_interface"], []],
-		["Timeline map (multiverse battles)", ["toggle_timeline_map"], []],
+		["Hide / show interface", ["toggle_interface"], []],
+		["Timeline map", ["toggle_timeline_map"], []],
 		["Inspect a unit", [], ["Hover", "Click to lock", "x to unlock"]],
-		["Shrink or grow a dock", [], ["- and + on the dock header"]],
+		["Shrink / grow a dock", [], ["- and + on the dock header"]],
 	]],
 ]
 
@@ -45,41 +49,54 @@ func _ready() -> void:
 	set_title("Controls")
 	_scroll = scroll
 	_grid = body
-	_grid.add_theme_constant_override("separation", 6)
+	_grid.add_theme_constant_override("separation", ROW_GAP)
 	for section in SECTIONS:
 		add_heading(String(section[0]))
-		for entry in section[1]:
+		var entries: Array = section[1]
+		for i in range(entries.size()):
+			var entry: Array = entries[i]
 			_grid.add_child(_row(String(entry[0]), _keys_for(entry[1], entry[2])))
+			if i < entries.size() - 1:
+				add_divider()
 	close_button = add_footer_button("Back", "CloseButton", func() -> void: closed.emit())
 
 
 func _row(caption: String, keys: Array[String]) -> HBoxContainer:
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 12)
+	row.add_theme_constant_override("separation", PmdStyle.PANEL_GAP)
 	var label := Label.new()
 	label.text = caption
-	label.custom_minimum_size = Vector2(LABEL_WIDTH, PmdStyle.ROW_HEIGHT)
+	label.custom_minimum_size = Vector2(LABEL_WIDTH * PmdStyle.font_width_factor(), PmdStyle.ROW_HEIGHT)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	row.add_child(label)
 	var flow := HFlowContainer.new()
 	flow.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	flow.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	flow.add_theme_constant_override("h_separation", 6)
-	flow.add_theme_constant_override("v_separation", 4)
+	flow.add_theme_constant_override("h_separation", KEY_GAP)
+	flow.add_theme_constant_override("v_separation", KEY_GAP)
 	row.add_child(flow)
 	for key in keys:
 		flow.add_child(_key_chip(key))
 	return row
 
 
+static func _is_pad_key(text: String) -> bool:
+	return text.begins_with("Pad ") or text.begins_with("D-pad") or text.ends_with("stick") or text.ends_with("stick click")
+
+
 func _key_chip(text: String) -> PanelContainer:
+	var pad: bool = _is_pad_key(text)
 	var chip := PanelContainer.new()
-	chip.add_theme_stylebox_override("panel", PmdStyle.chip(PmdStyle.NAVY_LIGHT, PmdStyle.FRAME_SOFT))
+	chip.add_theme_stylebox_override("panel", PmdStyle.keycap(pad))
+	chip.custom_minimum_size = Vector2(KEY_MIN_WIDTH, KEY_HEIGHT)
+	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var label := Label.new()
 	label.text = text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.add_theme_font_size_override("font_size", KEY_FONT)
-	label.add_theme_color_override("font_color", PmdStyle.TEXT_GOLD)
+	label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM if pad else PmdStyle.TEXT_GOLD)
 	chip.add_child(label)
 	return chip
 
@@ -104,7 +121,7 @@ func _keys_for(actions: Array, extra: Array) -> Array[String]:
 	var pads: Array[String] = []
 	for action in actions:
 		for text in _action_keys(String(action)):
-			var is_pad: bool = text.begins_with("Pad ") or text.begins_with("D-pad") or text.ends_with("stick") or text.ends_with("stick click")
+			var is_pad: bool = _is_pad_key(text)
 			if is_pad and not pads.has(text):
 				pads.append(text)
 			elif not is_pad and not names.has(text):

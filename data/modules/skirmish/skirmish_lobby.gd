@@ -36,6 +36,7 @@ const SLOT_COLUMNS: int = 8
 const COMPACT_SLOT_HEIGHT: float = 50.0
 const CONTROL_HEIGHT: float = PmdStyle.ROW_HEIGHT
 const MAP_PREVIEW_LABEL: String = "Preview..."
+const SCROLL_PAD_RIGHT: int = 12
 const REMOTE_CHOOSING_MS: int = 3000
 const GRID_GAP: float = 8.0
 const LAYOUT_MARGIN_X: float = 20.0
@@ -87,7 +88,7 @@ var last_resolved_seed: int = 0
 var _built: bool = false
 var _last_launch_state: Dictionary = {}
 var net_session: NetSession = null
-var net_ready_check: CheckBox = null
+var net_ready_check: CheckButton = null
 var net_status_label: Label = null
 var _net_syncing: bool = false
 var _net_sent: Dictionary = {}
@@ -103,6 +104,7 @@ var enemy_tray_title: Label = null
 var _remote_changed_at: int = 0
 var _remote_fingerprint: String = ""
 var _net_title_timer: float = 0.0
+var _scroll_pads: Array[MarginContainer] = []
 var player_slots: GridContainer
 var enemy_slots: GridContainer
 var setup_panel: PanelContainer
@@ -119,23 +121,23 @@ var control_mode_picker: OptionButton
 var multiverse_toggle: CheckButton
 var ai_level_spin: SpinBox
 var seed_input: LineEdit
-var reroll_seed_check: CheckBox
+var reroll_seed_check: CheckButton
 var difficulty_spin: SpinBox
-var random_enemy_check: CheckBox
-var random_player_check: CheckBox
+var random_enemy_check: CheckButton
+var random_player_check: CheckButton
 var enemy_size_spin: HSlider
 var player_size_slider: HSlider
 var status_label: Label
 var target_label: Label
 var details_label: Label
 var slot_title_label: Label
-var random_moves_check: CheckBox
+var random_moves_check: CheckButton
 var choose_moves_button: Button
 var moves_value_label: Label
-var random_ability_check: CheckBox
+var random_ability_check: CheckButton
 var choose_ability_button: Button
 var ability_value_label: Label
-var random_item_check: CheckBox
+var random_item_check: CheckButton
 var choose_item_button: Button
 var clear_item_button: Button
 var item_value_label: Label
@@ -448,33 +450,43 @@ func _create_setup_panel() -> PanelContainer:
 	margin.add_theme_constant_override("margin_bottom", 10)
 	panel.add_child(margin)
 
+	var outer := VBoxContainer.new()
+	outer.name = "SetupColumn"
+	outer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	outer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	outer.add_theme_constant_override("separation", 8)
+	margin.add_child(outer)
+
+	var title := Label.new()
+	title.name = "SetupTitle"
+	title.text = "Match Setup"
+	_apply_title_font(title)
+	outer.add_child(title)
+
 	var setup_scroll := ScrollContainer.new()
 	setup_scroll.name = "SetupScroll"
 	setup_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	setup_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	setup_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	margin.add_child(setup_scroll)
+	outer.add_child(setup_scroll)
 
 	var column := VBoxContainer.new()
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_theme_constant_override("separation", 8)
-	setup_scroll.add_child(column)
+	setup_scroll.add_child(_scroll_pad(column))
 
-	var top_row := HBoxContainer.new()
-	column.add_child(top_row)
-
-	var title := Label.new()
-	title.text = "Skirmish"
-	_apply_title_font(title)
-	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top_row.add_child(title)
+	var footer := VBoxContainer.new()
+	footer.name = "SetupFooter"
+	footer.add_theme_constant_override("separation", 6)
+	outer.add_child(footer)
 
 	var close_button := Button.new()
 	close_button.name = "CloseButton"
 	close_button.text = "Back"
 	close_button.custom_minimum_size.y = CONTROL_HEIGHT
 	close_button.pressed.connect(_on_close_pressed)
-	top_row.add_child(close_button)
+	column.add_child(_section_header("Match"))
+
 
 	map_picker = OptionButton.new()
 	map_picker.name = "MapPicker"
@@ -508,9 +520,10 @@ func _create_setup_panel() -> PanelContainer:
 	ai_level_spin.value_changed.connect(func(_value: float) -> void: _refresh_launch_state())
 	column.add_child(_labeled_control("Difficulty", ai_level_spin))
 
-	reroll_seed_check = CheckBox.new()
+	reroll_seed_check = CheckButton.new()
 	reroll_seed_check.name = "RerollSeedCheck"
-	reroll_seed_check.text = "New Seed Each Match"
+	reroll_seed_check.text = "New seed each match"
+	reroll_seed_check.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	reroll_seed_check.custom_minimum_size.y = CONTROL_HEIGHT
 	reroll_seed_check.tooltip_text = "Roll a fresh seed on every launch and on Play Again, so the seed box does not have to be cleared between matches"
 	reroll_seed_check.toggled.connect(func(_pressed: bool) -> void: _refresh_launch_state())
@@ -524,24 +537,27 @@ func _create_setup_panel() -> PanelContainer:
 	difficulty_spin.value = CustomSkirmishBuilder.DEFAULT_RANDOM_DIFFICULTY_TIER
 	column.add_child(_labeled_control("CPU Quality", difficulty_spin))
 
-	random_player_check = CheckBox.new()
+	column.add_child(_section_header("Teams"))
+	random_player_check = CheckButton.new()
 	random_player_check.name = "RandomPlayerCheck"
-	random_player_check.text = "Random Team 1"
+	random_player_check.text = "Random player team"
+	random_player_check.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	random_player_check.custom_minimum_size.y = CONTROL_HEIGHT
 	random_player_check.toggled.connect(_on_random_player_toggled)
 	column.add_child(random_player_check)
 
-	random_enemy_check = CheckBox.new()
+	random_enemy_check = CheckButton.new()
 	random_enemy_check.name = "RandomEnemyCheck"
-	random_enemy_check.text = "Random Team 2"
+	random_enemy_check.text = "Random enemy team"
+	random_enemy_check.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	random_enemy_check.custom_minimum_size.y = CONTROL_HEIGHT
 	random_enemy_check.toggled.connect(_on_random_enemy_toggled)
 	column.add_child(random_enemy_check)
 
 	player_size_slider = _team_size_slider("PlayerSizeSlider", 3)
-	column.add_child(_labeled_control("Your Team", _slider_row(player_size_slider, "PlayerSizeValue")))
+	column.add_child(_labeled_control("Player team", _slider_row(player_size_slider, "PlayerSizeValue")))
 	enemy_size_spin = _team_size_slider("EnemySizeSlider", 3)
-	column.add_child(_labeled_control("Enemy Team", _slider_row(enemy_size_spin, "EnemySizeValue")))
+	column.add_child(_labeled_control("Enemy team", _slider_row(enemy_size_spin, "EnemySizeValue")))
 
 	net_status_label = Label.new()
 	net_status_label.name = "NetStatus"
@@ -550,26 +566,32 @@ func _create_setup_panel() -> PanelContainer:
 	_apply_body_font(net_status_label)
 	column.add_child(net_status_label)
 
-	net_ready_check = CheckBox.new()
+	net_ready_check = CheckButton.new()
 	net_ready_check.name = "NetReadyCheck"
 	net_ready_check.text = "Ready"
+	net_ready_check.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	net_ready_check.custom_minimum_size.y = CONTROL_HEIGHT
 	net_ready_check.visible = false
 	net_ready_check.toggled.connect(_on_net_ready_toggled)
-	column.add_child(net_ready_check)
+	footer.add_child(net_ready_check)
 
 	launch_button = Button.new()
 	launch_button.name = "LaunchButton"
 	launch_button.text = "Launch Skirmish"
-	launch_button.custom_minimum_size.y = CONTROL_HEIGHT
+	launch_button.custom_minimum_size.y = PmdStyle.CONTROL_HEIGHT
 	launch_button.pressed.connect(_on_launch_pressed)
-	column.add_child(launch_button)
+	footer.add_child(launch_button)
 
 	status_label = Label.new()
 	status_label.name = "StatusLabel"
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	status_label.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
+	status_label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
 	status_label.custom_minimum_size = Vector2(0, 0)
-	column.add_child(status_label)
+	footer.add_child(status_label)
+	footer.add_child(close_button)
+
+	column.add_child(_section_header("Seed"))
 	code_output = LineEdit.new()
 	code_output.name = "CodeOutput"
 	code_output.editable = false
@@ -709,7 +731,7 @@ func _create_details_panel() -> PanelContainer:
 	var column := VBoxContainer.new()
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_theme_constant_override("separation", 8)
-	scroll.add_child(column)
+	scroll.add_child(_scroll_pad(column))
 
 	target_label = Label.new()
 	target_label.name = "TargetLabel"
@@ -726,7 +748,8 @@ func _create_details_panel() -> PanelContainer:
 	slot_title_label = Label.new()
 	slot_title_label.name = "SlotTitleLabel"
 	slot_title_label.text = "Pokemon setup"
-	_apply_title_font(slot_title_label)
+	_apply_body_font(slot_title_label)
+	slot_title_label.add_theme_color_override("font_color", PmdStyle.TEXT_GOLD)
 	slot_title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(slot_title_label)
 
@@ -734,7 +757,7 @@ func _create_details_panel() -> PanelContainer:
 	var moves_row := HBoxContainer.new()
 	moves_row.add_theme_constant_override("separation", 6)
 	column.add_child(moves_row)
-	random_moves_check = CheckBox.new()
+	random_moves_check = CheckButton.new()
 	random_moves_check.name = "RandomMovesCheck"
 	random_moves_check.text = "Random"
 	random_moves_check.button_pressed = true
@@ -754,7 +777,7 @@ func _create_details_panel() -> PanelContainer:
 	var ability_row := HBoxContainer.new()
 	ability_row.add_theme_constant_override("separation", 6)
 	column.add_child(ability_row)
-	random_ability_check = CheckBox.new()
+	random_ability_check = CheckButton.new()
 	random_ability_check.name = "RandomAbilityCheck"
 	random_ability_check.text = "Random"
 	random_ability_check.button_pressed = true
@@ -774,7 +797,7 @@ func _create_details_panel() -> PanelContainer:
 	var held_row := HBoxContainer.new()
 	held_row.add_theme_constant_override("separation", 6)
 	column.add_child(held_row)
-	random_item_check = CheckBox.new()
+	random_item_check = CheckButton.new()
 	random_item_check.name = "RandomItemCheck"
 	random_item_check.text = "Random"
 	random_item_check.toggled.connect(_on_random_item_toggled)
@@ -873,12 +896,32 @@ func _flash_portrait(texture_rect: TextureRect, slug: String, expression: String
 			texture_rect.texture = normal)
 
 
-func _section_header(text: String) -> Label:
+func _scroll_pad(content: Control) -> MarginContainer:
+	var pad := MarginContainer.new()
+	pad.name = "ScrollPad"
+	pad.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	pad.add_theme_constant_override("margin_left", 2)
+	pad.add_theme_constant_override("margin_right", SCROLL_PAD_RIGHT)
+	pad.add_theme_constant_override("margin_top", 2)
+	pad.add_theme_constant_override("margin_bottom", 2)
+	pad.add_child(content)
+	_scroll_pads.append(pad)
+	return pad
+
+
+func _section_header(text: String) -> Control:
+	var block := VBoxContainer.new()
+	block.name = "%sHeader" % text.replace(" ", "")
+	block.add_theme_constant_override("separation", 2)
 	var label := Label.new()
 	label.text = text
 	_apply_body_font(label)
-	label.modulate = Color(1, 1, 1, 0.7)
-	return label
+	label.add_theme_color_override("font_color", PmdStyle.TEXT_GOLD)
+	block.add_child(label)
+	var rule: ColorRect = PmdStyle.rule(0.6)
+	rule.custom_minimum_size.y = 2
+	block.add_child(rule)
+	return block
 
 
 func _section_value(node_name: String) -> Label:
@@ -1663,6 +1706,8 @@ func _create_slot_button(path: String, index: int, side: String) -> Button:
 		frame.visible = false
 		label.offset_left = 0
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
+		label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
 		label.text = "%d" % (index + 1)
 	else:
 		var entry: Dictionary = _entry_for_path(path)
@@ -1680,17 +1725,13 @@ func _create_slot_button(path: String, index: int, side: String) -> Button:
 
 func _refresh_details() -> void:
 	var target: String = "Player" if active_side == SIDE_PLAYER else "Enemy"
-	target_label.text = "Add Target: %s" % target
-	var player_names: String = _format_team(player_team_paths, _items_for_side(SIDE_PLAYER))
-	var enemy_names: String = _format_team(enemy_team_paths, _items_for_side(SIDE_ENEMY))
-	details_label.text = "Mode: %s\nPlayer %d/%d: %s\nEnemy %d/%d: %s" % [
+	target_label.text = "%s Team" % target
+	details_label.text = "%s\nPlayer %d/%d  Enemy %d/%d" % [
 		SkirmishControlMode.label(_selected_control_mode()),
 		player_team_paths.size(),
 		_map_max_team_size(),
-		player_names,
 		enemy_team_paths.size(),
 		_map_max_team_size(),
-		enemy_names,
 	]
 
 
@@ -2455,6 +2496,9 @@ func _apply_responsive_layout() -> void:
 	if is_inside_tree():
 		_apply_font_step()
 	var compact: bool = _uses_compact_layout()
+	for pad in _scroll_pads:
+		pad.add_theme_constant_override("margin_left", 0 if compact else 2)
+		pad.add_theme_constant_override("margin_right", 0 if compact else SCROLL_PAD_RIGHT)
 	if setup_panel != null:
 		setup_panel.custom_minimum_size.x = SETUP_PANEL_COMPACT_WIDTH if compact else SETUP_PANEL_WIDTH
 	if details_panel != null:
