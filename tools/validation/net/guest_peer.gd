@@ -6,6 +6,10 @@ var main: Node = null
 var session: NetSession = null
 var out_path: String = ""
 var drop_at_turn: int = 0
+var rejoin_after: int = 0
+var dropped: bool = false
+var rejoined: bool = false
+var drop_frame: int = 0
 var max_frames: int = 60000
 var _saved_text: String = ""
 
@@ -27,6 +31,7 @@ func _run() -> void:
 	var port: int = int(_arg("port", "24592"))
 	out_path = _arg("out", "res://logs/debug/net/guest.pmdn")
 	drop_at_turn = int(_arg("drop_at_turn", "0"))
+	rejoin_after = int(_arg("rejoin_after", "0"))
 	var player_name: String = _arg("name", "guest")
 	GameSettings.load_settings()
 	main = (load(MAIN_SCENE_PATH) as PackedScene).instantiate()
@@ -62,10 +67,20 @@ func _run() -> void:
 			level.battle_ended.connect(func(_r: int) -> void:
 				if is_instance_valid(level):
 					_saved_text = level.notation.text())
-		if drop_at_turn > 0 and level != null and is_instance_valid(level) and level.notation.turn_index >= drop_at_turn:
-			print("guest: dropping at turn %d" % level.notation.turn_index)
-			_saved_text = level.notation.text()
-			break
+		if drop_at_turn > 0 and not dropped and level != null and is_instance_valid(level) and level.notation.turn_index >= drop_at_turn:
+			dropped = true
+			if rejoin_after <= 0:
+				print("guest: dropping at turn %d" % level.notation.turn_index)
+				_saved_text = level.notation.text()
+				break
+			print("guest: cutting the link at turn %d" % level.notation.turn_index)
+			drop_frame = frames
+			if session.link != null:
+				session.link.close("cable")
+		if dropped and not rejoined and rejoin_after > 0 and frames - drop_frame >= rejoin_after:
+			rejoined = true
+			var back: String = session.rejoin()
+			print("guest: rejoining (%s)" % ("ok" if back.is_empty() else back))
 		if session.state == NetSession.IDLE and frames > 1200:
 			break
 	if _saved_text.is_empty():

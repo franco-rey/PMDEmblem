@@ -2,6 +2,7 @@ class_name RosterCarousel
 extends Control
 
 signal picked(entry: Dictionary)
+signal selection_changed(entry: Dictionary)
 
 const ROW_HEIGHT: float = 76.0
 const ROW_WIDTH: float = 330.0
@@ -9,6 +10,7 @@ const PORTRAIT_SIZE: float = 62.0
 const VISIBLE_ROWS: int = 9
 const CURVE_DEPTH: float = 96.0
 const GLIDE_SPEED: float = 14.0
+const SPIN_SECONDS: float = 1.2
 const WHEEL_STEP: float = 1.0
 const HAPPY: String = "Happy"
 
@@ -18,6 +20,8 @@ var _rows: Array[Control] = []
 var _offset: float = 0.0
 var _target: float = 0.0
 var _selected: int = -1
+var _spin_from: float = 0.0
+var _spin_elapsed: float = -1.0
 
 
 func _ready() -> void:
@@ -42,6 +46,16 @@ func set_entries(source: Array[Dictionary]) -> void:
 	if not entries.is_empty():
 		_select(0, false)
 	_layout_rows()
+
+
+func select_index(index: int, emit: bool) -> void:
+	_select(index, emit)
+	_offset = _target
+	_layout_rows()
+
+
+func selected_index() -> int:
+	return _selected
 
 
 func selected_entry() -> Dictionary:
@@ -76,7 +90,32 @@ func _build_row() -> Control:
 	return row
 
 
+func spin_to_random() -> void:
+	if entries.size() < 2:
+		return
+	var index: int = _selected
+	while index == _selected:
+		index = randi_range(0, entries.size() - 1)
+	_selected = index
+	_target = float(index)
+	_spin_from = _offset
+	_spin_elapsed = 0.0
+	_layout_rows()
+
+
 func _process(delta: float) -> void:
+	if _spin_elapsed >= 0.0:
+		_spin_elapsed += delta
+		var t: float = clampf(_spin_elapsed / SPIN_SECONDS, 0.0, 1.0)
+		var eased: float = 1.0 - pow(1.0 - t, 3.0)
+		_offset = lerpf(_spin_from, _target, eased)
+		_layout_rows()
+		if t >= 1.0:
+			_spin_elapsed = -1.0
+			_offset = _target
+			selection_changed.emit(selected_entry())
+			picked.emit(selected_entry())
+		return
 	if is_equal_approx(_offset, _target):
 		return
 	_offset = lerpf(_offset, _target, clampf(delta * GLIDE_SPEED, 0.0, 1.0))
@@ -117,20 +156,27 @@ func _paint_row(row: Control, entry: Dictionary, is_selected: bool) -> void:
 	label.text = String(entry.get("label", ""))
 	label.add_theme_color_override("font_color", PmdStyle.TEXT_GOLD if is_selected else PmdStyle.TEXT_DIM)
 	var plate: Panel = row.get_node("Plate") as Panel
-	var fill: Color = PmdStyle.NAVY_LIGHT if is_selected else PmdStyle.NAVY_DEEP
-	plate.add_theme_stylebox_override("panel", PmdStyle.window(fill, PmdStyle.FRAME, 2, 6))
+	plate.add_theme_stylebox_override("panel", PmdStyle.plate("hover" if is_selected else "normal"))
 	var portrait: TextureRect = row.get_node("Portrait") as TextureRect
 	var slug: String = String(entry.get("slug", ""))
-	var mood: String = HAPPY if is_selected and PortraitLibrary.has_expression(slug, HAPPY) else PortraitLibrary.NORMAL
-	portrait.texture = PortraitLibrary.texture_for(slug, mood)
+	portrait.visible = not slug.is_empty()
+	label.position.x = PORTRAIT_SIZE + 18.0 if portrait.visible else 18.0
+	label.size.x = ROW_WIDTH - label.position.x - 8.0
+	if portrait.visible:
+		var mood: String = HAPPY if is_selected and PortraitLibrary.has_expression(slug, HAPPY) else PortraitLibrary.NORMAL
+		portrait.texture = PortraitLibrary.texture_for(slug, mood)
 
 
 func _select(index: int, emit: bool) -> void:
 	if entries.is_empty():
 		return
+	_spin_elapsed = -1.0
+	var previous: int = _selected
 	_selected = clampi(index, 0, entries.size() - 1)
 	_target = float(_selected)
 	_layout_rows()
+	if _selected != previous:
+		selection_changed.emit(selected_entry())
 	if emit:
 		picked.emit(selected_entry())
 

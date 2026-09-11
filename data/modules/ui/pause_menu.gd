@@ -9,8 +9,7 @@ signal quit_requested
 signal resign_requested
 
 const LAYER_INDEX: int = 30
-const BUTTON_HEIGHT: float = 56.0
-const MENU_WIDTH: float = 420.0
+const MENU_WIDTH: float = 480.0
 
 var can_open: Callable = Callable()
 var is_open: bool = false
@@ -47,15 +46,15 @@ func _ready() -> void:
 	_center.add_child(_menu)
 	var margin := MarginContainer.new()
 	for side in ["left", "top", "right", "bottom"]:
-		margin.add_theme_constant_override("margin_%s" % side, 18)
+		margin.add_theme_constant_override("margin_%s" % side, PmdStyle.PANEL_MARGIN)
 	_menu.add_child(margin)
 	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 10)
+	column.add_theme_constant_override("separation", PmdStyle.PANEL_GAP)
 	margin.add_child(column)
 	var title := Label.new()
 	title.text = "Paused"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	PmdStyle.apply_heading(title, 36)
+	PmdStyle.apply_title(title, PmdStyle.FONT_TITLE)
 	column.add_child(title)
 	_add_button(column, "Resume", "ResumeButton", close)
 	_add_button(column, "Restart Skirmish", "RestartButton", func() -> void: _leave(restart_requested))
@@ -164,10 +163,6 @@ func _hide_graphics() -> void:
 
 
 func _add_button(column: VBoxContainer, text: String, node_name: String, callback: Callable) -> void:
-	var button := Button.new()
-	button.name = node_name
-	button.text = text
-	button.custom_minimum_size = Vector2(0, BUTTON_HEIGHT)
-	button.pressed.connect(callback)
+	var button := PmdStyle.control_button(text, node_name, callback)
 	column.add_child(button)
 	_buttons[node_name] = button

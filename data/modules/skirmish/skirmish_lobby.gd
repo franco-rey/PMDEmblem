@@ -10,11 +10,10 @@ const SIDE_ENEMY: String = "enemy"
 const RosterProvider = preload("res://data/modules/skirmish/skirmish_roster_provider.gd")
 const SkirmishCode = preload("res://data/modules/skirmish/skirmish_code.gd")
 const SkirmishControlMode = preload("res://data/modules/skirmish/skirmish_control_mode.gd")
-const FONT_SIZE: int = 36
-const SMALL_FONT_SIZE: int = 36
-const TITLE_FONT_SIZE: int = 48
-const COMPACT_FONT_SIZE: int = 24
-const COMPACT_TITLE_FONT_SIZE: int = 24
+const FONT_SIZE: int = PmdStyle.FONT_BODY
+const TITLE_FONT_SIZE: int = PmdStyle.FONT_TITLE
+const COMPACT_FONT_SIZE: int = PmdStyle.FONT_CAPTION
+const COMPACT_TITLE_FONT_SIZE: int = PmdStyle.FONT_CAPTION
 const PORTRAIT_FLASH_SECONDS: float = 0.9
 const SELECTED_PORTRAIT_PX: float = 96.0
 const LARGE_FONT_LAYOUT_WIDTH: float = 1700.0
@@ -35,7 +34,8 @@ const CHOOSER_ABILITY: String = "ability"
 const TRAY_HEIGHT: float = 112.0
 const SLOT_COLUMNS: int = 8
 const COMPACT_SLOT_HEIGHT: float = 50.0
-const CONTROL_HEIGHT: float = 42.0
+const CONTROL_HEIGHT: float = PmdStyle.ROW_HEIGHT
+const MAP_PREVIEW_LABEL: String = "Preview..."
 const GRID_GAP: float = 8.0
 const LAYOUT_MARGIN_X: float = 20.0
 const PANEL_MARGIN_X: float = 10.0
@@ -107,6 +107,8 @@ var search_input: LineEdit
 var type_filter: OptionButton
 var sort_picker: OptionButton
 var map_picker: OptionButton
+var map_preview: MapPreviewScreen = null
+var _map_index: int = 0
 var control_mode_picker: OptionButton
 var multiverse_toggle: CheckButton
 var ai_level_spin: SpinBox
@@ -814,7 +816,7 @@ func _create_selected_box() -> HBoxContainer:
 	column.add_child(selected_name_label)
 	selected_types_label = Label.new()
 	selected_types_label.name = "SelectedTypes"
-	selected_types_label.add_theme_font_size_override("font_size", 24)
+	selected_types_label.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
 	selected_types_label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
 	column.add_child(selected_types_label)
 	box.visible = false
@@ -985,9 +987,11 @@ func _load_data() -> void:
 		var map: MapDefinitionResource = load(path) as MapDefinitionResource
 		var label: String = map.display_name if map != null and not map.display_name.is_empty() else path.get_file().get_basename().capitalize()
 		map_picker.add_item(label)
+	map_picker.add_item(MAP_PREVIEW_LABEL)
 	var default_index: int = map_paths.find(SkirmishCode.DEFAULT_MAP_PATH)
 	if default_index >= 0:
 		map_picker.select(default_index)
+	_map_index = maxi(0, map_picker.selected)
 	_apply_map_team_cap()
 
 	type_filter.clear()
@@ -1340,7 +1344,7 @@ func _type_badge(type_id: String, category: int) -> Control:
 	var type_label := Label.new()
 	type_label.text = PmdStyle.type_abbreviation(type_id)
 	type_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	type_label.add_theme_font_size_override("font_size", 12)
+	type_label.add_theme_font_size_override("font_size", PmdStyle.FONT_MICRO)
 	type_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(type_label)
 	var category_label := Label.new()
@@ -1352,7 +1356,7 @@ func _type_badge(type_id: String, category: int) -> Control:
 		_:
 			category_label.text = "STA"
 	category_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	category_label.add_theme_font_size_override("font_size", 12)
+	category_label.add_theme_font_size_override("font_size", PmdStyle.FONT_MICRO)
 	category_label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
 	category_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(category_label)
@@ -1535,7 +1539,12 @@ func _apply_map_team_cap() -> void:
 			slider.value = minf(slider.value, float(cap))
 
 
-func _on_map_changed(_index: int) -> void:
+func _on_map_changed(index: int) -> void:
+	if index >= map_paths.size():
+		map_picker.select(clampi(_map_index, 0, maxi(0, map_paths.size() - 1)))
+		_open_map_preview()
+		return
+	_map_index = index
 	var cap: int = _map_max_team_size()
 	_apply_map_team_cap()
 	while player_team_paths.size() > cap:
@@ -2135,6 +2144,43 @@ func _on_close_pressed() -> void:
 	close_requested.emit()
 
 
+func request_close() -> void:
+	if map_preview != null and map_preview.visible:
+		map_preview.close()
+		return
+	if summary_panel != null and summary_panel.visible:
+		_on_back_to_lobby_pressed()
+		return
+	_on_close_pressed()
+
+
+func _open_map_preview() -> void:
+	if map_preview == null:
+		map_preview = MapPreviewScreen.new()
+		map_preview.map_selected.connect(_on_preview_map_selected)
+		map_preview.closed.connect(_on_preview_closed)
+		add_child(map_preview)
+	var layout: Control = get_node_or_null("LayoutMargin") as Control
+	if layout != null:
+		layout.visible = false
+	map_preview.open(map_paths, _map_index)
+
+
+func _on_preview_map_selected(index: int) -> void:
+	if index < 0 or index >= map_paths.size():
+		return
+	map_picker.select(index)
+	_on_map_changed(index)
+
+
+func _on_preview_closed() -> void:
+	var layout: Control = get_node_or_null("LayoutMargin") as Control
+	if layout != null:
+		layout.visible = true
+	if map_picker != null and map_picker.is_inside_tree():
+		map_picker.grab_focus()
+
+
 func _build_launch_result(store_state: bool) -> Dictionary:
 	if map_paths.is_empty():
 		_set_status("No maps available")
@@ -2367,8 +2413,15 @@ func _roster_width_budget() -> float:
 		setup_width = maxf(setup_width, setup_panel.get_combined_minimum_size().x)
 	if details_panel != null:
 		details_width = maxf(details_width, details_panel.get_combined_minimum_size().x)
-	var side_width: float = setup_width + details_width + MIDDLE_GAP * 2.0 + PANEL_MARGIN_X * 2.0
+	var side_width: float = setup_width + details_width + MIDDLE_GAP * 2.0 + PANEL_MARGIN_X * 4.0 + _roster_scrollbar_width()
 	return maxf(ROSTER_MIN_CELL * float(ROSTER_COLUMNS) + GRID_GAP * float(ROSTER_COLUMNS - 1), content_width - side_width)
+
+
+func _roster_scrollbar_width() -> float:
+	if roster_scroll == null:
+		return 8.0
+	var bar: VScrollBar = roster_scroll.get_v_scroll_bar()
+	return maxf(8.0, bar.get_combined_minimum_size().x) if bar != null else 8.0
 
 
 func _entry_for_path(path: String) -> Dictionary:

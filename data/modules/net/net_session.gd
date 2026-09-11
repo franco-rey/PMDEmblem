@@ -7,6 +7,7 @@ signal notice(text: String)
 signal start_requested(code: String, battle_id: String)
 signal battle_over_remote(result: int, reason: String)
 signal desynced(reason: String)
+signal suspension_tick(remaining_seconds: int)
 
 enum {
 	IDLE,
@@ -16,9 +17,11 @@ enum {
 	STARTING,
 	IN_BATTLE,
 	ENDED,
+	SUSPENDED,
 }
 
 const STALL_FRAMES: int = 3600
+const SUSPEND_SECONDS: float = 120.0
 
 var link: NetLink = null
 var state: int = IDLE
@@ -52,8 +55,18 @@ var _auto_ai: BattleAI = null
 var _auto_busy: bool = false
 var _stall_frames: int = 0
 var _stall_header: String = ""
-var disconnect_grace_seconds: float = 3.0
-var _disconnect_grace: float = -1.0
+var suspend_seconds: float = SUSPEND_SECONDS
+var _suspend_remaining: float = -1.0
+var _listen_port: int = 0
+var _join_address: String = ""
+var _join_port: int = 0
+var _rejoining: bool = false
+var _catching_up: bool = false
+var _catchup: Dictionary = {}
+var _catchup_wanted: bool = false
+var _outbox: Array[Dictionary] = []
+var _final_result: int = TacticsLevel.RESULT_ONGOING
+var _final_reason: String = ""
 
 
 func _ready() -> void:
@@ -70,11 +83,36 @@ func in_battle() -> bool:
 	return state == IN_BATTLE
 
 
+func suspended() -> bool:
+	return state == SUSPENDED
+
+
+func battle_live() -> bool:
+	return state == IN_BATTLE or state == SUSPENDED
+
+
+func suspend_remaining() -> float:
+	return maxf(_suspend_remaining, 0.0) if state == SUSPENDED else 0.0
+
+
+func suspend_expired() -> bool:
+	return state == SUSPENDED and _suspend_remaining <= 0.0
+
+
+func rejoining() -> bool:
+	return _rejoining or _catching_up
+
+
+func can_rejoin() -> bool:
+	return state == SUSPENDED and not host_role and not suspend_expired() and not rejoining() and not _join_address.is_empty()
+
+
 func host(port: int = EnetLink.DEFAULT_PORT) -> String:
 	var enet := EnetLink.new()
 	var error: String = enet.host(port)
 	if not error.is_empty():
 		return error
+	_listen_port = port
 	host_role = true
 	local_side = PokemonInstanceResource.Team.PLAYER
 	_use_link(enet)
@@ -87,6 +125,8 @@ func join(address: String, port: int = EnetLink.DEFAULT_PORT) -> String:
 	var error: String = enet.join(address, port)
 	if not error.is_empty():
 		return error
+	_join_address = address
+	_join_port = port
 	host_role = false
 	local_side = PokemonInstanceResource.Team.ENEMY
 	_use_link(enet)
@@ -101,6 +141,35 @@ func use_test_link(test_link: NetLink, as_host: bool) -> void:
 	_set_state(HOSTING if as_host else CONNECTING)
 	if not as_host:
 		_send_hello()
+
+
+func rejoin() -> String:
+	if not can_rejoin():
+		return "nothing to rejoin"
+	var enet := EnetLink.new()
+	var error: String = enet.join(_join_address, _join_port)
+	if not error.is_empty():
+		return error
+	_rejoining = true
+	_use_link(enet)
+	notice.emit("Reconnecting to %s..." % _remote_label())
+	return ""
+
+
+func rejoin_with_test_link(test_link: NetLink) -> void:
+	_rejoining = true
+	_use_link(test_link)
+	_on_opened()
+
+
+func accept_rejoin_test_link(test_link: NetLink) -> void:
+	_use_link(test_link)
+
+
+func claim_win() -> void:
+	if not suspend_expired():
+		return
+	_finish_remote(_local_win_result(), "abandon")
 
 
 func leave(reason: String = "left") -> void:
@@ -127,15 +196,8 @@ func _use_link(new_link: NetLink) -> void:
 func _process(delta: float) -> void:
 	if link != null:
 		link.poll(delta)
-	if _disconnect_grace >= 0.0:
-		if level != null and is_instance_valid(level) and level.battle_finished:
-			_disconnect_grace = -1.0
-			_set_state(ENDED)
-		else:
-			_disconnect_grace -= delta
-			if _disconnect_grace <= 0.0:
-				_disconnect_grace = -1.0
-				_finish_remote(_local_win_result(), "disconnect")
+	if state == SUSPENDED:
+		_tick_suspension(delta)
 	_update_remote_lock()
 	if not _inbox.is_empty() and not _draining:
 		_pump()
@@ -144,22 +206,65 @@ func _process(delta: float) -> void:
 
 
 func _on_opened() -> void:
-	if not host_role:
-		_send_hello()
+	if host_role:
+		return
+	if _rejoining:
+		link.send(NetMessages.build(NetMessages.REJOIN, {"battle_id": battle_id, "name": local_name}))
+		return
+	_send_hello()
 
 
 func _on_closed(reason: String) -> void:
 	last_reason = reason
-	if in_battle() and state != ENDED:
+	if state == SUSPENDED:
+		if _rejoining:
+			_rejoining = false
+			notice.emit("Could not reach %s (%s)." % [_remote_label(), reason])
+		return
+	if in_battle():
 		if _stall_frames > 60:
 			_raise_desync("stalled waiting for %s when the connection dropped" % _stall_header, false)
 			return
-		notice.emit("%s disconnected." % _remote_label())
-		_disconnect_grace = disconnect_grace_seconds
+		_suspend(reason)
 		return
 	if state != ENDED:
 		notice.emit("Disconnected (%s)." % reason)
 		_set_state(IDLE)
+
+
+func _suspend(reason: String) -> void:
+	_set_state(SUSPENDED)
+	_suspend_remaining = suspend_seconds
+	_rejoining = false
+	_catchup_wanted = false
+	notice.emit("Connection to %s lost (%s). Waiting up to %d s." % [_remote_label(), reason, int(ceil(suspend_seconds))])
+	suspension_tick.emit(int(ceil(suspend_seconds)))
+	if host_role:
+		_relisten()
+
+
+func _relisten() -> void:
+	if _listen_port <= 0:
+		return
+	var enet := EnetLink.new()
+	var error: String = enet.host(_listen_port)
+	if not error.is_empty():
+		notice.emit("Could not reopen port %d: %s" % [_listen_port, error])
+		return
+	_use_link(enet)
+
+
+func _tick_suspension(delta: float) -> void:
+	if _suspend_remaining > 0.0:
+		var before: int = int(ceil(_suspend_remaining))
+		_suspend_remaining = maxf(_suspend_remaining - delta, 0.0)
+		var after: int = int(ceil(_suspend_remaining))
+		if after != before:
+			suspension_tick.emit(after)
+		if _suspend_remaining <= 0.0:
+			notice.emit("%s did not return." % _remote_label())
+	if _catchup_wanted and host_role and level != null and is_instance_valid(level) and not level.is_presentation_busy() and not _draining:
+		_send_catchup()
 
 
 func _send_hello() -> void:
@@ -227,6 +332,9 @@ func _on_received(message: Dictionary) -> void:
 			notice.emit("Connected to %s." % remote_name)
 			send_lobby(local_lobby)
 		NetMessages.REJECT:
+			if state == SUSPENDED:
+				_handle_rejoin_refused(message)
+				return
 			notice.emit("The host refused the connection: %s" % String(message.get("reason", "")))
 			leave("rejected")
 		NetMessages.LOBBY:
@@ -242,6 +350,12 @@ func _on_received(message: Dictionary) -> void:
 			start_requested.emit(pending_code, battle_id)
 		NetMessages.BATTLE_READY:
 			_ready_remote = true
+			if state == SUSPENDED and host_role:
+				_resume_after_catchup()
+		NetMessages.REJOIN:
+			_handle_rejoin(message)
+		NetMessages.CATCHUP:
+			_handle_catchup(message)
 		NetMessages.CMD, NetMessages.SYNC:
 			_inbox.append(message)
 		NetMessages.DESYNC:
@@ -257,9 +371,12 @@ func _on_received(message: Dictionary) -> void:
 
 
 func _handle_hello(message: Dictionary) -> void:
-	remote_name = String(message.get("name", "Player"))
 	if not host_role:
 		return
+	if state == STARTING or battle_live():
+		link.send(NetMessages.build(NetMessages.REJECT, {"reason": "busy"}))
+		return
+	remote_name = String(message.get("name", "Player"))
 	if int(message.get("protocol", -1)) != NetMessages.PROTOCOL:
 		link.send(NetMessages.build(NetMessages.REJECT, {"reason": "protocol"}))
 		return
@@ -300,6 +417,115 @@ func _handle_start(message: Dictionary) -> void:
 	start_requested.emit(code, battle_id)
 
 
+func _handle_rejoin(message: Dictionary) -> void:
+	if not host_role or link == null:
+		return
+	var wanted: String = String(message.get("battle_id", ""))
+	if wanted.is_empty() or wanted != battle_id:
+		link.send(NetMessages.build(NetMessages.REJECT, {"reason": "no_battle"}))
+		return
+	remote_name = String(message.get("name", remote_name))
+	if state == ENDED:
+		link.send(NetMessages.build(NetMessages.REJECT, {"reason": "ended", "result": _final_result, "why": _final_reason}))
+		return
+	if state != SUSPENDED or level == null or not is_instance_valid(level):
+		link.send(NetMessages.build(NetMessages.REJECT, {"reason": "no_battle"}))
+		return
+	_catchup_wanted = true
+	notice.emit("%s is back, sending the battle so far." % _remote_label())
+
+
+func _send_catchup() -> void:
+	_catchup_wanted = false
+	if link == null or not link.is_open() or level == null or not is_instance_valid(level):
+		return
+	var lines: Array = []
+	for line in level.notation.lines:
+		lines.append(String(line))
+	_outbox.clear()
+	_inbox.clear()
+	_send_seq = 0
+	_expect_seq = 0
+	_stall_frames = 0
+	link.send(NetMessages.build(NetMessages.CATCHUP, {
+		"code": pending_code,
+		"battle_id": battle_id,
+		"lines": lines,
+		"chain": chain,
+		"count": line_count,
+	}))
+
+
+func _resume_after_catchup() -> void:
+	_set_state(IN_BATTLE)
+	_expect_seq = 0
+	_suspend_remaining = -1.0
+	notice.emit("%s caught up. The battle continues." % _remote_label())
+	for entry in _outbox:
+		link.send(entry)
+	_outbox.clear()
+
+
+func _handle_rejoin_refused(message: Dictionary) -> void:
+	_rejoining = false
+	var reason: String = String(message.get("reason", ""))
+	if reason == "ended":
+		var result: int = int(message.get("result", TacticsLevel.RESULT_ONGOING))
+		var why: String = String(message.get("why", "ended"))
+		if link != null:
+			link.close("ended")
+		_finish_remote(result, why)
+		return
+	notice.emit("%s could not take us back (%s)." % [_remote_label(), reason])
+	if link != null:
+		link.close("rejected")
+
+
+func _handle_catchup(message: Dictionary) -> void:
+	if host_role or state != SUSPENDED:
+		return
+	_rejoining = false
+	_catching_up = true
+	_catchup = message.duplicate(true)
+	battle_id = String(message.get("battle_id", battle_id))
+	pending_code = String(message.get("code", pending_code))
+	notice.emit("Reconnected to %s, catching up." % _remote_label())
+	start_requested.emit(pending_code, battle_id)
+
+
+func _replay_catchup() -> void:
+	var lines: Array = _catchup.get("lines", [])
+	var target_chain: String = String(_catchup.get("chain", ""))
+	var target_count: int = int(_catchup.get("count", 0))
+	_catchup = {}
+	var runner: BattlePresentationRunner = level.presentation_runner
+	var was_immediate: bool = runner.immediate_mode
+	runner.immediate_mode = true
+	var frames: int = 0
+	while is_instance_valid(level) and not level._scheduler_started and frames < 600:
+		await get_tree().physics_frame
+		frames += 1
+	for line in lines:
+		if level == null or not is_instance_valid(level) or level.battle_finished or applier.failures > 0:
+			break
+		await applier.apply(String(line))
+	_catching_up = false
+	if level == null or not is_instance_valid(level):
+		return
+	runner.immediate_mode = was_immediate
+	if applier.failures > 0 or chain != target_chain or line_count != target_count:
+		_raise_desync("catch-up replay differs (%d lines, expected %d)" % [line_count, target_count], true)
+		return
+	_send_seq = 0
+	_expect_seq = 0
+	_outbox.clear()
+	_ready_remote = true
+	_suspend_remaining = -1.0
+	_set_state(IN_BATTLE)
+	mark_ready()
+	notice.emit("Caught up with %s. The battle continues." % _remote_label())
+
+
 func attach_level(battle_level: TacticsLevel) -> void:
 	detach_level()
 	level = battle_level
@@ -313,8 +539,8 @@ func attach_level(battle_level: TacticsLevel) -> void:
 	_send_seq = 0
 	_expect_seq = 0
 	_inbox.clear()
+	_outbox.clear()
 	_stall_frames = 0
-	_disconnect_grace = -1.0
 	_my_rounds.clear()
 	_their_rounds.clear()
 	_ready_local = false
@@ -325,6 +551,10 @@ func attach_level(battle_level: TacticsLevel) -> void:
 	level.battle_ended.connect(_on_battle_ended)
 	if level.scheduler != null:
 		level.scheduler.round_started.connect(_on_round_started)
+	if _catching_up:
+		_replay_catchup()
+		return
+	_suspend_remaining = -1.0
 	_set_state(IN_BATTLE)
 
 
@@ -343,7 +573,7 @@ func detach_level() -> void:
 
 
 func mark_ready() -> void:
-	if _ready_local or link == null:
+	if _ready_local or link == null or _catching_up:
 		return
 	_ready_local = true
 	link.send(NetMessages.build(NetMessages.BATTLE_READY, {"battle_id": battle_id}))
@@ -361,7 +591,7 @@ func active_unit_side() -> int:
 
 
 func remote_turn_active() -> bool:
-	if not in_battle() or level == null or not is_instance_valid(level):
+	if not battle_live() or level == null or not is_instance_valid(level):
 		return false
 	var side: int = active_unit_side()
 	return side >= 0 and side != local_side
@@ -370,7 +600,7 @@ func remote_turn_active() -> bool:
 func _update_remote_lock() -> void:
 	if level == null or not is_instance_valid(level) or level.ui_control == null:
 		return
-	level.ui_control.remote_turn = remote_turn_active()
+	level.ui_control.remote_turn = remote_turn_active() or (state == SUSPENDED and not host_role)
 
 
 func _on_line_appended(line: String, index: int) -> void:
@@ -387,16 +617,20 @@ func _on_line_appended(line: String, index: int) -> void:
 		_turn_header = current_turn_header()
 	if not _owns_header(_turn_header):
 		return
-	if link == null or not link.is_open():
+	if _catching_up:
 		return
 	_send_seq += 1
-	link.send(NetMessages.build(NetMessages.CMD, {
+	var command: Dictionary = NetMessages.build(NetMessages.CMD, {
 		"seq": _send_seq,
 		"turn": _turn_header,
 		"line": line.strip_edges(),
 		"chain": before,
 		"count": index,
-	}))
+	})
+	if state == IN_BATTLE and link != null and link.is_open():
+		link.send(command)
+	else:
+		_outbox.append(command)
 
 
 func current_turn_header() -> String:
@@ -532,10 +766,16 @@ func resign() -> void:
 
 
 func _on_battle_ended(result: int) -> void:
+	_final_result = result
+	_final_reason = "ended"
+	_suspend_remaining = -1.0
 	_set_state(ENDED)
 
 
 func _finish_remote(result: int, reason: String) -> void:
+	_final_result = result
+	_final_reason = reason
+	_suspend_remaining = -1.0
 	if level != null and is_instance_valid(level) and not level.battle_finished:
 		level.finish_battle(result, reason)
 	_set_state(ENDED)
@@ -564,8 +804,14 @@ func _set_state(next: int) -> void:
 func _reset_battle_state() -> void:
 	detach_level()
 	_inbox.clear()
+	_outbox.clear()
 	_ready_local = false
 	_ready_remote = false
+	_rejoining = false
+	_catching_up = false
+	_catchup = {}
+	_catchup_wanted = false
+	_suspend_remaining = -1.0
 	battle_id = ""
 	pending_code = ""
 

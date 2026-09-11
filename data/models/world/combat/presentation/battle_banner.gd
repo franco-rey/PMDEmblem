@@ -61,7 +61,7 @@ func _ready() -> void:
 	_root.add_child(_notice_chip)
 	_notice_label = Label.new()
 	_notice_label.name = "NoticeLabel"
-	_notice_label.add_theme_font_size_override("font_size", 24)
+	_notice_label.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
 	_notice_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_notice_chip.add_child(_notice_label)
 

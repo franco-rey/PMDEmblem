@@ -8,8 +8,8 @@ signal next_requested
 
 const LAYER_INDEX: int = 25
 const PORTRAIT_SIZE: float = 64.0
-const BUTTON_HEIGHT: float = 52.0
-const PANEL_WIDTH: float = 900.0
+const BUTTON_HEIGHT: float = PmdStyle.CONTROL_HEIGHT
+const PANEL_WIDTH: float = PmdStyle.PANEL_WIDTH
 const ROSTER_CHROME: float = 260.0
 const ROSTER_MIN_HEIGHT: float = 200.0
 
@@ -45,15 +45,15 @@ func _ready() -> void:
 	_center.add_child(_panel)
 	var margin := MarginContainer.new()
 	for side in ["left", "top", "right", "bottom"]:
-		margin.add_theme_constant_override("margin_%s" % side, 20)
+		margin.add_theme_constant_override("margin_%s" % side, PmdStyle.PANEL_MARGIN)
 	_panel.add_child(margin)
 	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 12)
+	column.add_theme_constant_override("separation", PmdStyle.PANEL_GAP)
 	margin.add_child(column)
 	_title = Label.new()
 	_title.name = "ResultTitle"
 	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	PmdStyle.apply_heading(_title, 60)
+	PmdStyle.apply_title(_title, PmdStyle.FONT_HERO)
 	column.add_child(_title)
 	_subtitle = Label.new()
 	_subtitle.name = "ResultSubtitle"
@@ -68,19 +68,17 @@ func _ready() -> void:
 	_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_scroll.add_child(_columns)
 	column.add_child(_scroll)
-	var buttons := HBoxContainer.new()
-	buttons.add_theme_constant_override("separation", 12)
-	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
+	var buttons := HFlowContainer.new()
+	buttons.add_theme_constant_override("h_separation", PmdStyle.PANEL_GAP)
+	buttons.add_theme_constant_override("v_separation", PmdStyle.PANEL_GAP)
+	buttons.alignment = FlowContainer.ALIGNMENT_CENTER
 	column.add_child(buttons)
 	_add_button(buttons, "Play Again", "PlayAgainButton", play_again_requested)
 	_add_button(buttons, "Lobby", "LobbyButton", lobby_requested)
 	_add_button(buttons, "Main Menu", "MainMenuButton", main_menu_requested)
 	_add_button(buttons, "Next Battle", "NextButton", next_requested)
-	_copy_button = Button.new()
-	_copy_button.name = "CopyButton"
-	_copy_button.text = "Copy Notation"
-	_copy_button.custom_minimum_size = Vector2(200, BUTTON_HEIGHT)
-	_copy_button.pressed.connect(_on_copy_pressed)
+	_copy_button = PmdStyle.control_button("Copy Notation", "CopyButton", _on_copy_pressed)
+	_copy_button.custom_minimum_size.x = 200
 	buttons.add_child(_copy_button)
 	visible = false
 
@@ -202,7 +200,7 @@ func _unit_row(pawn: TacticsPawn, level: TacticsLevel) -> HBoxContainer:
 		var stats_label := Label.new()
 		stats_label.name = "UnitStats"
 		stats_label.text = "Dealt %d  Taken %d  KO %d" % [int(summary.get("dealt", 0)), int(summary.get("taken", 0)), int(summary.get("kos", 0))]
-		stats_label.add_theme_font_size_override("font_size", 24)
+		stats_label.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
 		stats_label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
 		text.add_child(stats_label)
 	return row
@@ -227,13 +225,10 @@ func _on_copy_pressed() -> void:
 	_copy_tween.tween_callback(func() -> void: _copy_button.text = "Copy Notation")
 
 
-func _add_button(row: HBoxContainer, text: String, node_name: String, signal_to_emit: Signal) -> void:
-	var button := Button.new()
-	button.name = node_name
-	button.text = text
-	button.custom_minimum_size = Vector2(200, BUTTON_HEIGHT)
-	button.pressed.connect(func() -> void:
+func _add_button(row: Container, text: String, node_name: String, signal_to_emit: Signal) -> void:
+	var button := PmdStyle.control_button(text, node_name, func() -> void:
 		hide_results()
 		signal_to_emit.emit())
+	button.custom_minimum_size.x = 200
 	row.add_child(button)
 	_buttons[node_name] = button

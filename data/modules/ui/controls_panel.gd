@@ -1,11 +1,10 @@
 class_name ControlsPanel
-extends PanelContainer
+extends MenuPanel
 
 signal closed
 
-const ROW_HEIGHT: float = 34.0
-const PANEL_WIDTH: float = 760.0
-const KEY_FONT: int = 24
+const LABEL_WIDTH: float = 380.0
+const KEY_FONT: int = PmdStyle.FONT_CAPTION
 const KEY_NAMES: Dictionary = {"BracketLeft": "[", "BracketRight": "]", "Equal": "=", "Plus": "+", "Minus": "-", "Kp Add": "Numpad +", "Kp Subtract": "Numpad -", "Kp Enter": "Numpad Enter", "Escape": "Esc", "Left": "Left arrow", "Right": "Right arrow", "Up": "Up arrow", "Down": "Down arrow"}
 const JOY_NAMES: Dictionary = {0: "Pad A", 1: "Pad B", 2: "Pad X", 3: "Pad Y", 4: "Pad Back", 5: "Pad Guide", 6: "Pad Start", 7: "Left stick click", 8: "Right stick click", 9: "Pad LB", 10: "Pad RB", 11: "D-pad up", 12: "D-pad down", 13: "D-pad left", 14: "D-pad right"}
 const SECTIONS: Array = [
@@ -38,48 +37,20 @@ var close_button: Button = null
 var _rows: Array[Dictionary] = []
 var _scroll: ScrollContainer = null
 var _grid: VBoxContainer = null
-var _fit_pending: bool = false
 
 
 func _ready() -> void:
+	super()
 	name = "ControlsPanel"
-	custom_minimum_size = Vector2(PANEL_WIDTH, 0)
-	add_theme_stylebox_override("panel", PmdStyle.window())
-	var margin := MarginContainer.new()
-	for side in ["left", "top", "right", "bottom"]:
-		margin.add_theme_constant_override("margin_%s" % side, 18)
-	add_child(margin)
-	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 8)
-	margin.add_child(column)
-	var title := Label.new()
-	title.text = "Controls"
-	PmdStyle.apply_heading(title, 36)
-	column.add_child(title)
-	_scroll = ScrollContainer.new()
-	_scroll.name = "RowsScroll"
-	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	column.add_child(_scroll)
-	_grid = VBoxContainer.new()
-	_grid.name = "Rows"
-	_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_grid.add_theme_constant_override("separation", 4)
-	_scroll.add_child(_grid)
+	set_title("Controls")
+	_scroll = scroll
+	_grid = body
+	_grid.add_theme_constant_override("separation", 6)
 	for section in SECTIONS:
-		var heading := Label.new()
-		heading.text = String(section[0])
-		heading.add_theme_font_size_override("font_size", 24)
-		heading.add_theme_color_override("font_color", PmdStyle.TEXT_GOLD)
-		_grid.add_child(heading)
+		add_heading(String(section[0]))
 		for entry in section[1]:
 			_grid.add_child(_row(String(entry[0]), _keys_for(entry[1], entry[2])))
-	close_button = Button.new()
-	close_button.name = "CloseButton"
-	close_button.text = "Back"
-	close_button.custom_minimum_size.y = 48
-	close_button.pressed.connect(func() -> void: closed.emit())
-	column.add_child(close_button)
+	close_button = add_footer_button("Back", "CloseButton", func() -> void: closed.emit())
 
 
 func _row(caption: String, keys: Array[String]) -> HBoxContainer:
@@ -87,12 +58,13 @@ func _row(caption: String, keys: Array[String]) -> HBoxContainer:
 	row.add_theme_constant_override("separation", 12)
 	var label := Label.new()
 	label.text = caption
-	label.custom_minimum_size = Vector2(300, ROW_HEIGHT)
-	label.add_theme_font_size_override("font_size", KEY_FONT)
+	label.custom_minimum_size = Vector2(LABEL_WIDTH, PmdStyle.ROW_HEIGHT)
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	row.add_child(label)
 	var flow := HFlowContainer.new()
 	flow.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	flow.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	flow.add_theme_constant_override("h_separation", 6)
 	flow.add_theme_constant_override("v_separation", 4)
 	row.add_child(flow)
@@ -116,31 +88,6 @@ func focus_first() -> void:
 	fit_to_viewport()
 	if close_button != null and close_button.is_inside_tree():
 		close_button.grab_focus()
-
-
-func fit_to_viewport() -> void:
-	if not is_inside_tree() or get_viewport() == null:
-		return
-	var view: Vector2 = get_viewport().get_visible_rect().size
-	custom_minimum_size.x = minf(PANEL_WIDTH, maxf(320.0, view.x - 40.0))
-	var natural: float = maxf(_grid.get_combined_minimum_size().y, _grid.size.y)
-	_scroll.custom_minimum_size.y = minf(natural, maxf(120.0, view.y - 200.0))
-	reset_size()
-	if not _fit_pending:
-		_fit_pending = true
-		call_deferred("_fit_again")
-
-
-func _fit_again() -> void:
-	_fit_pending = false
-	if not is_inside_tree() or _grid == null:
-		return
-	var view: Vector2 = get_viewport().get_visible_rect().size
-	var natural: float = maxf(_grid.get_combined_minimum_size().y, _grid.size.y)
-	var wanted: float = minf(natural, maxf(120.0, view.y - 200.0))
-	if not is_equal_approx(_scroll.custom_minimum_size.y, wanted):
-		_scroll.custom_minimum_size.y = wanted
-		reset_size()
 
 
 func rows() -> Array[Dictionary]:

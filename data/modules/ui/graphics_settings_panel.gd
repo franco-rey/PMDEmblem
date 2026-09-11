@@ -1,11 +1,10 @@
 class_name GraphicsSettingsPanel
-extends PanelContainer
+extends MenuPanel
 
 signal closed
 signal controls_requested
 
-const ROW_HEIGHT: float = 48.0
-const PANEL_WIDTH: float = 620.0
+const PICKER_WIDTH: float = 340.0
 
 var mode_picker: OptionButton = null
 var resolution_picker: OptionButton = null
@@ -21,66 +20,33 @@ var music_slider: HSlider = null
 var _volume_labels: Dictionary = {}
 var controls_button: Button = null
 var close_button: Button = null
-var status_label: Label = null
 
 
 func _ready() -> void:
+	super()
 	name = "GraphicsSettingsPanel"
-	custom_minimum_size = Vector2(PANEL_WIDTH, 0)
-	add_theme_stylebox_override("panel", PmdStyle.window())
-	var margin := MarginContainer.new()
-	for side in ["left", "top", "right", "bottom"]:
-		margin.add_theme_constant_override("margin_%s" % side, 18)
-	add_child(margin)
-	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 12)
-	margin.add_child(column)
-	var title := Label.new()
-	title.text = "Options"
-	PmdStyle.apply_heading(title, 36)
-	column.add_child(title)
-	mode_picker = _picker(column, "Window mode")
+	set_title("Options")
+	mode_picker = _picker("Window mode", "WindowModePicker")
 	for mode in GameSettings.WINDOW_MODES:
 		mode_picker.add_item(GameSettings.window_mode_label(mode))
-	resolution_picker = _picker(column, "Resolution")
+	resolution_picker = _picker("Resolution", "ResolutionPicker")
 	for size in GameSettings.RESOLUTIONS:
 		resolution_picker.add_item(GameSettings.resolution_label(size))
-	scale_picker = _picker(column, "UI scale")
+	scale_picker = _picker("UI scale", "UIscalePicker")
 	for value in GameSettings.UI_SCALES:
 		scale_picker.add_item(GameSettings.ui_scale_label(value))
-	var vsync_row := HBoxContainer.new()
-	vsync_row.custom_minimum_size.y = ROW_HEIGHT
-	column.add_child(vsync_row)
-	var vsync_label := Label.new()
-	vsync_label.text = "VSync"
-	vsync_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	vsync_row.add_child(vsync_label)
-	vsync_toggle = CheckButton.new()
-	vsync_toggle.name = "VsyncToggle"
-	vsync_row.add_child(vsync_toggle)
-	camera_track_toggle = _toggle(column, "Camera Track", "CameraTrackToggle")
-	cpu_report_toggle = _toggle(column, "Show Battle Report after CPU Battles", "CpuReportToggle")
-	cpu_speed_picker = _picker(column, "Battle speed")
+	vsync_toggle = _toggle("VSync", "VsyncToggle")
+	camera_track_toggle = _toggle("Camera track", "CameraTrackToggle")
+	cpu_report_toggle = _toggle("Battle report after CPU battles", "CpuReportToggle")
+	cpu_speed_picker = _picker("Battle speed", "BattlespeedPicker")
 	for value in GameSettings.CPU_SPEEDS:
 		cpu_speed_picker.add_item(GameSettings.cpu_speed_label(value))
-	battle_flair_toggle = _toggle(column, "Battle Flair (intro, turn banners, notices)", "BattleFlairToggle")
-	master_slider = _slider(column, "Master volume", "MasterVolumeSlider")
-	sfx_slider = _slider(column, "Effects volume", "EffectsVolumeSlider")
-	music_slider = _slider(column, "Music volume", "MusicVolumeSlider")
-	controls_button = Button.new()
-	controls_button.name = "ControlsButton"
-	controls_button.text = "Controls"
-	controls_button.custom_minimum_size.y = ROW_HEIGHT
-	column.add_child(controls_button)
-	status_label = Label.new()
-	status_label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
-	status_label.text = "Changes apply immediately and are saved."
-	column.add_child(status_label)
-	close_button = Button.new()
-	close_button.name = "CloseButton"
-	close_button.text = "Back"
-	close_button.custom_minimum_size.y = ROW_HEIGHT
-	column.add_child(close_button)
+	battle_flair_toggle = _toggle("Battle flair (intro, banners, notices)", "BattleFlairToggle")
+	master_slider = _slider("Master volume", "MasterVolumeSlider")
+	sfx_slider = _slider("Effects volume", "EffectsVolumeSlider")
+	music_slider = _slider("Music volume", "MusicVolumeSlider")
+	controls_button = add_footer_button("Controls", "ControlsButton", func() -> void: controls_requested.emit())
+	close_button = add_footer_button("Back", "CloseButton", func() -> void: closed.emit())
 	mode_picker.item_selected.connect(_on_mode_selected)
 	resolution_picker.item_selected.connect(_on_resolution_selected)
 	scale_picker.item_selected.connect(_on_scale_selected)
@@ -92,8 +58,6 @@ func _ready() -> void:
 	master_slider.value_changed.connect(_on_volume_changed.bind("master"))
 	sfx_slider.value_changed.connect(_on_volume_changed.bind("sfx"))
 	music_slider.value_changed.connect(_on_volume_changed.bind("music"))
-	controls_button.pressed.connect(func() -> void: controls_requested.emit())
-	close_button.pressed.connect(func() -> void: closed.emit())
 	refresh()
 
 
@@ -113,46 +77,46 @@ func refresh() -> void:
 
 
 func focus_first() -> void:
+	fit_to_viewport()
 	if mode_picker != null and mode_picker.is_inside_tree():
 		mode_picker.grab_focus()
 
 
-func _picker(column: VBoxContainer, caption: String) -> OptionButton:
-	var row := HBoxContainer.new()
-	row.custom_minimum_size.y = ROW_HEIGHT
-	column.add_child(row)
-	var label := Label.new()
-	label.text = caption
-	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.add_child(label)
+func _picker(caption: String, node_name: String) -> OptionButton:
 	var picker := OptionButton.new()
-	picker.name = "%sPicker" % caption.replace(" ", "")
-	picker.custom_minimum_size = Vector2(280, ROW_HEIGHT)
-	row.add_child(picker)
+	picker.name = node_name
+	picker.fit_to_longest_item = false
+	picker.clip_text = true
+	add_row(caption, picker, PICKER_WIDTH)
 	return picker
 
 
-func _slider(column: VBoxContainer, caption: String, node_name: String) -> HSlider:
-	var row := HBoxContainer.new()
-	row.custom_minimum_size.y = ROW_HEIGHT
-	column.add_child(row)
-	var label := Label.new()
-	label.text = caption
-	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.add_child(label)
+func _toggle(caption: String, node_name: String) -> CheckButton:
+	var toggle := CheckButton.new()
+	toggle.name = node_name
+	toggle.size_flags_horizontal = Control.SIZE_SHRINK_END
+	add_row(caption, toggle, 0.0)
+	toggle.size_flags_horizontal = Control.SIZE_SHRINK_END
+	return toggle
+
+
+func _slider(caption: String, node_name: String) -> HSlider:
+	var group := HBoxContainer.new()
+	group.add_theme_constant_override("separation", PmdStyle.PANEL_GAP)
 	var value_label := Label.new()
-	value_label.custom_minimum_size.x = 64
+	value_label.custom_minimum_size.x = 84
 	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	value_label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
-	row.add_child(value_label)
+	group.add_child(value_label)
 	var slider := HSlider.new()
 	slider.name = node_name
 	slider.min_value = 0.0
 	slider.max_value = 1.0
 	slider.step = 0.05
-	slider.custom_minimum_size = Vector2(210, ROW_HEIGHT)
+	slider.custom_minimum_size = Vector2(PICKER_WIDTH - 84.0 - PmdStyle.PANEL_GAP, PmdStyle.ROW_HEIGHT)
 	slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	row.add_child(slider)
+	group.add_child(slider)
+	add_row(caption, group, PICKER_WIDTH)
 	_volume_labels[slider] = value_label
 	return slider
 
@@ -174,45 +138,36 @@ func _on_volume_changed(value: float, key: String) -> void:
 			GameSettings.sfx_volume = clampf(value, 0.0, 1.0)
 		"music":
 			GameSettings.music_volume = clampf(value, 0.0, 1.0)
-	_apply_and_save()
-
-
-func _toggle(column: VBoxContainer, caption: String, node_name: String) -> CheckButton:
-	var row := HBoxContainer.new()
-	row.custom_minimum_size.y = ROW_HEIGHT
-	column.add_child(row)
-	var label := Label.new()
-	label.text = caption
-	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.add_child(label)
-	var toggle := CheckButton.new()
-	toggle.name = node_name
-	row.add_child(toggle)
-	return toggle
+	GameSettings.apply_audio()
+	_save()
 
 
 func _on_camera_track_toggled(pressed: bool) -> void:
 	GameSettings.camera_track = pressed
-	_apply_and_save()
+	_save()
 
 
 func _on_cpu_report_toggled(pressed: bool) -> void:
 	GameSettings.cpu_battle_report = pressed
-	_apply_and_save()
+	_save()
 
 
 func _on_battle_flair_toggled(pressed: bool) -> void:
 	GameSettings.battle_flair = pressed
-	_apply_and_save()
+	_save()
 
 
 func _on_cpu_speed_selected(index: int) -> void:
 	GameSettings.cpu_speed = GameSettings.CPU_SPEEDS[clampi(index, 0, GameSettings.CPU_SPEEDS.size() - 1)]
-	_apply_and_save()
+	_save()
 
 
 func _apply_and_save() -> void:
 	GameSettings.apply(get_window())
+	_save()
+
+
+func _save() -> void:
 	GameSettings.save_settings()
 	refresh()
 

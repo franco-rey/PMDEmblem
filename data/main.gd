@@ -60,8 +60,9 @@ const MANUAL_SKIRMISHES: Array[Dictionary] = [
 		"code": "series team=6 matches=10 -bots",
 	},
 ]
-const MENU_CONTROL_SIZE: Vector2 = Vector2(360, 64)
-const MENU_FONT_SIZE: int = 36
+const MENU_CONTROL_SIZE: Vector2 = Vector2(PmdStyle.CONTROL_WIDTH, PmdStyle.CONTROL_HEIGHT)
+const MENU_FONT_SIZE: int = PmdStyle.FONT_BODY
+const PRESET_PLACEHOLDER: String = "Choose Preset..."
 
 const MIN_WINDOW_SIZE: Vector2i = Vector2i(1280, 720)
 
@@ -69,6 +70,7 @@ var level_instance: TacticsLevel
 var skirmish_loader: SkirmishLoader
 var pause_menu: PauseMenu = null
 var net_session: NetSession = null
+var net_suspend_panel: NetSuspendPanel = null
 var multiplayer_menu: MultiplayerMenu = null
 var net_beacon: LanBeacon = null
 var multiplayer_button: Button = null
@@ -81,6 +83,9 @@ var _controls_enabled: bool = true
 var menu_graphics_panel: GraphicsSettingsPanel = null
 var menu_controls_panel: ControlsPanel = null
 var controls_button: Button = null
+var attack_button: Button = null
+var random_pokemon_button: Button = null
+var _controls_from_options: bool = false
 var options_button: Button = null
 var quit_button: Button = null
 var _relaunch: Callable = Callable()
@@ -118,6 +123,11 @@ func _ready() -> void:
 	net_session.desynced.connect(_on_net_desync)
 	net_session.state_changed.connect(_on_net_state_changed)
 	add_child(net_session)
+	net_suspend_panel = NetSuspendPanel.new()
+	net_suspend_panel.rejoin_requested.connect(_on_net_rejoin_pressed)
+	net_suspend_panel.claim_requested.connect(func() -> void: net_session.claim_win())
+	net_suspend_panel.main_menu_requested.connect(_on_main_menu_requested)
+	add_child(net_suspend_panel)
 	net_beacon = LanBeacon.new()
 	add_child(net_beacon)
 	skirmish_loader = SkirmishLoader.new()
@@ -205,10 +215,12 @@ func _poll_net_ready() -> void:
 	if net_session == null:
 		return
 	if pause_menu != null:
-		pause_menu.pauses_tree = not net_session.in_battle()
-		pause_menu.resign_visible = net_session.in_battle()
+		pause_menu.pauses_tree = not net_session.battle_live()
+		pause_menu.resign_visible = net_session.battle_live()
 	if level_instance != null and is_instance_valid(level_instance) and level_instance.hud != null:
 		level_instance.hud.set_network_text(_net_chip_text())
+	if net_suspend_panel != null:
+		net_suspend_panel.show_status(net_session if level_instance != null and is_instance_valid(level_instance) else null)
 	if not net_session.in_battle():
 		return
 	if level_instance == null or not is_instance_valid(level_instance):
@@ -218,7 +230,13 @@ func _poll_net_ready() -> void:
 
 
 func _net_chip_text() -> String:
-	if net_session == null or not net_session.in_battle():
+	if net_session == null:
+		return ""
+	if net_session.suspended():
+		if net_session.rejoining():
+			return "Reconnecting"
+		return "Opponent did not return" if net_session.suspend_expired() else "Connection lost, %d s" % int(ceil(net_session.suspend_remaining()))
+	if not net_session.in_battle():
 		return ""
 	if not net_session.ready_to_play():
 		return "Waiting for %s" % net_session.remote_name
@@ -246,9 +264,28 @@ func _on_net_start_requested(code: String, _battle_id: String) -> void:
 		net_session.attach_level(level_instance)
 
 
-func _on_net_battle_over(_result: int, reason: String) -> void:
-	if level_instance != null and is_instance_valid(level_instance) and level_instance.banner != null:
-		level_instance.banner.show_notice("Battle ended: %s" % reason)
+func _on_net_battle_over(result: int, reason: String) -> void:
+	if level_instance == null or not is_instance_valid(level_instance) or level_instance.banner == null:
+		return
+	var won: bool = result == TacticsLevel.RESULT_PLAYER_WIN if net_session.local_side == PokemonInstanceResource.Team.PLAYER else result == TacticsLevel.RESULT_PLAYER_LOSS
+	var remote: String = net_session.remote_name if not net_session.remote_name.is_empty() else "The other player"
+	var text: String = "Battle ended: %s" % reason
+	match reason:
+		"resign":
+			text = "%s resigned." % remote if won else "You resigned."
+		"abandon":
+			text = "%s did not return. You win." % remote
+		"desync":
+			text = "The two games fell out of step."
+	level_instance.banner.show_notice(text)
+
+
+func _on_net_rejoin_pressed() -> void:
+	if net_session == null:
+		return
+	var error: String = net_session.rejoin()
+	if not error.is_empty():
+		_on_net_notice(error)
 
 
 func _on_net_desync(reason: String) -> void:
@@ -287,6 +324,12 @@ func _setup_menus() -> void:
 	add_child(speed_bar)
 	var menu := $UI/MapSelector/SkirmishMenu as VBoxContainer
 	if menu != null:
+		attack_button = _menu_button("Attack", "AttackButton", _on_attack_pressed)
+		menu.add_child(attack_button)
+		menu.move_child(attack_button, 0)
+		random_pokemon_button = _menu_button("Random Pokemon", "RandomPokemonButton", _on_random_pokemon_pressed)
+		menu.add_child(random_pokemon_button)
+		menu.move_child(random_pokemon_button, 1)
 		multiplayer_button = Button.new()
 		multiplayer_button.name = "MultiplayerButton"
 		multiplayer_button.text = "Multiplayer"
@@ -332,13 +375,10 @@ func _setup_menus() -> void:
 		if options_button != null:
 			options_button.grab_focus())
 	overlay.add_child(menu_graphics_panel)
-	menu_graphics_panel.controls_requested.connect(_on_controls_pressed)
+	menu_graphics_panel.controls_requested.connect(_on_controls_from_options)
 	menu_controls_panel = ControlsPanel.new()
 	menu_controls_panel.visible = false
-	menu_controls_panel.closed.connect(func() -> void:
-		menu_controls_panel.visible = false
-		menu_graphics_panel.visible = true
-		menu_graphics_panel.focus_first())
+	menu_controls_panel.closed.connect(_on_controls_closed)
 	overlay.add_child(menu_controls_panel)
 	multiplayer_menu = MultiplayerMenu.new()
 	multiplayer_menu.visible = false
@@ -378,7 +418,38 @@ func _on_options_pressed() -> void:
 	menu_graphics_panel.focus_first()
 
 
+func _menu_button(text: String, node_name: String, callback: Callable) -> Button:
+	var button := Button.new()
+	button.name = node_name
+	button.text = text
+	button.custom_minimum_size = MENU_CONTROL_SIZE
+	button.size_flags_horizontal = Control.SIZE_SHRINK_END
+	button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
+	button.pressed.connect(callback)
+	return button
+
+
+func _on_attack_pressed() -> void:
+	if showcase_pedestal != null:
+		showcase_pedestal.play_attack()
+
+
+func _on_random_pokemon_pressed() -> void:
+	if roster_carousel != null:
+		roster_carousel.spin_to_random()
+
+
 func _on_controls_pressed() -> void:
+	_controls_from_options = false
+	_show_controls_panel()
+
+
+func _on_controls_from_options() -> void:
+	_controls_from_options = true
+	_show_controls_panel()
+
+
+func _show_controls_panel() -> void:
 	var overlay: Control = $UI.get_node_or_null("OptionsOverlay") as Control
 	if overlay == null:
 		return
@@ -387,6 +458,48 @@ func _on_controls_pressed() -> void:
 	menu_graphics_panel.visible = false
 	menu_controls_panel.visible = true
 	menu_controls_panel.focus_first()
+
+
+func _on_controls_closed() -> void:
+	menu_controls_panel.visible = false
+	if _controls_from_options:
+		menu_graphics_panel.visible = true
+		menu_graphics_panel.focus_first()
+		return
+	var overlay: Control = $UI.get_node_or_null("OptionsOverlay") as Control
+	if overlay != null:
+		overlay.visible = false
+	$UI/MapSelector.visible = true
+	if controls_button != null:
+		controls_button.grab_focus()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not event.is_action_pressed("ui_cancel"):
+		return
+	if event is InputEventKey and (event as InputEventKey).echo:
+		return
+	if level_instance != null and is_instance_valid(level_instance):
+		return
+	if _close_menu_overlay():
+		SoundPlayer.cue("ui.cancel")
+		get_viewport().set_input_as_handled()
+
+
+func _close_menu_overlay() -> bool:
+	if menu_controls_panel != null and menu_controls_panel.visible:
+		menu_controls_panel.closed.emit()
+		return true
+	if menu_graphics_panel != null and menu_graphics_panel.visible:
+		menu_graphics_panel.closed.emit()
+		return true
+	if multiplayer_menu != null and multiplayer_menu.visible:
+		multiplayer_menu.closed.emit()
+		return true
+	if skirmish_lobby != null and skirmish_lobby.visible:
+		skirmish_lobby.request_close()
+		return true
+	return false
 
 
 func _on_restart_requested() -> void:
@@ -403,6 +516,8 @@ func _on_return_to_lobby_requested() -> void:
 
 
 func _on_main_menu_requested() -> void:
+	if net_session != null and net_session.active():
+		net_session.leave("left")
 	unload_level()
 	_set_tactics_controls_enabled(false)
 	if skirmish_lobby != null:
@@ -548,7 +663,7 @@ func load_level(level_name: String) -> void:
 
 
 func load_selected_skirmish() -> void:
-	var idx: int = skirmish_picker.selected
+	var idx: int = skirmish_picker.selected - 1
 	if idx < 0 or idx >= MANUAL_SKIRMISHES.size():
 		push_error("Main: no manual skirmish selected")
 		return
@@ -618,8 +733,18 @@ func _build_random_skirmish(entry: Dictionary) -> SkirmishDefinitionResource:
 
 func _populate_skirmish_picker() -> void:
 	skirmish_picker.clear()
+	skirmish_picker.add_item(PRESET_PLACEHOLDER)
 	for entry in MANUAL_SKIRMISHES:
 		skirmish_picker.add_item(_label_for_picker_entry(entry))
+	skirmish_picker.select(0)
+	if not skirmish_picker.item_selected.is_connected(_on_preset_selected):
+		skirmish_picker.item_selected.connect(_on_preset_selected)
+	_on_preset_selected(0)
+
+
+func _on_preset_selected(index: int) -> void:
+	if launch_button != null:
+		launch_button.disabled = index <= 0
 
 
 func _label_for_picker_entry(entry: Dictionary) -> String:
@@ -786,7 +911,7 @@ func _style_main_menu() -> void:
 	ui.move_child(backdrop, 0)
 	var menu := $UI/MapSelector/SkirmishMenu as VBoxContainer
 	if menu != null:
-		menu.add_theme_constant_override("separation", 10)
+		menu.add_theme_constant_override("separation", PmdStyle.PANEL_GAP)
 	_build_roster_showcase()
 	for control in [skirmish_picker, launch_button, custom_toggle_button]:
 		control.custom_minimum_size = MENU_CONTROL_SIZE
@@ -823,6 +948,8 @@ func _build_roster_showcase() -> void:
 	var listed: Array[Dictionary] = playable if not playable.is_empty() else entries
 	listed.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return int(a.get("dex_number", 0)) < int(b.get("dex_number", 0)))
 	roster_carousel.set_entries(listed)
+	if not listed.is_empty():
+		roster_carousel.select_index(randi_range(0, listed.size() - 1), false)
 	_on_roster_picked(roster_carousel.selected_entry())
 
 

@@ -7,8 +7,8 @@ const FADE_SECONDS: float = 0.4
 const START_HEIGHT: float = 1.45
 const CALLOUT_HEIGHT: float = 1.85
 const PIXEL_SIZE: float = 0.006
-const BASE_FONT_SIZE: int = 60
-const BIG_FONT_SIZE: int = 72
+const BASE_FONT_SIZE: int = PmdStyle.FONT_HERO
+const BIG_FONT_SIZE: int = PmdStyle.FONT_BIG
 
 const CALLOUT_COOLDOWN_MS: int = 1500
 const STAT_SHORT: Dictionary = {"attack": "ATK", "defense": "DEF", "special_attack": "SPA", "special_defense": "SPD", "speed": "SPE", "accuracy": "ACC", "evasion": "EVA", "hp": "HP"}

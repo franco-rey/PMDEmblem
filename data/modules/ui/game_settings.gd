@@ -96,25 +96,38 @@ static func apply(window: Window) -> void:
 	var window_id: int = window.get_window_id()
 	match window_mode:
 		"fullscreen":
-			DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, false, window_id)
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN, window_id)
+			_set_borderless(window_id, false)
+			_set_mode(window_id, DisplayServer.WINDOW_MODE_FULLSCREEN)
 		"borderless":
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED, window_id)
-			DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, true, window_id)
+			_set_mode(window_id, DisplayServer.WINDOW_MODE_WINDOWED)
+			_set_borderless(window_id, true)
 			var screen: int = DisplayServer.window_get_current_screen(window_id)
-			DisplayServer.window_set_position(DisplayServer.screen_get_position(screen), window_id)
-			DisplayServer.window_set_size(DisplayServer.screen_get_size(screen), window_id)
+			if DisplayServer.window_get_size(window_id) != DisplayServer.screen_get_size(screen):
+				DisplayServer.window_set_position(DisplayServer.screen_get_position(screen), window_id)
+				DisplayServer.window_set_size(DisplayServer.screen_get_size(screen), window_id)
 		_:
-			DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, false, window_id)
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED, window_id)
+			_set_borderless(window_id, false)
+			_set_mode(window_id, DisplayServer.WINDOW_MODE_WINDOWED)
 			var screen: int = DisplayServer.window_get_current_screen(window_id)
 			var usable: Rect2i = DisplayServer.screen_get_usable_rect(screen)
 			var target: Vector2i = fitted_resolution(resolution, usable.size)
 			if DisplayServer.window_get_size(window_id) != target:
 				DisplayServer.window_set_size(target, window_id)
 				DisplayServer.window_set_position(usable.position + (usable.size - target) / 2, window_id)
-	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if vsync else DisplayServer.VSYNC_DISABLED, window_id)
+	var wanted_vsync: int = DisplayServer.VSYNC_ENABLED if vsync else DisplayServer.VSYNC_DISABLED
+	if DisplayServer.window_get_vsync_mode(window_id) != wanted_vsync:
+		DisplayServer.window_set_vsync_mode(wanted_vsync, window_id)
 	UiScale.apply(window)
+
+
+static func _set_mode(window_id: int, mode: int) -> void:
+	if DisplayServer.window_get_mode(window_id) != mode:
+		DisplayServer.window_set_mode(mode, window_id)
+
+
+static func _set_borderless(window_id: int, value: bool) -> void:
+	if DisplayServer.window_get_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, window_id) != value:
+		DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, value, window_id)
 
 
 static func apply_audio() -> void:

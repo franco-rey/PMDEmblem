@@ -16,6 +16,8 @@ const SYNC: String = "sync"
 const DESYNC: String = "desync"
 const RESIGN: String = "resign"
 const BYE: String = "bye"
+const REJOIN: String = "rejoin"
+const CATCHUP: String = "catchup"
 
 const REQUIRED: Dictionary = {
 	HELLO: ["protocol", "version", "name", "content"],
@@ -31,6 +33,8 @@ const REQUIRED: Dictionary = {
 	DESYNC: ["reason"],
 	RESIGN: ["battle_id"],
 	BYE: ["reason"],
+	REJOIN: ["battle_id", "name"],
+	CATCHUP: ["code", "battle_id", "lines", "chain", "count"],
 }
 
 const GENERATED_DIRS: Array[String] = [

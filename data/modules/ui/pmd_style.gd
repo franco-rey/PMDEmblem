@@ -19,6 +19,21 @@ const HP_MID: Color = Color(0.96, 0.78, 0.22, 1.0)
 const HP_LOW: Color = Color(0.92, 0.26, 0.22, 1.0)
 const HP_BACK: Color = Color(0.06, 0.07, 0.12, 1.0)
 const SHADOW: Color = Color(0.0, 0.0, 0.0, 0.55)
+const FONT_BIG: int = 72
+const FONT_HERO: int = 60
+const FONT_TITLE: int = 48
+const FONT_BODY: int = 36
+const FONT_CAPTION: int = 24
+const FONT_MICRO: int = 12
+const CONTROL_WIDTH: float = 360.0
+const CONTROL_HEIGHT: float = 64.0
+const ROW_HEIGHT: float = 56.0
+const PANEL_WIDTH: float = 900.0
+const PANEL_MARGIN: int = 24
+const PANEL_GAP: int = 12
+const PLATE_FRAME: int = 2
+const RADIUS: int = 6
+const PLATE_PRESSED: Color = Color(0.20, 0.26, 0.48, 1.0)
 const TYPE_COLORS: Dictionary = {
 	"normal": Color(0.66, 0.65, 0.48),
 	"fire": Color(0.93, 0.50, 0.19),
@@ -73,44 +88,49 @@ static func chip(fill: Color = NAVY_DEEP, frame: Color = FRAME_SOFT) -> StyleBox
 	return style
 
 
-static func button(state: String) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.set_corner_radius_all(5)
+static func plate(state: String) -> StyleBoxFlat:
+	var style: StyleBoxFlat
+	match state:
+		"hover":
+			style = window(NAVY_LIGHT, CURSOR, PLATE_FRAME, RADIUS)
+		"pressed":
+			style = window(PLATE_PRESSED, CURSOR, PLATE_FRAME, RADIUS)
+		"disabled":
+			style = window(NAVY_DEEP, FRAME_SOFT, PLATE_FRAME, RADIUS)
+		"focus":
+			style = window(Color(0, 0, 0, 0), CURSOR, PLATE_FRAME, RADIUS)
+			style.draw_center = false
+			style.shadow_size = 0
+		_:
+			style = window(NAVY_DEEP, FRAME, PLATE_FRAME, RADIUS)
 	style.content_margin_left = 14
 	style.content_margin_right = 14
 	style.content_margin_top = 6
 	style.content_margin_bottom = 6
-	match state:
-		"hover":
-			style.bg_color = NAVY_LIGHT
-			style.border_color = CURSOR
-			style.set_border_width_all(2)
-		"pressed":
-			style.bg_color = Color(0.20, 0.26, 0.48, 0.98)
-			style.border_color = CURSOR
-			style.set_border_width_all(2)
-		"disabled":
-			style.bg_color = Color(0.06, 0.07, 0.14, 0.85)
-			style.border_color = Color(0.30, 0.33, 0.45, 0.8)
-			style.set_border_width_all(1)
-		"focus":
-			style.bg_color = Color(0, 0, 0, 0)
-			style.border_color = CURSOR
-			style.set_border_width_all(2)
-			style.draw_center = false
-		_:
-			style.bg_color = Color(0.10, 0.14, 0.32, 0.95)
-			style.border_color = FRAME_SOFT
-			style.set_border_width_all(2)
 	return style
+
+
+static func button(state: String) -> StyleBoxFlat:
+	return plate(state)
+
+
+static func control_button(text: String, node_name: String, callback: Callable) -> Button:
+	var button := Button.new()
+	button.name = node_name
+	button.text = text
+	button.custom_minimum_size = Vector2(0, CONTROL_HEIGHT)
+	button.add_theme_font_size_override("font_size", FONT_BODY)
+	if callback.is_valid():
+		button.pressed.connect(callback)
+	return button
 
 
 static func field(state: String) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.03, 0.04, 0.10, 0.96)
+	style.bg_color = Color(0.03, 0.04, 0.10, 1.0)
 	style.border_color = CURSOR if state == "focus" else FRAME_SOFT
-	style.set_border_width_all(2 if state == "focus" else 1)
-	style.set_corner_radius_all(4)
+	style.set_border_width_all(PLATE_FRAME)
+	style.set_corner_radius_all(RADIUS)
 	style.content_margin_left = 8
 	style.content_margin_right = 8
 	style.content_margin_top = 4
@@ -143,7 +163,7 @@ static func build_theme(base: Theme) -> Theme:
 	var theme: Theme = base.duplicate(true) if base != null else Theme.new()
 	theme.default_font = TEXT_FONT
 	if theme.default_font_size <= 0:
-		theme.default_font_size = 36
+		theme.default_font_size = FONT_BODY
 	theme.set_stylebox("panel", "Panel", window())
 	theme.set_stylebox("panel", "PanelContainer", window())
 	theme.set_stylebox("panel", "PopupMenu", window(NAVY_DEEP, FRAME, 2, 4))
@@ -183,7 +203,7 @@ static func build_theme(base: Theme) -> Theme:
 	return theme
 
 
-static func apply_heading(label: Label, size: int = 24, color: Color = TEXT_GOLD) -> void:
+static func apply_heading(label: Label, size: int = FONT_CAPTION, color: Color = TEXT_GOLD) -> void:
 	label.add_theme_font_override("font", TEXT_FONT)
 	label.add_theme_font_size_override("font_size", size)
 	label.add_theme_color_override("font_color", color)
@@ -196,11 +216,11 @@ static func dock_toggle_button(minimized: bool) -> Button:
 	button.focus_mode = Control.FOCUS_NONE
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
 	button.custom_minimum_size = Vector2(36, 30)
-	button.add_theme_font_size_override("font_size", 24)
+	button.add_theme_font_size_override("font_size", FONT_CAPTION)
 	return button
 
 
-static func apply_title(label: Label, size: int = 48, color: Color = TEXT_GOLD) -> void:
+static func apply_title(label: Label, size: int = FONT_TITLE, color: Color = TEXT_GOLD) -> void:
 	label.add_theme_font_override("font", BANNER_FONT)
 	label.add_theme_font_size_override("font_size", size)
 	label.add_theme_color_override("font_color", color)
