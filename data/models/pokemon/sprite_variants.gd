@@ -34,7 +34,7 @@ static func has_sprites(slug: String, suffix: String) -> bool:
 	if suffix.is_empty():
 		return true
 	var folder: String = "%s%s%s/" % [ACTOR_ROOT, slug, suffix]
-	return FileAccess.file_exists(folder + "AnimData.xml") and FileAccess.file_exists(folder + "anchors.json")
+	return DirAccess.dir_exists_absolute(folder + "animations") and FileAccess.file_exists(folder + "AnimData.xml") and FileAccess.file_exists(folder + "anchors.json")
 
 
 static func has_portrait(slug: String, suffix: String) -> bool:

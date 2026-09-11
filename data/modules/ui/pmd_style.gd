@@ -781,6 +781,21 @@ static func set_menu_backdrop(id: String) -> void:
 	PmdBackdrop.refresh_all()
 
 
+static func set_board_floor(id: String) -> void:
+	GameSettings.board_floor = id if BoardSkin.is_floor(id) else BoardSkin.DEFAULT
+	BoardSkin.refresh_all()
+
+
+static func set_board_frame(id: String) -> void:
+	GameSettings.board_frame = id if BoardSkin.is_frame(id) else BoardSkin.DEFAULT
+	BoardSkin.refresh_all()
+
+
+static func set_board_decor(id: String) -> void:
+	GameSettings.board_decor = id if BoardSkin.is_decor(id) else BoardSkin.DECOR_OFF
+	BoardSkin.refresh_all()
+
+
 static func refresh_windows() -> void:
 	var keep: Array[WeakRef] = []
 	for ref in _windows:

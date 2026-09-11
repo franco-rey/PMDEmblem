@@ -122,10 +122,6 @@ func _puzzle_lethal_blow() -> void:
 	var small: int = int(_estimate(actor, finishable, move))
 	var large: int = int(_estimate(actor, tougher, move))
 	_assert_true(large > small and small > 0, "the far target takes less raw damage than the near one (%d vs %d)" % [small, large])
-	# Both targets share one health pool. Every tier above level 1 ranks targets by health
-	# FRACTION, not by absolute health, so leaving the two on their own species maximums
-	# made "the finishable one is the weaker one" accidentally false and decided the puzzle
-	# on sub-point margins. The pool keeps the two fractions directly comparable.
 	_set_health(finishable, maxi(1, int(round(float(small) * KO_HEADROOM))), PUZZLE_POOL)
 	_set_health(tougher, mini(PUZZLE_POOL - 1, large + SURVIVE_HEADROOM), PUZZLE_POOL)
 	var finish_fraction: float = float(finishable.stats.curr_health) / float(finishable.stats.max_health)
@@ -523,14 +519,6 @@ func _puzzle_retreat() -> void:
 		_assert_true(action.move_index < 0 and distance > opening, "retreat: level %d backs away when it is hurt and nothing is in reach (%s at %d against an opening %d)" % [tier, str(key), distance, opening])
 
 
-# The first cut of this square pinned every foe to a shared 100-point pool and read the
-# chip fraction straight off that pool. Absolute health and health FRACTION then drifted
-# apart: the lone foe landed on 24/100 while the cluster sat at 80/100 and 61/100, which
-# handed the lone foe both the wounded-target preference every tier above 2 applies and
-# the level 4/5 team focus multiplier. Levels 4 and 5 were deciding the puzzle on 0.08 and
-# 1.43 points, and level 2 on 0.50. Health fraction, unit value and damage fraction are
-# now set independently so that only the number of foes caught can decide it, and
-# _guard_area_premise fails loudly the moment the damage numbers drift out of that regime.
 func _arm_area_spread() -> void:
 	var actor: TacticsPawn = units["P1"]
 	_equip(actor, ["lava_plume"])
@@ -545,8 +533,6 @@ func _arm_area_spread() -> void:
 		_level_unit_value(units[String(id)], AREA_UNIT_VALUE)
 
 
-# Health fraction is held at AREA_HEALTH_FRACTION for every foe so the tier's wounded-target
-# preference cannot pick a side; the damage fraction rides on curr_health alone.
 func _chip(pawn: TacticsPawn, move: PokemonMoveResource, fraction: float) -> void:
 	var damage: float = _estimate(units["P1"], pawn, move)
 	var current: int = maxi(2, int(round(damage / fraction)))
@@ -554,17 +540,11 @@ func _chip(pawn: TacticsPawn, move: PokemonMoveResource, fraction: float) -> voi
 	_set_health(pawn, current, pool)
 
 
-# BattleAI._unit_value is offence plus VALUE_DURABILITY_WEIGHT * max_health. Chipping moves
-# max_health around, so offence is trimmed back to keep every foe worth the same and the
-# level 4/5 value weighting neutral.
 func _level_unit_value(pawn: TacticsPawn, target: float) -> void:
 	var offence: int = maxi(1, int(round(target - BattleAI.VALUE_DURABILITY_WEIGHT * float(pawn.stats.max_health))))
 	_set_offense(pawn, offence, offence)
 
 
-# Every premise the two area squares rest on. If move data, the damage formula or the
-# roster shifts under this puzzle these fail by name instead of letting the tier checks
-# pass or fail on a rounding error.
 func _guard_area_premise(actor: TacticsPawn, move: PokemonMoveResource) -> void:
 	var lone: TacticsPawn = units[AREA_LONE_ID]
 	var lone_share: float = _damage_share(actor, lone, move)
@@ -586,9 +566,6 @@ func _guard_area_premise(actor: TacticsPawn, move: PokemonMoveResource) -> void:
 		_assert_true(absf(float(estimator._unit_value(pawn)) - reference) <= 2.0, "area premise: %s is worth the same as the rest, so value weighting cannot decide this puzzle (%.1f against %.1f)" % [id, estimator._unit_value(pawn), reference])
 		_assert_true(_damage_share(actor, pawn, move) < BattleAI.VARIANCE_LOW, "area premise: %s survives the blast, so this puzzle stays clear of the knockout band (%.3f)" % [id, _damage_share(actor, pawn, move)])
 	_assert_true(absf(lone_share - AREA_LONE_FRACTION) <= 0.03, "area premise: the lone foe takes the intended share of its own health (%.3f against %.3f)" % [lone_share, AREA_LONE_FRACTION])
-	# The lone foe is the better SINGLE target and the nearer one, so an engine that scored
-	# the area move as one hit would take its square. Counting the blast is the only reason
-	# to walk the other way, which is exactly what levels 3 to 5 are being asked to do.
 	_assert_true(lone_share > richest + 0.15, "area premise: the lone foe is the richer single target (%.3f against the cluster's best %.3f)" % [lone_share, richest])
 	_assert_true(summed - lone_share * BattleAI.FOCUS_GAIN > 0.5, "area premise: the whole cluster outweighs the lone foe even when the lone foe holds the team focus (%.3f against %.3f)" % [summed, lone_share * BattleAI.FOCUS_GAIN])
 

@@ -52,6 +52,12 @@ func _run() -> void:
 		PmdStyle.set_hp_bar_style(_arg("hp"))
 	if _arg("cursor") == "1":
 		PmdStyle.set_menu_cursor(true)
+	if not _arg("floor").is_empty():
+		PmdStyle.set_board_floor(_arg("floor"))
+	if not _arg("frame").is_empty():
+		PmdStyle.set_board_frame(_arg("frame"))
+	if not _arg("decor").is_empty():
+		PmdStyle.set_board_decor(_arg("decor"))
 	for i in range(6):
 		await process_frame
 	print("queue: started after %d frames, %d queue tiles, %d shiny" % [frames, level.hud._queue_row.get_child_count(), level.shiny_pawns().size()])

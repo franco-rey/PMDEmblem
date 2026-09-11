@@ -41,6 +41,9 @@ static var ui_font: String = "text"
 static var ui_palette: String = "navy"
 static var sky_backdrop: String = "sky"
 static var menu_backdrop: String = "sky"
+static var board_floor: String = "default"
+static var board_frame: String = "default"
+static var board_decor: String = "off"
 static var team_palette: String = "classic"
 static var highlight_set: String = "default"
 static var hp_bar_style: String = "default"
@@ -90,6 +93,9 @@ static func load_settings() -> void:
 		ui_palette = String(config.get_value(SECTION, "ui_palette", ui_palette))
 		sky_backdrop = String(config.get_value(SECTION, "sky_backdrop", sky_backdrop))
 		menu_backdrop = String(config.get_value(SECTION, "menu_backdrop", menu_backdrop))
+		board_floor = String(config.get_value(SECTION, "board_floor", board_floor))
+		board_frame = String(config.get_value(SECTION, "board_frame", board_frame))
+		board_decor = String(config.get_value(SECTION, "board_decor", board_decor))
 		team_palette = String(config.get_value(SECTION, "team_palette", team_palette))
 		highlight_set = String(config.get_value(SECTION, "highlight_set", highlight_set))
 		hp_bar_style = String(config.get_value(SECTION, "hp_bar_style", hp_bar_style))
@@ -116,6 +122,12 @@ static func load_settings() -> void:
 		sky_backdrop = "sky"
 	if not MENU_BACKDROPS.has(menu_backdrop):
 		menu_backdrop = "sky"
+	if not BoardSkin.is_floor(board_floor):
+		board_floor = BoardSkin.DEFAULT
+	if not BoardSkin.is_frame(board_frame):
+		board_frame = BoardSkin.DEFAULT
+	if not BoardSkin.is_decor(board_decor):
+		board_decor = BoardSkin.DECOR_OFF
 	if not TEAM_PALETTES.has(team_palette):
 		team_palette = "classic"
 	if not HIGHLIGHT_SETS.has(highlight_set):
@@ -153,6 +165,9 @@ static func save_settings() -> bool:
 	config.set_value(SECTION, "ui_palette", ui_palette)
 	config.set_value(SECTION, "sky_backdrop", sky_backdrop)
 	config.set_value(SECTION, "menu_backdrop", menu_backdrop)
+	config.set_value(SECTION, "board_floor", board_floor)
+	config.set_value(SECTION, "board_frame", board_frame)
+	config.set_value(SECTION, "board_decor", board_decor)
 	config.set_value(SECTION, "team_palette", team_palette)
 	config.set_value(SECTION, "highlight_set", highlight_set)
 	config.set_value(SECTION, "hp_bar_style", hp_bar_style)

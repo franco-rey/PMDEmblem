@@ -93,6 +93,7 @@ func _ready() -> void:
 	arena = $TacticsArena
 
 	arena.configure_tiles()
+	BoardSkin.apply(arena)
 	participant.configure(camera, ui_control)
 
 	if camera.boundary_radius != camera_boundary_radius:

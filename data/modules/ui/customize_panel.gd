@@ -5,6 +5,7 @@ signal closed
 
 const PICKER_WIDTH: float = 340.0
 const IMPORT_HINT: String = "Import the PMD interface sheets with tools/importers/batch_assets/ui_sheet_packager.py --write"
+const BOARD_HINT: String = "Bake the board skins with tools/importers/batch_assets/board_skin_packager.py --write"
 
 var font_picker: OptionButton = null
 var palette_picker: OptionButton = null
@@ -17,6 +18,9 @@ var hp_picker: OptionButton = null
 var cursor_picker: OptionButton = null
 var sky_picker: OptionButton = null
 var menu_backdrop_picker: OptionButton = null
+var board_floor_picker: OptionButton = null
+var board_frame_picker: OptionButton = null
+var board_decor_picker: OptionButton = null
 var close_button: Button = null
 
 
@@ -57,7 +61,19 @@ func _ready() -> void:
 	menu_backdrop_picker = _picker("Menu backdrop", "MenuBackdropPicker")
 	for id in GameSettings.MENU_BACKDROPS:
 		menu_backdrop_picker.add_item(PmdStyle.menu_backdrop_label(id))
+	board_floor_picker = _picker("Board floor", "BoardFloorPicker")
+	for id in BoardSkin.floor_options():
+		board_floor_picker.add_item(BoardSkin.floor_label(id))
+	board_frame_picker = _picker("Board frame", "BoardFramePicker")
+	for id in BoardSkin.frame_options():
+		board_frame_picker.add_item(BoardSkin.frame_label(id))
+	board_decor_picker = _picker("Board decorations", "BoardDecorPicker")
+	for id in BoardSkin.decor_options():
+		board_decor_picker.add_item(BoardSkin.decor_label(id))
 	close_button = add_footer_button("Back", "CloseButton", func() -> void: closed.emit())
+	board_floor_picker.item_selected.connect(_on_board_floor_selected)
+	board_frame_picker.item_selected.connect(_on_board_frame_selected)
+	board_decor_picker.item_selected.connect(_on_board_decor_selected)
 	font_picker.item_selected.connect(_on_font_selected)
 	palette_picker.item_selected.connect(_on_palette_selected)
 	border_picker.item_selected.connect(_on_border_style_selected)
@@ -97,6 +113,16 @@ func refresh() -> void:
 	menu_backdrop_picker.select(maxi(0, GameSettings.MENU_BACKDROPS.find(GameSettings.menu_backdrop)))
 	menu_backdrop_picker.disabled = not PmdStyle.menu_backdrops_available()
 	menu_backdrop_picker.tooltip_text = IMPORT_HINT if menu_backdrop_picker.disabled else ""
+	var boards: bool = BoardSkin.available()
+	board_floor_picker.select(maxi(0, BoardSkin.floor_options().find(GameSettings.board_floor)))
+	board_floor_picker.disabled = not boards
+	board_floor_picker.tooltip_text = BOARD_HINT if not boards else ""
+	board_frame_picker.select(maxi(0, BoardSkin.frame_options().find(GameSettings.board_frame)))
+	board_frame_picker.disabled = not boards or GameSettings.board_floor == BoardSkin.DEFAULT
+	board_frame_picker.tooltip_text = BOARD_HINT if not boards else ("Pick a board floor first" if GameSettings.board_floor == BoardSkin.DEFAULT else "")
+	board_decor_picker.select(maxi(0, BoardSkin.decor_options().find(GameSettings.board_decor)))
+	board_decor_picker.disabled = not boards
+	board_decor_picker.tooltip_text = BOARD_HINT if not boards else ""
 
 
 func focus_first() -> void:
@@ -166,6 +192,24 @@ func _on_cursor_selected(index: int) -> void:
 
 func _on_sky_selected(index: int) -> void:
 	PmdStyle.set_sky_backdrop(GameSettings.SKY_BACKDROPS[clampi(index, 0, GameSettings.SKY_BACKDROPS.size() - 1)])
+	_save()
+
+
+func _on_board_floor_selected(index: int) -> void:
+	var options: Array[String] = BoardSkin.floor_options()
+	PmdStyle.set_board_floor(options[clampi(index, 0, options.size() - 1)])
+	_save()
+
+
+func _on_board_frame_selected(index: int) -> void:
+	var options: Array[String] = BoardSkin.frame_options()
+	PmdStyle.set_board_frame(options[clampi(index, 0, options.size() - 1)])
+	_save()
+
+
+func _on_board_decor_selected(index: int) -> void:
+	var options: Array[String] = BoardSkin.decor_options()
+	PmdStyle.set_board_decor(options[clampi(index, 0, options.size() - 1)])
 	_save()
 
 

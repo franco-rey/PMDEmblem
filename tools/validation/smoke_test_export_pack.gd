@@ -46,6 +46,11 @@ func _run() -> void:
 		_assert_true(FileAccess.file_exists(path) or ResourceLoader.exists(path), "the pack carries %s" % path)
 	var portraits: int = _count("res://assets/textures/pokemon/portraits/", "")
 	_assert_true(portraits > 0, "the pack carries portrait folders (%d entries)" % portraits)
+	_assert_true(ResourceLoader.exists("res://assets/textures/pokemon/portraits/0001_bulbasaur/Normal.png"), "an imported portrait resolves through ResourceLoader (the lobby's lookup)")
+	_assert_true(ResourceLoader.exists("res://assets/textures/actor/pokemon/0001_bulbasaur_shiny/animations/idle.png"), "the pack carries the shiny sprite textures")
+	for path in ["res://assets/textures/actor/pokemon/0001_bulbasaur_shiny/AnimData.xml", "res://assets/textures/actor/pokemon/0001_bulbasaur_shiny/anchors.json", "res://assets/textures/actor/pokemon/0019_rattata_form1/AnimData.xml", "res://assets/textures/actor/pokemon/0025_pikachu_female/AnimData.xml"]:
+		_assert_true(FileAccess.file_exists(path), "the pack carries %s" % path.trim_prefix("res://assets/textures/actor/pokemon/"))
+	_assert_true(DirAccess.dir_exists_absolute("res://assets/textures/actor/pokemon/0019_rattata_form1/animations"), "variant sprite folders are visible to DirAccess inside the pack")
 	_finish()
 
 

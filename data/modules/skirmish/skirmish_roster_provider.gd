@@ -91,7 +91,7 @@ static func _portrait_path_for(form: PokemonFormResource, slug: String) -> Strin
 
 
 static func _res_file_exists(path: String) -> bool:
-	return not path.is_empty() and FileAccess.file_exists(path)
+	return not path.is_empty() and (ResourceLoader.exists(path) or FileAccess.file_exists(path))
 
 
 static func _dex_from_slug(slug: String) -> int:
