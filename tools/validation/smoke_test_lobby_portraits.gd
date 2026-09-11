@@ -14,7 +14,7 @@ func _run() -> void:
 	root.add_child(main)
 	await process_frame
 	_assert_true(root.theme != null and root.theme.get_stylebox("panel", "PanelContainer") is StyleBoxFlat and root.theme.default_font == PmdStyle.TEXT_FONT, "root theme is the PMD skin with the PMD font")
-	_assert_true(main.get_node_or_null("UI/Backdrop") is PmdBackdrop and main.get_node_or_null("UI/MapSelector/SkirmishMenu/Title") is Label, "main menu has the sky backdrop and a banner title")
+	_assert_true(main.get_node_or_null("UI/Backdrop") is PmdBackdrop and main.get_node_or_null("UI/MapSelector/Banner/Title") is Label, "main menu has the sky backdrop and a banner title")
 	main.get_node("UI/MapSelector/SkirmishMenu/CustomToggleButton").emit_signal("pressed")
 	await process_frame
 	await process_frame

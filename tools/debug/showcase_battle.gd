@@ -44,6 +44,7 @@ var plan_path: String = ""
 var spin: bool = false
 var max_seconds: float = 0.0
 var start_frame: int = 0
+var show_ui: bool = true
 var shot_index: int = 0
 var base_yaw: int = -45
 var orbit_phase: float = 0.0
@@ -107,6 +108,8 @@ func _run() -> void:
 			director = String(arg).substr(11) == "1"
 		elif String(arg).begins_with("--human="):
 			human = String(arg).substr(8) == "1"
+		elif String(arg).begins_with("--ui="):
+			show_ui = String(arg).get_slice("=", 1) != "0"
 		elif String(arg).begins_with("--speed="):
 			speed_setting = float(String(arg).substr(8))
 		elif String(arg).begins_with("--code="):
@@ -154,6 +157,14 @@ func _run() -> void:
 		await physics_frame
 		await physics_frame
 		Input.warp_mouse(Vector2(160.0, float(root.size.y) - 60.0))
+	DisplayServer.window_set_size(Vector2i(1920, 1080))
+	UiScale.override_factor = 1.0
+	UiScale.apply(root)
+	root.content_scale_factor = 1.0
+	if not show_ui:
+		level.set_interface_visible(false)
+	await physics_frame
+	await physics_frame
 	start_frame = Engine.get_physics_frames()
 	print("showcase: recording starts at frame %d (%.2f s)" % [start_frame, float(start_frame) / 60.0])
 	print("showcase: window=%s root=%s scale=%.2f hud=%s override=%.2f" % [str(DisplayServer.window_get_size()), str(root.size), root.content_scale_factor, str(level.hud.layout_size()), UiScale.override_factor])

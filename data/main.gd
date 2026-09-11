@@ -60,8 +60,8 @@ const MANUAL_SKIRMISHES: Array[Dictionary] = [
 		"code": "series team=6 matches=10 -bots",
 	},
 ]
-const MENU_CONTROL_SIZE: Vector2 = Vector2(520, 72)
-const MENU_FONT_SIZE: int = 36
+const MENU_CONTROL_SIZE: Vector2 = Vector2(360, 64)
+const MENU_FONT_SIZE: int = 28
 
 const MIN_WINDOW_SIZE: Vector2i = Vector2i(1280, 720)
 
@@ -72,6 +72,8 @@ var net_session: NetSession = null
 var multiplayer_menu: MultiplayerMenu = null
 var net_beacon: LanBeacon = null
 var multiplayer_button: Button = null
+var roster_carousel: RosterCarousel = null
+var showcase_pedestal: ShowcasePedestal = null
 var results_screen: BattleResultsScreen = null
 var speed_bar: SpectatorSpeedBar = null
 var interface_visible: bool = true
@@ -289,6 +291,7 @@ func _setup_menus() -> void:
 		multiplayer_button.name = "MultiplayerButton"
 		multiplayer_button.text = "Multiplayer"
 		multiplayer_button.custom_minimum_size = MENU_CONTROL_SIZE
+		multiplayer_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 		multiplayer_button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
 		multiplayer_button.pressed.connect(_on_multiplayer_pressed)
 		menu.add_child(multiplayer_button)
@@ -296,6 +299,7 @@ func _setup_menus() -> void:
 		options_button.name = "OptionsButton"
 		options_button.text = "Options"
 		options_button.custom_minimum_size = MENU_CONTROL_SIZE
+		options_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 		options_button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
 		options_button.pressed.connect(_on_options_pressed)
 		menu.add_child(options_button)
@@ -303,6 +307,7 @@ func _setup_menus() -> void:
 		controls_button.name = "ControlsButton"
 		controls_button.text = "Controls"
 		controls_button.custom_minimum_size = MENU_CONTROL_SIZE
+		controls_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 		controls_button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
 		controls_button.pressed.connect(_on_controls_pressed)
 		menu.add_child(controls_button)
@@ -310,6 +315,7 @@ func _setup_menus() -> void:
 		quit_button.name = "QuitButton"
 		quit_button.text = "Quit"
 		quit_button.custom_minimum_size = MENU_CONTROL_SIZE
+		quit_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 		quit_button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
 		quit_button.pressed.connect(_on_quit_requested)
 		menu.add_child(quit_button)
@@ -781,23 +787,71 @@ func _style_main_menu() -> void:
 	var menu := $UI/MapSelector/SkirmishMenu as VBoxContainer
 	if menu != null:
 		menu.add_theme_constant_override("separation", 10)
+	var selector := $UI/MapSelector as Control
+	if selector != null and selector.get_node_or_null("Banner") == null:
+		var banner := VBoxContainer.new()
+		banner.name = "Banner"
+		banner.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+		banner.grow_horizontal = Control.GROW_DIRECTION_BOTH
+		banner.offset_top = 80.0
+		banner.add_theme_constant_override("separation", 6)
+		banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		selector.add_child(banner)
+		selector.move_child(banner, 0)
 		var title := Label.new()
 		title.name = "Title"
 		title.text = "PMD Emblem"
 		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		PmdStyle.apply_title(title, 72)
-		menu.add_child(title)
-		menu.move_child(title, 0)
+		banner.add_child(title)
 		var subtitle := Label.new()
 		subtitle.name = "Subtitle"
 		subtitle.text = "Tactical skirmishes"
 		subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		subtitle.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
-		menu.add_child(subtitle)
-		menu.move_child(subtitle, 1)
+		banner.add_child(subtitle)
+	_build_roster_showcase()
 	for control in [skirmish_picker, launch_button, custom_toggle_button]:
 		control.custom_minimum_size = MENU_CONTROL_SIZE
+		control.size_flags_horizontal = Control.SIZE_SHRINK_END
 		control.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
+	skirmish_picker.fit_to_longest_item = false
+	skirmish_picker.clip_text = true
+
+
+func _build_roster_showcase() -> void:
+	var selector := $UI/MapSelector as Control
+	if selector == null or selector.get_node_or_null("RosterShowcase") != null:
+		return
+	var holder := HBoxContainer.new()
+	holder.name = "RosterShowcase"
+	holder.set_anchors_and_offsets_preset(Control.PRESET_CENTER_LEFT)
+	holder.grow_vertical = Control.GROW_DIRECTION_BOTH
+	holder.offset_left = 24.0
+	holder.add_theme_constant_override("separation", 18)
+	selector.add_child(holder)
+	roster_carousel = RosterCarousel.new()
+	roster_carousel.name = "RosterCarousel"
+	holder.add_child(roster_carousel)
+	showcase_pedestal = ShowcasePedestal.new()
+	showcase_pedestal.name = "ShowcasePedestal"
+	showcase_pedestal.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	holder.add_child(showcase_pedestal)
+	roster_carousel.picked.connect(_on_roster_picked)
+	var entries: Array[Dictionary] = SkirmishRosterProvider.entries()
+	var playable: Array[Dictionary] = []
+	for entry in entries:
+		if bool(entry.get("battle_ready", false)):
+			playable.append(entry)
+	var listed: Array[Dictionary] = playable if not playable.is_empty() else entries
+	listed.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return int(a.get("dex_number", 0)) < int(b.get("dex_number", 0)))
+	roster_carousel.set_entries(listed)
+	_on_roster_picked(roster_carousel.selected_entry())
+
+
+func _on_roster_picked(entry: Dictionary) -> void:
+	if showcase_pedestal != null and not entry.is_empty():
+		showcase_pedestal.show_entry(entry)
 
 
 func _set_tactics_controls_enabled(enabled: bool) -> void:

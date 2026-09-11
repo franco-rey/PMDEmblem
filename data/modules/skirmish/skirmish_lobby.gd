@@ -496,13 +496,7 @@ func _create_setup_panel() -> PanelContainer:
 	ai_level_spin.value = AIProfile.DEFAULT_LEVEL
 	ai_level_spin.tooltip_text = "CPU skill: 1 Wandering, 2 Scrappy, 3 Tactical, 4 Ruthless, 5 Champion"
 	ai_level_spin.value_changed.connect(func(_value: float) -> void: _refresh_launch_state())
-	column.add_child(_labeled_control("CPU Skill", ai_level_spin))
-
-	seed_input = LineEdit.new()
-	seed_input.name = "SeedInput"
-	seed_input.placeholder_text = "seed or skirmish code"
-	seed_input.text_changed.connect(_on_seed_changed)
-	column.add_child(_labeled_control("Seed", seed_input))
+	column.add_child(_labeled_control("Difficulty", ai_level_spin))
 
 	reroll_seed_check = CheckBox.new()
 	reroll_seed_check.name = "RerollSeedCheck"
@@ -518,7 +512,7 @@ func _create_setup_panel() -> PanelContainer:
 	difficulty_spin.max_value = 4
 	difficulty_spin.step = 1
 	difficulty_spin.value = CustomSkirmishBuilder.DEFAULT_RANDOM_DIFFICULTY_TIER
-	column.add_child(_labeled_control("Difficulty", difficulty_spin))
+	column.add_child(_labeled_control("CPU Quality", difficulty_spin))
 
 	random_player_check = CheckBox.new()
 	random_player_check.name = "RandomPlayerCheck"
@@ -575,6 +569,11 @@ func _create_setup_panel() -> PanelContainer:
 	code_output.tooltip_text = "Select all and copy, then paste into the seed box to replay this exact setup"
 	code_output.custom_minimum_size.y = CONTROL_HEIGHT
 	column.add_child(code_output)
+	seed_input = LineEdit.new()
+	seed_input.name = "SeedInput"
+	seed_input.placeholder_text = "seed or skirmish code"
+	seed_input.text_changed.connect(_on_seed_changed)
+	column.add_child(_labeled_control("Seed", seed_input))
 
 	summary_panel = PanelContainer.new()
 	summary_panel.name = "SummaryPanel"
@@ -989,6 +988,7 @@ func _load_data() -> void:
 	var default_index: int = map_paths.find(SkirmishCode.DEFAULT_MAP_PATH)
 	if default_index >= 0:
 		map_picker.select(default_index)
+	_apply_map_team_cap()
 
 	type_filter.clear()
 	type_filter.add_item("All Types")
@@ -1527,12 +1527,17 @@ func _map_max_team_size() -> int:
 	return CustomSkirmishBuilder.max_team_size_for(map_paths[clampi(map_picker.selected, 0, map_paths.size() - 1)])
 
 
-func _on_map_changed(_index: int) -> void:
+func _apply_map_team_cap() -> void:
 	var cap: int = _map_max_team_size()
 	for slider in [enemy_size_spin, player_size_slider]:
 		if slider != null:
 			slider.max_value = cap
 			slider.value = minf(slider.value, float(cap))
+
+
+func _on_map_changed(_index: int) -> void:
+	var cap: int = _map_max_team_size()
+	_apply_map_team_cap()
 	while player_team_paths.size() > cap:
 		player_team_paths.pop_back()
 	while enemy_team_paths.size() > cap:
