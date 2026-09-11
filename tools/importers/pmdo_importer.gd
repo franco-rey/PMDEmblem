@@ -1151,6 +1151,8 @@ func _import_one_species(entry_data: Dictionary, sprite_sets: Dictionary, moves:
 		form.exp_yield = int(form_dict.get("ExpYield", 0))
 		form.join_rate = int(obj.get("JoinRate", 0))
 		form.temporary = bool(form_dict.get("Temporary", false))
+		form.released = bool(form_dict.get("Released", true))
+		form.form_name = _localized(form_dict.get("FormName", {}))
 		form.intrinsic1 = String(form_dict.get("Intrinsic1", ""))
 		form.intrinsic2 = String(form_dict.get("Intrinsic2", ""))
 		form.intrinsic3 = String(form_dict.get("Intrinsic3", ""))

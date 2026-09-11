@@ -15,7 +15,7 @@ func _run_settings_round_trip() -> Dictionary:
 	GameSettings.ui_font = "system"
 	GameSettings.ui_palette = "forest"
 	GameSettings.sky_backdrop = "dawn"
-	GameSettings.menu_backdrop = "BaseCamp"
+	GameSettings.menu_backdrop = "ForestCamp"
 	_assert_true(GameSettings.save_settings(), "settings save with every customize choice")
 	GameSettings.border_style = 0
 	GameSettings.border_color = 0
@@ -25,7 +25,7 @@ func _run_settings_round_trip() -> Dictionary:
 	GameSettings.sky_backdrop = "sky"
 	GameSettings.menu_backdrop = "sky"
 	GameSettings.load_settings()
-	_assert_true(GameSettings.border_style == 3 and GameSettings.border_color == 2 and GameSettings.portrait_border == 4 and GameSettings.ui_font == "system" and GameSettings.ui_palette == "forest" and GameSettings.sky_backdrop == "dawn" and GameSettings.menu_backdrop == "BaseCamp", "every customize choice loads back from the user config")
+	_assert_true(GameSettings.border_style == 3 and GameSettings.border_color == 2 and GameSettings.portrait_border == 4 and GameSettings.ui_font == "system" and GameSettings.ui_palette == "forest" and GameSettings.sky_backdrop == "dawn" and GameSettings.menu_backdrop == "ForestCamp", "every customize choice loads back from the user config")
 	GameSettings.border_style = 42
 	GameSettings.border_color = 9
 	GameSettings.portrait_border = 9
@@ -219,10 +219,34 @@ func _run() -> void:
 	var scenes: bool = PmdStyle.menu_backdrops_available()
 	print("smoke: menu backdrops %s" % ("available" if scenes else "missing, scene checks skipped"))
 	if scenes:
-		PmdStyle.set_menu_backdrop("BaseCamp")
-		_assert_true(backdrop.has_scene() and not backdrop._sky.visible, "picking Base Camp shows the hub scene instead of the sky")
+		PmdStyle.set_menu_backdrop("ForestCamp")
+		_assert_true(backdrop.has_scene() and not backdrop._sky.visible, "picking Forest Camp shows the hub scene instead of the sky")
 		PmdStyle.set_menu_backdrop("sky")
 		_assert_true(not backdrop.has_scene() and backdrop._sky.visible, "returning to Sky hides the scene")
+		var black_edged: Array[String] = []
+		for id in GameSettings.MENU_BACKDROPS:
+			if id == "sky":
+				continue
+			var texture: Texture2D = load(PmdStyle.MENU_BACKDROP_DIR + id + ".png") as Texture2D
+			var image: Image = texture.get_image() if texture != null else null
+			if image == null:
+				black_edged.append(id + " (missing)")
+				continue
+			var dark: int = 0
+			var samples: int = 0
+			for x in range(0, image.get_width(), 4):
+				for y in [0, image.get_height() - 1]:
+					samples += 1
+					if image.get_pixel(x, y).v < 0.05:
+						dark += 1
+			for y in range(0, image.get_height(), 4):
+				for x in [0, image.get_width() - 1]:
+					samples += 1
+					if image.get_pixel(x, y).v < 0.05:
+						dark += 1
+			if dark > 0:
+				black_edged.append("%s (%d of %d edge samples)" % [id, dark, samples])
+		_assert_true(black_edged.is_empty(), "every menu backdrop is full-bleed with no black surround (%s)" % ", ".join(black_edged))
 	backdrop.queue_free()
 	var options := GraphicsSettingsPanel.new()
 	root.add_child(options)

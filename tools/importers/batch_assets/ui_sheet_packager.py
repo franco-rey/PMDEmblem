@@ -18,7 +18,7 @@ REPORT_TXT_PATH = PROJECT_ROOT / "data" / "models" / "visuals" / "import_reports
 REQUIRED_FILES = ("MenuBorder.png", "PortraitBorder.png", "MenuBG.png")
 BACKDROP_SUBDIR = Path("Tile") / "24x24"
 BACKDROP_DEST_DIR = PROJECT_ROOT / "assets" / "visuals" / "raw_asset" / "Backdrop"
-BACKDROP_SCENES = ("BaseCamp", "ForestCamp", "ForestCampSecret", "GardenEnd", "GuildPath", "SnowCamp", "LuminousSpring", "CaveStop")
+BACKDROP_SCENES = ("ForestCamp", "ForestCampSecret", "GardenEnd", "GuildPath", "SnowCamp", "LuminousSpring", "CaveStop")
 
 
 def main() -> int:

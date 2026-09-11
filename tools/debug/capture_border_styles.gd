@@ -55,7 +55,7 @@ func _run() -> void:
 	var saved_sky: String = GameSettings.sky_backdrop
 	var saved_menu: String = GameSettings.menu_backdrop
 	var saved_portrait: int = GameSettings.portrait_border
-	for combo in [["forest", "text", "dawn", "sky"], ["ocean", "system", "cosmic", "BaseCamp"], ["rose", "banner", "sky", "GuildPath"], ["slate", "simple", "cloudy", "SnowCamp"]]:
+	for combo in [["forest", "text", "dawn", "sky"], ["ocean", "system", "cosmic", "ForestCamp"], ["rose", "banner", "sky", "GuildPath"], ["slate", "simple", "cloudy", "SnowCamp"]]:
 		PmdStyle.set_ui_palette(combo[0])
 		PmdStyle.set_ui_font(combo[1])
 		PmdStyle.set_sky_backdrop(combo[2])

@@ -53,9 +53,14 @@ func _run() -> void:
 	var idx: Dictionary = {}
 	for i in range(entries.size()):
 		idx[String(entries[i].get("slug", ""))] = i
-	lobby.add_roster_index(int(idx["0001_bulbasaur"]))
+	var first_slug: String = _arg("first") if idx.has(_arg("first")) else "0001_bulbasaur"
+	lobby.add_roster_index(int(idx[first_slug]))
 	lobby.add_roster_index(int(idx["0007_squirtle"]))
 	lobby.set_held_item(SkirmishLobby.SIDE_PLAYER, 0, "seed_blast")
+	if _arg("form").is_valid_int():
+		lobby.set_slot_form(SkirmishLobby.SIDE_PLAYER, 0, _arg("form"))
+	if not _arg("gender").is_empty():
+		lobby.set_slot_gender(SkirmishLobby.SIDE_PLAYER, 0, _arg("gender"))
 	lobby._on_team_slot_pressed(SkirmishLobby.SIDE_PLAYER, 0)
 	for i in range(4):
 		await process_frame

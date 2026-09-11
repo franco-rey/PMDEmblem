@@ -96,7 +96,7 @@ const SKY_SHEETS: Dictionary = {
 }
 const SKY_LABELS: Dictionary = {"sky": "Sky", "cloudy": "Cloudy sky", "dawn": "Dawn", "cosmic": "Night sky"}
 const MENU_BACKDROP_DIR: String = "res://assets/visuals/raw_asset/Backdrop/"
-const MENU_BACKDROP_LABELS: Dictionary = {"sky": "Sky", "BaseCamp": "Base Camp", "ForestCamp": "Forest Camp", "ForestCampSecret": "Secret Forest Camp", "GardenEnd": "Garden's End", "GuildPath": "Guild Path", "SnowCamp": "Snow Camp", "LuminousSpring": "Luminous Spring", "CaveStop": "Cave Stop"}
+const MENU_BACKDROP_LABELS: Dictionary = {"sky": "Sky", "ForestCamp": "Forest Camp", "ForestCampSecret": "Secret Forest Camp", "GardenEnd": "Garden's End", "GuildPath": "Guild Path", "SnowCamp": "Snow Camp", "LuminousSpring": "Luminous Spring", "CaveStop": "Cave Stop"}
 
 const TEAM_PALETTES: Dictionary = {
 	"classic": {"player": TEAM_PLAYER, "enemy": TEAM_ENEMY, "arrow": "Yellow"},
@@ -596,7 +596,7 @@ static func sheet_available(sheet: String) -> bool:
 
 
 static func menu_backdrops_available() -> bool:
-	return ResourceLoader.exists(MENU_BACKDROP_DIR + "BaseCamp.png")
+	return ResourceLoader.exists(MENU_BACKDROP_DIR + "ForestCamp.png")
 
 
 static func active_border_style() -> int:

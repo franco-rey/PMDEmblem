@@ -201,6 +201,8 @@ static func _make_enemy_instance(template: PokemonInstanceResource, tier: Dictio
 	var instance := PokemonInstanceResource.new()
 	instance.species = template.species
 	instance.form_index = template.form_index
+	if template.form_index == FormRules.default_index(template.species) and FormRules.is_choice(template.species):
+		instance.form_index = FormRules.roll(template.species, int(rng.seed), "enemy", slot_index)
 	instance.level = int(rng.randi_range(int(tier["min_level"]), int(tier["max_level"])))
 	instance.experience = PokemonExperienceService.xp_for_level(instance.resolved_form(), instance.level)
 	instance.current_hp = PokemonInstanceResource.CURRENT_HP_AUTO

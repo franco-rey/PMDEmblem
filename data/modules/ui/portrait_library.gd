@@ -31,7 +31,8 @@ static func has_expression(slug: String, expression: String) -> bool:
 static func slug_for_stats(stats: Stats) -> String:
 	if stats == null or stats.pokemon_instance == null or stats.pokemon_instance.species == null:
 		return ""
-	return SpriteVariants.portrait_slug(String(stats.pokemon_instance.species.species_id), stats.pokemon_instance.shiny, stats.gender == GenderRules.FEMALE)
+	var instance: PokemonInstanceResource = stats.pokemon_instance
+	return SpriteVariants.portrait_slug(String(instance.species.species_id), instance.shiny, stats.gender == GenderRules.FEMALE, SpriteVariants.form_suffix(instance.form_index, FormRules.default_index(instance.species)))
 
 
 static func slug_for_pawn(pawn: TacticsPawn) -> String:

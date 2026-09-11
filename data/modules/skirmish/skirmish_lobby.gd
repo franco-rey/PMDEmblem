@@ -135,6 +135,9 @@ var slot_title_label: Label
 var random_moves_check: CheckButton
 var choose_moves_button: Button
 var moves_value_label: Label
+var random_form_check: CheckButton
+var form_picker: OptionButton
+var form_value_label: Label
 var random_gender_check: CheckButton
 var gender_picker: OptionButton
 var gender_value_label: Label
@@ -276,6 +279,33 @@ func set_slot_ability(side: String, index: int, ability_id: String) -> bool:
 	var spec: Dictionary = _specs_for_side(side)[index]
 	spec["ability"] = "" if ability_id == CustomSkirmishBuilder.RANDOM_CHOICE else ability_id
 	spec["random_ability"] = ability_id.is_empty() or ability_id == CustomSkirmishBuilder.RANDOM_CHOICE
+	_refresh_details()
+	_refresh_slot_section()
+	return true
+
+
+func set_slot_form(side: String, index: int, form_value: String) -> bool:
+	var team: Array[String] = player_team_paths if side == SIDE_PLAYER else enemy_team_paths
+	if index < 0 or index >= team.size():
+		_set_status("Pick a team slot first")
+		return false
+	_sync_specs(side)
+	var spec: Dictionary = _specs_for_side(side)[index]
+	if form_value.is_empty() or form_value == CustomSkirmishBuilder.RANDOM_CHOICE:
+		spec["form"] = ""
+		spec["random_form"] = true
+	else:
+		if not form_value.is_valid_int():
+			_set_status("Unknown form %s" % form_value)
+			return false
+		var entry: Dictionary = _entry_for_path(team[index])
+		var error: String = FormRules.choice_error(_species_for_entry(entry), int(form_value), String(entry.get("label", "")))
+		if not error.is_empty():
+			_set_status(error)
+			return false
+		spec["form"] = str(int(form_value))
+		spec["random_form"] = false
+	_set_status("")
 	_refresh_details()
 	_refresh_slot_section()
 	return true
@@ -795,6 +825,27 @@ func _create_details_panel() -> VBoxContainer:
 	slot_title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(slot_title_label)
 
+	column.add_child(_section_header("Form"))
+	var form_row := HBoxContainer.new()
+	form_row.add_theme_constant_override("separation", 6)
+	column.add_child(form_row)
+	random_form_check = CheckButton.new()
+	random_form_check.name = "RandomFormCheck"
+	random_form_check.text = "Random"
+	random_form_check.button_pressed = true
+	random_form_check.toggled.connect(_on_random_form_toggled)
+	form_row.add_child(random_form_check)
+	form_picker = OptionButton.new()
+	form_picker.name = "FormPicker"
+	form_picker.custom_minimum_size.y = CONTROL_HEIGHT
+	form_picker.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	form_picker.fit_to_longest_item = false
+	form_picker.clip_text = true
+	form_picker.item_selected.connect(_on_form_picked)
+	form_row.add_child(form_picker)
+	form_value_label = _section_value("FormValueLabel")
+	column.add_child(form_value_label)
+
 	column.add_child(_section_header("Gender"))
 	var gender_row := HBoxContainer.new()
 	gender_row.add_theme_constant_override("separation", 6)
@@ -1143,7 +1194,7 @@ func _specs_for_side(side: String) -> Array[Dictionary]:
 
 
 func _default_spec() -> Dictionary:
-	return {"moves": [], "random_moves": true, "ability": "", "random_ability": true, "item": "", "random_item": false, "gender": "", "random_gender": true}
+	return {"moves": [], "random_moves": true, "ability": "", "random_ability": true, "item": "", "random_item": false, "gender": "", "random_gender": true, "form": "", "random_form": true}
 
 
 func _spec_for(side: String, index: int) -> Dictionary:
@@ -1169,7 +1220,8 @@ func _specs_payload(side: String) -> Array:
 		var moves: Array = [] if bool(spec.get("random_moves", true)) else (spec.get("moves", []) as Array).duplicate()
 		var ability: String = CustomSkirmishBuilder.RANDOM_CHOICE if bool(spec.get("random_ability", true)) else String(spec.get("ability", ""))
 		var gender: String = CustomSkirmishBuilder.RANDOM_CHOICE if bool(spec.get("random_gender", true)) else String(spec.get("gender", ""))
-		out.append({"moves": moves, "ability": ability, "gender": gender})
+		var form: String = CustomSkirmishBuilder.RANDOM_CHOICE if bool(spec.get("random_form", true)) else String(spec.get("form", ""))
+		out.append({"moves": moves, "ability": ability, "gender": gender, "form": form})
 	return out
 
 
@@ -1199,7 +1251,7 @@ func _refresh_slot_section() -> void:
 	var team: Array[String] = player_team_paths if active_side == SIDE_PLAYER else enemy_team_paths
 	var index: int = _selected_index_for(active_side)
 	var has_slot: bool = index >= 0 and index < team.size()
-	for control in [random_moves_check, choose_moves_button, random_ability_check, choose_ability_button, random_item_check, choose_item_button, clear_item_button, random_gender_check, gender_picker]:
+	for control in [random_moves_check, choose_moves_button, random_ability_check, choose_ability_button, random_item_check, choose_item_button, clear_item_button, random_gender_check, gender_picker, random_form_check, form_picker]:
 		control.disabled = not has_slot
 	if not has_slot:
 		slot_title_label.text = "Select a %s slot" % _side_label(active_side).to_lower()
@@ -1207,12 +1259,34 @@ func _refresh_slot_section() -> void:
 		ability_value_label.text = ""
 		item_value_label.text = ""
 		gender_value_label.text = ""
+		form_value_label.text = ""
+		form_picker.clear()
 		return
 	_sync_specs(active_side)
 	var spec: Dictionary = _spec_for(active_side, index)
 	var entry: Dictionary = _entry_for_path(team[index])
-	slot_title_label.text = "%s slot %d: %s" % [_side_label(active_side), index + 1, String(entry.get("label", ""))]
-	var form: PokemonFormResource = _form_for_entry(entry)
+	var species: PokemonSpeciesResource = _species_for_entry(entry)
+	var form_options: Array[int] = FormRules.options(species)
+	var form_choice: bool = form_options.size() > 1
+	var random_form: bool = bool(spec.get("random_form", true)) or not form_choice
+	var chosen_form: int = int(String(spec.get("form", ""))) if String(spec.get("form", "")).is_valid_int() else -1
+	if not form_options.has(chosen_form):
+		chosen_form = form_options[0]
+	random_form_check.disabled = not form_choice
+	random_form_check.set_pressed_no_signal(random_form)
+	form_picker.disabled = random_form
+	form_picker.clear()
+	if form_choice:
+		for j in range(form_options.size()):
+			form_picker.add_item(FormRules.label(species, form_options[j]), form_options[j])
+			if form_options[j] == chosen_form:
+				form_picker.select(j)
+		form_value_label.text = ("Rolled from %d forms" % form_options.size()) if random_form else FormRules.label(species, chosen_form)
+	else:
+		form_value_label.text = "Single form"
+	var slot_name: String = FormRules.label(species, chosen_form) if form_choice and not random_form and chosen_form != FormRules.default_index(species) else String(entry.get("label", ""))
+	slot_title_label.text = "%s slot %d: %s" % [_side_label(active_side), index + 1, slot_name]
+	var form: PokemonFormResource = species.forms[chosen_form] if species != null and not random_form and chosen_form >= 0 and chosen_form < species.forms.size() else _form_for_entry(entry)
 	var gender_choice: bool = GenderRules.is_choice(form)
 	var random_gender: bool = bool(spec.get("random_gender", true)) or not gender_choice
 	var chosen_gender: int = GenderRules.parse_id(String(spec.get("gender", "")))
@@ -1259,6 +1333,31 @@ func _on_random_moves_toggled(enabled: bool) -> void:
 	_refresh_slot_section()
 	if not enabled and (spec.get("moves", []) as Array).is_empty():
 		_open_chooser(CHOOSER_MOVES)
+
+
+func _on_random_form_toggled(enabled: bool) -> void:
+	var index: int = _selected_index_for(active_side)
+	if index < 0:
+		return
+	_sync_specs(active_side)
+	var spec: Dictionary = _spec_for(active_side, index)
+	spec["random_form"] = enabled
+	if not enabled and not String(spec.get("form", "")).is_valid_int():
+		var team: Array[String] = player_team_paths if active_side == SIDE_PLAYER else enemy_team_paths
+		spec["form"] = str(FormRules.default_index(_species_for_entry(_entry_for_path(team[index]))))
+	_refresh_details()
+	_refresh_slot_section()
+
+
+func _on_form_picked(item_index: int) -> void:
+	if form_picker == null or item_index < 0 or item_index >= form_picker.item_count:
+		return
+	set_slot_form(active_side, _selected_index_for(active_side), str(form_picker.get_item_id(item_index)))
+
+
+func _species_for_entry(entry: Dictionary) -> PokemonSpeciesResource:
+	var instance: PokemonInstanceResource = entry.get("instance", null) as PokemonInstanceResource
+	return instance.species if instance != null else null
 
 
 func _on_random_gender_toggled(enabled: bool) -> void:

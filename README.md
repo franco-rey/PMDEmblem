@@ -12,6 +12,16 @@ Single-player skirmishes against the CPU (difficulty 1 to 5), direct-connect 1v1
 - Windows: run `PMDEmblem.exe`. SmartScreen may show "Windows protected your PC"; choose **More info** and then **Run anyway**.
 - Both machines need the same build for network play. The host forwards UDP port 24555 (changeable in Direct Connect) when playing over the internet; on one network the guest can pick the host from "Games on this network".
 
+**Developer setup (fresh clone)**
+
+The repository tracks source and generated manifests only; the PMD sprites, portraits, particles, interface sheets, sounds and music are copied in by tracked scripts and stay ignored. Clone the three resource repositories next to this one so the folder holds `PMDEmblem`, `PMDODump`, `RawAsset` and `SpriteCollab` side by side, install Godot 4.7.2 (standard build) and Python 3.11 or newer, then run one script from the project folder:
+
+```
+python3 tools/setup/fresh_clone_setup.py
+```
+
+It runs every packager in order (raw visuals, interface sheets, the 686-Pokemon roster with shiny, female and alternate-form variants, the Godot import, the PMDO data import, the move and item presentation manifest, sounds and music), writes a log per step under `logs/setup/`, prints a timing table and finishes with a handful of smoke tests. About 25 minutes on a laptop; `--plan` prints the steps, `--from STEP` resumes after a failure, `--only STEP` reruns one, `--godot PATH` or `GODOT_BIN` points at a different Godot, and `--pmdo-root`, `--raw-asset-root` and `--sprite-collab-root` (or the `PMD_EMBLEM_*_ROOT` variables) move the resource checkouts. The step table with expected counts is in `plan/v13/fresh_clone_pipeline.md`.
+
 **Where things live**
 
 - Settings: the Godot user folder (`~/Library/Application Support/Godot/app_userdata/PMD Emblem` on macOS, `%APPDATA%\Godot\app_userdata\PMD Emblem` on Windows). Settings from the pre-alpha "Poke" folder are copied over on first launch.

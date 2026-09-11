@@ -15,6 +15,7 @@ from asset_rules import (
     generation_from_dex,
     project_slug,
     read_credit_text,
+    _has_required_sprite_sources,
 )
 from manifest import MANIFEST_PATH, REPORT_JSON_PATH, render_text_report, write_json
 from source_config import PROJECT_ROOT, load_config
@@ -247,6 +248,15 @@ def _discover_entries(sources: Any, only: set[str], generations: list[int], dex_
             "monster_json_abs": str(path),
             "monster_json": f"DumpAsset/Data/Monster/{path.name}",
             "form": form,
+            "forms": [
+                {
+                    "index": form_i,
+                    "name": _localized(form_d.get("FormName", {})) if isinstance(form_d, dict) else "",
+                    "temporary": bool(form_d.get("Temporary", False)) if isinstance(form_d, dict) else False,
+                    "released": bool(form_d.get("Released", True)) if isinstance(form_d, dict) else True,
+                }
+                for form_i, form_d in enumerate(forms)
+            ],
             "level_skills": _level_skills(form),
         })
     out.sort(key=lambda item: (int(item["dex_number"]), str(item["pmdo_slug"])))
@@ -365,16 +375,28 @@ def _discover_excluded_unreleased(sources: Any, only: set[str], generations: lis
 
 
 def _package_variant(sources: Any, dex: int, form_index: int, slug: str, suffix: str, shiny: bool, female: bool, dry_run: bool, source_revision: str) -> dict[str, Any]:
+    return _package_variant_from(
+        sources,
+        slug,
+        suffix,
+        find_first_complete_sprite_dir(sources.raw_sprite_dir, dex, form_index, shiny=shiny, female=female),
+        find_first_portrait_dir(sources.raw_portrait_dir, dex, form_index, shiny=shiny, female=female),
+        find_first_complete_sprite_dir(sources.sprite_collab_sprite_dir, dex, form_index, shiny=shiny, female=female) if sources.sprite_collab_sprite_dir else None,
+        find_first_portrait_dir(sources.sprite_collab_portrait_dir, dex, form_index, shiny=shiny, female=female) if sources.sprite_collab_portrait_dir else None,
+        dry_run,
+        source_revision,
+    )
+
+
+def _package_variant_from(sources: Any, slug: str, suffix: str, sprite_source: Path | None, portrait_source: Path | None, credit_sprite_dir: Path | None, credit_portrait_dir: Path | None, dry_run: bool, source_revision: str) -> dict[str, Any]:
     summary: dict[str, Any] = {"actor": False, "portrait": False}
-    sprite_source = find_first_complete_sprite_dir(sources.raw_sprite_dir, dex, form_index, shiny=shiny, female=female)
-    portrait_source = find_first_portrait_dir(sources.raw_portrait_dir, dex, form_index, shiny=shiny, female=female)
     if sprite_source is not None:
         dest = PROJECT_ROOT / "assets" / "textures" / "actor" / "pokemon" / f"{slug}{suffix}"
         _assets, _checksums, warnings, _copies = copy_sprite_set(
             project_root=PROJECT_ROOT,
             source_dir=sprite_source,
             destination_dir=dest,
-            credits_source_dir=find_first_complete_sprite_dir(sources.sprite_collab_sprite_dir, dex, form_index, shiny=shiny, female=female) if sources.sprite_collab_sprite_dir else None,
+            credits_source_dir=credit_sprite_dir,
             dry_run=dry_run,
         )
         copy_expanded_animation_states(
@@ -392,11 +414,68 @@ def _package_variant(sources: Any, dex: int, form_index: int, slug: str, suffix:
             project_root=PROJECT_ROOT,
             source_dir=portrait_source,
             destination_dir=PROJECT_ROOT / "assets" / "textures" / "pokemon" / "portraits" / f"{slug}{suffix}",
-            credits_source_dir=find_first_portrait_dir(sources.sprite_collab_portrait_dir, dex, form_index, shiny=shiny, female=female) if sources.sprite_collab_portrait_dir else None,
+            credits_source_dir=credit_portrait_dir,
             dry_run=dry_run,
         )
         summary["portrait"] = True
     return summary
+
+
+def _strict_sprite_dir(base: Path | None, dex: int, form_index: int, *parts: str) -> Path | None:
+    if base is None:
+        return None
+    candidate = base / f"{dex:04d}" / f"{form_index:04d}"
+    for part in parts:
+        candidate = candidate / part
+    return candidate if _has_required_sprite_sources(candidate) else None
+
+
+def _strict_portrait_dir(base: Path | None, dex: int, form_index: int, *parts: str) -> Path | None:
+    if base is None:
+        return None
+    candidate = base / f"{dex:04d}" / f"{form_index:04d}"
+    for part in parts:
+        candidate = candidate / part
+    return candidate if (candidate / "Normal.png").exists() else None
+
+
+def _package_forms(sources: Any, dex: int, slug: str, default_form_index: int, forms: list[dict[str, Any]], dry_run: bool, source_revision: str) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for form in forms:
+        index = int(form.get("index", 0))
+        if index == default_form_index or bool(form.get("temporary", False)) or not bool(form.get("released", True)):
+            continue
+        sprite_source = _strict_sprite_dir(sources.raw_sprite_dir, dex, index)
+        portrait_source = _strict_portrait_dir(sources.raw_portrait_dir, dex, index)
+        if sprite_source is None and portrait_source is None:
+            continue
+        suffix = f"_form{index}"
+        record: dict[str, Any] = {"index": index, "name": str(form.get("name", ""))}
+        record.update(_package_variant_from(
+            sources,
+            slug,
+            suffix,
+            sprite_source,
+            portrait_source,
+            _strict_sprite_dir(sources.sprite_collab_sprite_dir, dex, index),
+            _strict_portrait_dir(sources.sprite_collab_portrait_dir, dex, index),
+            dry_run,
+            source_revision,
+        ))
+        for variant_name, parts in (("shiny", ("0001",)), ("female", ("0000", "0002")), ("female_shiny", ("0001", "0002"))):
+            record[variant_name] = _package_variant_from(
+                sources,
+                slug,
+                f"{suffix}_{variant_name}",
+                _strict_sprite_dir(sources.raw_sprite_dir, dex, index, *parts),
+                _strict_portrait_dir(sources.raw_portrait_dir, dex, index, *parts),
+                _strict_sprite_dir(sources.sprite_collab_sprite_dir, dex, index, *parts),
+                _strict_portrait_dir(sources.sprite_collab_portrait_dir, dex, index, *parts),
+                dry_run,
+                source_revision,
+            )
+        out.append(record)
+    return out
 
 
 def _package_entry(entry: dict[str, Any], sources: Any, dry_run: bool, source_revision: str = "") -> dict[str, Any]:
@@ -438,6 +517,7 @@ def _package_entry(entry: dict[str, Any], sources: Any, dry_run: bool, source_re
     for variant_name, variant_shiny, variant_female in (("shiny", True, False), ("female", False, True), ("female_shiny", True, True)):
         variant_summary[variant_name] = _package_variant(sources, dex, form_index, slug, f"_{variant_name}", variant_shiny, variant_female, dry_run, source_revision)
     shiny_summary = variant_summary["shiny"]
+    form_summary = _package_forms(sources, dex, slug, form_index, list(entry.get("forms", [])), dry_run, source_revision)
 
     import_moves = _move_slugs_at_or_below(entry["level_skills"], LEVEL_FOR_DEFAULT_MOVES)
     usable_moves = [move for move in import_moves if (sources.skill_dir / f"{move}.json").exists()]
@@ -469,6 +549,7 @@ def _package_entry(entry: dict[str, Any], sources: Any, dry_run: bool, source_re
     return {
         "shiny": shiny_summary,
         "variants": variant_summary,
+        "forms": form_summary,
         "slug": slug,
         "pmdo_slug": entry["pmdo_slug"],
         "dex_number": dex,

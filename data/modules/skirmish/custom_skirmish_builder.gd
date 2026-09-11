@@ -225,6 +225,9 @@ static func apply_slot_specs(team: Array[PokemonInstanceResource], specs: Array,
 		if instance == null:
 			continue
 		var spec: Dictionary = specs[i] if i < specs.size() and specs[i] is Dictionary else {}
+		var form_error: String = apply_form(instance, String(spec.get("form", "")), seed, side_key, i)
+		if not form_error.is_empty():
+			return "%s slot %d: %s" % [side_key.capitalize(), i + 1, form_error]
 		var gender_error: String = apply_gender(instance, String(spec.get("gender", "")), seed, side_key, i)
 		if not gender_error.is_empty():
 			return "%s slot %d: %s" % [side_key.capitalize(), i + 1, gender_error]
@@ -243,6 +246,43 @@ static func apply_slot_specs(team: Array[PokemonInstanceResource], specs: Array,
 				return "%s slot %d: %s is not an ability of this Pokemon" % [side_key.capitalize(), i + 1, ability]
 			instance.ability_override = ability
 	return ""
+
+
+static func apply_form(instance: PokemonInstanceResource, choice: String, seed: int, side_key: String, slot_index: int) -> String:
+	var species: PokemonSpeciesResource = instance.species
+	var text: String = choice.strip_edges().to_lower()
+	if species == null or text.is_empty():
+		return ""
+	var wanted: int = instance.form_index
+	if text == RANDOM_CHOICE:
+		if instance.form_index != FormRules.default_index(species):
+			return ""
+		wanted = FormRules.roll(species, seed, side_key, slot_index)
+	elif text.is_valid_int():
+		wanted = int(text)
+		var error: String = FormRules.choice_error(species, wanted, instance.display_name())
+		if not error.is_empty():
+			return error
+	else:
+		return "%s is not a form number" % choice
+	set_form(instance, wanted)
+	return ""
+
+
+static func set_form(instance: PokemonInstanceResource, index: int) -> void:
+	if instance == null or instance.form_index == index:
+		return
+	instance.form_index = index
+	instance.experience = PokemonExperienceService.xp_for_level(instance.resolved_form(), instance.level)
+	if not instance.ability_override.is_empty() and not available_ability_ids(instance).has(instance.ability_override):
+		instance.ability_override = ""
+
+
+static func random_form_specs(size: int) -> Array:
+	var out: Array = []
+	for i in range(size):
+		out.append({"form": RANDOM_CHOICE})
+	return out
 
 
 static func apply_gender(instance: PokemonInstanceResource, choice: String, seed: int, side_key: String, slot_index: int) -> String:
@@ -359,6 +399,7 @@ static func build_random(
 	)
 	if result.get("ok", false):
 		var definition: SkirmishDefinitionResource = result["definition"]
+		apply_slot_specs(definition.player_team, random_form_specs(definition.player_team.size()), seed, "player")
 		definition.skirmish_id = "random_%dv%d_%d" % [team_size, team_size, seed]
 		definition.display_name = "Random %dv%d" % [team_size, team_size]
 		var meta: Dictionary = definition.generation_metadata.duplicate(true)

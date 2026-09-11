@@ -169,9 +169,16 @@ func _resolve_sprite_set(stats: Stats) -> PokemonSpriteSetResource:
 	var form: PokemonFormResource = stats.pokemon_instance.resolved_form()
 	if form == null:
 		return null
-	if stats.pokemon_instance.species != null and (stats.pokemon_instance.shiny or stats.gender == GenderRules.FEMALE):
-		return SpriteVariants.resolve_sprite_set(form.sprite_set, String(stats.pokemon_instance.species.species_id), stats.pokemon_instance.shiny, stats.gender == GenderRules.FEMALE)
-	return form.sprite_set
+	var species: PokemonSpeciesResource = stats.pokemon_instance.species
+	var base: PokemonSpriteSetResource = form.sprite_set
+	if base == null and species != null and species.default_form() != null:
+		base = species.default_form().sprite_set
+	if species == null:
+		return base
+	var form_suffix: String = SpriteVariants.form_suffix(stats.pokemon_instance.form_index, FormRules.default_index(species))
+	if stats.pokemon_instance.shiny or stats.gender == GenderRules.FEMALE or not form_suffix.is_empty():
+		return SpriteVariants.resolve_sprite_set(base, String(species.species_id), stats.pokemon_instance.shiny, stats.gender == GenderRules.FEMALE, form_suffix)
+	return base
 
 
 func _apply_world_pixel_size(sprite_set: PokemonSpriteSetResource) -> void:
