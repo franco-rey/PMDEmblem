@@ -2381,11 +2381,16 @@ func _update_net_status() -> void:
 			var addresses: PackedStringArray = (net_session.link as EnetLink).local_addresses() if net_session.link is EnetLink else PackedStringArray()
 			lines.append("Hosting on port %d. Waiting for a player." % GameSettings.net_port)
 			if addresses.size() > 0:
-				lines.append("Your address: %s" % ", ".join(addresses))
+				lines.append("LAN address: %s" % ", ".join(addresses))
+			var router: String = net_session.router_status()
+			if not router.is_empty():
+				lines.append(router)
 		NetSession.CONNECTING:
 			lines.append("Connecting...")
 		NetSession.LOBBY, NetSession.STARTING, NetSession.ENDED:
 			lines.append("%s with %s." % ["Hosting" if net_session.host_role else "Joined", net_session.remote_name])
+			if net_session.host_role and not net_session.public_address().is_empty():
+				lines.append("Public address %s, UDP %d open on the router." % [net_session.public_address(), GameSettings.net_port])
 			var activity: String = remote_activity_label()
 			lines.append("You play Team %d. %s" % [1 if net_session.host_role else 2, "They are ready." if net_session.remote_ready else ("They are choosing." if activity == "Choosing..." else "Waiting for them to ready up.")])
 			var ping: int = net_session.latency_ms()

@@ -67,12 +67,24 @@ var _catchup_wanted: bool = false
 var _outbox: Array[Dictionary] = []
 var _final_result: int = TacticsLevel.RESULT_ONGOING
 var _final_reason: String = ""
+var port_opener: NetPortOpener = null
 
 
 func _ready() -> void:
 	name = "NetSession"
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	set_process(true)
+	port_opener = NetPortOpener.new()
+	port_opener.name = "PortOpener"
+	add_child(port_opener)
+
+
+func router_status() -> String:
+	return port_opener.detail if port_opener != null and host_role else ""
+
+
+func public_address() -> String:
+	return port_opener.external_address if port_opener != null and host_role else ""
 
 
 func active() -> bool:
@@ -121,6 +133,8 @@ func host(port: int = EnetLink.DEFAULT_PORT) -> String:
 	local_side = PokemonInstanceResource.Team.PLAYER
 	_use_link(enet)
 	_set_state(HOSTING)
+	if port_opener != null:
+		port_opener.open(port)
 	return ""
 
 
@@ -181,6 +195,8 @@ func leave(reason: String = "left") -> void:
 		link.send(NetMessages.build(NetMessages.BYE, {"reason": reason}))
 		link.close(reason)
 	link = null
+	if port_opener != null and host_role:
+		port_opener.close()
 	_reset_battle_state()
 	remote_name = ""
 	remote_lobby = {}
