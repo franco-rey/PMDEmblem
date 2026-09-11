@@ -17,6 +17,8 @@ func _run() -> void:
 	UiScale.override_factor = 0.0
 	label_prefix = _arg("label")
 	GameSettings.remember_window_size = false
+	if _arg("shiny") == "1":
+		ShinyRules.force_all = true
 	var driver = DRIVER.new(self)
 	var ok: bool = await driver._launch("match seed=42 mode=pvp team=6 map=chessboard")
 	if not ok:
@@ -39,10 +41,22 @@ func _run() -> void:
 				PmdStyle.set_border_color(int(value))
 			"portrait":
 				PmdStyle.set_portrait_border(int(value))
+	if not _arg("team").is_empty():
+		PmdStyle.set_team_palette(_arg("team"))
+	if not _arg("highlight").is_empty():
+		PmdStyle.set_highlight_set(_arg("highlight"))
+	if not _arg("hp").is_empty():
+		PmdStyle.set_hp_bar_style(_arg("hp"))
+	if _arg("cursor") == "1":
+		PmdStyle.set_menu_cursor(true)
 	for i in range(6):
 		await process_frame
-	print("queue: started after %d frames, %d queue tiles" % [frames, level.hud._queue_row.get_child_count()])
+	print("queue: started after %d frames, %d queue tiles, %d shiny" % [frames, level.hud._queue_row.get_child_count(), level.shiny_pawns().size()])
 	await _snap("hud_queue")
+	if _arg("shiny") == "1":
+		for i in range(10):
+			await process_frame
+		await _snap("hud_queue_shiny_later")
 	for path in captured:
 		print("capture: %s" % path)
 	quit(0)

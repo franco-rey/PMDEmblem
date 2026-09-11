@@ -135,8 +135,8 @@ func show_result(result: int, definition: SkirmishDefinitionResource, level: Tac
 	for child in _columns.get_children():
 		child.queue_free()
 	if level != null:
-		_columns.add_child(_side_column("Player", level.player, PmdStyle.TEAM_PLAYER, level))
-		_columns.add_child(_side_column("Enemy", level.opponent, PmdStyle.TEAM_ENEMY, level))
+		_columns.add_child(_side_column("Player", level.player, PmdStyle.player_color(), level))
+		_columns.add_child(_side_column("Enemy", level.opponent, PmdStyle.enemy_color(), level))
 	visible = true
 	var focus_target: Button = _buttons["NextButton"] if series else _buttons.get("PlayAgainButton", null)
 	if focus_target != null:

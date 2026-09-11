@@ -182,6 +182,9 @@ func _spawn_team(team: Array[PokemonInstanceResource], parent: Node3D, anchors: 
 		var instance: PokemonInstanceResource = team[i]
 		if instance != null and instance.move_slots.size() < PokemonInstanceResource.MAX_MOVE_SLOTS and not instance.loadout_locked:
 			instance = SkirmishMoveLoadout.clone_with_loadout(instance, instance.team, instance.control_type, level.battle_seed, parent.name, i)
+		if instance != null and not instance.shiny and instance.species != null and ShinyRules.roll(level.battle_seed, parent.name, i, String(instance.species.species_id)):
+			instance = instance.duplicate() as PokemonInstanceResource
+			instance.shiny = true
 		var pawn: TacticsPawn = _pawn_scene.instantiate() as TacticsPawn
 		pawn.name = "Pkmn" if i == 0 else "Pkmn%d" % (i + 1)
 

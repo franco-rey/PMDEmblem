@@ -21,6 +21,9 @@ const UI_FONTS: Array[String] = ["text", "banner", "system", "simple"]
 const UI_PALETTES: Array[String] = ["navy", "forest", "ocean", "rose", "slate"]
 const SKY_BACKDROPS: Array[String] = ["sky", "cloudy", "dawn", "cosmic"]
 const MENU_BACKDROPS: Array[String] = ["sky", "BaseCamp", "ForestCamp", "ForestCampSecret", "GardenEnd", "GuildPath", "SnowCamp", "LuminousSpring", "CaveStop"]
+const TEAM_PALETTES: Array[String] = ["classic", "green_purple", "teal_pink", "white_tan"]
+const HIGHLIGHT_SETS: Array[String] = ["default", "colorblind", "mono", "pmd"]
+const HP_BAR_STYLES: Array[String] = ["default", "pmd"]
 
 static var window_mode: String = "windowed"
 static var resolution: Vector2i = Vector2i(1920, 1080)
@@ -38,6 +41,10 @@ static var ui_font: String = "text"
 static var ui_palette: String = "navy"
 static var sky_backdrop: String = "sky"
 static var menu_backdrop: String = "sky"
+static var team_palette: String = "classic"
+static var highlight_set: String = "default"
+static var hp_bar_style: String = "default"
+static var menu_cursor: bool = false
 static var master_volume: float = 1.0
 static var sfx_volume: float = 0.8
 static var music_volume: float = 0.6
@@ -83,6 +90,10 @@ static func load_settings() -> void:
 		ui_palette = String(config.get_value(SECTION, "ui_palette", ui_palette))
 		sky_backdrop = String(config.get_value(SECTION, "sky_backdrop", sky_backdrop))
 		menu_backdrop = String(config.get_value(SECTION, "menu_backdrop", menu_backdrop))
+		team_palette = String(config.get_value(SECTION, "team_palette", team_palette))
+		highlight_set = String(config.get_value(SECTION, "highlight_set", highlight_set))
+		hp_bar_style = String(config.get_value(SECTION, "hp_bar_style", hp_bar_style))
+		menu_cursor = bool(config.get_value(SECTION, "menu_cursor", menu_cursor))
 		player_name = String(config.get_value(NET_SECTION, "player_name", player_name))
 		last_address = String(config.get_value(NET_SECTION, "last_address", last_address))
 		net_port = int(config.get_value(NET_SECTION, "port", net_port))
@@ -105,6 +116,12 @@ static func load_settings() -> void:
 		sky_backdrop = "sky"
 	if not MENU_BACKDROPS.has(menu_backdrop):
 		menu_backdrop = "sky"
+	if not TEAM_PALETTES.has(team_palette):
+		team_palette = "classic"
+	if not HIGHLIGHT_SETS.has(highlight_set):
+		highlight_set = "default"
+	if not HP_BAR_STYLES.has(hp_bar_style):
+		hp_bar_style = "default"
 	if player_name.strip_edges().is_empty():
 		player_name = default_player_name()
 	loaded = true
@@ -136,6 +153,10 @@ static func save_settings() -> bool:
 	config.set_value(SECTION, "ui_palette", ui_palette)
 	config.set_value(SECTION, "sky_backdrop", sky_backdrop)
 	config.set_value(SECTION, "menu_backdrop", menu_backdrop)
+	config.set_value(SECTION, "team_palette", team_palette)
+	config.set_value(SECTION, "highlight_set", highlight_set)
+	config.set_value(SECTION, "hp_bar_style", hp_bar_style)
+	config.set_value(SECTION, "menu_cursor", menu_cursor)
 	config.set_value(NET_SECTION, "player_name", player_name)
 	config.set_value(NET_SECTION, "last_address", last_address)
 	config.set_value(NET_SECTION, "port", net_port)

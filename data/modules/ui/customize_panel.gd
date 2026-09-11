@@ -11,6 +11,10 @@ var palette_picker: OptionButton = null
 var border_picker: OptionButton = null
 var border_color_picker: OptionButton = null
 var portrait_picker: OptionButton = null
+var team_picker: OptionButton = null
+var highlight_picker: OptionButton = null
+var hp_picker: OptionButton = null
+var cursor_picker: OptionButton = null
 var sky_picker: OptionButton = null
 var menu_backdrop_picker: OptionButton = null
 var close_button: Button = null
@@ -35,6 +39,18 @@ func _ready() -> void:
 	portrait_picker = _picker("Portrait borders", "PortraitBorderPicker")
 	for index in range(PmdStyle.PORTRAIT_STYLE_COUNT + 1):
 		portrait_picker.add_item(PmdStyle.portrait_border_label(index))
+	team_picker = _picker("Team colors", "TeamPalettePicker")
+	for id in GameSettings.TEAM_PALETTES:
+		team_picker.add_item(PmdStyle.team_palette_label(id))
+	highlight_picker = _picker("Highlight colors", "HighlightPicker")
+	for id in GameSettings.HIGHLIGHT_SETS:
+		highlight_picker.add_item(TacticsConfig.highlight_label(id))
+	hp_picker = _picker("HP bars", "HpBarPicker")
+	for id in GameSettings.HP_BAR_STYLES:
+		hp_picker.add_item(PmdStyle.hp_bar_label(id))
+	cursor_picker = _picker("Menu cursor", "MenuCursorPicker")
+	cursor_picker.add_item("Off")
+	cursor_picker.add_item("PMD")
 	sky_picker = _picker("Sky backdrop", "SkyPicker")
 	for id in GameSettings.SKY_BACKDROPS:
 		sky_picker.add_item(PmdStyle.sky_label(id))
@@ -47,6 +63,10 @@ func _ready() -> void:
 	border_picker.item_selected.connect(_on_border_style_selected)
 	border_color_picker.item_selected.connect(_on_border_color_selected)
 	portrait_picker.item_selected.connect(_on_portrait_selected)
+	team_picker.item_selected.connect(_on_team_selected)
+	highlight_picker.item_selected.connect(_on_highlight_selected)
+	hp_picker.item_selected.connect(_on_hp_selected)
+	cursor_picker.item_selected.connect(_on_cursor_selected)
 	sky_picker.item_selected.connect(_on_sky_selected)
 	menu_backdrop_picker.item_selected.connect(_on_menu_backdrop_selected)
 	refresh()
@@ -65,6 +85,14 @@ func refresh() -> void:
 	portrait_picker.select(clampi(GameSettings.portrait_border, 0, PmdStyle.PORTRAIT_STYLE_COUNT))
 	portrait_picker.disabled = not portraits
 	portrait_picker.tooltip_text = IMPORT_HINT if portrait_picker.disabled else ""
+	team_picker.select(maxi(0, GameSettings.TEAM_PALETTES.find(GameSettings.team_palette)))
+	highlight_picker.select(maxi(0, GameSettings.HIGHLIGHT_SETS.find(GameSettings.highlight_set)))
+	hp_picker.select(maxi(0, GameSettings.HP_BAR_STYLES.find(GameSettings.hp_bar_style)))
+	hp_picker.disabled = PmdStyle.hp_glyph_texture() == null
+	hp_picker.tooltip_text = IMPORT_HINT if hp_picker.disabled else ""
+	cursor_picker.select(1 if GameSettings.menu_cursor else 0)
+	cursor_picker.disabled = PmdStyle.cursor_texture() == null
+	cursor_picker.tooltip_text = IMPORT_HINT if cursor_picker.disabled else ""
 	sky_picker.select(maxi(0, GameSettings.SKY_BACKDROPS.find(GameSettings.sky_backdrop)))
 	menu_backdrop_picker.select(maxi(0, GameSettings.MENU_BACKDROPS.find(GameSettings.menu_backdrop)))
 	menu_backdrop_picker.disabled = not PmdStyle.menu_backdrops_available()
@@ -113,6 +141,26 @@ func _on_border_color_selected(index: int) -> void:
 
 func _on_portrait_selected(index: int) -> void:
 	PmdStyle.set_portrait_border(index)
+	_save()
+
+
+func _on_team_selected(index: int) -> void:
+	PmdStyle.set_team_palette(GameSettings.TEAM_PALETTES[clampi(index, 0, GameSettings.TEAM_PALETTES.size() - 1)])
+	_save()
+
+
+func _on_highlight_selected(index: int) -> void:
+	PmdStyle.set_highlight_set(GameSettings.HIGHLIGHT_SETS[clampi(index, 0, GameSettings.HIGHLIGHT_SETS.size() - 1)])
+	_save()
+
+
+func _on_hp_selected(index: int) -> void:
+	PmdStyle.set_hp_bar_style(GameSettings.HP_BAR_STYLES[clampi(index, 0, GameSettings.HP_BAR_STYLES.size() - 1)])
+	_save()
+
+
+func _on_cursor_selected(index: int) -> void:
+	PmdStyle.set_menu_cursor(index == 1)
 	_save()
 
 

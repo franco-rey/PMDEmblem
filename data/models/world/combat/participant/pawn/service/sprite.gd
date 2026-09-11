@@ -169,6 +169,8 @@ func _resolve_sprite_set(stats: Stats) -> PokemonSpriteSetResource:
 	var form: PokemonFormResource = stats.pokemon_instance.resolved_form()
 	if form == null:
 		return null
+	if stats.pokemon_instance.shiny and stats.pokemon_instance.species != null:
+		return ShinyRules.shiny_sprite_set(form.sprite_set, String(stats.pokemon_instance.species.species_id))
 	return form.sprite_set
 
 

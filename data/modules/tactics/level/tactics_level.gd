@@ -508,6 +508,30 @@ func _start_scheduler() -> void:
 	_scheduler_started = true
 	if hud != null:
 		hud.rebuild_queue()
+	_celebrate_shinies()
+
+
+func shiny_pawns() -> Array[TacticsPawn]:
+	var out: Array[TacticsPawn] = []
+	for unit in battle_units:
+		var pawn: TacticsPawn = unit.pawn
+		if pawn != null and is_instance_valid(pawn) and pawn.stats != null and pawn.stats.pokemon_instance != null and pawn.stats.pokemon_instance.shiny:
+			out.append(pawn)
+	return out
+
+
+func _celebrate_shinies() -> void:
+	var shinies: Array[TacticsPawn] = shiny_pawns()
+	if shinies.is_empty():
+		return
+	var asset: Dictionary = ShinyRules.sparkle_asset()
+	for pawn in shinies:
+		battle_log.append({"kind": "shiny_entry", "pawn": pawn, "sparkle": not asset.is_empty()})
+		if vfx_player == null or asset.is_empty():
+			continue
+		for offset in ShinyRules.SPARKLE_OFFSETS:
+			vfx_player.spawn_static(asset, {"index": ShinyRules.SPARKLE_INDEX, "frame_time": ShinyRules.SPARKLE_FRAME_TIME}, pawn.global_position + offset, Vector3.FORWARD, 2, 0, 0, 3, "shiny")
+	SoundPlayer.cue("battle.shiny")
 
 
 func _on_edge_pan_toggled(enabled: bool) -> void:

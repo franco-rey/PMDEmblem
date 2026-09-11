@@ -960,6 +960,8 @@ func _on_skirmish_ended(result: int, definition: SkirmishDefinitionResource) -> 
 
 func _style_main_menu() -> void:
 	get_tree().root.theme = PmdStyle.build_theme(load("res://assets/ui/pmd_theme.tres") as Theme)
+	TacticsConfig.apply_highlight_set(GameSettings.highlight_set)
+	PmdCursor.ensure(get_tree().root)
 	var ui: Control = $UI as Control
 	var backdrop := PmdBackdrop.new()
 	backdrop.name = "Backdrop"

@@ -399,6 +399,38 @@ def _package_entry(entry: dict[str, Any], sources: Any, dry_run: bool, source_re
         dry_run=dry_run,
     )
 
+    shiny_sprite_source = find_first_complete_sprite_dir(sources.raw_sprite_dir, dex, form_index, shiny=True)
+    shiny_portrait_source = find_first_portrait_dir(sources.raw_portrait_dir, dex, form_index, shiny=True)
+    shiny_summary: dict[str, Any] = {"actor": False, "portrait": False}
+    if shiny_sprite_source is not None:
+        shiny_dest = PROJECT_ROOT / "assets" / "textures" / "actor" / "pokemon" / f"{slug}_shiny"
+        shiny_assets, _shiny_checksums, shiny_warnings, _shiny_copies = copy_sprite_set(
+            project_root=PROJECT_ROOT,
+            source_dir=shiny_sprite_source,
+            destination_dir=shiny_dest,
+            credits_source_dir=find_first_complete_sprite_dir(sources.sprite_collab_sprite_dir, dex, form_index, shiny=True) if sources.sprite_collab_sprite_dir else None,
+            dry_run=dry_run,
+        )
+        copy_expanded_animation_states(
+            project_root=PROJECT_ROOT,
+            source_dir=shiny_sprite_source,
+            destination_dir=shiny_dest,
+            dry_run=dry_run,
+            source_repo="RawAsset",
+            source_rel_dir=_source_rel(sources.raw_asset_root, shiny_sprite_source),
+            source_revision=source_revision,
+        )
+        shiny_summary["actor"] = not any(warning.startswith("missing sprite state") for warning in shiny_warnings)
+    if shiny_portrait_source is not None:
+        copy_portrait(
+            project_root=PROJECT_ROOT,
+            source_dir=shiny_portrait_source,
+            destination_dir=PROJECT_ROOT / "assets" / "textures" / "pokemon" / "portraits" / f"{slug}_shiny",
+            credits_source_dir=find_first_portrait_dir(sources.sprite_collab_portrait_dir, dex, form_index, shiny=True) if sources.sprite_collab_portrait_dir else None,
+            dry_run=dry_run,
+        )
+        shiny_summary["portrait"] = True
+
     import_moves = _move_slugs_at_or_below(entry["level_skills"], LEVEL_FOR_DEFAULT_MOVES)
     usable_moves = [move for move in import_moves if (sources.skill_dir / f"{move}.json").exists()]
     default_moves = usable_moves[-4:]
@@ -427,6 +459,7 @@ def _package_entry(entry: dict[str, Any], sources: Any, dry_run: bool, source_re
         assets["portrait_fallback"] = FALLBACK_ICON_PATH
 
     return {
+        "shiny": shiny_summary,
         "slug": slug,
         "pmdo_slug": entry["pmdo_slug"],
         "dex_number": dex,

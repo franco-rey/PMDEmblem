@@ -982,7 +982,7 @@ func _make_tile(pawn: TacticsPawn, active: bool) -> Control:
 	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if active:
 		var arrow := EmoticonIcon.new()
-		arrow.set_sheet(ARROW_SHEET, ARROW_PX)
+		arrow.set_sheet(PmdStyle.arrow_sheet(), ARROW_PX)
 		arrow.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		holder.add_child(arrow)
 	var frame := _portrait_frame(px)

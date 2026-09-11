@@ -101,8 +101,22 @@ def candidate_asset_dirs(base: Path, dex_number: int, form_index: int = 0) -> li
     return out
 
 
-def find_first_complete_sprite_dir(base: Path, dex_number: int, form_index: int = 0) -> Path | None:
-    for candidate in candidate_asset_dirs(base, dex_number, form_index):
+def candidate_shiny_dirs(base: Path, dex_number: int, form_index: int = 0) -> list[Path]:
+    dex = f"{dex_number:04d}"
+    form = f"{form_index:04d}"
+    root = base / dex
+    candidates = [root / form / "0001", root / "0000" / "0001"]
+    seen: set[Path] = set()
+    out: list[Path] = []
+    for candidate in candidates:
+        if candidate not in seen:
+            seen.add(candidate)
+            out.append(candidate)
+    return out
+
+
+def find_first_complete_sprite_dir(base: Path, dex_number: int, form_index: int = 0, shiny: bool = False) -> Path | None:
+    for candidate in (candidate_shiny_dirs(base, dex_number, form_index) if shiny else candidate_asset_dirs(base, dex_number, form_index)):
         if not candidate.is_dir():
             continue
         if (candidate / "AnimData.xml").exists() and _has_required_sprite_sources(candidate):
@@ -110,8 +124,8 @@ def find_first_complete_sprite_dir(base: Path, dex_number: int, form_index: int 
     return None
 
 
-def find_first_portrait_dir(base: Path, dex_number: int, form_index: int = 0) -> Path | None:
-    for candidate in candidate_asset_dirs(base, dex_number, form_index):
+def find_first_portrait_dir(base: Path, dex_number: int, form_index: int = 0, shiny: bool = False) -> Path | None:
+    for candidate in (candidate_shiny_dirs(base, dex_number, form_index) if shiny else candidate_asset_dirs(base, dex_number, form_index)):
         if (candidate / "Normal.png").exists():
             return candidate
     return None

@@ -23,6 +23,26 @@ static var mat_color: Dictionary = {
 	"danger": create_material(str(color.danger_red)),
 }
 
+static var highlight_sets: Dictionary = {
+	"default": {"hover": "FFFFFF3F", "reachable": "008fdbBF", "reachable_hover": "0aa9ffBF", "attackable": "d10000BF", "hover_attackable": "ff4242BF", "path": "e6fbffF2", "committed": "ffd54aD8", "danger": "ff3a3a4A"},
+	"colorblind": {"hover": "FFFFFF3F", "reachable": "0072B2BF", "reachable_hover": "56B4E9BF", "attackable": "E69F00BF", "hover_attackable": "F0B84ABF", "path": "FFFFFFF2", "committed": "F0E442D8", "danger": "CC79A74A"},
+	"mono": {"hover": "FFFFFF5F", "reachable": "FFFFFF8F", "reachable_hover": "FFFFFFCF", "attackable": "202020BF", "hover_attackable": "404040BF", "path": "FFFFFFF2", "committed": "FFFFFFF2", "danger": "0000004A"},
+	"pmd": {"hover": "FFFFFF3F", "reachable": "3ddc5cBF", "reachable_hover": "7cf08cBF", "attackable": "ff3b3bBF", "hover_attackable": "ff7a7aBF", "path": "fff3a0F2", "committed": "ffd54aD8", "danger": "ff3a3a4A"},
+}
+
+static var highlight_labels: Dictionary = {"default": "Default", "colorblind": "Blue and orange", "mono": "Monochrome", "pmd": "PMD green"}
+
+
+static func apply_highlight_set(id: String) -> void:
+	var chosen: Dictionary = highlight_sets.get(id, highlight_sets["default"])
+	for key in chosen.keys():
+		if mat_color.has(key):
+			(mat_color[key] as StandardMaterial3D).albedo_color = Color(str(chosen[key]))
+
+
+static func highlight_label(id: String) -> String:
+	return String(highlight_labels.get(id, id))
+
 static var pawn: Dictionary = {
 	"base_walk_speed": 8,
 	"animation_frames": 1,

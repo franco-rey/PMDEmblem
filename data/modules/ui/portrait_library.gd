@@ -31,7 +31,7 @@ static func has_expression(slug: String, expression: String) -> bool:
 static func slug_for_stats(stats: Stats) -> String:
 	if stats == null or stats.pokemon_instance == null or stats.pokemon_instance.species == null:
 		return ""
-	return String(stats.pokemon_instance.species.species_id)
+	return ShinyRules.portrait_slug(String(stats.pokemon_instance.species.species_id), stats.pokemon_instance.shiny)
 
 
 static func slug_for_pawn(pawn: TacticsPawn) -> String:

@@ -4,6 +4,7 @@ extends StyleBox
 var flat: StyleBoxFlat = null
 var fill: Color = PmdStyle.NAVY
 var frame_color: Color = PmdStyle.FRAME
+var frame_role: String = ""
 var sheet: String = "menu"
 var texture: ImageTexture = null
 var baked_style: int = 0
@@ -16,6 +17,7 @@ static func create(flat_style: StyleBoxFlat, fill_color: Color, frame: Color = P
 	style.flat = flat_style
 	style.fill = fill_color
 	style.frame_color = frame
+	style.frame_role = PmdStyle.color_role(frame)
 	style.sheet = sheet_kind
 	style.flat_margins = [flat_style.content_margin_left, flat_style.content_margin_top, flat_style.content_margin_right, flat_style.content_margin_bottom]
 	style.refresh()
@@ -26,9 +28,12 @@ func refresh() -> void:
 	var index: int = PmdStyle.active_sheet_style(sheet)
 	var row: int = PmdStyle.active_border_color()
 	var effective: Color = PmdStyle.effective_fill(fill)
+	var tint: Color = PmdStyle.role_color(frame_role, frame_color)
 	if flat != null:
 		flat.bg_color = effective
-	texture = PmdStyle.bake_sheet_texture(sheet, index, row, effective, frame_color) if index > 0 else null
+		if frame_role != "":
+			flat.border_color = tint
+	texture = PmdStyle.bake_sheet_texture(sheet, index, row, effective, tint) if index > 0 else null
 	if texture == null:
 		index = 0
 	baked_style = index

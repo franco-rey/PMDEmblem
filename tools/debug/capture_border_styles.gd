@@ -39,6 +39,11 @@ func _run() -> void:
 	for i in range(3):
 		await process_frame
 	await _snap("options_panel")
+	PmdStyle.set_menu_cursor(true)
+	for i in range(3):
+		await process_frame
+	await _snap("options_cursor")
+	PmdStyle.set_menu_cursor(false)
 	var customize_button: Button = main.find_child("CustomizeButton", true, false) as Button
 	if customize_button != null:
 		customize_button.pressed.emit()

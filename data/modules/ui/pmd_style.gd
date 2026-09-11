@@ -98,6 +98,18 @@ const SKY_LABELS: Dictionary = {"sky": "Sky", "cloudy": "Cloudy sky", "dawn": "D
 const MENU_BACKDROP_DIR: String = "res://assets/visuals/raw_asset/Backdrop/"
 const MENU_BACKDROP_LABELS: Dictionary = {"sky": "Sky", "BaseCamp": "Base Camp", "ForestCamp": "Forest Camp", "ForestCampSecret": "Secret Forest Camp", "GardenEnd": "Garden's End", "GuildPath": "Guild Path", "SnowCamp": "Snow Camp", "LuminousSpring": "Luminous Spring", "CaveStop": "Cave Stop"}
 
+const TEAM_PALETTES: Dictionary = {
+	"classic": {"player": TEAM_PLAYER, "enemy": TEAM_ENEMY, "arrow": "Yellow"},
+	"green_purple": {"player": Color(0.36, 0.80, 0.42, 1.0), "enemy": Color(0.72, 0.46, 0.96, 1.0), "arrow": "Green"},
+	"teal_pink": {"player": Color(0.28, 0.82, 0.80, 1.0), "enemy": Color(1.0, 0.52, 0.76, 1.0), "arrow": "Pink"},
+	"white_tan": {"player": Color(0.96, 0.96, 0.98, 1.0), "enemy": Color(0.86, 0.68, 0.44, 1.0), "arrow": "Tan"},
+}
+const TEAM_PALETTE_LABELS: Dictionary = {"classic": "Blue and red", "green_purple": "Green and purple", "teal_pink": "Teal and pink", "white_tan": "White and tan"}
+const HP_BAR_LABELS: Dictionary = {"default": "Default", "pmd": "PMD"}
+const ARROW_SHEET_DIR: String = "res://assets/visuals/raw_asset/Icon/"
+const UI_SHEET_DIR: String = "res://assets/visuals/raw_asset/UI/"
+const HP_GLYPH_PX: int = 8
+
 static var _sheet_images: Dictionary = {}
 static var _window_textures: Dictionary = {}
 static var _frame_accents: Dictionary = {}
@@ -106,6 +118,10 @@ static var _flats: Array[Dictionary] = []
 static var _body_font: FontVariation = null
 static var _title_font: FontVariation = null
 static var _knob_icons: Dictionary = {}
+static var _ui_textures: Dictionary = {}
+static var _ui_sheets: Dictionary = {}
+static var _root_theme: Theme = null
+static var _project_theme: Theme = null
 
 
 static func window(fill: Color = NAVY, frame: Color = FRAME, width: int = 3, radius: int = 6) -> StyleBox:
@@ -282,8 +298,185 @@ static func hp_color(fraction: float) -> Color:
 	return HP_LOW
 
 
+static func active_team_palette() -> Dictionary:
+	return TEAM_PALETTES.get(GameSettings.team_palette, TEAM_PALETTES["classic"])
+
+
+static func player_color() -> Color:
+	return active_team_palette()["player"]
+
+
+static func enemy_color() -> Color:
+	return active_team_palette()["enemy"]
+
+
 static func team_color(team: int) -> Color:
-	return TEAM_PLAYER if team == PokemonInstanceResource.Team.PLAYER else TEAM_ENEMY
+	return player_color() if team == PokemonInstanceResource.Team.PLAYER else enemy_color()
+
+
+static func team_palette_label(id: String) -> String:
+	return String(TEAM_PALETTE_LABELS.get(id, id))
+
+
+static func arrow_sheet() -> String:
+	return ARROW_SHEET_DIR + "Arrow_Down_%s.None.png" % String(active_team_palette().get("arrow", "Yellow"))
+
+
+static func color_role(color: Color) -> String:
+	for id in TEAM_PALETTES.keys():
+		var palette: Dictionary = TEAM_PALETTES[id]
+		if color == palette["player"]:
+			return "player"
+		if color == palette["enemy"]:
+			return "enemy"
+	return ""
+
+
+static func role_color(role: String, fallback: Color) -> Color:
+	if role == "player":
+		return player_color()
+	if role == "enemy":
+		return enemy_color()
+	return fallback
+
+
+static func set_team_palette(id: String) -> void:
+	GameSettings.team_palette = id if TEAM_PALETTES.has(id) else "classic"
+	refresh_windows()
+
+
+static func set_highlight_set(id: String) -> void:
+	GameSettings.highlight_set = id if TacticsConfig.highlight_sets.has(id) else "default"
+	TacticsConfig.apply_highlight_set(GameSettings.highlight_set)
+
+
+static func hp_bar_label(id: String) -> String:
+	return String(HP_BAR_LABELS.get(id, id))
+
+
+static func hp_bar_is_pmd() -> bool:
+	return GameSettings.hp_bar_style == "pmd" and hp_glyph_texture() != null and mini_hp_texture() != null
+
+
+static func set_hp_bar_style(id: String) -> void:
+	GameSettings.hp_bar_style = id if HP_BAR_LABELS.has(id) else "default"
+	notify_theme_changed()
+
+
+static func set_menu_cursor(enabled: bool) -> void:
+	GameSettings.menu_cursor = enabled
+	apply_arrows(enabled)
+	notify_theme_changed()
+
+
+static func ui_sheet(name: String) -> Texture2D:
+	if _ui_sheets.has(name):
+		return _ui_sheets[name]
+	var path: String = UI_SHEET_DIR + name + ".png"
+	if not ResourceLoader.exists(path):
+		return null
+	var sheet: Texture2D = load(path) as Texture2D
+	if sheet != null:
+		_ui_sheets[name] = sheet
+	return sheet
+
+
+static func _scaled_region(name: String, region: Rect2i, scale: int) -> ImageTexture:
+	var key: String = "%s:%s:%d" % [name, str(region), scale]
+	if _ui_textures.has(key):
+		return _ui_textures[key]
+	var sheet: Texture2D = ui_sheet(name)
+	if sheet == null:
+		return null
+	var source: Image = sheet.get_image()
+	if source == null:
+		return null
+	if source.is_compressed():
+		source.decompress()
+	source.convert(Image.FORMAT_RGBA8)
+	var image: Image = Image.create(region.size.x, region.size.y, false, Image.FORMAT_RGBA8)
+	image.blit_rect(source, region, Vector2i.ZERO)
+	image.resize(region.size.x * scale, region.size.y * scale, Image.INTERPOLATE_NEAREST)
+	var texture: ImageTexture = ImageTexture.create_from_image(image)
+	_ui_textures[key] = texture
+	return texture
+
+
+static func cursor_texture() -> ImageTexture:
+	return _scaled_region("Cursor", Rect2i(0, 0, 11, 11), 2)
+
+
+static func arrow_icon(direction: String) -> ImageTexture:
+	var cells: Dictionary = {"up": Vector2i(1, 0), "down": Vector2i(1, 2), "left": Vector2i(0, 1), "right": Vector2i(2, 1)}
+	var cell: Vector2i = cells.get(direction, Vector2i(1, 2))
+	return _scaled_region("Arrows", Rect2i(cell * 8, Vector2i(8, 8)), 2)
+
+
+static func updown_icon() -> ImageTexture:
+	var key: String = "Arrows:updown"
+	if _ui_textures.has(key):
+		return _ui_textures[key]
+	var up: ImageTexture = arrow_icon("up")
+	var down: ImageTexture = arrow_icon("down")
+	if up == null or down == null:
+		return null
+	var image: Image = Image.create(16, 32, false, Image.FORMAT_RGBA8)
+	image.blit_rect(up.get_image(), Rect2i(0, 0, 16, 16), Vector2i(0, 0))
+	image.blit_rect(down.get_image(), Rect2i(0, 0, 16, 16), Vector2i(0, 16))
+	var texture: ImageTexture = ImageTexture.create_from_image(image)
+	_ui_textures[key] = texture
+	return texture
+
+
+static func hp_glyph_texture() -> Texture2D:
+	return ui_sheet("HP")
+
+
+static func mini_hp_texture() -> Texture2D:
+	return ui_sheet("MiniHP")
+
+
+static func hp_text_width(text: String, scale: float) -> float:
+	return float(text.length()) * float(HP_GLYPH_PX) * scale
+
+
+static func draw_hp_text(canvas: CanvasItem, text: String, right_centre: Vector2, scale: float) -> void:
+	var glyphs: Texture2D = hp_glyph_texture()
+	if glyphs == null:
+		return
+	var cell: float = float(HP_GLYPH_PX) * scale
+	var x: float = right_centre.x - hp_text_width(text, scale)
+	var y: float = right_centre.y - cell * 0.5
+	var i: int = 0
+	while i < text.length():
+		var ch: String = text[i]
+		var region := Rect2()
+		var width: int = 1
+		if ch >= "0" and ch <= "9":
+			region = Rect2(float(int(ch) * HP_GLYPH_PX), 0.0, float(HP_GLYPH_PX), float(HP_GLYPH_PX))
+		elif ch == "/":
+			region = Rect2(16.0, float(HP_GLYPH_PX), float(HP_GLYPH_PX), float(HP_GLYPH_PX))
+		elif ch == "H" and i + 1 < text.length() and text[i + 1] == "P":
+			region = Rect2(0.0, float(HP_GLYPH_PX), float(HP_GLYPH_PX * 2), float(HP_GLYPH_PX))
+			width = 2
+		if region.size.x > 0.0:
+			canvas.draw_texture_rect_region(glyphs, Rect2(Vector2(x, y), Vector2(cell * float(width), cell)), region)
+		x += cell * float(width)
+		i += width
+
+
+static func apply_arrows(enabled: bool) -> void:
+	for theme in [_root_theme, _project_theme]:
+		if theme == null:
+			continue
+		if enabled and arrow_icon("down") != null:
+			theme.set_icon("arrow", "OptionButton", arrow_icon("down"))
+			theme.set_icon("updown", "SpinBox", updown_icon())
+		else:
+			if theme.has_icon("arrow", "OptionButton"):
+				theme.clear_icon("arrow", "OptionButton")
+			if theme.has_icon("updown", "SpinBox"):
+				theme.clear_icon("updown", "SpinBox")
 
 
 static func build_theme(base: Theme) -> Theme:
@@ -326,6 +519,9 @@ static func build_theme(base: Theme) -> Theme:
 	theme.set_icon("grabber", "HSlider", slider_knob())
 	theme.set_icon("grabber_highlight", "HSlider", slider_knob())
 	theme.set_icon("grabber_disabled", "HSlider", slider_knob(0.5))
+	if GameSettings.menu_cursor and arrow_icon("down") != null:
+		theme.set_icon("arrow", "OptionButton", arrow_icon("down"))
+		theme.set_icon("updown", "SpinBox", updown_icon())
 	theme.set_stylebox("normal", "LineEdit", field("normal"))
 	theme.set_stylebox("focus", "LineEdit", field("focus"))
 	theme.set_stylebox("read_only", "LineEdit", field("normal"))
@@ -346,6 +542,8 @@ static func build_theme(base: Theme) -> Theme:
 
 static func _publish_project_theme(theme: Theme) -> void:
 	var project: Theme = ThemeDB.get_project_theme()
+	_root_theme = theme
+	_project_theme = project
 	if project == null or project == theme:
 		return
 	project.merge_with(theme)
@@ -598,7 +796,8 @@ static func refresh_windows() -> void:
 		var fill: Color = entry["fill"]
 		if fill_role(fill) != "":
 			flat.bg_color = effective_fill(fill)
-		flat.border_color = accent_for_frame(entry["frame"])
+		var team_role: String = String(entry.get("team_role", ""))
+		flat.border_color = role_color(team_role, entry["frame"]) if team_role != "" else accent_for_frame(entry["frame"])
 		keep_flats.append(entry)
 	_flats = keep_flats
 	notify_theme_changed()
@@ -606,14 +805,17 @@ static func refresh_windows() -> void:
 
 static func _register_flat(style: StyleBoxFlat, frame: Color, fill: Color) -> void:
 	var role: String = fill_role(fill)
+	var team_role: String = color_role(frame)
 	var follows_frame: bool = frame == FRAME or frame == FRAME_SOFT
-	if not follows_frame and role == "":
+	if not follows_frame and role == "" and team_role == "":
 		return
-	_flats.append({"ref": weakref(style), "frame": frame, "fill": fill})
+	_flats.append({"ref": weakref(style), "frame": frame, "fill": fill, "team_role": team_role})
 	if role != "":
 		style.bg_color = effective_fill(fill)
 	if follows_frame:
 		style.border_color = accent_for_frame(frame)
+	elif team_role != "":
+		style.border_color = role_color(team_role, frame)
 
 
 static func accent_for_frame(frame: Color) -> Color:
