@@ -129,6 +129,9 @@ func show_result(result: int, definition: SkirmishDefinitionResource, level: Tac
 	_subtitle.text = "%s   Seed %d   %d turns" % [mode, seed, turns]
 	if level != null and level.multiverse != null and level.multiverse.enabled and not level.multiverse.state.timelines.is_empty():
 		_subtitle.text += "   Timelines %d   Travels %d" % [level.multiverse.state.timeline_ids().size(), level.multiverse.travels]
+		var per_timeline: String = level.multiverse.timeline_summary()
+		if not per_timeline.is_empty():
+			_subtitle.text += "\n" + per_timeline
 	for child in _columns.get_children():
 		child.queue_free()
 	if level != null:

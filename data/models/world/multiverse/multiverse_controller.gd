@@ -34,6 +34,8 @@ var fx: MultiverseFx = null
 var minimap: MultiverseMinimap = null
 var preview_active: bool = false
 var committing: bool = false
+var browsing: bool = false
+var _view: Vector2i = Vector2i.ZERO
 var _pawn_scene: PackedScene = null
 var _expertise_scene: PackedScene = null
 
@@ -65,10 +67,92 @@ func on_round_building() -> void:
 
 
 func present_refresh() -> void:
+	if browsing:
+		browsing = false
+		if stage != null and is_instance_valid(stage):
+			stage.clear_browse()
 	if stage != null and is_instance_valid(stage):
 		stage.refresh()
 	if minimap != null and is_instance_valid(minimap):
 		minimap.refresh()
+
+
+func viewing() -> Vector2i:
+	return _view if browsing else state.focus
+
+
+func latest_boards() -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	var ids: Array[int] = state.timeline_ids()
+	ids.sort()
+	for l in ids:
+		var latest: BoardSnapshot = state.latest(l)
+		if latest != null:
+			out.append(latest.coords())
+	return out
+
+
+func browse_board(coords: Vector2i) -> bool:
+	if not enabled or state.timelines.is_empty() or state.board(coords.x, coords.y) == null:
+		return false
+	if coords == state.focus:
+		browse_present()
+		return true
+	browsing = true
+	_view = coords
+	if stage != null and is_instance_valid(stage):
+		stage.browse(coords)
+	if minimap != null and is_instance_valid(minimap):
+		minimap.refresh()
+	if level != null and level.banner != null:
+		var latest: BoardSnapshot = state.latest(coords.x)
+		var kind: String = "latest" if latest != null and latest.turn == coords.y else "past"
+		level.banner.show_notice("Viewing %s T%d (%s). Press / to return." % [MultiverseState.label(coords.x), coords.y, kind])
+	return true
+
+
+func browse_step(direction: int) -> void:
+	var boards: Array[Vector2i] = latest_boards()
+	if boards.size() < 2:
+		return
+	var index: int = boards.find(viewing())
+	if index < 0:
+		index = boards.find(state.focus)
+	var next: Vector2i = boards[posmod(index + direction, boards.size())]
+	browse_board(next)
+
+
+func browse_present() -> void:
+	var was_browsing: bool = browsing
+	browsing = false
+	if stage != null and is_instance_valid(stage):
+		stage.clear_browse()
+		stage.look_at_board(state.focus)
+	if minimap != null and is_instance_valid(minimap):
+		minimap.refresh()
+	if was_browsing and level != null and level.banner != null:
+		level.banner.show_notice("Back on %s T%d" % [MultiverseState.label(state.focus.x), state.focus.y])
+
+
+func timeline_summary() -> String:
+	if state.timelines.is_empty():
+		return ""
+	var parts: Array[String] = []
+	var ids: Array[int] = state.timeline_ids()
+	ids.sort()
+	for l in ids:
+		var latest: BoardSnapshot = state.latest(l)
+		if latest == null:
+			continue
+		var text: String = "%s T%d " % [MultiverseState.label(l), latest.turn]
+		if not state.is_active(l):
+			text += "frozen"
+		else:
+			text += "P%d v E%d" % [latest.standing(MultiverseState.SIDE_PLAYER), latest.standing(MultiverseState.SIDE_ENEMY)]
+			if latest.coords() == state.focus:
+				text += " in play"
+		parts.append(text)
+	return "   ".join(parts)
 
 
 func presentation_immediate() -> bool:

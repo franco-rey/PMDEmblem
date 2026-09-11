@@ -138,8 +138,19 @@ func set_interface_visible(value: bool) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if multiverse_enabled and timeline_map != null and event.is_action_pressed("toggle_timeline_map") and not battle_finished:
+	if not multiverse_enabled or battle_finished:
+		return
+	if timeline_map != null and event.is_action_pressed("toggle_timeline_map"):
 		timeline_map.toggle()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("board_prev"):
+		multiverse.browse_step(-1)
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("board_next"):
+		multiverse.browse_step(1)
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("board_present"):
+		multiverse.browse_present()
 		get_viewport().set_input_as_handled()
 
 

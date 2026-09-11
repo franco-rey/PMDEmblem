@@ -71,6 +71,7 @@ var skirmish_loader: SkirmishLoader
 var pause_menu: PauseMenu = null
 var net_session: NetSession = null
 var net_suspend_panel: NetSuspendPanel = null
+var _net_previous_state: int = NetSession.IDLE
 var multiplayer_menu: MultiplayerMenu = null
 var net_beacon: LanBeacon = null
 var multiplayer_button: Button = null
@@ -209,6 +210,11 @@ func _on_net_join_requested(address: String, port: int) -> void:
 
 
 func _on_net_state_changed(state: int) -> void:
+	if state == NetSession.SUSPENDED:
+		SoundPlayer.cue("ui.error")
+	elif state == NetSession.IN_BATTLE and _net_previous_state == NetSession.SUSPENDED:
+		SoundPlayer.cue("lobby.join")
+	_net_previous_state = state
 	if state == NetSession.LOBBY and skirmish_lobby != null and not skirmish_lobby.visible and level_instance == null:
 		_open_network_lobby()
 	if state == NetSession.IDLE:

@@ -83,6 +83,12 @@ func _run() -> void:
 	pause.resign_visible = false
 	pause.open()
 	_assert_true(pause._buttons["RestartButton"].visible and pause._buttons["LobbyButton"].visible and not pause._buttons["ResignButton"].visible, "a local battle keeps Restart and Return to Lobby without Resign")
+	var restarted: Array = []
+	pause.restart_requested.connect(func() -> void: restarted.append(true))
+	pause._buttons["RestartButton"].pressed.emit()
+	_assert_true(pause._confirm.visible and restarted.is_empty(), "Restart Skirmish asks for confirmation in local play too")
+	pause._buttons["ConfirmNoButton"].pressed.emit()
+	_assert_true(not pause._confirm.visible and pause._menu.visible and restarted.is_empty(), "declining the restart returns to the pause menu")
 	pause._show_graphics()
 	var panel: GraphicsSettingsPanel = pause._graphics
 	_assert_true(panel.visible and panel.mode_picker.item_count == 3 and panel.find_child("ResolutionPicker", true, false) == null and panel.scale_picker.item_count == 11 and panel.scale_picker.get_item_text(0) == "50%" and panel.scale_picker.get_item_text(5) == "100%" and panel.scale_picker.get_item_text(10) == "150%" and panel.camera_track_toggle != null and panel.cpu_report_toggle != null and panel.cpu_speed_picker.item_count == 6, "options panel lists window modes, no resolution row, UI scales from 50% to 150% of automatic in steps of 10, camera track, CPU report and CPU speeds")

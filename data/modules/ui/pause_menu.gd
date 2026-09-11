@@ -62,7 +62,7 @@ func _ready() -> void:
 	PmdStyle.apply_title(title, PmdStyle.FONT_TITLE)
 	column.add_child(title)
 	_add_button(column, "Resume", "ResumeButton", close)
-	_add_button(column, "Restart Skirmish", "RestartButton", func() -> void: _leave(restart_requested))
+	_add_button(column, "Restart Skirmish", "RestartButton", func() -> void: _ask("Restart this skirmish from the start?", func() -> void: _leave(restart_requested)))
 	_add_button(column, "Resign", "ResignButton", func() -> void: _guarded_leave(resign_requested, "Resign this battle?"))
 	_add_button(column, "Return to Lobby", "LobbyButton", func() -> void: _leave(lobby_requested))
 	_add_button(column, "Main Menu", "MainMenuButton", func() -> void: _guarded_leave(main_menu_requested, "Leave the battle? Your opponent takes the win."))

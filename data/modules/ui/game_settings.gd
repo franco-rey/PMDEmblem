@@ -1,7 +1,8 @@
 class_name GameSettings
 extends RefCounted
 
-const GAME_VERSION: String = "0.18.0"
+const GAME_VERSION: String = "0.20.0"
+const LEGACY_USER_DIR_NAME: String = "Poke"
 const SETTINGS_PATH: String = "user://settings.cfg"
 const SECTION: String = "graphics"
 const AUDIO_SECTION: String = "audio"
@@ -47,7 +48,19 @@ static var loaded: bool = false
 static var remember_window_size: bool = true
 
 
+static func migrate_legacy_settings() -> bool:
+	if FileAccess.file_exists(SETTINGS_PATH):
+		return false
+	var current: String = OS.get_user_data_dir()
+	var legacy: String = current.get_base_dir().path_join(LEGACY_USER_DIR_NAME).path_join(SETTINGS_PATH.get_file())
+	if not FileAccess.file_exists(legacy):
+		return false
+	DirAccess.make_dir_recursive_absolute(current)
+	return DirAccess.copy_absolute(legacy, ProjectSettings.globalize_path(SETTINGS_PATH)) == OK
+
+
 static func load_settings() -> void:
+	migrate_legacy_settings()
 	var config := ConfigFile.new()
 	if config.load(SETTINGS_PATH) == OK:
 		window_mode = String(config.get_value(SECTION, "window_mode", window_mode))

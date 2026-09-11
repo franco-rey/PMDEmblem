@@ -17,6 +17,7 @@ var stage: MultiverseStage = null
 var yaw: float = 0.0
 var draws: int = 0
 var last_cards: Dictionary = {}
+var last_rects: Dictionary = {}
 var _pulse: float = 0.0
 var _content: Control = null
 var _frame: Control = null
@@ -24,7 +25,7 @@ var _frame: Control = null
 
 func _ready() -> void:
 	name = "MultiverseMinimap"
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	mouse_filter = Control.MOUSE_FILTER_STOP
 	custom_minimum_size = Vector2(DIAMETER, DIAMETER)
 	size = Vector2(DIAMETER, DIAMETER)
 	_content = Control.new()
@@ -58,6 +59,35 @@ func refresh() -> void:
 	queue_redraw()
 	for child in _content.get_children():
 		child.queue_redraw()
+
+
+func board_at(point: Vector2) -> Vector2i:
+	var best: Vector2i = Vector2i(2147483647, 2147483647)
+	var best_distance: float = INF
+	for coords in last_rects.keys():
+		var rect: Rect2 = (last_rects[coords] as Rect2).grow(3.0)
+		if rect.has_point(point):
+			var distance: float = rect.get_center().distance_to(point)
+			if distance < best_distance:
+				best_distance = distance
+				best = coords
+	return best
+
+
+func click_at(point: Vector2) -> bool:
+	var coords: Vector2i = board_at(point)
+	if coords.x == 2147483647 or level == null or level.multiverse == null:
+		return false
+	if level.multiverse.browse_board(coords):
+		SoundPlayer.cue("ui.confirm")
+		return true
+	return false
+
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and (event as InputEventMouseButton).pressed and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
+		if click_at((event as InputEventMouseButton).position):
+			accept_event()
 
 
 func _process(delta: float) -> void:
@@ -131,6 +161,7 @@ func _draw_frame() -> void:
 func _draw_field(field: Control) -> void:
 	draws += 1
 	last_cards.clear()
+	last_rects.clear()
 	if level == null or level.multiverse == null or level.multiverse.state.timelines.is_empty():
 		return
 	var state: MultiverseState = level.multiverse.state
@@ -177,6 +208,7 @@ func _draw_field(field: Control) -> void:
 			var outline: Color = COLOR_LABEL if status != MultiverseStage.STATUS_PENDING else Color(1.0, 0.55, 0.2, 1.0)
 			field.draw_rect(rect, outline, false, 1.0 if status != MultiverseStage.STATUS_PENDING and status != MultiverseStage.STATUS_CURRENT else 2.0)
 			last_cards[coords] = status
+			last_rects[coords] = rect
 			if card >= 9.0:
 				var text: String = str(coords.y)
 				var width: float = font.get_string_size(text, HORIZONTAL_ALIGNMENT_CENTER, -1.0, font_size).x

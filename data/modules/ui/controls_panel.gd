@@ -9,7 +9,7 @@ const KEY_HEIGHT: float = 38.0
 const KEY_MIN_WIDTH: float = 38.0
 const KEY_GAP: int = 6
 const ROW_GAP: int = 4
-const KEY_NAMES: Dictionary = {"BracketLeft": "[", "BracketRight": "]", "Equal": "=", "Plus": "+", "Minus": "-", "Kp Add": "Numpad +", "Kp Subtract": "Numpad -", "Kp Enter": "Numpad Enter", "Escape": "Esc", "Left": "Left arrow", "Right": "Right arrow", "Up": "Up arrow", "Down": "Down arrow"}
+const KEY_NAMES: Dictionary = {"Comma": ",", "Period": ".", "Slash": "/", "BracketLeft": "[", "BracketRight": "]", "Equal": "=", "Plus": "+", "Minus": "-", "Kp Add": "Numpad +", "Kp Subtract": "Numpad -", "Kp Enter": "Numpad Enter", "Escape": "Esc", "Left": "Left arrow", "Right": "Right arrow", "Up": "Up arrow", "Down": "Down arrow"}
 const JOY_NAMES: Dictionary = {0: "Pad A", 1: "Pad B", 2: "Pad X", 3: "Pad Y", 4: "Pad Back", 5: "Pad Guide", 6: "Pad Start", 7: "Left stick click", 8: "Right stick click", 9: "Pad LB", 10: "Pad RB", 11: "D-pad up", 12: "D-pad down", 13: "D-pad left", 14: "D-pad right"}
 const SECTIONS: Array = [
 	["Camera", [
@@ -29,9 +29,14 @@ const SECTIONS: Array = [
 		["Danger zones", ["toggle_danger_zone"], ["Danger button"]],
 		["Battle speed", ["battle_speed_1", "battle_speed_2", "battle_speed_3", "battle_speed_4", "battle_speed_5", "battle_speed_6"], []],
 	]],
+	["Multiverse", [
+		["Timeline map", ["toggle_timeline_map"], []],
+		["Previous / next board", ["board_prev", "board_next"], []],
+		["Back to the board in play", ["board_present"], []],
+		["Look at a board", [], ["Click it on the mini map or the timeline map"]],
+	]],
 	["Interface", [
 		["Hide / show interface", ["toggle_interface"], []],
-		["Timeline map", ["toggle_timeline_map"], []],
 		["Inspect a unit", [], ["Hover", "Click to lock", "x to unlock"]],
 		["Shrink / grow a dock", [], ["- and + on the dock header"]],
 	]],

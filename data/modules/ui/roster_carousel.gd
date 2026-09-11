@@ -14,6 +14,7 @@ const GLIDE_SPEED: float = 14.0
 const SPIN_SECONDS: float = 1.2
 const WHEEL_STEP: float = 1.0
 const HAPPY: String = "Happy"
+const TICK_MS: int = 45
 const DESIGN_HEIGHT: float = 1080.0
 const MAX_ZOOM: float = 2.5
 
@@ -25,6 +26,8 @@ var _target: float = 0.0
 var _selected: int = -1
 var _spin_from: float = 0.0
 var _spin_elapsed: float = -1.0
+var _last_tick_ms: int = 0
+var _last_tick_row: int = -1
 var _zoom: float = 1.0
 
 
@@ -162,6 +165,9 @@ func _process(delta: float) -> void:
 		var t: float = clampf(_spin_elapsed / SPIN_SECONDS, 0.0, 1.0)
 		var eased: float = 1.0 - pow(1.0 - t, 3.0)
 		_offset = lerpf(_spin_from, _target, eased)
+		if int(round(_offset)) != _last_tick_row:
+			_last_tick_row = int(round(_offset))
+			_tick()
 		_layout_rows()
 		if t >= 1.0:
 			_spin_elapsed = -1.0
@@ -230,8 +236,10 @@ func _select(index: int, emit: bool) -> void:
 	_target = float(_selected)
 	_layout_rows()
 	if _selected != previous:
+		_tick()
 		selection_changed.emit(selected_entry())
 	if emit:
+		SoundPlayer.cue("ui.confirm")
 		picked.emit(selected_entry())
 
 
@@ -262,6 +270,14 @@ func _gui_input(event: InputEvent) -> void:
 		elif key.keycode == KEY_ENTER or key.keycode == KEY_SPACE:
 			_select(_selected, true)
 			accept_event()
+
+
+func _tick() -> void:
+	var now: int = Time.get_ticks_msec()
+	if now - _last_tick_ms < TICK_MS:
+		return
+	_last_tick_ms = now
+	SoundPlayer.cue("ui.cursor")
 
 
 func _row_at(point: Vector2) -> int:

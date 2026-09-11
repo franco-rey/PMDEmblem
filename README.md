@@ -2,6 +2,21 @@
 
 Pokemon Mystery Dungeon Strategy Roguelite
 
+## Alpha 0.20.0
+
+Single-player skirmishes against the CPU (difficulty 1 to 5), direct-connect 1v1 over the network, and the optional 5D multiverse rules on eight chess-variant boards.
+
+**Install**
+
+- macOS: unzip, then right-click `PMDEmblem.app` and choose **Open** the first time (the build is ad-hoc signed, so Gatekeeper asks once). If the app still refuses to open, run `xattr -dr com.apple.quarantine PMDEmblem.app` in Terminal.
+- Windows: run `PMDEmblem.exe`. SmartScreen may show "Windows protected your PC"; choose **More info** and then **Run anyway**.
+- Both machines need the same build for network play. The host forwards UDP port 24555 (changeable in Direct Connect) when playing over the internet; on one network the guest can pick the host from "Games on this network".
+
+**Where things live**
+
+- Settings: the Godot user folder (`~/Library/Application Support/Godot/app_userdata/PMD Emblem` on macOS, `%APPDATA%\Godot\app_userdata\PMD Emblem` on Windows). Settings from the pre-alpha "Poke" folder are copied over on first launch.
+- Battle transcripts: `logs/debug/battles/` next to the app's user folder; attach one when reporting a bug.
+
 ---
 
 (Old readme)

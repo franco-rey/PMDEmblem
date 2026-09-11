@@ -301,6 +301,10 @@ func show_battle_summary(result: int, definition: SkirmishDefinitionResource, le
 		String(player_summary.get("detail", "")),
 		String(enemy_summary.get("detail", "")),
 	]
+	if level != null and level.multiverse != null and level.multiverse.enabled:
+		var per_timeline: String = level.multiverse.timeline_summary()
+		if not per_timeline.is_empty():
+			summary_label.text += "\nTimelines: %s" % per_timeline
 	play_again_button.disabled = _last_launch_state.is_empty()
 	_set_status("")
 	_refresh_launch_state()
