@@ -9,6 +9,7 @@ var created_by_player: int = 0
 var created_by_enemy: int = 0
 var focus: Vector2i = Vector2i(0, 1)
 var origins: Dictionary = {}
+var openings: Dictionary = {}
 
 
 func add_root(board: BoardSnapshot) -> void:
@@ -129,8 +130,17 @@ func replace_latest(l: int, board_state: BoardSnapshot) -> void:
 		timelines[l] = [board_state]
 		return
 	board_state.timeline = l
+	var previous: BoardSnapshot = list[list.size() - 1]
+	var key: Vector2i = Vector2i(l, previous.turn)
+	if not previous.mid_round and not openings.has(key):
+		openings[key] = previous
 	list[list.size() - 1] = board_state
 	timelines[l] = list
+
+
+func opening_board(l: int, t: int) -> BoardSnapshot:
+	var key: Vector2i = Vector2i(l, t)
+	return openings[key] if openings.has(key) else board(l, t)
 
 
 func past_boards(l: int, before_turn: int) -> Array[BoardSnapshot]:

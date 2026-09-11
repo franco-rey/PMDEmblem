@@ -8,6 +8,7 @@ const GENERATION_SEED_SALT: int = 0x9E3779B1
 const PLAYER_SPAWN_SALT: int = 0x13579BDF
 const ENEMY_SPAWN_SALT: int = 0x5A5A5A5A
 const ANCHOR_POOL_SIZE: int = 8
+const TRAVELLER_SEED_SALT: int = 0x2C1D5E7B
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
 
 const DIFFICULTY_TIERS: Array[Dictionary] = [
@@ -32,6 +33,7 @@ class GeneratorInputs:
 	var roster_templates: Array[PokemonInstanceResource] = []
 	var reward_profile: String = DEFAULT_REWARD_PROFILE
 	var max_team_size: int = MAX_TEAM_SIZE
+	var require_travellers: bool = false
 
 
 static func generate(inputs: GeneratorInputs) -> SkirmishDefinitionResource:
@@ -63,7 +65,7 @@ static func generate(inputs: GeneratorInputs) -> SkirmishDefinitionResource:
 		push_error("RandomSkirmishGenerator: enemy team size %d outside %d-%d" % [enemy_size, MIN_TEAM_SIZE, cap])
 		return null
 
-	var enemy_team: Array[PokemonInstanceResource] = _build_enemy_team(inputs.roster_templates, enemy_size, tier, rng)
+	var enemy_team: Array[PokemonInstanceResource] = _build_enemy_team(inputs.roster_templates, enemy_size, tier, rng, inputs.require_travellers)
 	if enemy_team.size() != enemy_size:
 		push_error("RandomSkirmishGenerator: generated %d enemies, expected %d" % [enemy_team.size(), enemy_size])
 		return null
@@ -153,7 +155,7 @@ static func _resolve_enemy_size(inputs: GeneratorInputs, tier: Dictionary, map: 
 	return clampi(int(rng.randi_range(min_size, max_size)), MIN_TEAM_SIZE, MAX_TEAM_SIZE)
 
 
-static func _build_enemy_team(roster_templates: Array[PokemonInstanceResource], enemy_size: int, tier: Dictionary, rng: RandomNumberGenerator) -> Array[PokemonInstanceResource]:
+static func _build_enemy_team(roster_templates: Array[PokemonInstanceResource], enemy_size: int, tier: Dictionary, rng: RandomNumberGenerator, require_travellers: bool = false) -> Array[PokemonInstanceResource]:
 	var out: Array[PokemonInstanceResource] = []
 	var pool: Array[PokemonInstanceResource] = []
 	for template in roster_templates:
@@ -164,7 +166,17 @@ static func _build_enemy_team(roster_templates: Array[PokemonInstanceResource], 
 		return out
 	var allow_duplicates: bool = enemy_size > pool.size()
 	var available: Array[PokemonInstanceResource] = pool.duplicate()
-	for i in range(enemy_size):
+	if require_travellers:
+		for slug in MultiverseRoster.required_slugs(enemy_size, [], _salt_seed(rng.seed, TRAVELLER_SEED_SALT)):
+			if out.size() >= enemy_size:
+				break
+			var forced: PokemonInstanceResource = _template_for_slug(available, String(slug))
+			if forced == null:
+				continue
+			if not allow_duplicates:
+				available.erase(forced)
+			out.append(_make_enemy_instance(forced, tier, rng, out.size()))
+	for i in range(out.size(), enemy_size):
 		if available.is_empty():
 			if not allow_duplicates:
 				break
@@ -175,6 +187,13 @@ static func _build_enemy_team(roster_templates: Array[PokemonInstanceResource], 
 			available.remove_at(pick_index)
 		out.append(_make_enemy_instance(template, tier, rng, i))
 	return out
+
+
+static func _template_for_slug(pool: Array[PokemonInstanceResource], slug: String) -> PokemonInstanceResource:
+	for template in pool:
+		if template != null and template.species != null and String(template.species.species_id) == slug:
+			return template
+	return null
 
 
 static func _is_template_less_than(a: PokemonInstanceResource, b: PokemonInstanceResource) -> bool:

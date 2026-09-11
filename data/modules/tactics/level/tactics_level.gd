@@ -4,6 +4,7 @@ extends Node3D
 signal battle_ended(result: int)
 signal weather_changed(weather_id: String)
 
+const ROUND_LIMIT: int = 200
 const RESULT_ONGOING: int = 0
 const RESULT_PLAYER_WIN: int = 1
 const RESULT_PLAYER_LOSS: int = 2
@@ -59,6 +60,8 @@ var interface_visible: bool = true
 var round_index: int = 0
 var multiverse: MultiverseController = MultiverseController.new()
 var multiverse_enabled: bool = false
+var ai_level: int = AIProfile.DEFAULT_LEVEL
+var ai_team_levels: Dictionary = {}
 var timeline_map: TimelineMap = null
 var multiverse_stage: MultiverseStage = null
 var multiverse_fx: MultiverseFx = null
@@ -462,7 +465,7 @@ func _travel_choice_open() -> bool:
 	var stage: int = participant.res.stage
 	if stage == participant.res.STAGE_SELECT_TRAVEL:
 		return true
-	return stage == participant.res.STAGE_ATTACK and not multiverse.pending_travel.is_empty()
+	return (stage == participant.res.STAGE_ATTACK or stage == participant.res.STAGE_MOVE_PAWN) and not multiverse.pending_travel.is_empty()
 
 
 func _advance_presentation_wait(unit: BattleUnit, delta: float) -> void:
@@ -907,6 +910,9 @@ func _on_round_building() -> void:
 
 func _on_round_started() -> void:
 	round_index += 1
+	if round_index > ROUND_LIMIT and not battle_finished:
+		_finish_on_round_limit()
+		return
 	if banner != null:
 		banner.show_turn(round_index)
 	for unit in battle_units:
@@ -1225,3 +1231,23 @@ func _format_battle_event(event: Dictionary) -> String:
 		if readable.has(key) and readable[key] is Node:
 			readable[key] = (readable[key] as Node).name
 	return str(readable)
+
+
+func _finish_on_round_limit() -> void:
+	var mine: float = _remaining_share(player)
+	var theirs: float = _remaining_share(opponent)
+	finish_battle(RESULT_PLAYER_WIN if mine > theirs else RESULT_PLAYER_LOSS, "round_limit")
+
+
+func _remaining_share(side: Node3D) -> float:
+	if side == null:
+		return 0.0
+	var total: float = 0.0
+	for child in side.get_children():
+		if not (child is TacticsPawn):
+			continue
+		var pawn: TacticsPawn = child
+		if pawn.stats == null or pawn.stats.max_health <= 0:
+			continue
+		total += float(pawn.stats.curr_health) / float(pawn.stats.max_health)
+	return total

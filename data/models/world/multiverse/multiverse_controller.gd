@@ -499,7 +499,18 @@ func cancel_travel(reason: String = "") -> void:
 
 func pick_random_option() -> int:
 	var options: Array = pending_travel.get("options", [])
-	return level.battle_rng.randi_range(0, options.size() - 1) if not options.is_empty() else -1
+	if options.is_empty():
+		return -1
+	var side: int = int(pending_travel.get("side", MultiverseState.SIDE_PLAYER))
+	var mine: int = state.created_by_player if side == MultiverseState.SIDE_PLAYER else state.created_by_enemy
+	var theirs: int = state.created_by_enemy if side == MultiverseState.SIDE_PLAYER else state.created_by_player
+	var safe: Array[int] = []
+	for i in range(options.size()):
+		if not MultiversePolicy.lands_frozen(String((options[i] as Dictionary).get("kind", "")), mine, theirs):
+			safe.append(i)
+	if safe.is_empty():
+		return level.battle_rng.randi_range(0, options.size() - 1)
+	return safe[level.battle_rng.randi_range(0, safe.size() - 1)]
 
 
 func commit_travel(choice: int) -> bool:
@@ -542,9 +553,11 @@ func commit_travel(choice: int) -> bool:
 	for pawn in travellers:
 		from_locals[level.notation.unit_id(pawn)] = pawn.global_position
 	clear_travel_preview()
-	if kind != "hop":
+	if kind == "new":
+		base = capture(true)
+	elif kind != "hop":
 		var branch_from: Vector2i = option["from"]
-		base = state.board(branch_from.x, branch_from.y).duplicate_board()
+		base = state.opening_board(branch_from.x, branch_from.y).duplicate_board()
 	level.scheduler.detach_active()
 	for pawn in travellers:
 		var unit: BattleUnit = by_unit.get(pawn, null)
@@ -581,7 +594,7 @@ func commit_travel(choice: int) -> bool:
 		arrival["res"]["has_acted_this_round"] = true
 		if bool(rule.get("lag", false)) or move_id == "roar_of_time" and String(entry["id"]) == traveller_ids[0]:
 			var statuses: Dictionary = arrival["stats"]["battle_statuses"]
-			statuses["recharge"] = {"counter": 1}
+			statuses["recharge"] = {"counter": 2}
 			arrival["stats"]["battle_statuses"] = statuses
 		destination.add_unit(arrival)
 	travels += 1
@@ -596,6 +609,7 @@ func commit_travel(choice: int) -> bool:
 		level.banner.show_notice("%s: %s" % [BattleMessageCatalog.move_label(move_id), "a new timeline opens at %s" % MultiverseState.label(dest_coords.x) if kind != "hop" else "arrival on %s" % MultiverseState.label(dest_coords.x)])
 	if kind != "hop":
 		level.notation.record_branch(destination, arrived_ids)
+	level.notation.record_board_switch(dest_coords.x, dest_coords.y)
 	level.battle_log.append({"kind": "board_switched", "timeline": dest_coords.x, "turn": dest_coords.y, "reason": "travel"})
 	present_refresh()
 	committing = false

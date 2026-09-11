@@ -56,6 +56,7 @@ const TYPE_IMMUNITY_BY_INTRINSIC: Dictionary = {
 const ABSORB_HEAL_BY_INTRINSIC: Dictionary = {
 	"volt_absorb": "electric",
 	"water_absorb": "water",
+	"dry_skin": "water",
 }
 const ABSORB_STAGE_BY_INTRINSIC: Dictionary = {
 	"lightning_rod": {"element": "electric", "stat": "special_attack"},
@@ -715,7 +716,7 @@ func after_damage(attacker: TacticsPawn, defender: TacticsPawn, move: PokemonMov
 				if contact and attacker != defender and _chance(rng, 30):
 					var spore_status: String = ["poison", "paralyze", "sleep"][rng.randi_range(0, 2) if rng != null else 0]
 					_apply_contact_status(attacker, spore_status, slug, move, battle_log)
-		if CONTACT_STATUS_BY_INTRINSIC.has(slug) and move.category == PokemonMoveResource.CATEGORY_PHYSICAL and _chance(rng, 30):
+		if CONTACT_STATUS_BY_INTRINSIC.has(slug) and contact and attacker != defender and _chance(rng, 30):
 			_apply_contact_status(attacker, String(CONTACT_STATUS_BY_INTRINSIC[slug]), slug, move, battle_log)
 	for slug in intrinsic_slugs_for(attacker.stats):
 		if slug == "magnet_pull" and attacker != defender and defender.stats.types.has("steel") and defender.stats.is_active():
@@ -724,7 +725,7 @@ func after_damage(attacker: TacticsPawn, defender: TacticsPawn, move: PokemonMov
 			var taken: PokemonItemResource = PokemonItemService.take_held_item(defender, battle_log, "magician")
 			if taken != null and PokemonItemService.give_held_item(attacker, taken, battle_log, "magician") and battle_log != null:
 				battle_log.append({"kind": "intrinsic_triggered", "hook": "steal", "unit": attacker, "intrinsic_id": slug, "item_id": taken.item_id})
-		if slug == "poison_touch" and move.category == PokemonMoveResource.CATEGORY_PHYSICAL and _chance(rng, 30):
+		if slug == "poison_touch" and contact and attacker != defender and _chance(rng, 30):
 			_apply_contact_status(defender, "poison", slug, move, battle_log)
 		if slug == "stench" and attacker != defender and _chance(rng, 10):
 			_apply_contact_status(defender, "flinch", slug, move, battle_log)
@@ -790,7 +791,7 @@ func accuracy_multiplier(attacker: TacticsPawn, defender: TacticsPawn, move: Pok
 				multiplier *= 0.8
 			elif slug == "snow_cloak" and weather == "hail":
 				multiplier *= 0.8
-			elif slug == "tangled_feet" and defender.stats.battle_statuses.has("confusion"):
+			elif slug == "tangled_feet" and defender.stats.battle_statuses.has("confuse"):
 				multiplier *= 0.5
 			elif slug == "wonder_skin" and move != null and move.category == PokemonMoveResource.CATEGORY_STATUS and move.accuracy > 50:
 				multiplier *= 50.0 / float(move.accuracy)

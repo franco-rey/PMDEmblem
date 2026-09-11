@@ -2,14 +2,10 @@ class_name Targeting
 extends RefCounted
 
 
-static func compute_range(unit: TacticsPawn, move: PokemonMoveResource) -> Array[Vector3i]:
-	var tiles: Array[Vector3i] = []
-	if unit == null or move == null:
-		return tiles
-
-	var origin: Vector3i = _tile_key(unit.get_tile())
+static func effective_range_kind(move: PokemonMoveResource) -> int:
+	if move == null:
+		return PokemonMoveResource.TacticalRangeKind.MELEE
 	var kind: int = move.tactical_range_kind
-	var distance: int = maxi(1, move.tactical_range_value + BattleIntrinsicService.range_bonus_for(unit.stats, move))
 	if kind in [
 			PokemonMoveResource.TacticalRangeKind.UNSUPPORTED,
 			PokemonMoveResource.TacticalRangeKind.ALLY,
@@ -17,7 +13,31 @@ static func compute_range(unit: TacticsPawn, move: PokemonMoveResource) -> Array
 			PokemonMoveResource.TacticalRangeKind.MAP,
 			PokemonMoveResource.TacticalRangeKind.CONE,
 	]:
-		kind = PokemonMoveResource.TacticalRangeKind.MELEE
+		return PokemonMoveResource.TacticalRangeKind.MELEE
+	return kind
+
+
+static func range_distance(unit: TacticsPawn, move: PokemonMoveResource) -> int:
+	if move == null:
+		return 1
+	var bonus: int = BattleIntrinsicService.range_bonus_for(unit.stats, move) if unit != null else 0
+	return maxi(1, move.tactical_range_value + bonus)
+
+
+static func compute_range(unit: TacticsPawn, move: PokemonMoveResource) -> Array[Vector3i]:
+	if unit == null or move == null:
+		var empty: Array[Vector3i] = []
+		return empty
+	return range_from(_tile_key(unit.get_tile()), unit, move)
+
+
+static func range_from(origin: Vector3i, unit: TacticsPawn, move: PokemonMoveResource) -> Array[Vector3i]:
+	var tiles: Array[Vector3i] = []
+	if move == null:
+		return tiles
+
+	var kind: int = effective_range_kind(move)
+	var distance: int = range_distance(unit, move)
 
 	match kind:
 		PokemonMoveResource.TacticalRangeKind.MELEE:
@@ -45,6 +65,29 @@ static func compute_range(unit: TacticsPawn, move: PokemonMoveResource) -> Array
 			tiles.append(origin)
 
 	return tiles
+
+
+static func key_in_range(origin: Vector3i, key: Vector3i, unit: TacticsPawn, move: PokemonMoveResource) -> bool:
+	if move == null:
+		return false
+	var kind: int = effective_range_kind(move)
+	var distance: int = range_distance(unit, move)
+	var dx: int = absi(key.x - origin.x)
+	var dz: int = absi(key.z - origin.z)
+	match kind:
+		PokemonMoveResource.TacticalRangeKind.MELEE:
+			return dx + dz == 1
+		PokemonMoveResource.TacticalRangeKind.LINE:
+			if dx != 0 and dz != 0:
+				return false
+			return dx + dz >= 1 and dx + dz <= distance
+		PokemonMoveResource.TacticalRangeKind.PROJECTILE:
+			return (dx != 0 or dz != 0) and maxi(dx, dz) <= distance
+		PokemonMoveResource.TacticalRangeKind.AREA:
+			return dx + dz <= distance
+		PokemonMoveResource.TacticalRangeKind.SELF:
+			return dx == 0 and dz == 0
+	return false
 
 
 static func filter_by_alignment(
@@ -115,6 +158,8 @@ static func is_target_legal(unit: TacticsPawn, target: TacticsPawn, move: Pokemo
 
 static func alignment_allows(unit: TacticsPawn, target: TacticsPawn, move: PokemonMoveResource) -> bool:
 	if unit == target:
+		if move.is_damaging():
+			return false
 		return move.can_target_self()
 	var same_team: bool = _team_key(unit) == _team_key(target)
 	if same_team:

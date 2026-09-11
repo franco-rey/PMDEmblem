@@ -55,6 +55,16 @@ func _run() -> void:
 	var copy: BoardSnapshot = state.latest(1).duplicate_board()
 	copy.remove_unit("P1")
 	_assert_true(not copy.has_unit("P1") and state.latest(1).has_unit("P1") and not (copy.scheduler["queue"] as Array).has("P1"), "duplicating a board is deep and removing a unit also drops it from the queue")
+	var travelled := MultiverseState.new()
+	travelled.add_root(_board(1))
+	travelled.advance(0, _board(2))
+	var first_base: Array = travelled.opening_board(0, 2).unit_ids()
+	var live: BoardSnapshot = _board(2, 1, 2)
+	live.mid_round = true
+	travelled.replace_latest(0, live)
+	var second_base: Array = travelled.opening_board(0, 2).unit_ids()
+	_assert_true(first_base == second_base and second_base.size() == 4, "two branches from one coordinate see the same opening board after a mid-round travel replaced the latest")
+	_assert_true(travelled.latest(0).mid_round and travelled.latest(0).unit_ids().size() == 3, "the timeline itself still resumes from the mid-round board")
 	_finish()
 
 

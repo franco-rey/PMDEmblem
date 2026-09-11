@@ -109,7 +109,9 @@ var sort_picker: OptionButton
 var map_picker: OptionButton
 var control_mode_picker: OptionButton
 var multiverse_toggle: CheckButton
+var ai_level_spin: SpinBox
 var seed_input: LineEdit
+var reroll_seed_check: CheckBox
 var difficulty_spin: SpinBox
 var random_enemy_check: CheckBox
 var random_player_check: CheckBox
@@ -486,11 +488,29 @@ func _create_setup_panel() -> PanelContainer:
 	multiverse_toggle.toggled.connect(func(_pressed: bool) -> void: _refresh_launch_state())
 	column.add_child(_labeled_control("Multiversal Rules", multiverse_toggle))
 
+	ai_level_spin = SpinBox.new()
+	ai_level_spin.name = "AiLevelSpin"
+	ai_level_spin.min_value = AIProfile.MIN_LEVEL
+	ai_level_spin.max_value = AIProfile.MAX_LEVEL
+	ai_level_spin.step = 1
+	ai_level_spin.value = AIProfile.DEFAULT_LEVEL
+	ai_level_spin.tooltip_text = "CPU skill: 1 Wandering, 2 Scrappy, 3 Tactical, 4 Ruthless, 5 Champion"
+	ai_level_spin.value_changed.connect(func(_value: float) -> void: _refresh_launch_state())
+	column.add_child(_labeled_control("CPU Skill", ai_level_spin))
+
 	seed_input = LineEdit.new()
 	seed_input.name = "SeedInput"
 	seed_input.placeholder_text = "seed or skirmish code"
 	seed_input.text_changed.connect(_on_seed_changed)
 	column.add_child(_labeled_control("Seed", seed_input))
+
+	reroll_seed_check = CheckBox.new()
+	reroll_seed_check.name = "RerollSeedCheck"
+	reroll_seed_check.text = "New Seed Each Match"
+	reroll_seed_check.custom_minimum_size.y = CONTROL_HEIGHT
+	reroll_seed_check.tooltip_text = "Roll a fresh seed on every launch and on Play Again, so the seed box does not have to be cleared between matches"
+	reroll_seed_check.toggled.connect(func(_pressed: bool) -> void: _refresh_launch_state())
+	column.add_child(reroll_seed_check)
 
 	difficulty_spin = SpinBox.new()
 	difficulty_spin.name = "DifficultySpin"
@@ -1943,10 +1963,12 @@ func network_state() -> Dictionary:
 	return {
 		"map_path": map_paths[clampi(map_picker.selected, 0, map_paths.size() - 1)] if not map_paths.is_empty() else "",
 		"seed_text": seed_input.text if seed_input != null else "",
-		"multiverse": multiverse_toggle != null and multiverse_toggle.button_pressed,
+		"multiverse": _multiverse_wanted(),
+		"reroll_seed": reroll_seed_check != null and reroll_seed_check.button_pressed,
 		"player_team_size": int(player_size_slider.value) if player_size_slider != null else 3,
 		"enemy_team_size": int(enemy_size_spin.value) if enemy_size_spin != null else 3,
 		"difficulty_tier": int(difficulty_spin.value) if difficulty_spin != null else 0,
+		"ai_level": int(ai_level_spin.value) if ai_level_spin != null else AIProfile.DEFAULT_LEVEL,
 		"paths": paths,
 		"items": _items_for_side(side),
 		"specs": _specs_payload(side),
@@ -1998,6 +2020,10 @@ func _on_remote_lobby(state: Dictionary) -> void:
 			seed_input.text = String(state.get("seed_text", ""))
 		if multiverse_toggle != null:
 			multiverse_toggle.button_pressed = bool(state.get("multiverse", false))
+		if reroll_seed_check != null:
+			reroll_seed_check.button_pressed = bool(state.get("reroll_seed", false))
+		if ai_level_spin != null:
+			ai_level_spin.value = AIProfile.clamp_level(int(state.get("ai_level", AIProfile.DEFAULT_LEVEL)))
 		if player_size_slider != null:
 			player_size_slider.value = int(state.get("player_team_size", player_size_slider.value))
 		if enemy_size_spin != null:
@@ -2040,8 +2066,10 @@ func _network_launch_state() -> Dictionary:
 
 
 func network_launch_code() -> String:
-	var result: Dictionary = _build_from_state(_network_launch_state())
-	_apply_multiverse(result)
+	var network_state: Dictionary = _network_launch_state()
+	var result: Dictionary = _build_from_state(network_state)
+	_apply_multiverse(result, network_state)
+	_apply_ai_level(result)
 	if not bool(result.get("ok", false)):
 		_set_status(String(result.get("error", "Could not build the match")))
 		return ""
@@ -2077,6 +2105,8 @@ func _on_launch_pressed() -> void:
 func _on_play_again_pressed() -> void:
 	if _last_launch_state.is_empty():
 		return
+	if _reroll_seed_wanted():
+		_last_launch_state["seed_text"] = ""
 	var result: Dictionary = _build_from_state(_last_launch_state)
 	if not result.get("ok", false):
 		_set_status(String(result.get("error", "Could not replay skirmish")))
@@ -2118,22 +2148,23 @@ func _build_launch_result(store_state: bool) -> Dictionary:
 		"player_specs": [] if random_player else _specs_payload(SIDE_PLAYER),
 		"enemy_specs": _specs_payload(SIDE_ENEMY),
 		"map_path": map_path,
-		"seed_text": seed_input.text,
+		"seed_text": _launch_seed_text(),
 		"enemy_team_size": int(enemy_size_spin.value),
 		"player_team_size": int(player_size_slider.value),
 		"difficulty_tier": int(difficulty_spin.value),
 		"control_mode": _selected_control_mode(),
 	}
 	var result: Dictionary = _build_from_state(state)
-	_apply_multiverse(result)
+	_apply_multiverse(result, state)
+	_apply_ai_level(result)
 	if not result.get("ok", false):
 		_set_status(String(result.get("error", "Could not build skirmish")))
 		return result
 	last_resolved_seed = int(result["seed"])
-	if not bool(result.get("code_driven", false)):
+	if not bool(result.get("code_driven", false)) and not _reroll_seed_wanted():
 		seed_input.text = str(last_resolved_seed)
 	if store_state:
-		if not bool(result.get("code_driven", false)):
+		if not bool(result.get("code_driven", false)) and not _reroll_seed_wanted():
 			state["seed_text"] = str(last_resolved_seed)
 		_last_launch_state = state
 	summary_panel.visible = false
@@ -2150,14 +2181,51 @@ func _build_launch_result(store_state: bool) -> Dictionary:
 	return result
 
 
-func _apply_multiverse(result: Dictionary) -> void:
-	var wanted: bool = multiverse_toggle != null and multiverse_toggle.button_pressed
+func _apply_ai_level(result: Dictionary) -> void:
+	var wanted: int = AIProfile.clamp_level(int(ai_level_spin.value)) if ai_level_spin != null else AIProfile.DEFAULT_LEVEL
+	var primary: SkirmishDefinitionResource = result.get("definition", null) as SkirmishDefinitionResource
+	if primary != null:
+		primary.ai_level = wanted
+	for definition in result.get("definitions", []):
+		if definition is SkirmishDefinitionResource:
+			(definition as SkirmishDefinitionResource).ai_level = wanted
+
+
+func _reroll_seed_wanted() -> bool:
+	if reroll_seed_check == null or not reroll_seed_check.button_pressed:
+		return false
+	return not SkirmishCode.is_rich_code(seed_input.text if seed_input != null else "")
+
+
+func _launch_seed_text() -> String:
+	if seed_input == null:
+		return ""
+	return "" if _reroll_seed_wanted() else seed_input.text
+
+
+func _multiverse_wanted() -> bool:
+	return multiverse_toggle != null and multiverse_toggle.button_pressed
+
+
+func _apply_multiverse(result: Dictionary, state: Dictionary = {}) -> void:
+	var wanted: bool = _multiverse_wanted()
 	var primary: SkirmishDefinitionResource = result.get("definition", null) as SkirmishDefinitionResource
 	if primary != null and wanted:
 		primary.multiverse = true
+		_apply_traveller_moves(primary, state)
 	for definition in result.get("definitions", []):
 		if definition is SkirmishDefinitionResource and wanted:
 			(definition as SkirmishDefinitionResource).multiverse = true
+			_apply_traveller_moves(definition as SkirmishDefinitionResource, state)
+
+
+func _apply_traveller_moves(definition: SkirmishDefinitionResource, state: Dictionary) -> void:
+	if state.is_empty():
+		return
+	if _string_array(state.get("player_paths", [])).is_empty():
+		MultiverseRoster.ensure_traveller_moves(definition.player_team)
+	if bool(state.get("random_enemy", false)) or _string_array(state.get("enemy_paths", [])).is_empty():
+		MultiverseRoster.ensure_traveller_moves(definition.enemy_team)
 
 
 func _build_from_state(state: Dictionary) -> Dictionary:
@@ -2176,8 +2244,14 @@ func _build_from_state(state: Dictionary) -> Dictionary:
 	var player_seed_paths: Array[String] = []
 	if not bool(state.get("random_player", false)):
 		player_seed_paths = _string_array(state.get("player_paths", []))
+	var enemy_seed_paths: Array[String] = _string_array(state.get("enemy_paths", []))
 	var player_paths: Array[String] = CustomSkirmishBuilder.fill_random_paths(player_seed_paths, int(state.get("player_team_size", 0)), fill_seed ^ 0x51A7)
-	var enemy_paths: Array[String] = CustomSkirmishBuilder.fill_random_paths(_string_array(state.get("enemy_paths", [])), int(state.get("enemy_team_size", 0)), fill_seed ^ 0x3E2D)
+	var enemy_paths: Array[String] = CustomSkirmishBuilder.fill_random_paths(enemy_seed_paths, int(state.get("enemy_team_size", 0)), fill_seed ^ 0x3E2D)
+	var travellers_wanted: bool = _multiverse_wanted()
+	if travellers_wanted and player_seed_paths.is_empty():
+		player_paths = MultiverseRoster.ensure_traveller_paths(player_paths, fill_seed ^ 0x51A7)
+	if travellers_wanted and enemy_seed_paths.is_empty():
+		enemy_paths = MultiverseRoster.ensure_traveller_paths(enemy_paths, fill_seed ^ 0x3E2D)
 	if bool(state.get("random_enemy", false)):
 		return CustomSkirmishBuilder.build_with_random_enemy(
 			player_paths,
@@ -2187,7 +2261,8 @@ func _build_from_state(state: Dictionary) -> Dictionary:
 			int(state.get("difficulty_tier", CustomSkirmishBuilder.DEFAULT_RANDOM_DIFFICULTY_TIER)),
 			"",
 			"",
-			control_mode
+			control_mode,
+			travellers_wanted
 		)
 	return CustomSkirmishBuilder.build(
 		player_paths,

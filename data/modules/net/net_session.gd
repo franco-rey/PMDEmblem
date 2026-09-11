@@ -48,6 +48,7 @@ var _my_rounds: Dictionary = {}
 var _their_rounds: Dictionary = {}
 var _ready_local: bool = false
 var _ready_remote: bool = false
+var _auto_ai: BattleAI = null
 var _auto_busy: bool = false
 var _stall_frames: int = 0
 var _stall_header: String = ""
@@ -586,7 +587,7 @@ func _auto_play_step() -> void:
 func _auto_turn(pawn: TacticsPawn) -> void:
 	var allies: Array = pawn.get_parent().get_children()
 	var enemies: Array = (level.opponent if pawn.get_parent() == level.player else level.player).get_children()
-	var brain := MinimumViableAI.new()
+	var brain := _auto_brain()
 	level.arena.reset_all_tile_markers()
 	level.arena.process_surrounding_tiles(pawn.get_tile(), pawn.stats.movement, allies)
 	level.arena.mark_reachable_tiles(pawn.get_tile(), pawn.stats.movement)
@@ -604,3 +605,11 @@ func _auto_turn(pawn: TacticsPawn) -> void:
 			applier.apply_stay(pawn)
 		await applier.apply_end_turn(pawn)
 	_auto_busy = false
+
+
+func _auto_brain() -> BattleAI:
+	if _auto_ai == null:
+		_auto_ai = BattleSearch.new()
+	if level != null:
+		_auto_ai.set_level(level.ai_level)
+	return _auto_ai

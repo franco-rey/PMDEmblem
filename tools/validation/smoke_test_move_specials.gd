@@ -68,7 +68,7 @@ func _charging_and_damage_checks() -> void:
 	squirtle.stats.curr_health = squirtle.stats.max_health
 	_set_moves(charmander, ["hyper_beam", "high_jump_kick", "fury_attack", "mud_sport"])
 	_execute_until_hit(charmander, squirtle, 0, level)
-	_assert_true(charmander.stats.battle_statuses.has("recharge") and int(charmander.stats.battle_statuses["recharge"].get("counter", 0)) == 1, "Hyper Beam needs a recharge turn")
+	_assert_true(charmander.stats.battle_statuses.has("recharge") and int(charmander.stats.battle_statuses["recharge"].get("counter", 0)) == 2, "Hyper Beam needs a recharge turn")
 	ops.remove_status(charmander, "recharge", {"source": "test"})
 	ops.apply_status(squirtle, "underground", {}, {"kind": "test", "skip_rules": true})
 	var before: int = charmander.stats.curr_health

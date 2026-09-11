@@ -12,30 +12,6 @@ const MANUAL_SKIRMISHES: Array[Dictionary] = [
 		"code": TEMPORAL_CODE,
 	},
 	{
-		"kind": "static",
-		"id": "demo_3v3",
-		"label": "Demo 3v3 (fixed)",
-		"path": "res://data/models/skirmish/manual/demo_3v3.tres",
-	},
-	{
-		"kind": "static",
-		"id": "single_1v1",
-		"label": "1v1 fixture (fixed)",
-		"path": "res://data/models/skirmish/manual/single_1v1.tres",
-	},
-	{
-		"kind": "static",
-		"id": "team_3v3",
-		"label": "3v3 fixture (fixed)",
-		"path": "res://data/models/skirmish/manual/team_3v3.tres",
-	},
-	{
-		"kind": "static",
-		"id": "type_effectiveness_test",
-		"label": "Type effectiveness fixture",
-		"path": "res://data/models/skirmish/manual/type_effectiveness_test.tres",
-	},
-	{
 		"kind": "random",
 		"id": "random_1v1",
 		"label": "Random 1v1",
@@ -69,19 +45,19 @@ const MANUAL_SKIRMISHES: Array[Dictionary] = [
 		"kind": "series_code",
 		"id": "random_6v6_bots_1",
 		"label": "1 Random 6v6 CPU vs CPU",
-		"code": "series seed=6100 team=6 matches=1 -bots",
+		"code": "series team=6 matches=1 -bots",
 	},
 	{
 		"kind": "series_code",
 		"id": "random_6v6_bots_5",
 		"label": "5 Random 6v6 CPU vs CPU",
-		"code": "series seed=6200 team=6 matches=5 -bots",
+		"code": "series team=6 matches=5 -bots",
 	},
 	{
 		"kind": "series_code",
 		"id": "random_6v6_bots_10",
 		"label": "10 Random 6v6 CPU vs CPU",
-		"code": "series seed=6300 team=6 matches=10 -bots",
+		"code": "series team=6 matches=10 -bots",
 	},
 ]
 const MENU_CONTROL_SIZE: Vector2 = Vector2(520, 72)
@@ -128,7 +104,7 @@ func _ready() -> void:
 	add_child(SoundPlayer.new())
 	add_child(UiSoundHook.new())
 	add_child(MusicPlayer.new())
-	BattleNotation.clear_output_dir()
+	BattleNotation.prune_output_dir()
 	_style_main_menu()
 	_setup_menus()
 	_set_tactics_controls_enabled(false)
@@ -572,11 +548,12 @@ func load_selected_skirmish() -> void:
 		return
 	var entry: Dictionary = MANUAL_SKIRMISHES[idx]
 	if String(entry.get("kind", "static")) == "series_code":
-		var built: Dictionary = SkirmishCode.build_definitions(String(entry.get("code", "")))
+		var code: String = _randomise_series_code(String(entry.get("code", "")))
+		var built: Dictionary = SkirmishCode.build_definitions(code)
 		if not bool(built.get("ok", false)):
 			push_error("Main: series code build failed: %s" % String(built.get("error", "?")))
 			return
-		_launch_series(_definitions_from_result(built), String(entry.get("code", "")))
+		_launch_series(_definitions_from_result(built), code)
 		return
 	skirmish_queue.clear()
 	skirmish_queue_index = 0
@@ -586,6 +563,16 @@ func load_selected_skirmish() -> void:
 		return
 	_relaunch = load_selected_skirmish
 	_launch_definition(definition, false)
+
+
+func _randomise_series_code(code: String) -> String:
+	var maps: Array[String] = CustomSkirmishBuilder.map_paths()
+	var out: String = code
+	if not maps.is_empty() and not out.contains("map="):
+		out += " map=%s" % maps[randi() % maps.size()].get_file().get_basename()
+	if not out.contains("ai="):
+		out += " ai=%d" % randi_range(AIProfile.MIN_LEVEL, AIProfile.MAX_LEVEL)
+	return out
 
 
 func _resolve_skirmish_definition(entry: Dictionary) -> SkirmishDefinitionResource:
@@ -612,12 +599,15 @@ func _build_random_skirmish(entry: Dictionary) -> SkirmishDefinitionResource:
 	if maps.is_empty():
 		push_error("Main: no maps available for random skirmish")
 		return null
-	var result: Dictionary = CustomSkirmishBuilder.build_random(team_size, maps[0], "")
+	var map_path: String = maps[randi() % maps.size()]
+	var result: Dictionary = CustomSkirmishBuilder.build_random(team_size, map_path, "")
 	if not result.get("ok", false):
 		push_error("Main: random skirmish build failed: %s" % result.get("error", "?"))
 		return null
-	print("Main: launching %s seed=%d" % [entry.get("id", "random"), int(result["seed"])])
-	return result["definition"]
+	var definition: SkirmishDefinitionResource = result["definition"]
+	definition.ai_level = randi_range(AIProfile.MIN_LEVEL, AIProfile.MAX_LEVEL)
+	print("Main: launching %s seed=%d map=%s ai=%d" % [entry.get("id", "random"), int(result["seed"]), map_path.get_file().get_basename(), definition.ai_level])
+	return definition
 
 
 func _populate_skirmish_picker() -> void:

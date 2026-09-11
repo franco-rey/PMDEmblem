@@ -20,27 +20,31 @@ func _run() -> void:
 	var round_cap: int = int(_arg("rounds", "40"))
 	var with_items: bool = _arg("items", "1") == "1"
 	var with_abilities: bool = _arg("abilities", "1") == "1"
+	var map_name: String = _arg("map", "chessboard")
+	var level_value: int = AIProfile.clamp_level(int(_arg("level", str(AIProfile.DEFAULT_LEVEL))))
+	var map_path: String = "res://data/models/maps/definitions/%s.tres" % map_name
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUTPUT_DIR))
 	for seed in range(first, last + 1):
-		var result: Dictionary = await _battle(seed, team_size, round_cap, with_items, with_abilities)
+		var result: Dictionary = await _battle(seed, team_size, round_cap, with_items, with_abilities, map_path, level_value)
 		summary.append(result)
 		print("bots: seed=%d result=%s rounds=%d frames=%d moves=%d faints=%d invariants=%s errors=%d" % [seed, str(result.get("result", "")), int(result.get("rounds", 0)), int(result.get("frames", 0)), int(result.get("moves_used_total", 0)), int(result.get("faints", 0)), str(result.get("invariant_failures", [])), int(result.get("error_count", 0))])
 	var aggregate: Dictionary = _aggregate()
-	var file := FileAccess.open("%s/bot_battles_%d_%d.json" % [OUTPUT_DIR, first, last], FileAccess.WRITE)
+	var file := FileAccess.open("%s/bot_battles_%s_L%d_%d_%d.json" % [OUTPUT_DIR, map_name, level_value, first, last], FileAccess.WRITE)
 	file.store_string(JSON.stringify({"generated": Time.get_datetime_string_from_system(), "team_size": team_size, "round_cap": round_cap, "aggregate": aggregate, "battles": summary}, "\t"))
 	file.close()
-	print("bots: done %d battles -> %s" % [summary.size(), JSON.stringify(aggregate)])
+	print("bots: done map=%s level=%d %d battles -> %s" % [map_name, level_value, summary.size(), JSON.stringify(aggregate)])
 	quit(0)
 
 
-func _battle(seed: int, team_size: int, round_cap: int, with_items: bool, with_abilities: bool) -> Dictionary:
+func _battle(seed: int, team_size: int, round_cap: int, with_items: bool, with_abilities: bool, map_path: String, level_value: int) -> Dictionary:
 	var out: Dictionary = {"seed": seed, "invariant_failures": [], "error_count": 0}
-	var built: Dictionary = CustomSkirmishBuilder.build_random(team_size, MAP_PATH, str(seed), SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU)
+	var built: Dictionary = CustomSkirmishBuilder.build_random(team_size, map_path, str(seed), SkirmishDefinitionResource.CONTROL_MODE_CPU_VS_CPU)
 	if not bool(built.get("ok", false)):
 		out["result"] = "build_failed"
 		out["error"] = String(built.get("error", ""))
 		return out
 	var definition: SkirmishDefinitionResource = built["definition"]
+	definition.ai_level = level_value
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash("validation:%d" % seed)
 	var pool: Array[Dictionary] = BattleItemCatalog.entries()

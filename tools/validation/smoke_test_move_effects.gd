@@ -666,6 +666,25 @@ func _check_status_dependent_moves() -> void:
 	resolver.execute(attacker, defender, 0, level)
 	_assert_true(attacker.stats.battle_statuses.has("recharge"), "Hyper Beam applies recharge status")
 	_assert_true(attacker.stats.consume_turn_skip_status().get("status_id", "") == "recharge", "Recharge status participates in turn-skip handling")
+	_assert_true(int(attacker.stats.battle_statuses["recharge"].get("counter", 0)) == 2, "recharge outlasts the turn-start decrement so the skip check still sees it")
+	attacker.stats.battle_statuses.erase("recharge")
+	level.battle_log.events.clear()
+
+	var previous_types: Array[String] = defender.stats.types.duplicate()
+	defender.stats.types.clear()
+	defender.stats.types.append("ghost")
+	var normal_hit := _move("normal_hit", PokemonMoveResource.CATEGORY_PHYSICAL, 85, PokemonMoveResource.TacticalRangeKind.PROJECTILE, PokemonMoveResource.TARGET_FOE, [
+		{"family": "damage", "target": "hit_target"},
+	])
+	attacker.stats.move_slots = [normal_hit]
+	attacker.stats.current_pp = [normal_hit.pp]
+	var immune_hp: int = defender.stats.curr_health
+	resolver.execute(attacker, defender, 0, level)
+	_assert_true(defender.stats.curr_health == immune_hp, "a normal move leaves a ghost untouched")
+	_assert_true(_log_has_source(level.battle_log, "damage_prevented", "type_immunity"), "type immunity is reported instead of resolving silently")
+	defender.stats.types.clear()
+	for type_id in previous_types:
+		defender.stats.types.append(String(type_id))
 	level.battle_log.events.clear()
 
 	var sticky_web := _move("sticky_web", PokemonMoveResource.CATEGORY_STATUS, 0, PokemonMoveResource.TacticalRangeKind.PROJECTILE, PokemonMoveResource.TARGET_FOE, [])

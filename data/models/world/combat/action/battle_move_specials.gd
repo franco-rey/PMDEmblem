@@ -259,8 +259,8 @@ func after_move(resolver: BattleActionResolver, attacker: TacticsPawn, move: Pok
 		var outcome: Dictionary = resolver._ops(battle_level, battle_log).damage(attacker, attacker.stats.curr_health, {"kind": "self_faint", "attacker": attacker, "move": move})
 		if bool(outcome.get("fainted", false)):
 			resolver.animation_resolver.select_reaction(attacker, move, "faint", battle_log)
-	if RECHARGE_MOVES.has(move.move_id) and attacker.stats.is_active():
-		resolver._ops(battle_level, battle_log).apply_status(attacker, "recharge", {"counter": 1}, {"kind": "move", "move": move, "skip_rules": true})
+	if RECHARGE_MOVES.has(move.move_id) and attacker.stats.is_active() and not attacker.stats.battle_statuses.has("recharge"):
+		resolver._ops(battle_level, battle_log).apply_status(attacker, "recharge", {"counter": 2}, {"kind": "move", "move": move, "skip_rules": true})
 	if battle_level != null and battle_level.multiverse.enabled and attacker.stats.is_active() and String(battle_level.multiverse.travel_rule(move.move_id).get("travellers", "")) == "user" and not bool(battle_level.multiverse.travel_rule(move.move_id).get("strike", false)):
 		battle_level.multiverse.request_travel(move.move_id, attacker, attacker)
 

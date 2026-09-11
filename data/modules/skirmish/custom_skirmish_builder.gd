@@ -308,7 +308,8 @@ static func build_random(
 	team_size: int,
 	map_path: String,
 	seed_text: String = "",
-	control_mode: String = SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU
+	control_mode: String = SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU,
+	require_travellers: bool = false
 ) -> Dictionary:
 	var cap: int = max_team_size_for(map_path)
 	if team_size < MIN_TEAM_SIZE or team_size > cap:
@@ -317,6 +318,8 @@ static func build_random(
 		return {"ok": false, "error": "Seed must be an integer or empty"}
 	var seed: int = resolve_seed(seed_text)
 	var player_paths: Array[String] = random_roster_paths(team_size, seed ^ 0x1234ABCD)
+	if require_travellers:
+		player_paths = MultiverseRoster.ensure_traveller_paths(player_paths, seed ^ 0x1234ABCD)
 	var result: Dictionary = build_with_random_enemy(
 		player_paths,
 		map_path,
@@ -325,7 +328,8 @@ static func build_random(
 		DEFAULT_RANDOM_DIFFICULTY_TIER,
 		"",
 		"",
-		control_mode
+		control_mode,
+		require_travellers
 	)
 	if result.get("ok", false):
 		var definition: SkirmishDefinitionResource = result["definition"]
@@ -348,7 +352,8 @@ static func build_with_random_enemy(
 	difficulty_tier: int = DEFAULT_RANDOM_DIFFICULTY_TIER,
 	biome: String = "",
 	reward_profile: String = "",
-	control_mode: String = SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU
+	control_mode: String = SkirmishDefinitionResource.CONTROL_MODE_PLAYER_VS_CPU,
+	require_travellers: bool = false
 ) -> Dictionary:
 	var cap: int = max_team_size_for(map_path)
 	if player_paths.size() < MIN_TEAM_SIZE or player_paths.size() > cap:
@@ -394,6 +399,7 @@ static func build_with_random_enemy(
 	inputs.map_pool = [map]
 	inputs.roster_templates = roster_templates
 	inputs.reward_profile = reward_profile
+	inputs.require_travellers = require_travellers
 
 	var definition: SkirmishDefinitionResource = RandomSkirmishGenerator.generate(inputs)
 	if definition == null:

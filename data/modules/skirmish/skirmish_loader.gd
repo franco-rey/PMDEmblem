@@ -102,6 +102,7 @@ func load_skirmish(definition: SkirmishDefinitionResource, battle_parent: Node =
 	if parent == null:
 		parent = get_tree().root
 	level.multiverse_enabled = definition.multiverse
+	level.ai_level = AIProfile.clamp_level(definition.ai_level)
 	parent.add_child(level)
 	skirmish_loaded.emit(level)
 	return level
@@ -164,7 +165,7 @@ func _is_spawn_anchor_less_than(a: Node3D, b: Node3D) -> bool:
 	var order_b: int = _spawn_anchor_order(b.name)
 	if order_a != order_b:
 		return order_a < order_b
-	return a.name < b.name
+	return String(a.name) < String(b.name)
 
 
 func _spawn_anchor_order(anchor_name: String) -> int:
