@@ -117,7 +117,11 @@ func _check_responsive_layout(label: String, expect_wide: bool) -> void:
 	_assert_true(roster_grid.columns == expected_columns, "%s roster grid columns use available width (%d vs %d)" % [label, roster_grid.columns, expected_columns])
 	_assert_true(roster_grid.columns == SkirmishLobby.ROSTER_COLUMNS, "%s roster keeps %d columns (%d)" % [label, SkirmishLobby.ROSTER_COLUMNS, roster_grid.columns])
 	_assert_true(is_equal_approx(cell_px, float(expected_layout["cell"])) and cell_px >= SkirmishLobby.ROSTER_MIN_CELL, "%s roster cells fill the row at %.0f px" % [label, cell_px])
-	_assert_true((cell_px > 90.0) == expect_wide, "%s roster cell size matches layout mode (%.0f px)" % [label, cell_px])
+	_assert_true((cell_px >= 80.0) == expect_wide, "%s roster cell size matches layout mode (%.0f px)" % [label, cell_px])
+	var setup_panel := lobby.find_child("SetupPanel", true, false) as Control
+	var roster_panel := lobby.find_child("RosterPanel", true, false) as Control
+	if expect_wide and setup_panel != null and roster_panel != null:
+		_assert_true(absf(setup_panel.size.x - roster_panel.size.x) <= 2.0, "%s setup and roster panels split the row evenly (%.0f vs %.0f)" % [label, setup_panel.size.x, roster_panel.size.x])
 	_assert_true(float(roster_grid.columns) * cell_px + SkirmishLobby.GRID_GAP * float(roster_grid.columns - 1) <= available_width + 1.0, "%s roster cells fit the available width" % label)
 	var first_cell: Button = roster_grid.get_child(0) as Button
 	_assert_true(first_cell != null and first_cell.flat and first_cell.find_child("NameLabel", true, false) == null and not first_cell.tooltip_text.is_empty(), "%s roster cells are flat portraits with name tooltips" % label)

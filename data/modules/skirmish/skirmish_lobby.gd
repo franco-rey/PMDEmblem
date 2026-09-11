@@ -108,7 +108,8 @@ var _scroll_pads: Array[MarginContainer] = []
 var player_slots: GridContainer
 var enemy_slots: GridContainer
 var setup_panel: PanelContainer
-var details_panel: PanelContainer
+var details_panel: Control
+var setup_grid: GridContainer = null
 var roster_grid: GridContainer
 var roster_scroll: ScrollContainer
 var search_input: LineEdit
@@ -349,9 +350,14 @@ func _build_ui() -> void:
 	middle.add_theme_constant_override("separation", int(MIDDLE_GAP))
 	outer.add_child(middle)
 
-	middle.add_child(_create_setup_panel())
-	middle.add_child(_create_roster_panel())
-	middle.add_child(_create_details_panel())
+	var setup: PanelContainer = _create_setup_panel()
+	setup.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	setup.size_flags_stretch_ratio = 1.0
+	middle.add_child(setup)
+	var roster: PanelContainer = _create_roster_panel()
+	roster.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	roster.size_flags_stretch_ratio = 1.0
+	middle.add_child(roster)
 
 	enemy_tray = _create_team_tray("EnemyTeamTray", "Enemy Team", SIDE_ENEMY)
 	enemy_tray_title = enemy_tray.find_child("%sTitle" % SIDE_ENEMY.capitalize(), true, false) as Label
@@ -470,10 +476,21 @@ func _create_setup_panel() -> PanelContainer:
 	setup_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	outer.add_child(setup_scroll)
 
+	setup_grid = GridContainer.new()
+	setup_grid.name = "SetupGrid"
+	setup_grid.columns = 2
+	setup_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	setup_grid.add_theme_constant_override("h_separation", int(MIDDLE_GAP))
+	setup_grid.add_theme_constant_override("v_separation", 12)
+	setup_scroll.add_child(_scroll_pad(setup_grid))
+
 	var column := VBoxContainer.new()
+	column.name = "SettingsColumn"
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	column.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	column.add_theme_constant_override("separation", 8)
-	setup_scroll.add_child(_scroll_pad(column))
+	setup_grid.add_child(column)
+	setup_grid.add_child(_create_details_panel())
 
 	var footer := VBoxContainer.new()
 	footer.name = "SetupFooter"
@@ -575,21 +592,30 @@ func _create_setup_panel() -> PanelContainer:
 	net_ready_check.toggled.connect(_on_net_ready_toggled)
 	footer.add_child(net_ready_check)
 
-	launch_button = Button.new()
-	launch_button.name = "LaunchButton"
-	launch_button.text = "Launch Skirmish"
-	launch_button.custom_minimum_size.y = PmdStyle.CONTROL_HEIGHT
-	launch_button.pressed.connect(_on_launch_pressed)
-	footer.add_child(launch_button)
-
 	status_label = Label.new()
 	status_label.name = "StatusLabel"
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	status_label.add_theme_font_size_override("font_size", PmdStyle.FONT_CAPTION)
 	status_label.add_theme_color_override("font_color", PmdStyle.TEXT_DIM)
 	status_label.custom_minimum_size = Vector2(0, 0)
+	status_label.visible = false
 	footer.add_child(status_label)
-	footer.add_child(close_button)
+
+	var actions := HBoxContainer.new()
+	actions.name = "SetupActions"
+	actions.add_theme_constant_override("separation", int(PmdStyle.PANEL_GAP))
+	footer.add_child(actions)
+	launch_button = Button.new()
+	launch_button.name = "LaunchButton"
+	launch_button.text = "Launch Skirmish"
+	launch_button.custom_minimum_size.y = PmdStyle.CONTROL_HEIGHT
+	launch_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	launch_button.size_flags_stretch_ratio = 2.0
+	launch_button.pressed.connect(_on_launch_pressed)
+	actions.add_child(launch_button)
+	close_button.custom_minimum_size.y = PmdStyle.CONTROL_HEIGHT
+	close_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	actions.add_child(close_button)
 
 	column.add_child(_section_header("Seed"))
 	code_output = LineEdit.new()
@@ -706,32 +732,13 @@ func _create_roster_panel() -> PanelContainer:
 	return panel
 
 
-func _create_details_panel() -> PanelContainer:
-	var panel := PanelContainer.new()
-	panel.name = "DetailsPanel"
-	panel.custom_minimum_size = Vector2(DETAILS_PANEL_WIDTH, 0)
-	panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	panel.add_theme_stylebox_override("panel", _style_box(PANEL_COLOR, MUTED_BORDER_COLOR, 1))
-	details_panel = panel
-
-	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 10)
-	margin.add_theme_constant_override("margin_top", 10)
-	margin.add_theme_constant_override("margin_right", 10)
-	margin.add_theme_constant_override("margin_bottom", 10)
-	panel.add_child(margin)
-
-	var scroll := ScrollContainer.new()
-	scroll.name = "DetailsScroll"
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	margin.add_child(scroll)
-
+func _create_details_panel() -> VBoxContainer:
 	var column := VBoxContainer.new()
+	column.name = "DetailsPanel"
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	column.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	column.add_theme_constant_override("separation", 8)
-	scroll.add_child(_scroll_pad(column))
+	details_panel = column
 
 	target_label = Label.new()
 	target_label.name = "TargetLabel"
@@ -817,7 +824,7 @@ func _create_details_panel() -> PanelContainer:
 	held_row.add_child(clear_item_button)
 	item_value_label = _section_value("ItemValueLabel")
 	column.add_child(item_value_label)
-	return panel
+	return column
 
 
 func _create_selected_box() -> HBoxContainer:
@@ -2499,6 +2506,8 @@ func _apply_responsive_layout() -> void:
 	for pad in _scroll_pads:
 		pad.add_theme_constant_override("margin_left", 0 if compact else 2)
 		pad.add_theme_constant_override("margin_right", 0 if compact else SCROLL_PAD_RIGHT)
+	if setup_grid != null:
+		setup_grid.columns = 1 if compact else 2
 	if setup_panel != null:
 		setup_panel.custom_minimum_size.x = SETUP_PANEL_COMPACT_WIDTH if compact else SETUP_PANEL_WIDTH
 	if details_panel != null:
@@ -2523,14 +2532,12 @@ func _layout_width() -> float:
 
 func _roster_width_budget() -> float:
 	var content_width: float = maxf(0.0, _layout_width() - LAYOUT_MARGIN_X * 2.0)
-	var setup_width: float = SETUP_PANEL_COMPACT_WIDTH if _uses_compact_layout() else SETUP_PANEL_WIDTH
-	var details_width: float = DETAILS_PANEL_COMPACT_WIDTH if _uses_compact_layout() else DETAILS_PANEL_WIDTH
+	var half: float = (content_width - MIDDLE_GAP) * 0.5
+	var setup_width: float = half
 	if setup_panel != null:
-		setup_width = maxf(setup_width, setup_panel.get_combined_minimum_size().x)
-	if details_panel != null:
-		details_width = maxf(details_width, details_panel.get_combined_minimum_size().x)
-	var side_width: float = setup_width + details_width + MIDDLE_GAP * 2.0 + PANEL_MARGIN_X * 4.0 + _roster_scrollbar_width()
-	return maxf(ROSTER_MIN_CELL * float(ROSTER_COLUMNS) + GRID_GAP * float(ROSTER_COLUMNS - 1), content_width - side_width)
+		setup_width = maxf(half, setup_panel.get_combined_minimum_size().x)
+	var roster_outer: float = content_width - MIDDLE_GAP - setup_width
+	return maxf(ROSTER_MIN_CELL * float(ROSTER_COLUMNS) + GRID_GAP * float(ROSTER_COLUMNS - 1), roster_outer - PANEL_MARGIN_X * 4.0 - _roster_scrollbar_width())
 
 
 func _roster_scrollbar_width() -> float:
@@ -2636,6 +2643,7 @@ func _side_label(side: String) -> String:
 func _set_status(text: String) -> void:
 	if status_label != null:
 		status_label.text = text
+		status_label.visible = not text.is_empty()
 
 
 func _style_box(color: Color, border: Color, border_width: int) -> StyleBox:
