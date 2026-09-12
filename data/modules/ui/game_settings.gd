@@ -1,7 +1,7 @@
 class_name GameSettings
 extends RefCounted
 
-const GAME_VERSION: String = "0.20.0"
+const GAME_VERSION: String = "0.20.1"
 const LEGACY_USER_DIR_NAME: String = "Poke"
 const SETTINGS_PATH: String = "user://settings.cfg"
 const SECTION: String = "graphics"
