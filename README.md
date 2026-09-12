@@ -1,9 +1,12 @@
 # PMD Emblem
 
+[Download Link Here
+](https://github.com/franco-rey/PMDEmblem/releases/tag/v0.20.1)
+
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](./LICENSE)
 [![Godot 4.7](https://img.shields.io/badge/Godot-4.7-478cbf.svg)](https://godotengine.org)
 
-Pokemon Mystery Dungeon, built into a tactical RPG framework (i.e. Fire Emblem), also incorporating the ruleset of 5D Chess with Multiverse Time travel.
+Pokemon Mystery Dungeon, built into a tactical RPG framework (i.e. Fire Emblem), also incorporating the ruleset of 5D Chess with Multiverse Time Travel.
 
 ## Features
 
