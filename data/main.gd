@@ -63,6 +63,7 @@ const MANUAL_SKIRMISHES: Array[Dictionary] = [
 const MENU_CONTROL_SIZE: Vector2 = Vector2(PmdStyle.CONTROL_WIDTH, PmdStyle.CONTROL_HEIGHT)
 const MENU_FONT_SIZE: int = PmdStyle.FONT_BODY
 const PRESET_PLACEHOLDER: String = "Choose Preset..."
+const CREDITS_URL: String = "https://github.com/franco-rey/PMDEmblem/blob/main/CREDITS.txt"
 
 const MIN_WINDOW_SIZE: Vector2i = Vector2i(1280, 720)
 
@@ -92,6 +93,7 @@ var random_pokemon_button: Button = null
 var _controls_from_options: bool = false
 var options_button: Button = null
 var quit_button: Button = null
+var credits_button: Button = null
 var _relaunch: Callable = Callable()
 var _ended_definition: SkirmishDefinitionResource = null
 var _ended_result: int = 0
@@ -389,6 +391,8 @@ func _setup_menus() -> void:
 		controls_button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
 		controls_button.pressed.connect(_on_controls_pressed)
 		menu.add_child(controls_button)
+		credits_button = _menu_button("Credits", "CreditsButton", _on_credits_pressed)
+		menu.add_child(credits_button)
 		quit_button = Button.new()
 		quit_button.name = "QuitButton"
 		quit_button.text = "Quit"
@@ -468,6 +472,10 @@ func _menu_button(text: String, node_name: String, callback: Callable) -> Button
 	button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
 	button.pressed.connect(callback)
 	return button
+
+
+func _on_credits_pressed() -> void:
+	OS.shell_open(CREDITS_URL)
 
 
 func _on_attack_pressed() -> void:
