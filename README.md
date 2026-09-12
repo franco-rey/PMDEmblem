@@ -8,6 +8,8 @@
 
 Pokemon Mystery Dungeon, built into a tactical RPG framework (i.e. Fire Emblem), also incorporating the ruleset of 5D Chess with Multiverse Time Travel.
 
+<img width="1920" height="1080" alt="01_main_menu_gallade" src="https://github.com/user-attachments/assets/4f803448-cf39-4d0c-8037-91179efadc04" />
+
 ## Features
 
 - 686 Pokemon, 137 items
@@ -15,7 +17,7 @@ Pokemon Mystery Dungeon, built into a tactical RPG framework (i.e. Fire Emblem),
 - Direct-connect multiplayer
 - Full ruleset includes also 5D Chess with Multiverse Time Travel
 
-## Installation
+## Download & Installation
 
 From the releases, download the respective MacOS .app or Windows .exe as necessary, the game is self contained.
 
@@ -30,6 +32,15 @@ python3 setup.py
 ```
 
 It runs every packager in order (raw visuals, interface sheets, the 686-Pokemon roster with shiny, female and alternate-form variants, the Godot import, the PMDO data import, the move and item presentation manifest, sounds and music), writes a log per step under `logs/setup/`, prints a timing table and finishes with initial smoke tests.
+
+## Gallery
+
+<img width="1920" height="1080" alt="05_circular_no_ui" src="https://github.com/user-attachments/assets/19bb649c-1641-4c2c-8463-ef6f5ad15630" />
+<img width="1920" height="1080" alt="02_chessboard_5d_with_ui" src="https://github.com/user-attachments/assets/74905c43-781c-42a5-84ba-e6b6abe3d2fc" />
+<img width="1920" height="1080" alt="04_xiangqi_5d_with_ui" src="https://github.com/user-attachments/assets/36d4745e-d120-4e2e-8395-92a7cab265bb" />
+<img width="1920" height="1080" alt="03_shogi_5d_no_ui" src="https://github.com/user-attachments/assets/91c630ec-e330-4bc0-b3d2-f25305f9b46f" />
+<img width="1920" height="1080" alt="06_makruk_no_ui" src="https://github.com/user-attachments/assets/7b176df4-05ec-4923-a753-8102c5736400" />
+
 
 ## Credits
 
