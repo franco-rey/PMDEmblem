@@ -1,107 +1,47 @@
 # PMD Emblem
 
-Pokemon Mystery Dungeon Strategy Roguelite
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](./LICENSE)
+[![Godot 4.7](https://img.shields.io/badge/Godot-4.7-478cbf.svg)](https://godotengine.org)
 
-## Alpha 0.20.0
+Pokemon Mystery Dungeon, built into a tactical RPG framework (i.e. Fire Emblem), also incorporating the ruleset of 5D Chess with Multiverse Time travel.
 
-Single-player skirmishes against the CPU (difficulty 1 to 5), direct-connect 1v1 over the network, and the optional 5D multiverse rules on eight chess-variant boards.
+## Features
 
-**Install**
+- 686 Pokemon, 137 items
+- Thorough custom skirmish setups
+- Direct-connect multiplayer
+- Full ruleset includes also 5D Chess with Multiverse Time Travel
 
-- macOS: unzip, then right-click `PMDEmblem.app` and choose **Open** the first time (the build is ad-hoc signed, so Gatekeeper asks once). If the app still refuses to open, run `xattr -dr com.apple.quarantine PMDEmblem.app` in Terminal.
-- Windows: run `PMDEmblem.exe`. SmartScreen may show "Windows protected your PC"; choose **More info** and then **Run anyway**.
-- Both machines need the same build for network play. The host forwards UDP port 24555 (changeable in Direct Connect) when playing over the internet; on one network the guest can pick the host from "Games on this network".
+## Installation
 
-**Developer setup (fresh clone)**
+From the releases, download the respective MacOS .app or Windows .exe as necessary, the game is self contained.
 
-The repository tracks source and generated manifests only; the PMD sprites, portraits, particles, interface sheets, sounds and music are copied in by tracked scripts and stay ignored. Clone the three resource repositories next to this one so the folder holds `PMDEmblem`, `PMDODump`, `RawAsset` and `SpriteCollab` side by side, install Godot 4.7.2 (standard build) and Python 3.11 or newer, then run one script from the project folder:
+For those interested in looking at the source code, the repo is set up not to track sprites and other assets from other repositories, favoring an import system. Ensure the following repos are also downloaded (saved to the same directory as the game source code folder, if possible): 
 
+- [PMDODump](https://github.com/audinowho/PMDODump)
+- [RawAsset](https://github.com/PMDCollab/RawAsset)
+
+Then run:
 ```
-python3 tools/setup/fresh_clone_setup.py
+python3 setup.py
 ```
 
-It runs every packager in order (raw visuals, interface sheets, the 686-Pokemon roster with shiny, female and alternate-form variants, the Godot import, the PMDO data import, the move and item presentation manifest, sounds and music), writes a log per step under `logs/setup/`, prints a timing table and finishes with a handful of smoke tests. About 25 minutes on a laptop; `--plan` prints the steps, `--from STEP` resumes after a failure, `--only STEP` reruns one, `--godot PATH` or `GODOT_BIN` points at a different Godot, and `--pmdo-root`, `--raw-asset-root` and `--sprite-collab-root` (or the `PMD_EMBLEM_*_ROOT` variables) move the resource checkouts. The step table with expected counts is in `plan/v13/fresh_clone_pipeline.md`.
+It runs every packager in order (raw visuals, interface sheets, the 686-Pokemon roster with shiny, female and alternate-form variants, the Godot import, the PMDO data import, the move and item presentation manifest, sounds and music), writes a log per step under `logs/setup/`, prints a timing table and finishes with initial smoke tests.
 
-**Where things live**
+## Credits
 
-- Settings: the Godot user folder (`~/Library/Application Support/Godot/app_userdata/PMD Emblem` on macOS, `%APPDATA%\Godot\app_userdata\PMD Emblem` on Windows). Settings from the pre-alpha "Poke" folder are copied over on first launch.
-- Battle transcripts: `logs/debug/battles/` next to the app's user folder; attach one when reporting a bug.
+PMD Emblem is a non-commercial fan project. It is not affiliated with, endorsed by or sponsored by Nintendo, Creatures Inc., GAME FREAK inc., The Pokemon Company or Spike Chunsoft Co., Ltd. Pokemon, Pokemon Mystery Dungeon and all related names, designs, music and sounds are their trademarks and copyrights. No Pokemon art, music or sound is stored in this repository; `setup.py` imports it on your own machine from the community repositories credited below, and the game must not be sold or otherwise monetised.
 
----
+The multiverse rules and timeline presentation are modelled on 5D Chess with Multiverse Time Travel by Thunkspace, LLC; no code or assets from that game are used.
 
-(Old readme)
+Every third-party source and its licence is listed in [CREDITS.txt](./CREDITS.txt):
 
-![banner](./docs/img/banner.png)
+- Pokemon data, sounds and interface: [PMDODump](https://github.com/audinowho/PMDODump) and [DumpAsset](https://github.com/audinowho/DumpAsset), from Pokemon Mystery Dungeon: Origins ([PMDC](https://github.com/PMDCollab/PMDC) and RogueEssence, MIT, Audino)
+- Sprites, portraits and fonts: [PMD Sprite Collab](https://github.com/PMDCollab/SpriteCollab) and [RawAsset](https://github.com/PMDCollab/RawAsset), CC BY-NC 4.0; every artist is credited by name in `assets/textures/credits.txt`, which ships inside each build ([contributors](https://sprites.pmdcollab.org/#/Contributors))
+- Engine: [Godot Engine](https://godotengine.org), MIT
+- Starting template: [Godot Tactical RPG](https://github.com/ramaureirac/godot-tactical-rpg) by Rodrigo Maureira Contreras, MIT
+- Importer tooling: [Pillow](https://python-pillow.org), HPND
 
-# About
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
-[![Godot v3.4](https://img.shields.io/badge/Godot-v3.4-blue.svg)](https://github.com/ramaureirac/godot-tactical-rpg/tree/release/godot-v3.4)
-[![Godot v4.0](https://img.shields.io/badge/Godot-v4.0-blue.svg)](https://github.com/ramaureirac/godot-tactical-rpg/tree/release/godot-v4.0)
-[![Godot v4.2](https://img.shields.io/badge/Godot-v4.2-blue.svg)](https://github.com/ramaureirac/godot-tactical-rpg/tree/release/godot-v4.2)
-[![Godot v4.3](https://img.shields.io/badge/Godot-v4.3-blue.svg)](https://github.com/ramaureirac/godot-tactical-rpg/tree/release/godot-v4.3)
+## License
 
-
-A simple template for making <i>tactical role-playing games</i> on [Godot Engine 4](https://godotengine.org/).
-This is not a fully functional game framework or a professional work, just a simple project made in our free time. 
-Anyways, feel free to use this sample in your own game. 
-
-- You can see all of the project's features on [YouTube](https://youtu.be/lJKWlLwYDZY).
-- Another demo from [Open Source Games](https://www.youtube.com/watch?v=-AY6KEdX_3E).
-- In case you are searching for some 2d projects, checkout [GDQuest](https://github.com/GDQuest/godot-2d-tactical-rpg-movement) or [TBS_GoDot](https://github.com/ja-brouil/TBS_GoDot)
-- In case you are looking for a similar pathfinding project/tutorial: [GameDevArts](https://www.youtube.com/watch?v=fYtwZdQTP5A) (Not mine)
-
-
-As mentioned before, this project uses [Godot Engine 4.3](https://godotengine.org/) (and was ported quite recently), so it will no longer support previous versions of the engine. If (for some reason) you still want to use an older version of Godot make sure to clone from the respective branch, but keep in mind that no new features will be added in the future.
-
-
-# Features
-
-- Turn based
-- Grid movement
-- Each pawn can move and attack
-- Super basic (and stupid) enemy AI 
-- Advanced camera panning, free look, zoom and rotations
-    - Mouse, gamepad or keyboard-controlled
-    - Configurable camera stray distance (radius)
-- Blender map recognition -- [tutorial for Blender (with or without Godot Export) right here](./docs/tutorials/how-to-create-maps/README.md)!
-- Controller Support
-
-- Complete native Godot editor documentation across the project
-- Toggleable Debugger
-    - Sending to Output tab
-    - Disable in TacticsConfig
-
-### 4.3 Project refactoring:
-[View Structure Overview Diagram](https://github.com/user-attachments/assets/65bb6862-6e84-4149-af5a-047a04f413eb)
-- @mbusson made the project structure more scalable (shared assets architecture)
-    - Models: Centralized storage for class parameters & logic
-    - Modules: Self-contained reusable units (Godot Nodes)
-    - Dedicated maps directory
-    - Other smaller architecture changes to nest components logically
-- Adapted code to follow [the official GDScript style guidelines](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html#one-statement-per-line)
-- Slightly optimized framework performance
-
-
-
-[![asset-store](./docs/img/asset-store.png)](https://godotengine.org/asset-library/asset/1295)
-
-
-# Preview
-
-![preview](./docs/img/preview.png)
-
-# Contribute
-
-All code contributions and opened issues are welcome! However, since I want to keep this project as simple as posible I suggest first open an issue suggesting your idea before sending a PR. its really sad reject work just because it doesn't allign to a projects vision or it overrides a core functionallity (If that is the case, it will be better to start your own fork).
-
-I now there's a lot of entry game developers in here who is looking into collaborate on open-source projects (which is nice), if that's your case checkout the label "Good First Issue" in the Issues Tab. So that you can get involve into this project with simple features.
-
-
-# Special thanks
-
-- GDQuest
-- Tiny Legions
-- Miziziziz
-- TutsByKai
-- AdamCYounis
-- Almost every other guy at Godot's formus / StackOverflow
+PMD Emblem is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See [LICENSE](./LICENSE) for the full text. That licence covers only this project's own code and data; the Pokemon property and the third-party material above remain under the terms named in CREDITS.txt.
