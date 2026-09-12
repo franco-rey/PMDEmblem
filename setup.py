@@ -22,7 +22,7 @@ MAX_LEVEL = 100
 QUICK_SMOKES = ("gender", "shiny", "forms", "board_skin", "skirmish_lobby", "battle_hud", "border_style")
 LOCAL_SOURCES_PATH = PROJECT_ROOT / "logs" / "local_sources.json"
 MIN_PYTHON = (3, 10)
-STEP_NAMES = ("raw_visuals", "ui_sheets", "board_skins", "roster", "import", "data", "reimport", "presentation", "sounds", "final_import", "verify")
+STEP_NAMES = ("raw_visuals", "ui_sheets", "fonts", "board_skins", "roster", "import", "data", "reimport", "presentation", "sounds", "app_icon", "final_import", "verify")
 GODOT_CANDIDATES = {
     "Darwin": ["/Applications/Godot.app/Contents/MacOS/Godot"],
     "Windows": [r"C:\Program Files\Godot\Godot_v4.7.2-stable_win64_console.exe", r"C:\Program Files\Godot\Godot_v4.7.2-stable_win64.exe", r"C:\Program Files\Godot\godot.exe"],
@@ -214,6 +214,9 @@ def _plan(context: Context, args: argparse.Namespace) -> list[Step]:
         Step("final_import", "Godot import after the manifests landed", godot + ["--import"]),
         Step("verify", "every smoke test under tools/validation (about 45 min)" if args.verify == "full" else "quick smoke tests (" + ", ".join(QUICK_SMOKES) + ")", []),
     ]
+    unknown = [step.name for step in steps if step.name not in STEP_NAMES]
+    if unknown:
+        raise SystemExit("setup: steps missing from STEP_NAMES: " + ", ".join(unknown))
     return steps
 
 

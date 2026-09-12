@@ -1,0 +1,157 @@
+PMD Emblem - credits and third-party notices
+============================================
+
+PMD Emblem is a non-commercial fan project. The code in this repository is
+licensed under the GNU General Public License version 3 or, at your option,
+any later version (see LICENSE). That licence covers only the original code
+and data of this project. Everything listed below belongs to its respective
+owners under the terms named here, and nothing in this repository grants any
+right to the Pokemon property.
+
+
+Pokemon and Pokemon Mystery Dungeon
+-----------------------------------
+
+Pokemon, Pokemon Mystery Dungeon, the Pokemon names, designs, music and sound
+effects are trademarks and copyrights of Nintendo, Creatures Inc., GAME FREAK
+inc., The Pokemon Company and Spike Chunsoft Co., Ltd. This project is not
+affiliated with, endorsed by or sponsored by any of them. No Pokemon art,
+music or sound is stored in this repository; setup.py imports it on your own
+machine from the repositories credited below, and the game must not be sold
+or otherwise monetised.
+
+
+5D Chess with Multiverse Time Travel
+------------------------------------
+
+The multiverse rules and the timeline presentation are modelled on
+"5D Chess with Multiverse Time Travel" by Thunkspace, LLC (Conor Petersen).
+No code or assets from that game are used.
+
+
+Pokemon Mystery Dungeon: Origins (PMDO) - data, sounds and interface
+--------------------------------------------------------------------
+
+Species, forms, moves, items, abilities, status effects, the type chart, the
+music and sound cue tables and the interface sheets are derived from PMDO and
+its engine, by Audino and contributors:
+
+  PMDODump      https://github.com/audinowho/PMDODump      MIT License
+  DumpAsset     https://github.com/audinowho/DumpAsset     (PMDO content dump)
+  PMDC          https://github.com/PMDCollab/PMDC          MIT License, Copyright (c) Audino 2021
+  RogueEssence  (engine, shipped inside PMDC)              MIT License, Copyright (c) Audino 2020
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+
+
+PMD Sprite Collab - sprites, portraits and fonts
+------------------------------------------------
+
+Every Pokemon sprite and portrait, including the shiny, female and alternate
+form variants, and the bitmap fonts come from the PMD Sprite Collab
+community and its RawAsset repository:
+
+  SpriteCollab  https://github.com/PMDCollab/SpriteCollab
+  RawAsset      https://github.com/PMDCollab/RawAsset
+  Contributors  https://sprites.pmdcollab.org/#/Contributors
+
+The sprites and portraits are licensed under the Creative Commons
+Attribution-NonCommercial 4.0 International licence (CC BY-NC 4.0,
+https://creativecommons.org/licenses/by-nc/4.0/). Each artist is credited
+individually, with the licence recorded per sprite and portrait set, in
+assets/textures/credits.txt, which setup.py regenerates from the Sprite Collab
+credit files and which ships inside every build.
+
+
+Godot Engine
+------------
+
+This project runs on Godot Engine 4.7 (https://godotengine.org), MIT License:
+
+  Copyright (c) 2014-present Godot Engine contributors.
+  Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+
+Godot's own third-party notices apply to the exported builds:
+https://godotengine.org/license
+
+
+Godot Tactical RPG - the starting template
+------------------------------------------
+
+The tactics engine began from the Godot Tactical RPG template by Rodrigo
+Maureira Contreras (https://github.com/ramaureirac/godot-tactical-rpg),
+MIT License:
+
+  Copyright (c) 2019 Rodrigo Maureira Contreras
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+
+
+Tools used by the importers
+---------------------------
+
+  Pillow  https://python-pillow.org  Historical Permission Notice and
+          Disclaimer (HPND) licence; used by setup.py and the asset packagers
+          on the developer's machine, not shipped in the builds.
+
+
+Design references
+-----------------
+
+These projects were read for their treatment of multiverse chess and tactics
+interaction; no code or assets from them are used:
+
+  cwmtt (a Haskell model of 5D chess)
+  5d-diplomacy-with-multiverse-time-travel
+  chess-in-5d
+  unto-deepest-depths-prototype

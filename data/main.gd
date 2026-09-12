@@ -106,6 +106,7 @@ var skirmish_queue_code: String = ""
 @onready var skirmish_lobby: SkirmishLobby = $UI/SkirmishLobby
 @onready var tactics_controls: Control = $TacticsControls
 
+
 func _ready() -> void:
 	GameSettings.load_settings()
 	if DisplayServer.get_name() != "headless":
@@ -145,6 +146,7 @@ func _ready() -> void:
 		skirmish_lobby.close_requested.connect(_on_lobby_close_requested)
 	launch_button.grab_focus()
 	MusicPlayer.play_scene("menu")
+
 
 func _process(_delta: float) -> void:
 	_poll_net_ready()
@@ -699,6 +701,7 @@ func _on_custom_toggle_pressed() -> void:
 	if skirmish_lobby != null:
 		skirmish_lobby.open()
 
+
 func unload_level() -> void:
 	_set_battle_speed(1.0)
 	if speed_bar != null:
@@ -708,6 +711,7 @@ func unload_level() -> void:
 	elif is_instance_valid(level_instance):
 		level_instance.queue_free()
 	level_instance = null
+
 
 func load_level(level_name: String) -> void:
 	unload_level()

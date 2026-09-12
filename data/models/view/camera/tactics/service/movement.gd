@@ -89,4 +89,3 @@ static func _slide(camera: TacticsCamera) -> void:
 	camera.velocity /= scale
 	camera.move_and_slide()
 	camera.velocity *= scale
-

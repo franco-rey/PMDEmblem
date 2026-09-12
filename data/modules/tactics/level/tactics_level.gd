@@ -77,6 +77,7 @@ var landed_items: Dictionary = {}
 var _scheduler_started: bool = false
 var _type_chart: TypeChartResource = null
 
+
 func _ready() -> void:
 	battle_rng.seed = battle_seed
 	battle_log.event_appended.connect(_on_battle_event_appended)
@@ -109,6 +110,7 @@ func _ready() -> void:
 		scheduler.round_started.connect(_on_round_started)
 		multiverse.setup(self)
 		scheduler.round_gate = multiverse.round_gate
+
 
 func ensure_multiverse_presentation() -> void:
 	if multiverse_stage != null and is_instance_valid(multiverse_stage):
@@ -168,6 +170,7 @@ func _physics_process(delta: float) -> void:
 			0: _init_turn()
 			1: _handle_turn(delta)
 	_check_and_handle_battle_end()
+
 
 func _setup_presentation() -> void:
 	vfx_player = BattleVFXPlayer.new()
@@ -401,6 +404,7 @@ func _landed_items_root() -> Node3D:
 func _init_turn() -> void:
 	if participant.is_configured(player) and participant.is_configured(opponent):
 		turn_stage = 1
+
 
 func _handle_turn(delta: float) -> void:
 	DebugLog.debug_nospam("player_can_act", participant.can_act(player))

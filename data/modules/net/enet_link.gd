@@ -12,6 +12,7 @@ var port: int = DEFAULT_PORT
 var _elapsed: float = 0.0
 var _connecting: bool = false
 var _pending_close: String = ""
+var _opened: bool = false
 
 
 func host(listen_port: int = DEFAULT_PORT) -> String:
@@ -27,6 +28,7 @@ func host(listen_port: int = DEFAULT_PORT) -> String:
 	peer.peer_disconnected.connect(_on_peer_disconnected)
 	open = true
 	_connecting = false
+	_opened = false
 	return ""
 
 
@@ -44,6 +46,7 @@ func join(host_address: String, host_port: int = DEFAULT_PORT) -> String:
 	peer.peer_disconnected.connect(_on_peer_disconnected)
 	open = true
 	_connecting = true
+	_opened = false
 	_elapsed = 0.0
 	return ""
 
@@ -58,7 +61,7 @@ func poll(delta: float = 0.0) -> void:
 		if status == MultiplayerPeer.CONNECTION_CONNECTED:
 			_connecting = false
 			remote_id = 1
-			opened.emit()
+			_emit_opened()
 		elif status == MultiplayerPeer.CONNECTION_DISCONNECTED:
 			close("refused")
 			return
@@ -84,6 +87,14 @@ func _on_peer_connected(id: int) -> void:
 		remote_id = id
 	else:
 		remote_id = 1
+		_connecting = false
+	_emit_opened()
+
+
+func _emit_opened() -> void:
+	if _opened:
+		return
+	_opened = true
 	opened.emit()
 
 

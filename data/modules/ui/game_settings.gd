@@ -309,4 +309,3 @@ static func cpu_speed_label(value: float) -> String:
 	if is_equal_approx(shown, roundf(shown)):
 		return "%dx" % int(roundf(shown))
 	return "%sx" % ("%.1f" % shown)
-

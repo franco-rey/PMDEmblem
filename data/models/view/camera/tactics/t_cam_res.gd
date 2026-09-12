@@ -79,6 +79,7 @@ var twist_input: float
 var pitch_input: float
 var viewport_size: Vector2i
 
+
 func move_camera(h: float, v: float, joystick: bool, delta: float) -> void:
 	called_move_camera.emit(h, v, joystick, delta)
 

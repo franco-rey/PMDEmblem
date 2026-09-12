@@ -69,6 +69,7 @@ var _rejoining: bool = false
 var _catching_up: bool = false
 var _catchup: Dictionary = {}
 var _catchup_wanted: bool = false
+var _catchup_sent: bool = false
 var _outbox: Array[Dictionary] = []
 var _final_result: int = TacticsLevel.RESULT_ONGOING
 var _final_reason: String = ""
@@ -263,6 +264,7 @@ func _suspend(reason: String) -> void:
 	_suspend_remaining = suspend_seconds
 	_rejoining = false
 	_catchup_wanted = false
+	_catchup_sent = false
 	rejoin_attempts = 0
 	_auto_rejoin_wait = AUTO_REJOIN_FIRST_SECONDS
 	notice.emit("Connection to %s lost (%s). Waiting up to %d s." % [_remote_label(), reason, int(ceil(suspend_seconds))])
@@ -464,6 +466,8 @@ func _handle_rejoin(message: Dictionary) -> void:
 	if state != SUSPENDED or level == null or not is_instance_valid(level):
 		link.send(NetMessages.build(NetMessages.REJECT, {"reason": "no_battle"}))
 		return
+	if _catchup_wanted or _catchup_sent:
+		return
 	_catchup_wanted = true
 	notice.emit("%s is back, sending the battle so far." % _remote_label())
 
@@ -480,6 +484,7 @@ func _send_catchup() -> void:
 	_send_seq = 0
 	_expect_seq = 0
 	_stall_frames = 0
+	_catchup_sent = true
 	link.send(NetMessages.build(NetMessages.CATCHUP, {
 		"code": pending_code,
 		"battle_id": battle_id,
@@ -492,6 +497,7 @@ func _send_catchup() -> void:
 func _resume_after_catchup() -> void:
 	_set_state(IN_BATTLE)
 	_expect_seq = 0
+	_catchup_sent = false
 	_suspend_remaining = -1.0
 	notice.emit("%s caught up. The battle continues." % _remote_label())
 	for entry in _outbox:
@@ -515,7 +521,7 @@ func _handle_rejoin_refused(message: Dictionary) -> void:
 
 
 func _handle_catchup(message: Dictionary) -> void:
-	if host_role or state != SUSPENDED:
+	if host_role or state != SUSPENDED or _catching_up:
 		return
 	_rejoining = false
 	_catching_up = true
@@ -531,21 +537,23 @@ func _replay_catchup() -> void:
 	var target_chain: String = String(_catchup.get("chain", ""))
 	var target_count: int = int(_catchup.get("count", 0))
 	_catchup = {}
+	var replay_level: TacticsLevel = level
 	var runner: BattlePresentationRunner = level.presentation_runner
 	var was_immediate: bool = runner.immediate_mode
 	runner.immediate_mode = true
 	var frames: int = 0
-	while is_instance_valid(level) and not level._scheduler_started and frames < 600:
+	while is_instance_valid(replay_level) and level == replay_level and not replay_level._scheduler_started and frames < 600:
 		await get_tree().physics_frame
 		frames += 1
 	for line in lines:
-		if level == null or not is_instance_valid(level) or level.battle_finished or applier.failures > 0:
+		if level != replay_level or not is_instance_valid(replay_level) or replay_level.battle_finished or applier.failures > 0:
 			break
 		await applier.apply(String(line))
-	_catching_up = false
-	if level == null or not is_instance_valid(level):
+	if level != replay_level or not is_instance_valid(replay_level):
 		return
-	runner.immediate_mode = was_immediate
+	_catching_up = false
+	if is_instance_valid(runner):
+		runner.immediate_mode = was_immediate
 	if applier.failures > 0 or chain != target_chain or line_count != target_count:
 		_raise_desync("catch-up replay differs (%d lines, expected %d)" % [line_count, target_count], true)
 		return

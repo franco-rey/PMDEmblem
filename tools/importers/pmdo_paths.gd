@@ -34,6 +34,7 @@ const POKEMON_SPRITE_STATES: Dictionary = {
 }
 const POKEMON_ANIM_DATA_FILENAME: String = "AnimData.xml"
 
+
 static func project_slug_for(bare_slug: String, dex_number: int = 0) -> String:
 	if dex_number <= 0:
 		return bare_slug
