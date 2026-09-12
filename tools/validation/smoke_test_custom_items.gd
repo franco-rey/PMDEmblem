@@ -1,14 +1,9 @@
-extends SceneTree
+extends SmokeCase
 
 const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
 
-var failures: int = 0
 var resolver: BattleActionResolver = BattleActionResolver.new()
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -244,12 +239,7 @@ func _run() -> void:
 	PokemonItemService.apply_speed_multipliers(level.battle_units, level.battle_log)
 	_assert_true(is_equal_approx(charizard.stats.battle_speed_multiplier, 0.5), "Iron Ball halves speed through the round refresh")
 	await _teardown(setup)
-	if failures > 0:
-		push_error("smoke: custom_items failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: custom_items clean")
-	quit(0)
+	_finish("custom_items")
 
 
 func _give(pawn: TacticsPawn, item_id: String) -> void:
@@ -375,11 +365,3 @@ func _settle_on_tile(pawn: TacticsPawn, tile: TacticsTile) -> void:
 	ray.force_raycast_update()
 	pawn.center()
 	ray.force_raycast_update()
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

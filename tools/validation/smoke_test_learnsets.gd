@@ -1,8 +1,6 @@
-extends SceneTree
+extends SmokeCase
 
 const BULBASAUR_PATH: String = "res://data/models/pokemon/generated/instances/0001_bulbasaur.tres"
-
-var failures: int = 0
 
 
 func _init() -> void:
@@ -25,20 +23,3 @@ func _init() -> void:
 	_assert_true((chosen.get("learned", []) as Array).has("double_edge"), "replacement choice learns move")
 	_assert_true(instance.move_slots[1].move_id == "double_edge", "replacement choice updates selected slot")
 	_finish("learnsets")
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: fail - %s" % label)
-
-
-func _finish(name: String) -> void:
-	if failures > 0:
-		push_error("smoke: %s failed %d check(s)" % [name, failures])
-		quit(1)
-	else:
-		print("smoke: %s clean" % name)
-		quit(0)

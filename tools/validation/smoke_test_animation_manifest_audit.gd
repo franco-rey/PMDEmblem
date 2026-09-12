@@ -1,6 +1,4 @@
-extends SceneTree
-
-var failures: int = 0
+extends SmokeCase
 
 
 func _init() -> void:
@@ -62,11 +60,3 @@ func _state_exists(sprites: Dictionary, key: String) -> bool:
 		if raw_state is Dictionary and String((raw_state as Dictionary).get("key", "")) == key:
 			return true
 	return false
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: fail - %s" % label)

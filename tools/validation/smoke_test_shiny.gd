@@ -1,14 +1,8 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 const CODE: String = "match seed=42 mode=pvp team=6 map=chessboard"
 const SAMPLES: int = 200000
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -112,21 +106,4 @@ func _run() -> void:
 			await process_frame
 			frames2 += 1
 		_assert_true(level2.shiny_pawns().size() <= 1, "normal odds seldom roll a shiny in one 6v6 (%d)" % level2.shiny_pawns().size())
-	_finish()
-
-
-func _finish() -> void:
-	if failures > 0:
-		print("smoke: shiny FAILED with %d failures" % failures)
-		quit(1)
-		return
-	print("smoke: shiny clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		print("smoke: FAIL - %s" % label)
+	_finish("shiny")

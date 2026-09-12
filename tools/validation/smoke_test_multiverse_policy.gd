@@ -1,12 +1,6 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -18,7 +12,7 @@ func _run() -> void:
 	_level_checks()
 	_determinism_checks()
 	await _live_checks()
-	_finish()
+	_finish("multiverse_policy")
 
 
 func _value_checks() -> void:
@@ -60,8 +54,8 @@ func _branch_checks() -> void:
 	var costly: Dictionary = _mixed_context()
 	costly["option_cost"] = 100.0
 	_assert_true(MultiversePolicy.decide([_branch_option(6, _good_board())], costly) == 0, "the same branch survives an option cost it still outscores")
-	costly["option_cost"] = 100.0 * MultiversePolicy.RELUCTANT_SCALE
-	_assert_true(MultiversePolicy.RELUCTANT_SCALE > 1.0 and MultiversePolicy.decide([_branch_option(6, _good_board())], costly) == -1, "inflating the option cost the way level 4 does turns the same branch down")
+	costly["option_cost"] = 400.0
+	_assert_true(MultiversePolicy.decide([_branch_option(6, _good_board())], costly) == -1, "a branch right priced above the force that would arrive is turned down")
 
 	var ahead: Dictionary = _mixed_context()
 	ahead["origin_pre"] = _team(0, 3) + _team(1, 1)
@@ -86,7 +80,11 @@ func _branch_checks() -> void:
 
 	var level_new: Dictionary = _mixed_context()
 	level_new["global_margin"] = MultiversePolicy.margin(level_new["origin_board"], MultiverseState.SIDE_PLAYER)
-	_assert_true(MultiversePolicy.decide([_new_option(9)], level_new) == -1, "a fresh universe that only clones a position the CPU is already winning is refused, because the copy is a gift to the side that is behind")
+	_assert_true(MultiversePolicy.decide([_new_option(9)], level_new) == 0, "a fresh universe that duplicates the CPU's own traveller is taken even while ahead, because the multiverse gains a copy of that unit")
+	var gift_new: Dictionary = _mixed_context()
+	gift_new["travellers"] = _team(1, 1)
+	gift_new["global_margin"] = MultiversePolicy.margin(gift_new["origin_board"], MultiverseState.SIDE_PLAYER)
+	_assert_true(MultiversePolicy.decide([_new_option(9)], gift_new) == -1, "a fresh universe that only duplicates the opponent's traveller is refused, because the copy is a gift to the other side")
 	var lifeline: Dictionary = _mixed_context()
 	lifeline["origin_pre"] = _team(0, 1) + _team(1, 3)
 	lifeline["origin_post"] = _team(0, 1) + _team(1, 3)
@@ -280,20 +278,3 @@ func _team(team: int, count: int) -> Array:
 
 func _record(team: int, alive: bool, offence: float, curr_health: float, max_health: float) -> Dictionary:
 	return {"team": team, "alive": alive, "offence": offence, "curr_health": curr_health, "max_health": max_health}
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: multiverse_policy failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: multiverse_policy clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

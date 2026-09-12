@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const ATTACKER_PATH: String = "res://data/models/pokemon/generated/instances/0004_charmander.tres"
 const DEFENDER_PATH: String = "res://data/models/pokemon/generated/instances/0007_squirtle.tres"
@@ -8,8 +8,6 @@ class FakePawn:
 	var fake_tile: TacticsTile
 	func get_tile() -> TacticsTile:
 		return fake_tile
-
-var failures: int = 0
 
 
 func _init() -> void:
@@ -112,11 +110,3 @@ func _sanitize_value(value: Variant) -> Variant:
 			dict[String(key)] = _sanitize_value((value as Dictionary)[key])
 		return dict
 	return value
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: fail - %s" % label)

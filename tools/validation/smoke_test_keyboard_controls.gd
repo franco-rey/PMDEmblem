@@ -1,12 +1,6 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -26,7 +20,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=9 mode=pvp p=0025_pikachu@50:thunderbolt,quick_attack:static e=0004_charmander@50:ember:blaze|0001_bulbasaur@50:tackle:overgrow")
 	_assert_true(ok, "battle launches for the keyboard checks")
 	if not ok:
-		_finish()
+		_finish("keyboard_controls")
 		return
 	var level: TacticsLevel = driver.level
 	var main: Node = driver.main
@@ -110,6 +104,19 @@ func _run() -> void:
 	var move_visible: bool = (ctrl.get_act("Move") as Button).visible
 	var cancel_visible: bool = (ctrl.get_act("Cancel") as Button).visible
 	_assert_true(not move_visible and cancel_visible, "only Cancel stays on the action menu while a target is chosen")
+	var cancel_action: Button = ctrl.get_act("Cancel")
+	var menu_changes: Array[int] = [0]
+	actions_box.visibility_changed.connect(func() -> void: menu_changes[0] += 1)
+	for i in range(10):
+		await physics_frame
+	_assert_true(menu_changes[0] == 0, "the action menu stays put while a target is chosen so a click on Cancel is not thrown away")
+	cancel_action.grab_focus()
+	_press_left_mouse(true)
+	ctrl.serv.set_actions_menu_visibility(true, res.curr_pawn, ctrl)
+	_assert_true(cancel_action.has_focus(), "Cancel keeps focus while the mouse is held down on it")
+	_press_left_mouse(false)
+	ctrl.serv.set_actions_menu_visibility(true, res.curr_pawn, ctrl)
+	_assert_true(not cancel_action.has_focus(), "the action menu drops focus again once the mouse is released")
 	var move: PokemonMoveResource = pikachu.stats.move_slots[0]
 	var targets: Array[TacticsPawn] = selection.legal_targets(move)
 	_assert_true(targets.size() >= 1, "Thunderbolt has legal targets from the new square (%d)" % targets.size())
@@ -131,21 +138,12 @@ func _run() -> void:
 	_assert_true(hud_stage_pin, "clicks do not pin the inspector while a target is being chosen")
 	var fired: bool = selection.keyboard_confirm_target(ctrl)
 	_assert_true(fired and res.stage == res.STAGE_ATTACK and not selection.cursor_shadow_visible(), "the second confirm fires the move and clears the cursor shadow")
-	_finish()
+	_finish("keyboard_controls")
 
 
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: keyboard_controls failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: keyboard_controls clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
+func _press_left_mouse(pressed: bool) -> void:
+	var event := InputEventMouseButton.new()
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.pressed = pressed
+	Input.parse_input_event(event)
+	Input.flush_buffered_events()

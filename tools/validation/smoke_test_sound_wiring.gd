@@ -1,13 +1,7 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 const PRESENTATION_MANIFEST: String = "res://data/models/visuals/generated/action_presentation_manifest.json"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -58,7 +52,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=5 mode=pvp p=0006_charizard@50:flamethrower,swords_dance,earthquake:blaze e=0009_blastoise@50:hydro_pump,protect:torrent|0001_bulbasaur@50:tackle:overgrow")
 	_assert_true(ok, "battle launches for the sound checks")
 	if not ok:
-		_finish()
+		_finish("sound_wiring")
 		return
 	var level: TacticsLevel = driver.level
 	var main: Node = driver.main
@@ -132,7 +126,7 @@ func _run() -> void:
 		_assert_true(_count_since_label(level, log_before, expected[i]) == 1, "%s plays its cue through the runner" % expected[i])
 	_assert_true(SoundPlayer.shared.last_played == SoundCues.resolve("battle.heal"), "the heal cue was the last sound played")
 	_assert_true(_count_since(level, 0, "sound_skipped") == 0, "no cue was skipped for a missing file")
-	_finish()
+	_finish("sound_wiring")
 
 
 func _collect_sounds(node: Variant, names: Dictionary) -> void:
@@ -162,20 +156,3 @@ func _count_since_label(level: TacticsLevel, start: int, label: String) -> int:
 		if String(event.get("kind", "")) == "sound_played" and String(event.get("label", "")) == label:
 			count += 1
 	return count
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: sound_wiring failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: sound_wiring clean")
-	quit(0)

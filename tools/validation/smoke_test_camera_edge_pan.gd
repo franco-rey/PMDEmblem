@@ -1,12 +1,6 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -15,7 +9,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=2 mode=pvp team=2")
 	_assert_true(ok, "2v2 launches")
 	if not ok:
-		_finish()
+		_finish("camera_edge_pan")
 		return
 	var level: TacticsLevel = driver.level
 	_assert_true(not level.camera.edge_pan_enabled, "mouse edge panning is off by default")
@@ -38,21 +32,4 @@ func _run() -> void:
 	var name_label: Label3D = pawn.get_node("Character/CharacterUI/NameLabel")
 	var hp_label: Label3D = pawn.get_node("Character/CharacterUI/HealthLabel")
 	_assert_true(is_equal_approx(name_label.position.y, hp_label.position.y) and name_label.offset.y > hp_label.offset.y and hp_label.offset.y > 0.0, "name and HP labels share a height and stack above the sprite by screen-space offsets")
-	_finish()
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: camera_edge_pan failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: camera_edge_pan clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
+	_finish("camera_edge_pan")

@@ -1,10 +1,4 @@
-extends SceneTree
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
+extends SmokeCase
 
 
 func _run() -> void:
@@ -40,21 +34,4 @@ func _run() -> void:
 	session.leave("test")
 	session.queue_free()
 	await process_frame
-	_finish()
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: net_auto_rejoin failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: net_auto_rejoin clean")
-	quit(0)
+	_finish("net_auto_rejoin")

@@ -1,14 +1,8 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 const CODE: String = "match seed=11 mode=pvp p=0025_pikachu@50:thunderbolt,quick_attack:static e=0004_charmander@50:ember,scratch:blaze|0001_bulbasaur@50:tackle:overgrow"
 const PORT: int = 24591
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -18,7 +12,7 @@ func _run() -> void:
 	await _check_enet()
 	await _check_handshake()
 	await _check_bridge()
-	_finish()
+	_finish("net_protocol")
 
 
 func _check_messages() -> void:
@@ -207,20 +201,3 @@ func _last_turn_header(level: TacticsLevel) -> String:
 		if String(NotationParser.parse(line).get("kind", "")) == NotationParser.KIND_TURN:
 			return line.strip_edges()
 	return ""
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: net_protocol failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: net_protocol clean")
-	quit(0)

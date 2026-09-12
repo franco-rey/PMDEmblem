@@ -1,14 +1,8 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 const FRAME: float = 1.0 / 60.0
 const MAX_FRAMES: int = 240
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -16,13 +10,13 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=2 mode=pvp team=2")
 	_assert_true(ok, "2v2 launches")
 	if not ok:
-		_finish()
+		_finish("camera_rotation")
 		return
 	var rigs: Array = root.find_children("*", "TacticsCamera", true, false)
 	var camera_node: TacticsCamera = rigs[0] if not rigs.is_empty() else null
 	_assert_true(camera_node != null, "camera rig is in the tree")
 	if camera_node == null:
-		_finish()
+		_finish("camera_rotation")
 		return
 	var res: TacticsCameraResource = camera_node.res
 	var start_heading: int = posmod(res.y_rot, 360)
@@ -83,21 +77,4 @@ func _run() -> void:
 	_assert_true(not res.in_free_look and res.is_snapping_to_quad, "releasing free look snaps to the nearest quadrant")
 	await create_timer(res.quad_snap_duration + 0.2).timeout
 	_assert_true(not res.is_snapping_to_quad, "quadrant snap finishes and releases the camera")
-	_finish()
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: camera_rotation failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: camera_rotation clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
+	_finish("camera_rotation")

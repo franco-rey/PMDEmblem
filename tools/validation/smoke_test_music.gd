@@ -1,12 +1,6 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -31,7 +25,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=9 mode=pvp p=0025_pikachu@50:thunderbolt,quick_attack:static e=0004_charmander@50:ember:blaze")
 	_assert_true(ok, "battle launches for the music checks")
 	if not ok:
-		_finish()
+		_finish("music")
 		return
 	_assert_true(MusicPlayer.shared != null and is_instance_valid(MusicPlayer.shared), "main adds the music player")
 	var expected: String = MusicPlayer.battle_track_for("", 9)
@@ -50,21 +44,4 @@ func _run() -> void:
 	MusicPlayer.stop(0.1)
 	await create_timer(0.3).timeout
 	_assert_true(MusicPlayer.shared.current_track.is_empty() and not MusicPlayer.shared._active.playing, "stopping fades out and clears the track")
-	_finish()
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: music failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: music clean")
-	quit(0)
+	_finish("music")

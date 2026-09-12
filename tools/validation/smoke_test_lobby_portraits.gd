@@ -1,12 +1,6 @@
-extends SceneTree
+extends SmokeCase
 
 const MAIN_SCENE_PATH: String = "res://assets/scene/main.tscn"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -23,7 +17,7 @@ func _run() -> void:
 	var cell: Button = lobby.find_child("Roster_0006_charizard", true, false)
 	_assert_true(cell != null, "roster has a Charizard cell")
 	if cell == null:
-		_finish()
+		_finish("lobby_portraits")
 		return
 	var portrait: TextureRect = cell.get_node("Portrait")
 	var normal: Texture2D = portrait.texture
@@ -44,21 +38,4 @@ func _run() -> void:
 		await process_frame
 		_assert_true(lobby.selected_expression == "Happy", "clicking a team slot smiles too")
 	_assert_true(lobby.find_child("Backdrop", true, false) is PmdBackdrop, "lobby carries the sky backdrop")
-	_finish()
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: lobby_portraits failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: lobby_portraits clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
+	_finish("lobby_portraits")

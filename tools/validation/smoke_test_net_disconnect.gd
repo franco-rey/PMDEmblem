@@ -1,20 +1,14 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 const CODE: String = "match seed=21 mode=pvp p=0025_pikachu@50:thunderbolt,quick_attack:static e=0004_charmander@50:ember,scratch:blaze|0001_bulbasaur@50:tackle:overgrow"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
 	await _case("resign")
 	await _case("disconnect")
 	await _case("rejoin")
-	_finish()
+	_finish("net_disconnect")
 
 
 func _case(kind: String) -> void:
@@ -133,20 +127,3 @@ func _rejoin_case(session: NetSession, level: TacticsLevel, fake: LoopbackLink) 
 	_assert_true(session.state == NetSession.IN_BATTLE, "rejoin: battle_ready resumes the host (%d)" % session.state)
 	_assert_true(session.ready_to_play(), "rejoin: both sides count as ready after the resume")
 	_assert_true(session.suspend_remaining() == 0.0, "rejoin: the countdown clears on resume")
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: net_disconnect failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: net_disconnect clean")
-	quit(0)

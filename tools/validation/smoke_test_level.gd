@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const SCENE_PATH: String = "res://assets/maps/level/test_level.tscn"
 const FRAMES_TO_RUN: int = 6

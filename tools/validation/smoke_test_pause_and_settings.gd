@@ -1,12 +1,6 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -47,7 +41,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=9 mode=pvp p=0025_pikachu@50:thunderbolt,quick_attack:static e=0004_charmander@50:ember,scratch:blaze")
 	_assert_true(ok, "battle launches for the menu checks")
 	if not ok:
-		_finish()
+		_finish("pause_and_settings")
 		return
 	var main: Node = driver.main
 	var level: TacticsLevel = driver.level
@@ -197,21 +191,4 @@ func _run() -> void:
 		await process_frame
 		_assert_true(is_equal_approx(Engine.time_scale, 1.0) and not bots.main.speed_bar.visible, "leaving the bot match restores real time and hides the speed bar")
 		bots_camera.res.spectator = false
-	_finish()
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: pause_and_settings failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: pause_and_settings clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
+	_finish("pause_and_settings")

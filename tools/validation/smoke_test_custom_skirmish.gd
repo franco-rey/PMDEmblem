@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const MAIN_SCENE_PATH: String = "res://assets/scene/main.tscn"
 const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
@@ -15,8 +15,6 @@ const EXPECTED_ROSTER: Array[String] = [
 const FIXED_SEED: int = 424242
 const ANCHOR_POOL_SIZE: int = 16
 
-var failures: int = 0
-
 
 func _init() -> void:
 	await _check_main_scene_controls()
@@ -29,12 +27,7 @@ func _init() -> void:
 	_check_empty_seed_resolves()
 	_check_invalid_seed_rejected()
 
-	if failures > 0:
-		push_error("smoke: custom_skirmish failed %d check(s)" % failures)
-		quit(1)
-	else:
-		print("smoke: custom_skirmish clean")
-		quit(0)
+	_finish("custom_skirmish")
 
 
 func _check_main_scene_controls() -> void:
@@ -450,15 +443,3 @@ func _max_index(arr: Array) -> int:
 		if n > m:
 			m = n
 	return m
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		_fail(label)
-
-
-func _fail(label: String) -> void:
-	failures += 1
-	push_error("smoke: fail - %s" % label)

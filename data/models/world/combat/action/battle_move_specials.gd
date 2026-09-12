@@ -245,11 +245,14 @@ func after_hit(resolver: BattleActionResolver, attacker: TacticsPawn, target: Ta
 	var id: String = move.move_id
 	if id == "fell_stinger" and was_active and not target.stats.is_active():
 		resolver._ops(battle_level, battle_log).change_stat_stage(attacker, "attack", 3, {"kind": "move", "attacker": attacker, "move": move})
-	if battle_level != null and battle_level.multiverse.enabled and target != attacker and target.stats.is_active() and attacker.stats.is_active():
+	if battle_level != null and battle_level.multiverse.enabled and target != attacker and attacker.stats.is_active():
 		var travellers: String = String(battle_level.multiverse.travel_rule(id).get("travellers", ""))
 		var declared: TacticsPawn = battle_level.multiverse.declared_target
 		if (travellers == "both" or travellers == "target") and (declared == null or not is_instance_valid(declared) or declared == target):
-			battle_level.multiverse.request_travel(id, attacker, target)
+			if target.stats.is_active():
+				battle_level.multiverse.request_travel(id, attacker, target)
+			else:
+				_append(battle_log, {"kind": "travel_unavailable", "unit": attacker, "move_id": id, "reason": "target_down"})
 
 
 func after_move(resolver: BattleActionResolver, attacker: TacticsPawn, move: PokemonMoveResource, battle_level: TacticsLevel, battle_log: BattleLog) -> void:

@@ -1,10 +1,8 @@
-extends SceneTree
+extends SmokeCase
 
 const SkirmishCode = preload("res://data/modules/skirmish/skirmish_code.gd")
 
 const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
-
-var failures: int = 0
 
 
 func _init() -> void:
@@ -16,12 +14,7 @@ func _init() -> void:
 	_check_semicolon_matches()
 	_check_invalid_inputs()
 
-	if failures > 0:
-		push_error("smoke: skirmish_code failed %d check(s)" % failures)
-		quit(1)
-	else:
-		print("smoke: skirmish_code clean")
-		quit(0)
+	_finish("skirmish_code")
 
 
 func _check_legacy_seed() -> void:
@@ -158,11 +151,3 @@ func _move_slugs(instance: PokemonInstanceResource) -> Array[String]:
 	for move in instance.move_slots:
 		out.append(move.move_id if move != null else "?")
 	return out
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

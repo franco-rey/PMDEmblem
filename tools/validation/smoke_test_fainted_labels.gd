@@ -1,12 +1,6 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -14,7 +8,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=9 mode=pvp p=0025_pikachu@50:thunderbolt,quick_attack:static e=0004_charmander@50:ember:blaze|0001_bulbasaur@50:tackle:overgrow|0007_squirtle@50:tackle:torrent")
 	_assert_true(ok, "battle launches for the fainted label checks")
 	if not ok:
-		_finish()
+		_finish("fainted_labels")
 		return
 	var level: TacticsLevel = driver.level
 	var frames: int = 0
@@ -42,7 +36,7 @@ func _run() -> void:
 	for i in range(3):
 		await physics_frame
 	_assert_true(not _labels_visible(charmander), "a target that faints with its labels shown loses them on the next frame")
-	_finish()
+	_finish("fainted_labels")
 
 
 func _labels_visible(pawn: TacticsPawn) -> bool:
@@ -50,20 +44,3 @@ func _labels_visible(pawn: TacticsPawn) -> bool:
 		return false
 	var ui: Node3D = pawn.get_node_or_null("Character/CharacterUI") as Node3D
 	return ui != null and ui.visible
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: fainted_labels failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: fainted_labels clean")
-	quit(0)

@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const SPRITES_DIR: String = "res://data/models/pokemon/generated/sprites/"
 const INSTANCES_DIR: String = "res://data/models/pokemon/generated/instances/"
@@ -9,14 +9,9 @@ const OPTIONAL_STATES: Array[String] = ["faint", "hop", "sleep", "charge", "shoo
 const SOURCE_ACTIONS: Array[String] = ["Attack", "Shoot", "Charge"]
 const SAMPLE_EVERY: int = 40
 
-var failures: int = 0
 var checked: int = 0
 var optional_missing: Dictionary = {}
 var sampled: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -44,12 +39,7 @@ func _run() -> void:
 	for key in optional_missing.keys():
 		optional_summary.append("%s:%d" % [key, optional_missing[key]])
 	print("smoke: roster_animation checked %d sprite sets (%d sampled live), optional states missing %s" % [checked, sampled, ", ".join(optional_summary) if not optional_summary.is_empty() else "none"])
-	if failures > 0:
-		push_error("smoke: roster_animation failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: roster_animation clean")
-	quit(0)
+	_finish("roster_animation")
 
 
 func _check_resource(slug: String) -> void:
@@ -116,11 +106,6 @@ func _check_sample(scene: PackedScene, expertise_scene: PackedScene, slug: Strin
 		_fail("%s attack one-shot finishes" % slug)
 	pawn.queue_free()
 	await process_frame
-
-
-func _fail(label: String) -> void:
-	failures += 1
-	push_error("smoke: FAIL - %s" % label)
 
 
 func _arg(name: String) -> String:

@@ -1,13 +1,7 @@
-extends SceneTree
+extends SmokeCase
 
 const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -47,12 +41,7 @@ func _run() -> void:
 	var claw_payload: Dictionary = (clawed["defender"] as TacticsPawn).stats.battle_statuses.get("wrap", {})
 	_assert_true(int(claw_payload.get("counter", 0)) == 7, "Grip Claw extends the trap to 7 turns (%s)" % str(claw_payload))
 	await _teardown(clawed)
-	if failures > 0:
-		push_error("smoke: trap_statuses failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: trap_statuses clean")
-	quit(0)
+	_finish("trap_statuses")
 
 
 func _execute_until_hit(resolver: BattleActionResolver, attacker: TacticsPawn, target: TacticsPawn, slot: int, level: TacticsLevel) -> void:
@@ -137,11 +126,3 @@ func _settle_on_tile(pawn: TacticsPawn, tile: TacticsTile) -> void:
 	ray.force_raycast_update()
 	pawn.center()
 	ray.force_raycast_update()
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

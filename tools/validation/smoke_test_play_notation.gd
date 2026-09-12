@@ -1,10 +1,4 @@
-extends SceneTree
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
+extends SmokeCase
 
 
 func _run() -> void:
@@ -19,17 +13,4 @@ func _run() -> void:
 	_assert_true(notation.contains("[Code \"match seed=7 mode=pvp") and notation.contains("[Mode pvp]"), "header carries the skirmish code and mode")
 	var level: TacticsLevel = result.get("level")
 	_assert_true(level != null and FileAccess.file_exists(level.notation.output_path()), "notation file saved")
-	if failures > 0:
-		push_error("smoke: play_notation failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: play_notation clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
+	_finish("play_notation")

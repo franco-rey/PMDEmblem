@@ -1,12 +1,6 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _key(code: Key, pressed: bool = true) -> void:
@@ -29,7 +23,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=9 mode=pvp p=0025_pikachu@50:thunderbolt,quick_attack:static e=0004_charmander@50:ember:blaze|0001_bulbasaur@50:tackle:overgrow")
 	_assert_true(ok, "battle launches for the input event checks")
 	if not ok:
-		_finish()
+		_finish("input_events")
 		return
 	var level: TacticsLevel = driver.level
 	var main: Node = driver.main
@@ -153,21 +147,4 @@ func _run() -> void:
 	_assert_true(not level.hud.visible and not level.message_log.visible and not level.banner.visible and not controls_node.visible and not bool(main.get("interface_visible")), "Tab hides the battle interface")
 	await _tap(KEY_TAB)
 	_assert_true(level.hud.visible and level.message_log.visible and controls_node.visible and bool(main.get("interface_visible")), "Tab shows it again")
-	_finish()
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: input_events failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: input_events clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
+	_finish("input_events")

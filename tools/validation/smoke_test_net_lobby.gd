@@ -1,12 +1,6 @@
-extends SceneTree
+extends SmokeCase
 
 const LOBBY_SCENE_PATH: String = "res://assets/scene/skirmish_lobby.tscn"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -98,7 +92,7 @@ func _run() -> void:
 	guest_session.queue_free()
 	await _settle(4)
 	await _check_menu_path()
-	_finish()
+	_finish("net_lobby")
 
 
 func _check_menu_path() -> void:
@@ -154,20 +148,3 @@ func _settle(frames: int) -> void:
 	for i in range(frames):
 		await process_frame
 		await physics_frame
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: net_lobby failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: net_lobby clean")
-	quit(0)

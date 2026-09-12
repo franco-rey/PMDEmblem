@@ -1,12 +1,6 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -15,7 +9,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=5 mode=pvp map=chessboard p=0006_charizard@50:flamethrower,air_slash,dragon_claw,roost:blaze|0025_pikachu@50:thunderbolt,quick_attack:static e=0009_blastoise@50:hydro_pump,ice_beam:torrent|0003_venusaur@50:giga_drain,sludge_bomb:overgrow")
 	_assert_true(ok, "the difficulty battle launches")
 	if not ok:
-		_finish()
+		_finish("ai_difficulty")
 		return
 	var level: TacticsLevel = driver.level
 	var chart: TypeChartResource = load("res://data/models/pokemon/generated/types/type_chart.tres") as TypeChartResource
@@ -85,7 +79,7 @@ func _run() -> void:
 	_assert_true(_setup_headroom_reads_real_stats(charizard), "setup headroom reads the stat stage keys the game actually stores")
 	_assert_true(_range_rules_agree(charizard), "key_in_range agrees with range_from for every range kind")
 
-	_finish()
+	_finish("ai_difficulty")
 
 
 func _profile_checks() -> void:
@@ -157,20 +151,3 @@ func _range_rules_agree(unit: TacticsPawn) -> bool:
 
 func _at_least(current: bool, previous: bool) -> bool:
 	return current or not previous
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: ai_difficulty failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: ai_difficulty clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

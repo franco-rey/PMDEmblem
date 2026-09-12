@@ -1,13 +1,7 @@
-extends SceneTree
+extends SmokeCase
 
 const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -37,12 +31,7 @@ func _run() -> void:
 	_assert_true(not (grass["defender"] as TacticsPawn).stats.battle_statuses.has("sleep") and _has_blocked(grass_level, powder_start, "sleep", "powder_immunity"), "Grass types are immune to Sleep Powder")
 	_assert_true(grass_level.message_log.history.has("It doesn't affect Ivysaur..."), "immunity message shown (%s)" % str(grass_level.message_log.recent(2)))
 	await _teardown(grass)
-	if failures > 0:
-		push_error("smoke: leech_seed failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: leech_seed clean")
-	quit(0)
+	_finish("leech_seed")
 
 
 func _execute_until_hit(resolver: BattleActionResolver, attacker: TacticsPawn, target: TacticsPawn, slot: int, level: TacticsLevel) -> int:
@@ -131,11 +120,3 @@ func _settle_on_tile(pawn: TacticsPawn, tile: TacticsTile) -> void:
 	ray.force_raycast_update()
 	pawn.center()
 	ray.force_raycast_update()
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

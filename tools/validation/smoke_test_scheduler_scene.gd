@@ -1,9 +1,7 @@
-extends SceneTree
+extends SmokeCase
 
 const SCENE_PATH: String = "res://assets/maps/level/test_level.tscn"
 const FRAMES_TO_RUN: int = 360
-
-var failures: int = 0
 
 
 func _init() -> void:
@@ -95,11 +93,3 @@ func _log_has_status(log: BattleLog, kind: String, status_id: String) -> bool:
 		if event.get("kind", "") == kind and event.get("status_id", "") == status_id:
 			return true
 	return false
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: fail - %s" % label)

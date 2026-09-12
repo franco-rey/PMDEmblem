@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const BULBASAUR_PATH: String = "res://data/models/pokemon/generated/instances/0001_bulbasaur.tres"
 const CHARMANDER_PATH: String = "res://data/models/pokemon/generated/instances/0004_charmander.tres"
@@ -9,7 +9,6 @@ class FakePawn:
 	func get_tile() -> TacticsTile:
 		return fake_tile
 
-var failures: int = 0
 var resolver := BattleActionResolver.new()
 
 
@@ -205,11 +204,3 @@ func _log_has_source(log: BattleLog, kind: String, source: String) -> bool:
 		if event.get("kind", "") == kind and event.get("source", "") == source:
 			return true
 	return false
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: fail - %s" % label)

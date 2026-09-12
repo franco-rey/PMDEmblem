@@ -10,6 +10,7 @@ const LINEAR_LEVEL: int = 2
 const BRANCH_LEVEL: int = 4
 const RELUCTANT_LEVEL: int = 4
 const RELUCTANT_SCALE: float = 1.5
+const OPTION_COST_SCALE: float = 0.35
 const TRAVEL_NOISE_SCALE: float = 0.25
 const NOISE_STEP: int = 2654435761
 const HOP_FLOOR: float = 1.0
@@ -80,7 +81,7 @@ func context_for(pending: Dictionary) -> Dictionary:
 		"origin_pre": origin_pre,
 		"origin_post": origin_post,
 		"travellers": travellers,
-		"origin_board": board_records(state.latest(focus)),
+		"origin_board": origin_pre,
 		"global_margin": margin(global_records, side),
 		"standing_mine": standing(standing_records, team_of(side)),
 		"unfreeze_margin": _unfreeze_margin(side, mine, theirs),
@@ -114,8 +115,7 @@ func _option_cost(records: Array, side: int) -> float:
 			strongest = maxf(strongest, unit_value(record))
 	var standing: int = mv.state.standing_total(PokemonInstanceResource.Team.PLAYER) + mv.state.standing_total(PokemonInstanceResource.Team.ENEMY)
 	var scale: float = clampf(float(standing) / float(_initial_total()), 0.0, 1.0)
-	var reluctance: float = 1.0
-	return strongest * scale * reluctance
+	return strongest * scale * OPTION_COST_SCALE
 
 
 func _initial_total() -> int:
@@ -203,9 +203,9 @@ static func best_branch(options: Array, context: Dictionary) -> int:
 		var dest_turn: int = int((option.get("from", Vector2i(0, turn)) as Vector2i).y)
 		var distance: float = float(clampi(turn - dest_turn, 0, SUSPENSION_CAP))
 		var relief: float = SUSPENSION_WEIGHT * distance * maxf(0.0, -margin_origin)
-		var share: float = clampf(float(standing(dest, team_of(side))) / float(maxi(1, int(context.get("standing_mine", 0)))), 0.0, SURVIVAL_CAP)
+		var share: float = clampf(float(standing(arrived, team_of(side))) / float(maxi(1, int(context.get("standing_mine", 0)))), 0.0, SURVIVAL_CAP)
 		var survival: float = SURVIVAL_WEIGHT * maxf(0.0, -global_margin) * share
-		var score: float = margin(dest, side) + unfreeze - global_margin + relief + survival - option_cost + judgement(context, i)
+		var score: float = margin(arrived, side) + unfreeze - global_margin + relief + survival - option_cost + judgement(context, i)
 		scores[i] = score
 		turns[i] = dest_turn
 		best_score = maxf(best_score, score)

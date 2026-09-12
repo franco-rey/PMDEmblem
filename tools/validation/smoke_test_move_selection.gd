@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const CHARMANDER_PATH: String = "res://data/models/pokemon/generated/instances/0004_charmander.tres"
 const MAGMORTAR_PATH: String = "res://data/models/pokemon/overrides/instances/0467_magmortar.tres"
@@ -28,8 +28,6 @@ class FakePawn:
 	var fake_tile: TacticsTile
 	func get_tile() -> TacticsTile:
 		return fake_tile
-
-var failures: int = 0
 
 
 func _init() -> void:
@@ -389,11 +387,3 @@ func _count_events(log: BattleLog, kind: String) -> int:
 		if event.get("kind", "") == kind:
 			count += 1
 	return count
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: fail - %s" % label)

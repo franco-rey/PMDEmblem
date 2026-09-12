@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const ATTACKER_PATH: String = "res://data/models/pokemon/generated/instances/0004_charmander.tres"
 const DEFENDER_PATH: String = "res://data/models/pokemon/overrides/instances/0467_magmortar.tres"
@@ -10,7 +10,6 @@ class FakePawn:
 	func get_tile() -> TacticsTile:
 		return fake_tile
 
-var failures: int = 0
 var resolver := BattleActionResolver.new()
 
 
@@ -20,12 +19,7 @@ func _init() -> void:
 	_check_pp_damage()
 	_check_cure_scopes()
 	_check_dry_skin_absorbs_water()
-	if failures > 0:
-		push_error("smoke: rules_move_effects failed %d check(s)" % failures)
-		quit(1)
-	else:
-		print("smoke: rules_move_effects clean")
-		quit(0)
+	_finish("rules_move_effects")
 
 
 func _check_self_faint_cut_hp() -> void:
@@ -183,11 +177,3 @@ func _fake_pawn(path: String, pawn_name: String, pos: Vector3) -> FakePawn:
 	pawn.stats.init_from_pokemon(instance)
 	pawn.add_child(pawn.stats)
 	return pawn
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: fail - %s" % label)

@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 const MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
@@ -36,7 +36,6 @@ const AREA_ALLY_SPOTS: Dictionary = {
 	"P2": Vector3i(3, 0, 3),
 }
 
-var failures: int = 0
 var level: TacticsLevel = null
 var chart: TypeChartResource = null
 var tiles: Dictionary = {}
@@ -45,16 +44,12 @@ var baseline: Dictionary = {}
 var estimator: BattleAI = null
 
 
-func _init() -> void:
-	call_deferred("_run")
-
-
 func _run() -> void:
 	var driver = DRIVER.new(self)
 	var ok: bool = await driver._launch(CODE)
 	_assert_true(ok, "the tactics puzzle board launches")
 	if not ok:
-		_finish()
+		_finish("ai_tactics")
 		return
 	level = driver.level
 	chart = level.get_type_chart()
@@ -66,7 +61,7 @@ func _run() -> void:
 		units[id] = pawn
 		if pawn == null:
 			_assert_true(false, "unit %s is on the board" % id)
-			_finish()
+			_finish("ai_tactics")
 			return
 		baseline[id] = {
 			"max_health": pawn.stats.max_health,
@@ -90,7 +85,7 @@ func _run() -> void:
 	await _puzzle_perception()
 	await _puzzle_focus_wounded()
 	await _puzzle_retreat()
-	_finish()
+	_finish("ai_tactics")
 
 
 func _check_turn_order() -> void:
@@ -730,20 +725,3 @@ func _tile_key(tile: TacticsTile) -> Vector3i:
 
 func _manhattan(a: Vector3i, b: Vector3i) -> int:
 	return absi(a.x - b.x) + absi(a.z - b.z)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: ai_tactics failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: ai_tactics clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

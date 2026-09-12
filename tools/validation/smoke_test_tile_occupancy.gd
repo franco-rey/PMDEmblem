@@ -1,13 +1,7 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 const CODE: String = "match seed=7 mode=pvp map=chessboard multiverse=1 p=0483_dialga@100:roar_of_time,dragon_claw:pressure|0251_celebi@100:dimensional_hole,psychic:natural_cure|0474_porygon_z@100:dimensional_glitch,tri_attack:adaptability e=0484_palkia@100:spacial_rend,aqua_tail:pressure|0487_giratina@100:shadow_force,dragon_claw:pressure|0720_hoopa@100:hyperspace_hole,psychic:magician"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -15,7 +9,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch(CODE)
 	_assert_true(ok, "the multiverse chessboard launches")
 	if not ok:
-		_finish()
+		_finish("tile_occupancy")
 		return
 	var level: TacticsLevel = driver.level
 	_check_occupancy(level, "on a settled board")
@@ -28,7 +22,7 @@ func _run() -> void:
 	_check_occupancy(level, "a frame after a board is rebuilt")
 	_check_reachable(level, "a frame after a board is rebuilt")
 	await _teleport_case(level)
-	_finish()
+	_finish("tile_occupancy")
 
 
 func _teleport_case(level: TacticsLevel) -> void:
@@ -107,20 +101,3 @@ func _check_reachable(level: TacticsLevel, label: String) -> void:
 		if standing.has(key):
 			offered += 1
 	_assert_true(offered == 0, "no occupied tile is offered as a destination %s (%d offered)" % [label, offered])
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: tile_occupancy failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: tile_occupancy clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

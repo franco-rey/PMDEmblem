@@ -1,15 +1,9 @@
-extends SceneTree
+extends SmokeCase
 
 const MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const SEED: int = 4242
 const ROUND_CAP: int = 12
 const MAX_FRAMES: int = 6000
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -22,12 +16,7 @@ func _run() -> void:
 			if first[i] != second[i]:
 				push_error("smoke: first divergence at line %d: %s | %s" % [i, first[i], second[i]])
 				break
-	if failures > 0:
-		push_error("smoke: bot_determinism failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: bot_determinism clean")
-	quit(0)
+	_finish("bot_determinism")
 
 
 func _play() -> Array[String]:
@@ -70,11 +59,3 @@ func _play() -> Array[String]:
 	await process_frame
 	await process_frame
 	return lines
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

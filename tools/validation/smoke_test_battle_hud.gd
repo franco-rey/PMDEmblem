@@ -1,13 +1,7 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 const CODE: String = "match seed=9 mode=pvp p=0006_charizard@50:flamethrower,slash,growl,ember:blaze|0025_pikachu@50:thunder_shock,quick_attack,growl,tail_whip:static e=0009_blastoise@50:water_gun,tackle,withdraw,bite:torrent|0143_snorlax@50:tackle,rest,yawn,crunch:thick_fat"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -15,7 +9,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch(CODE)
 	_assert_true(ok, "2v2 launches")
 	if not ok:
-		_finish()
+		_finish("battle_hud")
 		return
 	var level: TacticsLevel = driver.level
 	var hud: BattleHud = level.hud
@@ -76,21 +70,4 @@ func _run() -> void:
 	_assert_true(hud.expression_for(target) == "Crying", "fainted unit shows the crying portrait")
 	_assert_true(PortraitLibrary.texture_for("0006_charizard", "Angry") != PortraitLibrary.texture_for("0006_charizard", "Normal") and PortraitLibrary.texture_for("0006_charizard", "NoSuchFace") == PortraitLibrary.texture_for("0006_charizard", "Normal"), "portrait library resolves expressions and falls back to Normal")
 	_assert_true(root.theme != null and root.theme.get_stylebox("normal", "Button") is StyleBoxFlat, "root theme carries the PMD button style")
-	_finish()
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: battle_hud failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: battle_hud clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
+	_finish("battle_hud")

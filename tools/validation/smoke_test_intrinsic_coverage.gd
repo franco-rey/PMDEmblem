@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const MANIFEST_PATH: String = "res://data/models/pokemon/generated/manifests/pokemon_import_manifest.json"
 const GENERATED_INTRINSICS_DIR: String = "res://data/models/pokemon/generated/intrinsics"
@@ -7,8 +7,6 @@ const REPORT_PATH: String = "res://data/models/pokemon/import_reports/intrinsic_
 const EXPECTED_INTRINSICS: int = 208
 const EXPECTED_SPECIES: int = 686
 const IMPLEMENTED_OUTSIDE_SUPPORTED_LIST: Array[String] = []
-
-var failures: int = 0
 
 
 func _init() -> void:
@@ -139,11 +137,3 @@ func _write_text(path: String, text: String) -> bool:
 	file.store_string(text)
 	file.close()
 	return true
-
-
-func _assert_true(condition: bool, message: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % message)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % message)

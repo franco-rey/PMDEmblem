@@ -1,14 +1,9 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 
-var failures: int = 0
 var driver = null
 var level: TacticsLevel = null
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -16,7 +11,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=11 mode=pvp multiverse=1 p=0483_dialga@50:roar_of_time,dragon_claw:pressure|0025_pikachu@50:thunderbolt,quick_attack:static e=0004_charmander@50:ember,scratch:blaze|0001_bulbasaur@50:tackle,growth:overgrow")
 	_assert_true(ok, "multiverse battle with Dialga launches")
 	if not ok:
-		_finish()
+		_finish("roar_of_time")
 		return
 	level = driver.level
 	var frames: int = 0
@@ -29,7 +24,7 @@ func _run() -> void:
 	var dialga: TacticsPawn = await _wait_for_active("P1")
 	_assert_true(dialga != null, "Dialga's turn comes up in round 3")
 	if dialga == null:
-		_finish()
+		_finish("roar_of_time")
 		return
 	var charmander: TacticsPawn = level.notation.pawn_for_id("E1")
 	var roar: PokemonMoveResource = PokemonLearnsetService.load_move("roar_of_time")
@@ -78,7 +73,7 @@ func _run() -> void:
 	var remainder: Array[String] = await _play_round_collect()
 	_assert_true(remainder.size() == 2 and mv.switches == 2 and mv.state.focus == Vector2i(1, 3) and mv.state.latest(0).turn == 4, "after timeline 0 finishes its round the game hands play back to the branch, which still owes T3 (%s)" % str(remainder))
 	_assert_true(not level.battle_finished and level.notation.text().find("present L0 T3") >= 0 and level.notation.text().find("present L1 T3") >= 0, "the battle continues and both switches are written to the notation")
-	_finish()
+	_finish("roar_of_time")
 
 
 func _wait_for_active(id: String) -> TacticsPawn:
@@ -147,20 +142,3 @@ func _foe_of(pawn: TacticsPawn) -> TacticsPawn:
 		if child is TacticsPawn and (child as TacticsPawn).is_alive():
 			return child
 	return null
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: roar_of_time failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: roar_of_time clean")
-	quit(0)

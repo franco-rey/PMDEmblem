@@ -1,15 +1,9 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 const REPORT_PATH: String = "res://data/models/visuals/import_reports/vfx_coverage_report.json"
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
 const VISUAL_KINDS: Array[String] = ["vfx_spawned", "vfx_after_image_scheduled", "vfx_column_spawned", "vfx_overlay", "vfx_screen_shake", "vfx_beam_spawned", "vfx_projectile_spawned"]
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -17,7 +11,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=5 mode=pvp p=0006_charizard@50:flamethrower,earthquake,brick_break,extreme_speed:blaze e=0009_blastoise@50:hydro_pump,ice_beam,absorb,protect:torrent")
 	_assert_true(ok, "coverage battle launches")
 	if not ok:
-		_finish()
+		_finish("vfx_manifest_coverage")
 		return
 	var level: TacticsLevel = driver.level
 	var runner: BattlePresentationRunner = level.presentation_runner
@@ -97,7 +91,7 @@ func _run() -> void:
 	_assert_true(silent_with_data.is_empty(), "every skill with visual data plays something (%d silent: %s)" % [silent_with_data.size(), str(silent_with_data.slice(0, 8))])
 	_assert_true(played >= 500, "at least 500 skills play visuals (%d played, %d have no visual data)" % [played, silent_by_data])
 	print("smoke: vfx coverage played=%d no_data=%d silent=%d approximated=%s skipped=%s" % [played, silent_by_data, silent_with_data.size(), str(approximated), str(skipped)])
-	_finish()
+	_finish("vfx_manifest_coverage")
 
 
 func _entry_has_visual_data(entry: Dictionary, emitter_kinds: Dictionary) -> bool:
@@ -134,20 +128,3 @@ func _write_text(path: String, text: String) -> bool:
 	file.store_string(text)
 	file.close()
 	return true
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: vfx_manifest_coverage failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: vfx_manifest_coverage clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

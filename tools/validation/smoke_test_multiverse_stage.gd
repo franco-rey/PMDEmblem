@@ -1,14 +1,9 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER: GDScript = preload("res://tools/debug/notation_driver.gd")
 
 var driver: RefCounted = null
 var level: TacticsLevel = null
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -16,7 +11,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=13 mode=pvp multiverse=1 map=chessboard p=0484_palkia@50:spacial_rend,aqua_tail:pressure|0483_dialga@50:roar_of_time,dragon_claw:pressure e=0004_charmander@50:ember,scratch:blaze|0720_hoopa@50:hyperspace_hole,psychic:magician")
 	_assert_true(ok, "multiverse battle on the chessboard launches")
 	if not ok:
-		_finish()
+		_finish("multiverse_stage")
 		return
 	level = driver.level
 	var frames: int = 0
@@ -143,7 +138,7 @@ func _run() -> void:
 	var centre_after: Vector3 = minimap.view_centre(mv.state)
 	camera.global_position = pan_before
 	_assert_true((centre_after - centre_before).is_equal_approx(Vector3(5.0, 0.0, -3.0)), "the mini map's centre pans with the camera")
-	_finish()
+	_finish("multiverse_stage")
 
 
 func _wait_for_active(id: String) -> TacticsPawn:
@@ -195,20 +190,3 @@ func _foe_of(pawn: TacticsPawn) -> TacticsPawn:
 		if child is TacticsPawn and (child as TacticsPawn).is_alive():
 			return child
 	return null
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: multiverse_stage failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: multiverse_stage clean")
-	quit(0)

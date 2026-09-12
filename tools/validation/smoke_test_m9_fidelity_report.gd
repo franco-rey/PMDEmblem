@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const MANIFEST_PATH: String = "res://data/models/pokemon/generated/manifests/pokemon_import_manifest.json"
 const REPORT_JSON_PATH: String = "res://data/models/pokemon/import_reports/pokemon_import_report.json"
@@ -23,7 +23,6 @@ const STATIC_IDLE_SLUGS: Array[String] = [
 	"0414_mothim",
 ]
 
-var failures: int = 0
 var manifest: Dictionary = {}
 var report: Dictionary = {}
 
@@ -40,12 +39,7 @@ func _init() -> void:
 		_check_static_idle_substitutions()
 		_check_runtime_resource_paths()
 		_check_credits_paths()
-	if failures > 0:
-		push_error("smoke: m9_fidelity_report failed %d check(s)" % failures)
-		quit(1)
-	else:
-		print("smoke: m9_fidelity_report clean")
-		quit(0)
+	_finish("m9_fidelity_report")
 
 
 func _check_manifest_counts() -> void:
@@ -241,11 +235,3 @@ func _read_text(path: String) -> String:
 	var text: String = file.get_as_text()
 	file.close()
 	return text
-
-
-func _assert_true(condition: bool, message: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % message)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % message)

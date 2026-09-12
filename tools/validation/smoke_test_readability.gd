@@ -1,12 +1,6 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -14,7 +8,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=12 mode=pvp p=0006_charizard@50:flamethrower,slash,fly,dig:blaze e=0009_blastoise@50:hydro_pump,tackle:torrent|0003_venusaur@50:razor_leaf,tackle:overgrow")
 	_assert_true(ok, "battle launches")
 	if not ok:
-		_finish()
+		_finish("readability")
 		return
 	var level: TacticsLevel = driver.level
 	var main: Node = driver.main
@@ -91,21 +85,4 @@ func _run() -> void:
 	var visuals: PawnStateVisuals = faded.get_node("StateVisuals")
 	var sprite: Sprite3D = faded.get_node("Character")
 	_assert_true(visuals.faint_alpha() < 0.05 and sprite.modulate.a < 0.05, "fainted pawn fades out after its faint hold (alpha %.2f)" % sprite.modulate.a)
-	_finish()
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: readability failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: readability clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
+	_finish("readability")

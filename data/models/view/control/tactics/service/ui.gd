@@ -440,7 +440,7 @@ func _sync_menu_focus(ctrl: TacticsControls, actions: VBoxContainer) -> void:
 			var first: Control = _first_enabled_child(actions)
 			if first != null and first.is_inside_tree():
 				first.grab_focus()
-	elif owner_in_menu:
+	elif owner_in_menu and not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		owner.release_focus()
 
 

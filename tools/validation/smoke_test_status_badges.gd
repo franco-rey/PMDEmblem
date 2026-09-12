@@ -1,13 +1,7 @@
-extends SceneTree
+extends SmokeCase
 
 const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -62,12 +56,7 @@ func _run() -> void:
 	loader.unload_current()
 	loader.queue_free()
 	await process_frame
-	if failures > 0:
-		push_error("smoke: status_badges failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: status_badges clean")
-	quit(0)
+	_finish("status_badges")
 
 
 func _instance(slug: String, move_ids: Array, team: int) -> PokemonInstanceResource:
@@ -83,11 +72,3 @@ func _instance(slug: String, move_ids: Array, team: int) -> PokemonInstanceResou
 	instance.pp_state = pp
 	instance.loadout_locked = true
 	return instance
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

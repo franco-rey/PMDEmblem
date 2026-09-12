@@ -936,6 +936,7 @@ func _on_turn_completed(unit: BattleUnit) -> void:
 	intrinsic_service.on_turn_completed(unit.pawn, battle_log)
 	notation.mark_turn_end(unit.pawn)
 	if multiverse_enabled:
+		multiverse.strike_hop_declined.erase(unit.pawn)
 		multiverse.on_turn_completed()
 
 

@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const GENERATED_ITEMS_DIR: String = "res://data/models/pokemon/generated/items"
 const REPORT_PATH: String = "res://data/models/pokemon/import_reports/item_coverage_report.json"
@@ -35,8 +35,6 @@ const RUN_LOOP_CATEGORIES: Array[String] = [
 ]
 const FUTURE_CATEGORIES: Array[String] = ["category_2", "category_3", "orb"]
 const CONSUMABLE_CATEGORIES: Array[String] = ["berry", "food", "gummi", "medicine", "seed"]
-
-var failures: int = 0
 
 
 func _init() -> void:
@@ -194,11 +192,3 @@ func _write_text(path: String, text: String) -> bool:
 	file.store_string(text)
 	file.close()
 	return true
-
-
-func _assert_true(condition: bool, message: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % message)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % message)

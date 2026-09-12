@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const LOBBY_SCENE_PATH: String = "res://assets/scene/skirmish_lobby.tscn"
 const MAIN_SCENE_PATH: String = "res://assets/scene/main.tscn"
@@ -8,7 +8,6 @@ const EXTERNAL_PATH_MARKERS: Array[String] = [
 	"RawAsset",
 ]
 
-var failures: int = 0
 var lobby: Control = null
 
 
@@ -25,12 +24,7 @@ func _init() -> void:
 	_check_random_enemy_build()
 	await _cleanup()
 
-	if failures > 0:
-		push_error("smoke: skirmish_lobby failed %d check(s)" % failures)
-		quit(1)
-	else:
-		print("smoke: skirmish_lobby clean")
-		quit(0)
+	_finish("skirmish_lobby")
 
 
 func _setup_lobby() -> void:
@@ -395,11 +389,3 @@ func _all_controlled_by(team: Array[PokemonInstanceResource], control_type: int)
 		if instance == null or instance.control_type != control_type:
 			return false
 	return true
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

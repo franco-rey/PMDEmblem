@@ -1,12 +1,10 @@
-extends SceneTree
+extends SmokeCase
 
 const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const RandomSkirmishGenerator = preload("res://data/modules/skirmish/random_skirmish_generator.gd")
 const SUPPORTED_TEAM_SIZES: Array[int] = [1, 2, 3, 4, 5]
 const FIXED_SEED_TEXT: String = "777777"
 const FIXED_SEED: int = 777777
-
-var failures: int = 0
 
 
 func _init() -> void:
@@ -19,12 +17,7 @@ func _init() -> void:
 	_check_control_modes()
 	_check_invalid_inputs_rejected()
 
-	if failures > 0:
-		push_error("smoke: random_skirmish failed %d check(s)" % failures)
-		quit(1)
-	else:
-		print("smoke: random_skirmish clean")
-		quit(0)
+	_finish("random_skirmish")
 
 
 func _check_generator_directly() -> void:
@@ -291,11 +284,3 @@ func _all_controlled_by(team: Array[PokemonInstanceResource], control_type: int)
 		if instance == null or instance.control_type != control_type:
 			return false
 	return true
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

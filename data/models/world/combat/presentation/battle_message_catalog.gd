@@ -135,6 +135,18 @@ static func messages_for(event: Dictionary) -> Array[String]:
 			out.append("%s absorbed the toxic spikes!" % _unit_name(event.get("unit")))
 		"hazards_cleared":
 			out.append("%s blew away the traps!" % _unit_name(event.get("unit")))
+		"travel_unavailable":
+			var travel_reason: String = String(event.get("reason", ""))
+			if travel_reason == "target_down":
+				out.append("There was nobody left to carry through!")
+			elif travel_reason == "time":
+				out.append("But there was no earlier moment to return to!")
+			else:
+				out.append("But there was no dimension to reach!")
+		"travel_cancelled":
+			var cancel_reason: String = String(event.get("reason", ""))
+			if (cancel_reason.is_empty() or cancel_reason == "choice") and event.get("unit") is TacticsPawn:
+				out.append("%s stayed on this board!" % _unit_name(event.get("unit")))
 	var intrinsic_id: String = String(event.get("intrinsic_id", ""))
 	if not intrinsic_id.is_empty() and kind in ["status_applied", "stat_stage_changed", "healed", "damage_prevented", "status_blocked", "stat_stage_blocked", "effect_blocked", "status_removed"] and event.has("unit"):
 		out.insert(0, "%s's %s!" % [_unit_name(event.get("unit")), intrinsic_id.capitalize()])

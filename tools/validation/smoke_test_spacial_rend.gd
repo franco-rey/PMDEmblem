@@ -1,14 +1,9 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 
-var failures: int = 0
 var driver = null
 var level: TacticsLevel = null
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -16,7 +11,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=13 mode=pvp multiverse=1 p=0484_palkia@50:spacial_rend,aqua_tail:pressure|0025_pikachu@50:thunderbolt,quick_attack:static e=0004_charmander@50:ember,scratch:blaze|0720_hoopa@50:hyperspace_hole,psychic:magician")
 	_assert_true(ok, "multiverse battle with Palkia and Hoopa launches")
 	if not ok:
-		_finish()
+		_finish("spacial_rend")
 		return
 	level = driver.level
 	var frames: int = 0
@@ -83,7 +78,7 @@ func _run() -> void:
 	var transcript: String = level.notation.text()
 	_assert_true(transcript.find("travel P1 spacial_rend L0T2 -> L1T2 with P1,E1") >= 0 and transcript.find("branch L1 from L0T2") >= 0 and transcript.find("hop E2 hyperspace_hole L0T3 -> L1T3 with P2") >= 0, "the notation records the torn universe and the hop with the acting unit")
 	_assert_true(not level.battle_finished, "the battle continues")
-	_finish()
+	_finish("spacial_rend")
 
 
 func _wait_for_active(id: String) -> TacticsPawn:
@@ -160,20 +155,3 @@ func _option_count(picker: VBoxContainer) -> int:
 		if child.name.begins_with("Option") and not child.is_queued_for_deletion():
 			count += 1
 	return count
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: spacial_rend failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: spacial_rend clean")
-	quit(0)

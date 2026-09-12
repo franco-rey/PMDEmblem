@@ -1,12 +1,6 @@
-extends SceneTree
+extends SmokeCase
 
 const MAIN_SCENE_PATH: String = "res://assets/scene/main.tscn"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -32,7 +26,7 @@ func _run() -> void:
 	var layout: Control = lobby.get_node("LayoutMargin")
 	_assert_true(not layout.visible, "the lobby layout hides behind the preview")
 	if preview == null:
-		_finish()
+		_finish("map_preview")
 		return
 	_assert_true(preview.carousel.entries.size() == count, "the rolodex lists every map (%d)" % preview.carousel.entries.size())
 	_assert_true(preview.selected_index() == before, "the rolodex starts on the current map")
@@ -58,7 +52,7 @@ func _run() -> void:
 	_assert_true(not preview.visible and picker.selected == other and lobby._map_index == other, "Select Map applies the rolodex choice to the lobby (%d)" % picker.selected)
 	main.queue_free()
 	await process_frame
-	_finish()
+	_finish("map_preview")
 
 
 func _check_spawns(preview: MapPreviewScreen, path: String) -> void:
@@ -92,20 +86,3 @@ func _check_spawns(preview: MapPreviewScreen, path: String) -> void:
 func _settle() -> void:
 	for i in range(4):
 		await process_frame
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: map_preview failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: map_preview clean")
-	quit(0)

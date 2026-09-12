@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const ATTACKER_PATH: String = "res://data/models/pokemon/generated/instances/0004_charmander.tres"
 const DEFENDER_PATH: String = "res://data/models/pokemon/overrides/instances/0467_magmortar.tres"
@@ -11,7 +11,6 @@ class FakePawn:
 	func get_tile() -> TacticsTile:
 		return fake_tile
 
-var failures: int = 0
 var resolver := BattleActionResolver.new()
 
 
@@ -19,12 +18,7 @@ func _init() -> void:
 	_check_move_flags()
 	_check_defender_contact_abilities()
 	_check_attacker_contact_ability()
-	if failures > 0:
-		push_error("smoke: rules_contact_abilities failed %d check(s)" % failures)
-		quit(1)
-	else:
-		print("smoke: rules_contact_abilities clean")
-		quit(0)
+	_finish("rules_contact_abilities")
 
 
 func _check_move_flags() -> void:
@@ -119,11 +113,3 @@ func _fake_pawn(path: String, pawn_name: String, pos: Vector3) -> FakePawn:
 	pawn.stats.init_from_pokemon(instance)
 	pawn.add_child(pawn.stats)
 	return pawn
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: fail - %s" % label)

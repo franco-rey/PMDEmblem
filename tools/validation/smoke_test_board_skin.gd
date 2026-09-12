@@ -1,13 +1,7 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 const CODE: String = "match seed=9 mode=pvp p=0006_charizard@50:flamethrower,slash e=0009_blastoise@50:water_gun,tackle map=chessboard"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -36,7 +30,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch(CODE)
 	_assert_true(ok, "board launches on the default look")
 	if not ok:
-		_finish(saved)
+		_wrap_up(saved)
 		return
 	var level: TacticsLevel = driver.level
 	var terrain: Node3D = level.arena.get_node("Terrain")
@@ -105,25 +99,12 @@ func _run() -> void:
 	_assert_true(floor_picker != null and floor_picker.item_count == 25 and frame_picker != null and frame_picker.item_count == 2 and decor_picker != null and decor_picker.item_count == 4, "Customize lists the board floor, frame and decoration choices")
 	_assert_true(floor_picker.disabled == not available and decor_picker.disabled == not available, "board pickers follow the packaged skins")
 	panel.queue_free()
-	_finish(saved)
+	_wrap_up(saved)
 
 
-func _finish(saved: Array) -> void:
+func _wrap_up(saved: Array) -> void:
 	GameSettings.board_floor = String(saved[0])
 	GameSettings.board_frame = String(saved[1])
 	GameSettings.board_decor = String(saved[2])
 	GameSettings.save_settings()
-	if failures > 0:
-		print("smoke: board_skin FAILED with %d failures" % failures)
-		quit(1)
-		return
-	print("smoke: board_skin clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		print("smoke: FAIL - %s" % label)
+	_finish("board_skin")

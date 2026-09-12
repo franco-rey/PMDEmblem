@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const GENERATED_STATUSES_DIR: String = "res://data/models/pokemon/generated/statuses"
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves"
@@ -101,8 +101,6 @@ const INTRINSIC_APPLIERS: Dictionary = {
 	"poison": ["poison_touch", "synchronize"],
 	"poison_toxic": ["synchronize"],
 }
-
-var failures: int = 0
 
 
 func _init() -> void:
@@ -229,11 +227,3 @@ func _write_text(path: String, text: String) -> bool:
 	file.store_string(text)
 	file.close()
 	return true
-
-
-func _assert_true(condition: bool, message: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % message)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % message)

@@ -1,11 +1,9 @@
-extends SceneTree
+extends SmokeCase
 
 const TYPE_CHART_PATH: String = "res://data/models/pokemon/generated/types/type_chart.tres"
 const LUCARIO_PATH: String = "res://data/models/pokemon/overrides/instances/0448_lucario.tres"
 const MAGMORTAR_PATH: String = "res://data/models/pokemon/overrides/instances/0467_magmortar.tres"
 const SCENE_PATH: String = "res://assets/maps/level/test_level.tscn"
-
-var failures: int = 0
 
 
 func _init() -> void:
@@ -170,20 +168,8 @@ func _log_has(battle_log: BattleLog, kind: String) -> bool:
 	return false
 
 
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		_fail(label)
-
-
 func _assert_close(actual: float, expected: float, label: String) -> void:
 	if is_equal_approx(actual, expected):
 		print("smoke: ok - %s (%.2f)" % [label, actual])
 	else:
 		_fail("%s expected %.2f, got %.2f" % [label, expected, actual])
-
-
-func _fail(label: String) -> void:
-	failures += 1
-	push_error("smoke: fail - %s" % label)

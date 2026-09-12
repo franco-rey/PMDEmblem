@@ -1,6 +1,4 @@
-extends SceneTree
-
-var failures: int = 0
+extends SmokeCase
 
 
 func _run_settings_round_trip() -> Dictionary:
@@ -44,10 +42,6 @@ func _run_settings_round_trip() -> Dictionary:
 	GameSettings.sky_backdrop = "sky"
 	GameSettings.menu_backdrop = "sky"
 	return saved
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -307,7 +301,7 @@ func _run() -> void:
 	PmdStyle.set_ui_font(GameSettings.ui_font)
 	PmdStyle.refresh_windows()
 	GameSettings.save_settings()
-	_finish()
+	_finish("border_style")
 
 
 func _ring_average(image: Image, size: int, band: int = PmdStyle.BORDER_FRAME_PX, fill: Color = PmdStyle.NAVY) -> Color:
@@ -324,20 +318,3 @@ func _ring_average(image: Image, size: int, band: int = PmdStyle.BORDER_FRAME_PX
 
 func _close(a: Color, b: Color) -> bool:
 	return absf(a.r - b.r) < 0.01 and absf(a.g - b.g) < 0.01 and absf(a.b - b.b) < 0.01 and absf(a.a - b.a) < 0.01
-
-
-func _finish() -> void:
-	if failures > 0:
-		print("smoke: border_style FAILED with %d failures" % failures)
-		quit(1)
-		return
-	print("smoke: border_style clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("ok: %s" % label)
-	else:
-		failures += 1
-		printerr("FAIL: %s" % label)

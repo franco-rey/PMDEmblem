@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const MANUAL_IDS: Array[String] = [
 	"demo_3v3",
@@ -9,8 +9,6 @@ const MANUAL_IDS: Array[String] = [
 const MANUAL_PATH: String = "res://data/models/skirmish/manual/%s.tres"
 const FRAMES_TO_RUN: int = 10
 const SPAWN_TOLERANCE: float = 0.2
-
-var failures: int = 0
 
 
 func _init() -> void:
@@ -293,15 +291,3 @@ func _local_transform_to(node: Node3D, ancestor: Node) -> Transform3D:
 			out = (current as Node3D).transform * out
 		current = current.get_parent()
 	return out
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		_fail(label)
-
-
-func _fail(label: String) -> void:
-	failures += 1
-	push_error("smoke: fail - %s" % label)

@@ -1,14 +1,9 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 
-var failures: int = 0
 var driver = null
 var level: TacticsLevel = null
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -74,7 +69,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=17 mode=pvp multiverse=1 p=0251_celebi@50:dimensional_hole,psychic:natural_cure|0474_porygon_z@50:dimensional_glitch,tri_attack:adaptability|0493_arceus@50:judgment,recover:multitype e=0483_dialga@50:roar_of_time,dragon_claw:pressure|0720_hoopa@50:hyperspace_fury,psychic:magician|0487_giratina@50:shadow_force,dragon_claw:pressure")
 	_assert_true(ok, "a roster with every multiverse Pokemon and all four custom moves launches")
 	if not ok:
-		_finish()
+		_finish("multiverse_roster")
 		return
 	level = driver.level
 	var frames: int = 0
@@ -130,7 +125,7 @@ func _run() -> void:
 	_assert_true(giratina != null and bool(strike_rule.get("strike", false)) and String(strike_rule.get("travellers", "")) == "user", "Shadow Force is a solo strike hop")
 	var judgment: PokemonMoveResource = CustomMoves.load_move("judgment")
 	_assert_true(judgment != null and judgment.is_damaging() and mv.travel_rule("judgment").is_empty(), "Judgment is an ordinary attack")
-	_finish()
+	_finish("multiverse_roster")
 
 
 func celebi_or_any(battle_level: TacticsLevel, not_pawn: TacticsPawn) -> TacticsPawn:
@@ -178,20 +173,3 @@ func _next_active() -> BattleUnit:
 
 func _play_turn(pawn: TacticsPawn) -> void:
 	await driver._end_turn(pawn)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: multiverse_roster failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: multiverse_roster clean")
-	quit(0)

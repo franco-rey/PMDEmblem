@@ -1,13 +1,7 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 const CODE: String = "match seed=1 mode=pvp team=16 map=chessboard"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -18,7 +12,7 @@ func _run() -> void:
 	_assert_true(CustomSkirmishBuilder.max_team_size_for("res://data/models/maps/definitions/chessboard.tres") == 16 and CustomSkirmishBuilder.max_team_size_for("res://data/models/maps/definitions/grids.tres") == 15 and CustomSkirmishBuilder.max_team_size_for("res://data/models/maps/definitions/shogi.tres") == 20, "team caps follow the boards: 16 on the chessboard, 15 on Grids, 20 on Shogi")
 	_assert_true(ok, "16v16 launches on the chessboard")
 	if not ok:
-		_finish()
+		_finish("chessboard_map")
 		return
 	var level: TacticsLevel = driver.level
 	var tiles: Array = level.arena.get_node("Tiles").get_children()
@@ -63,21 +57,4 @@ func _run() -> void:
 	_assert_true(terrain != null and terrain.get_child_count() == 65, "visible board has 64 squares on a slab")
 	var hud_label: Label = level.hud.get_node("HudRoot/QueueColumn/QueueStrip/Inner/RoundLabel")
 	_assert_true(hud_label.text.begins_with("Turn "), "HUD counts turns (%s)" % hud_label.text)
-	_finish()
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: chessboard_map failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: chessboard_map clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
+	_finish("chessboard_map")

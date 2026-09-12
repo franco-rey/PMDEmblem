@@ -1,14 +1,9 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 
-var failures: int = 0
 var driver = null
 var level: TacticsLevel = null
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -16,7 +11,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=9 mode=pvp multiverse=1 p=0025_pikachu@50:thunderbolt,quick_attack,agility:static|0004_charmander@50:ember,growl:blaze e=0001_bulbasaur@50:tackle,growth:overgrow|0007_squirtle@50:tackle,withdraw:torrent")
 	_assert_true(ok, "multiverse battle launches from a code with multiverse=1")
 	if not ok:
-		_finish()
+		_finish("board_snapshot")
 		return
 	level = driver.level
 	var frames: int = 0
@@ -73,7 +68,7 @@ func _run() -> void:
 	var following: BattleUnit = await _next_active()
 	_assert_true(following != null and following.pawn != resumed and following.pawn.is_alive(), "the restored board plays on: the turn passes to the next unit")
 	_assert_true(level.notation.text().find("T") >= 0, "notation keeps writing after the restore")
-	_finish()
+	_finish("board_snapshot")
 
 
 func _next_active() -> BattleUnit:
@@ -117,20 +112,3 @@ func _pos_map() -> Dictionary:
 	for pawn in level.units_on_map():
 		out[level.notation.unit_id(pawn)] = Targeting._tile_key(pawn.get_tile()) if pawn.get_tile() != null else Vector3i(-1, -1, -1)
 	return out
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: board_snapshot failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: board_snapshot clean")
-	quit(0)

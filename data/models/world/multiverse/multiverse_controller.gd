@@ -555,6 +555,9 @@ func request_travel(move_id: String, user: TacticsPawn, target: TacticsPawn) -> 
 	pending_travel = {}
 	var options: Array[Dictionary] = travel_options(move_id, user, target)
 	if options.is_empty():
+		var rule: Dictionary = travel_rule(move_id)
+		if enabled and not rule.is_empty() and level != null and level.battle_log != null:
+			level.battle_log.append({"kind": "travel_unavailable", "unit": user, "move_id": move_id, "reason": String(rule.get("axis", ""))})
 		return 0
 	travel_serial += 1
 	pending_travel = {"move_id": move_id, "user": user, "target": target, "options": options, "side": MultiverseState.SIDE_PLAYER if user.get_parent() == level.player else MultiverseState.SIDE_ENEMY, "serial": travel_serial}

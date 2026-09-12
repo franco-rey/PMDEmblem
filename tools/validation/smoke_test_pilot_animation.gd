@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const PAWN_SCENE_PATH: String = "res://data/modules/tactics/level/pawn/pawn.tscn"
 const EXPERTISE_SCENE_PATH: String = "res://data/modules/stats/expertise/expertise.tscn"
@@ -15,12 +15,6 @@ const PILOT: Array[Dictionary] = [
 	{"slug": "0008_wartortle", "aliases": {}, "moves": {"tackle": "Attack", "water_gun": "Shoot", "bite": "Bite"}},
 	{"slug": "0009_blastoise", "aliases": {}, "moves": {"tackle": "Attack", "hydro_pump": "Shoot", "withdraw": "Withdraw"}},
 ]
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -234,24 +228,3 @@ func _first_event(log: BattleLog, kind: String) -> Dictionary:
 		if String(event.get("kind", "")) == kind:
 			return event
 	return {}
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: fail - %s" % label)
-
-
-func _fail(label: String) -> void:
-	_assert_true(false, label)
-
-
-func _finish(name: String) -> void:
-	if failures > 0:
-		push_error("smoke: %s failed %d check(s)" % [name, failures])
-		quit(1)
-	else:
-		print("smoke: %s clean" % name)
-		quit(0)

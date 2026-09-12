@@ -1,12 +1,6 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -14,7 +8,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=9 mode=pvp p=0025_pikachu@50:thunderbolt,quick_attack:static e=0004_charmander@50:ember:blaze|0001_bulbasaur@50:tackle:overgrow|0007_squirtle@50:tackle:torrent")
 	_assert_true(ok, "battle launches for the fainted removal checks")
 	if not ok:
-		_finish()
+		_finish("fainted_removal")
 		return
 	var level: TacticsLevel = driver.level
 	var frames: int = 0
@@ -54,7 +48,7 @@ func _run() -> void:
 	var visuals: PawnStateVisuals = bulbasaur.get_node("StateVisuals") as PawnStateVisuals
 	visuals.settle_faint()
 	_assert_true(not bulbasaur.visible and bulbasaur.collision_layer == 0 and tile.get_tile_occupier() == null, "a settled faint (restored board) hides the unit immediately")
-	_finish()
+	_finish("fainted_removal")
 
 
 func _body_hit_at(level: TacticsLevel, position: Vector3) -> Object:
@@ -62,20 +56,3 @@ func _body_hit_at(level: TacticsLevel, position: Vector3) -> Object:
 	var to: Vector3 = position + Vector3.DOWN * 1.0
 	var hit: Dictionary = level.get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(from, to, 2, []))
 	return hit.get("collider", null)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: fainted_removal failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: fainted_removal clean")
-	quit(0)

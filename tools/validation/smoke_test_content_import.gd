@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const MANIFEST_PATH: String = "res://data/models/pokemon/generated/manifests/pokemon_import_manifest.json"
 const REPORT_JSON_PATH: String = "res://data/models/pokemon/import_reports/pokemon_import_report.json"
@@ -21,7 +21,6 @@ const EXTERNAL_PATH_MARKERS: Array[String] = [
 ]
 const REST_ANIMDATA_CANDIDATES: Array[String] = ["Laying", "EventSleep", "Sleep"]
 
-var failures: int = 0
 var manifest: Dictionary = {}
 var report: Dictionary = {}
 
@@ -33,12 +32,7 @@ func _init() -> void:
 	_check_roster_provider_metadata()
 	_check_random_skirmish_from_battle_ready_pool()
 
-	if failures > 0:
-		push_error("smoke: content_import failed %d check(s)" % failures)
-		quit(1)
-	else:
-		print("smoke: content_import clean")
-		quit(0)
+	_finish("content_import")
 
 
 func _load_json_artifacts() -> void:
@@ -209,11 +203,3 @@ func _has_no_external_marker(path: String) -> bool:
 		if path.contains(marker):
 			return false
 	return true
-
-
-func _assert_true(condition: bool, message: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % message)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % message)

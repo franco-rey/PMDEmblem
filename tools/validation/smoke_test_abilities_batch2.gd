@@ -1,14 +1,9 @@
-extends SceneTree
+extends SmokeCase
 
 const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
 
-var failures: int = 0
 var resolver := BattleActionResolver.new()
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -99,12 +94,7 @@ func _run() -> void:
 	level = setup["level"]
 	_assert_true(is_equal_approx(level.intrinsic_service.accuracy_multiplier(setup["attacker"], setup["defender"], (setup["attacker"] as TacticsPawn).stats.move_slots[0], level), 1.1), "Victory Star raises accuracy by a tenth")
 	await _teardown(setup)
-	if failures > 0:
-		push_error("smoke: abilities_batch2 failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: abilities_batch2 clean")
-	quit(0)
+	_finish("abilities_batch2")
 
 
 func _damage(attacker_slug: String, move_id: String, defender_slug: String, attacker_ability: String, defender_ability: String) -> int:
@@ -205,11 +195,3 @@ func _settle_on_tile(pawn: TacticsPawn, tile: TacticsTile) -> void:
 	ray.force_raycast_update()
 	pawn.center()
 	ray.force_raycast_update()
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

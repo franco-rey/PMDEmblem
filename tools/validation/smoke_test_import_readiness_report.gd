@@ -1,6 +1,4 @@
-extends SceneTree
-
-var failures: int = 0
+extends SmokeCase
 
 
 func _init() -> void:
@@ -39,11 +37,3 @@ func _load_json(path: String) -> Dictionary:
 	var parsed: Variant = JSON.parse_string(file.get_as_text())
 	file.close()
 	return parsed if parsed is Dictionary else {}
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: fail - %s" % label)

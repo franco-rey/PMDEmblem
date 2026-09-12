@@ -1,13 +1,7 @@
-extends SceneTree
+extends SmokeCase
 
 const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -85,12 +79,7 @@ func _run() -> void:
 	loader.unload_current()
 	loader.queue_free()
 	await process_frame
-	if failures > 0:
-		push_error("smoke: battle_notation failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: battle_notation clean")
-	quit(0)
+	_finish("battle_notation")
 
 
 func _instance(slug: String, move_ids: Array, team: int) -> PokemonInstanceResource:
@@ -117,11 +106,3 @@ func _settle_on_tile(pawn: TacticsPawn, tile: TacticsTile) -> void:
 	ray.force_raycast_update()
 	pawn.center()
 	ray.force_raycast_update()
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

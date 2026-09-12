@@ -1,10 +1,4 @@
-extends SceneTree
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
+extends SmokeCase
 
 
 func _board(t: int, player_alive: int = 2, enemy_alive: int = 2) -> BoardSnapshot:
@@ -65,21 +59,4 @@ func _run() -> void:
 	var second_base: Array = travelled.opening_board(0, 2).unit_ids()
 	_assert_true(first_base == second_base and second_base.size() == 4, "two branches from one coordinate see the same opening board after a mid-round travel replaced the latest")
 	_assert_true(travelled.latest(0).mid_round and travelled.latest(0).unit_ids().size() == 3, "the timeline itself still resumes from the mid-round board")
-	_finish()
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: multiverse_model failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: multiverse_model clean")
-	quit(0)
+	_finish("multiverse_model")

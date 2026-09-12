@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const MAIN_SCENE_PATH: String = "res://assets/scene/main.tscn"
 const MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
@@ -6,12 +6,7 @@ const GUEST_SCRIPT: String = "tools/validation/net/guest_peer.gd"
 const BASE_PORT: int = 24592
 const MAX_FRAMES: int = 120000
 
-var failures: int = 0
 var children: Array[int] = []
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -23,7 +18,7 @@ func _run() -> void:
 	for scenario in scenarios:
 		await _play(scenario, BASE_PORT + index)
 		index += 1
-	_finish()
+	_wrap_up()
 
 
 func _play(scenario: Dictionary, port: int) -> void:
@@ -135,21 +130,8 @@ func _stop(pid: int, main: Node) -> void:
 	await process_frame
 
 
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
+func _wrap_up() -> void:
 	for pid in children:
 		if OS.is_process_running(pid):
 			OS.kill(pid)
-	if failures > 0:
-		push_error("smoke: net_two_peers failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: net_two_peers clean")
-	quit(0)
+	_finish("net_two_peers")

@@ -1,14 +1,9 @@
-extends SceneTree
+extends SmokeCase
 
 const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
 
-var failures: int = 0
 var resolver: BattleActionResolver = BattleActionResolver.new()
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -37,12 +32,7 @@ func _run() -> void:
 	var metronome: Dictionary = await _hit_pair("held_metronome", "", true)
 	_assert_true(int(metronome["slash_repeat"]) > int(metronome["slash"]), "Metronome boosts a repeated move (%d -> %d)" % [int(metronome["slash"]), int(metronome["slash_repeat"])])
 	await _turn_item_checks()
-	if failures > 0:
-		push_error("smoke: held_items_mainline failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: held_items_mainline clean")
-	quit(0)
+	_finish("held_items_mainline")
 
 
 func _turn_item_checks() -> void:
@@ -250,11 +240,3 @@ func _settle_on_tile(pawn: TacticsPawn, tile: TacticsTile) -> void:
 	ray.force_raycast_update()
 	pawn.center()
 	ray.force_raycast_update()
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

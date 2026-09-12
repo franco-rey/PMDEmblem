@@ -61,7 +61,5 @@ layout_mode = 1
 
 [node name="World" type="Node3D" parent="." unique_id=79446120]
 
-[node name="Node" type="Node" parent="." unique_id=1509493399]
-
 [connection signal="pressed" from="UI/MapSelector/SkirmishMenu/LaunchButton" to="." method="_on_launch_button_pressed"]
 [connection signal="pressed" from="UI/MapSelector/SkirmishMenu/CustomToggleButton" to="." method="_on_custom_toggle_pressed"]

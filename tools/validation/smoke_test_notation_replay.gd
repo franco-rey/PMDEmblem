@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const CODE: String = "match seed=7 mode=pvp p=0007_squirtle@50:rain_dance,water_gun,withdraw,bite:torrent:berry_sitrus e=0004_charmander@50:ember,scratch,growl,smokescreen:blaze:berry_oran"
 const SCRIPT_AFTER_MOVE: Array = [
@@ -19,19 +19,13 @@ const SCRIPT_AFTER_MOVE: Array = [
 ]
 const RESULT_VERBS: Array[String] = ["hit", "miss", "nfx", "st", "tick", "stat", "heal", "wx", "fld", "hz", "push", "ko", "skip", "rej", "held"]
 
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
-
 
 func _run() -> void:
 	var first := NotationDriver.new(self)
 	var launched: bool = await first._launch(CODE)
 	_assert_true(launched, "scripted game launches")
 	if not launched:
-		_finish()
+		_finish("notation_replay")
 		return
 	var level: TacticsLevel = first.level
 	var p1: TacticsPawn = level.notation.pawn_for_id("P1")
@@ -73,7 +67,7 @@ func _run() -> void:
 		var parsed: Dictionary = NotationParser.parse(String(line))
 		if String(parsed.get("kind", "")) == NotationParser.KIND_ACTION and not NotationParser.COMMAND_VERBS.has(String(parsed.get("verb", ""))) and not RESULT_VERBS.has(String(parsed.get("verb", ""))):
 			_assert_true(false, "unknown verb in transcript: %s" % String(line))
-	_finish()
+	_finish("notation_replay")
 
 
 func _reachable_label(level: TacticsLevel, pawn: TacticsPawn) -> String:
@@ -107,20 +101,3 @@ func _body(text: String) -> Array:
 			continue
 		out.append(line)
 	return out
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: notation_replay failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: notation_replay clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

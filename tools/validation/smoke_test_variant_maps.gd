@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER: GDScript = preload("res://tools/debug/notation_driver.gd")
 const EXPECTED: Dictionary = {
@@ -13,11 +13,6 @@ const EXPECTED: Dictionary = {
 }
 
 var driver: RefCounted = null
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -97,7 +92,7 @@ func _run() -> void:
 		lobby.add_roster_index(1)
 		var built: Dictionary = lobby.build_current_definition()
 		_assert_true(index >= 0 and bool(built.get("ok", false)) and (built["definition"] as SkirmishDefinitionResource).map.map_id == "sittuyin", "picking Sittuyin in the lobby's map picker builds a Sittuyin skirmish (%s)" % String(built.get("error", "")))
-	_finish()
+	_finish("variant_maps")
 
 
 func _anchor_keys(arena: Node, prefix: String) -> Dictionary:
@@ -213,20 +208,3 @@ func _check_map(map_id: String, expected: Dictionary) -> void:
 	_assert_true(players >= int(expected["cap"]) and enemies >= int(expected["cap"]) and off_tile == 0, "%s has %d anchors a side on walkable squares (%d/%d, %d off)" % [map_id, int(expected["cap"]), players, enemies, off_tile])
 	_assert_true(squares == tile_count and frames >= 1 and absi(lights - darks) <= maxi(2, tile_count / 12), "%s keeps the chessboard look: a light or dark block per square and the brown foundation (%d squares, %d light, %d dark, %d frame pieces)" % [map_id, squares, lights, darks, frames])
 	_assert_true(wedges == int(expected.get("wedges", 0)), "%s draws %d chamfer wedges on squares nobody can stand on (%d)" % [map_id, int(expected.get("wedges", 0)), wedges])
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: variant_maps failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: variant_maps clean")
-	quit(0)

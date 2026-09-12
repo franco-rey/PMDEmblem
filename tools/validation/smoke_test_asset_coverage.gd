@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const MANIFEST_PATH: String = "res://data/models/pokemon/generated/manifests/pokemon_import_manifest.json"
 const VISUAL_MANIFEST_PATH: String = "res://data/models/visuals/generated/visual_asset_manifest.json"
@@ -43,8 +43,6 @@ const REQUIRED_STATE_SOURCES: Dictionary = {
 	"sleep": ["Laying-Anim.png", "EventSleep-Anim.png", "Sleep-Anim.png"],
 	"hop": ["Hop-Anim.png"],
 }
-
-var failures: int = 0
 
 
 func _init() -> void:
@@ -428,11 +426,3 @@ func _write_text(path: String, text: String) -> bool:
 	file.store_string(text)
 	file.close()
 	return true
-
-
-func _assert_true(condition: bool, message: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % message)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % message)

@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 const UNIT_SPEED: float = 30.0
@@ -7,19 +7,13 @@ const UNIT_FRAMES: int = 240
 const MATCH_FRAMES: int = 7200
 const STALL_FRAMES: int = 900
 
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
-
 
 func _run() -> void:
 	var driver = DRIVER.new(self)
 	var ok: bool = await driver._launch("match seed=6300 mode=bots team=6")
 	_assert_true(ok, "6v6 bot match launches for the movement check")
 	if not ok:
-		_finish()
+		_wrap_up()
 		return
 	var level: TacticsLevel = driver.level
 	var frames: int = 0
@@ -48,7 +42,7 @@ func _run() -> void:
 	var match_ok: bool = await match_driver._launch("match seed=6301 mode=bots team=6")
 	_assert_true(match_ok, "second 6v6 bot match launches for the full-speed run")
 	if not match_ok:
-		_finish()
+		_wrap_up()
 		return
 	var match_level: TacticsLevel = match_driver.level
 	Engine.time_scale = MATCH_SPEED
@@ -83,7 +77,7 @@ func _run() -> void:
 	Engine.time_scale = 1.0
 	_assert_true(stalled.is_empty(), "no unit stalls while the match runs at %dx (%s)" % [int(MATCH_SPEED), stalled])
 	_assert_true(not is_instance_valid(match_level) or match_level.battle_finished or not stalled.is_empty(), "the %dx match finishes within %d physics frames" % [int(MATCH_SPEED), MATCH_FRAMES])
-	_finish()
+	_wrap_up()
 
 
 func _pawn_with_row(level: TacticsLevel) -> TacticsPawn:
@@ -113,19 +107,6 @@ func _row_tiles(level: TacticsLevel, start: Vector3, count: int) -> Array[Varian
 	return out
 
 
-func _finish() -> void:
+func _wrap_up() -> void:
 	Engine.time_scale = 1.0
-	if failures > 0:
-		push_error("smoke: movement_at_speed failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: movement_at_speed clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
+	_finish("movement_at_speed")

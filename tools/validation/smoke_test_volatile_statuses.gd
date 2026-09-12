@@ -1,14 +1,9 @@
-extends SceneTree
+extends SmokeCase
 
 const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
 
-var failures: int = 0
 var resolver: BattleActionResolver = BattleActionResolver.new()
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -16,12 +11,7 @@ func _run() -> void:
 	await _self_status_checks()
 	await _timer_checks()
 	await _faint_checks()
-	if failures > 0:
-		push_error("smoke: volatile_statuses failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: volatile_statuses clean")
-	quit(0)
+	_finish("volatile_statuses")
 
 
 func _shield_checks() -> void:
@@ -339,11 +329,3 @@ func _settle_on_tile(pawn: TacticsPawn, tile: TacticsTile) -> void:
 	ray.force_raycast_update()
 	pawn.center()
 	ray.force_raycast_update()
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

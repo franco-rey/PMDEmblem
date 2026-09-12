@@ -1,12 +1,6 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -14,7 +8,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=3 mode=pvp team=16 map=chessboard")
 	_assert_true(ok, "16v16 chessboard launches")
 	if not ok:
-		_finish()
+		_finish("move_through_allies")
 		return
 	var level: TacticsLevel = driver.level
 	var keys: Dictionary = Targeting.arena_tile_keys(level)
@@ -33,7 +27,7 @@ func _run() -> void:
 			break
 	_assert_true(boxed != null, "a player unit starts boxed in by teammates and the board edge")
 	if boxed == null:
-		_finish()
+		_finish("move_through_allies")
 		return
 	var participant: TacticsParticipantResource = level.participant.res
 	participant.curr_pawn = boxed
@@ -60,21 +54,4 @@ func _run() -> void:
 			break
 	_assert_true(enemy_side_reached, "reachable tiles include squares past the front row")
 	participant.stage = participant.STAGE_SHOW_ACTIONS
-	_finish()
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: move_through_allies failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: move_through_allies clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
+	_finish("move_through_allies")

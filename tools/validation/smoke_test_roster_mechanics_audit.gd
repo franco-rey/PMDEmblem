@@ -1,6 +1,4 @@
-extends SceneTree
-
-var failures: int = 0
+extends SmokeCase
 
 
 func _init() -> void:
@@ -58,11 +56,3 @@ func _check_move_families_are_reportable(payload: Dictionary) -> void:
 				not families.is_empty() or not unsupported.is_empty() or not is_status,
 				"%s/%s has supported families or explicit unsupported tags" % [String(entry.get("slug", "")), String(move.get("move_id", ""))]
 			)
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: fail - %s" % label)

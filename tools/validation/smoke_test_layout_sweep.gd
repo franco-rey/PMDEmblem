@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 const SIZES: Array[Vector2i] = [
@@ -11,12 +11,7 @@ const SIZES: Array[Vector2i] = [
 ]
 const TOLERANCE: float = 1.0
 
-var failures: int = 0
 var problems: Array[String] = []
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -24,7 +19,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=42 mode=pvp team=6 map=chessboard")
 	_assert_true(ok, "6v6 chessboard match launches for the layout sweep")
 	if not ok:
-		_finish()
+		_finish("layout_sweep")
 		return
 	var level: TacticsLevel = driver.level
 	var main: Node = driver.main
@@ -123,21 +118,4 @@ func _run() -> void:
 	for problem in problems:
 		print("smoke: layout - %s" % problem)
 	_assert_true(problems.is_empty(), "no HUD element overlaps another or leaves the window across %d size passes (%d problems)" % [checked, problems.size()])
-	_finish()
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: layout_sweep failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: layout_sweep clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
+	_finish("layout_sweep")

@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves"
 const REPORT_PATH: String = "res://data/models/pokemon/import_reports/move_coverage_report.json"
@@ -67,8 +67,6 @@ const DISPOSITION_PRIORITY: Array[String] = [
 	"decide_future_only",
 	"implemented",
 ]
-
-var failures: int = 0
 
 
 func _init() -> void:
@@ -222,11 +220,3 @@ func _write_text(path: String, text: String) -> bool:
 	file.store_string(text)
 	file.close()
 	return true
-
-
-func _assert_true(condition: bool, message: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % message)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % message)

@@ -339,7 +339,6 @@ func select_pawn_to_attack(ctrl: TacticsControls) -> void:
 	controls.set_actions_menu_visibility(true, participant.curr_pawn)
 	(ctrl.serv.ui_service as TacticsUIService).set_move_picker_visibility(false, participant.curr_pawn, ctrl, [])
 	if participant.attackable_pawn:
-		controls.set_actions_menu_visibility(false, participant.attackable_pawn)
 		participant.attackable_pawn.show_pawn_stats(false)
 	var step: int = _target_cycle_step()
 	if step != 0:
@@ -365,7 +364,6 @@ func select_pawn_to_attack(ctrl: TacticsControls) -> void:
 		if move != null and not Targeting.is_target_legal(participant.curr_pawn, participant.attackable_pawn, move):
 			participant.attackable_pawn = null
 	if participant.attackable_pawn:
-		controls.set_actions_menu_visibility(true, participant.attackable_pawn)
 		participant.attackable_pawn.show_pawn_stats(true)
 	if controls.armed_key is Vector3i and (tile == null or controls.armed_key != _tile_key(tile)):
 		_disarm()

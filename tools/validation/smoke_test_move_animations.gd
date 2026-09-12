@@ -1,11 +1,9 @@
-extends SceneTree
+extends SmokeCase
 
 const BULBASAUR_PATH: String = "res://data/models/pokemon/generated/instances/0001_bulbasaur.tres"
 
 class FakePawn:
 	extends TacticsPawn
-
-var failures: int = 0
 
 
 func _init() -> void:
@@ -71,11 +69,3 @@ func _count_animation_events(log: BattleLog) -> int:
 		if String(event.get("kind", "")).begins_with("animation_"):
 			count += 1
 	return count
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: fail - %s" % label)

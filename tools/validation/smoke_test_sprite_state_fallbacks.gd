@@ -1,14 +1,8 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 const SPRITES_DIR: String = "res://data/models/pokemon/generated/sprites/"
 const REQUIRED: Array[String] = ["idle", "walk", "hurt", "sleep"]
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -34,7 +28,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=4 mode=pvp p=0383_groudon@50:earthquake,stone_edge,fire_punch,swords_dance:drought|0623_golurk@50:shadow_punch,earthquake,dynamic_punch,hammer_arm:iron_fist e=0065_alakazam@50:psybeam,calm_mind,recover,shadow_ball:synchronize|0435_skuntank@50:night_slash,poison_jab,sucker_punch,toxic:aftermath")
 	_assert_true(ok, "Groudon and Golurk vs Alakazam and Skuntank launch")
 	if not ok:
-		_finish()
+		_finish("sprite_state_fallbacks")
 		return
 	var level: TacticsLevel = driver.level
 	for pawn in level.player.get_children() + level.opponent.get_children():
@@ -54,21 +48,4 @@ func _run() -> void:
 				_assert_true(false, "%s loaded a zero-width state %s" % [name, key])
 		var shadow: Sprite3D = pawn.get_node_or_null("Shadow")
 		_assert_true(shadow != null and shadow.axis == Vector3.AXIS_Y and shadow.texture != null and shadow.position.y > 0.0, "%s has a ground shadow lying on the tile" % name)
-	_finish()
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: sprite_state_fallbacks failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: sprite_state_fallbacks clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
+	_finish("sprite_state_fallbacks")

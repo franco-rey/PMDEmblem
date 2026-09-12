@@ -1,13 +1,7 @@
-extends SceneTree
+extends SmokeCase
 
 const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -15,12 +9,7 @@ func _run() -> void:
 	await _check_duration_and_messages()
 	await _check_chip_damage_and_immunities()
 	await _check_sun_rules()
-	if failures > 0:
-		push_error("smoke: weather failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: weather clean")
-	quit(0)
+	_finish("weather")
 
 
 func _check_rain_dance_and_multipliers() -> void:
@@ -196,11 +185,3 @@ func _settle_on_tile(pawn: TacticsPawn, tile: TacticsTile) -> void:
 	ray.force_raycast_update()
 	pawn.center()
 	ray.force_raycast_update()
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)

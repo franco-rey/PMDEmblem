@@ -1,15 +1,9 @@
-extends SceneTree
+extends SmokeCase
 
 const FONT_DIR: String = "res://assets/fonts/pmd/"
 const FONT_NAMES: Array[String] = ["text", "banner", "system", "simple", "blue", "green", "yellow"]
 const THEME_PATH: String = "res://assets/ui/pmd_theme.tres"
 const REPORT_PATH: String = "res://data/models/visuals/import_reports/font_report.json"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -47,17 +41,4 @@ func _run() -> void:
 		_assert_true(fonts.size() == FONT_NAMES.size(), "font report lists %d fonts" % FONT_NAMES.size())
 	else:
 		_assert_true(false, "font report exists")
-	if failures > 0:
-		push_error("smoke: pmd_font failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: pmd_font clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
+	_finish("pmd_font")

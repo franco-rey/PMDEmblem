@@ -1,12 +1,6 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -40,7 +34,7 @@ func _run() -> void:
 	var ok: bool = await driver._launch("match seed=9 mode=pvp p=0025_pikachu@50:thunderbolt,quick_attack:static:held_leftovers e=0004_charmander@50:ember,scratch:blaze|0001_bulbasaur@50:tackle:overgrow")
 	_assert_true(ok, "battle launches for the polish checks")
 	if not ok:
-		_finish()
+		_finish("polish_pass")
 		return
 	var level: TacticsLevel = driver.level
 	var main: Node = driver.main
@@ -151,21 +145,4 @@ func _run() -> void:
 	GameSettings.battle_flair = saved_flair
 	GameSettings.danger_zone = saved_danger
 	GameSettings.save_settings()
-	_finish()
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: polish_pass failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: polish_pass clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
+	_finish("polish_pass")

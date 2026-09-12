@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const BULBASAUR_PATH: String = "res://data/models/pokemon/generated/instances/0001_bulbasaur.tres"
 const CURRENT_SEVEN: Array[String] = [
@@ -13,8 +13,6 @@ const CURRENT_SEVEN: Array[String] = [
 
 class FakePawn:
 	extends TacticsPawn
-
-var failures: int = 0
 
 
 func _init() -> void:
@@ -40,12 +38,7 @@ func _init() -> void:
 	_check_high_frequency_batch(service)
 	_check_ability_swap_primitive(service)
 
-	if failures > 0:
-		push_error("smoke: intrinsics failed %d check(s)" % failures)
-		quit(1)
-	else:
-		print("smoke: intrinsics clean")
-		quit(0)
+	_finish("intrinsics")
 
 
 func _stats(path: String) -> Stats:
@@ -220,11 +213,3 @@ func _log_has(log: BattleLog, kind: String) -> bool:
 		if event.get("kind", "") == kind:
 			return true
 	return false
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: fail - %s" % label)

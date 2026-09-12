@@ -1,15 +1,10 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 const CODE: String = "match seed=21 mode=pvp map=chessboard multiverse=1 p=0483_dialga@30:roar_of_time,dragon_claw:pressure e=0004_charmander@50:ember,scratch:blaze|0242_blissey@50:seismic_toss,soft_boiled:natural_cure"
 
-var failures: int = 0
 var driver = null
 var level: TacticsLevel = null
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -38,7 +33,7 @@ func _run() -> void:
 				push_error("smoke: replay diverges at body line %d: %s | %s" % [i, original[i], replayed[i]])
 				break
 	_assert_true(same and replayed.size() == original.size(), "the replay rebuilds the same multiverse line for line (%d vs %d)" % [replayed.size(), original.size()])
-	_finish()
+	_finish("multiverse_replay")
 
 
 func _scenario() -> Array:
@@ -105,20 +100,3 @@ func _next_active() -> BattleUnit:
 		await physics_frame
 		frames += 1
 	return null
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: FAIL - %s" % label)
-
-
-func _finish() -> void:
-	if failures > 0:
-		push_error("smoke: multiverse_replay failed %d check(s)" % failures)
-		quit(1)
-		return
-	print("smoke: multiverse_replay clean")
-	quit(0)

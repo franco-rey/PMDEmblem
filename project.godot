@@ -33,10 +33,6 @@ gdscript/warnings/unsafe_call_argument=1
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 
-[dotnet]
-
-project/assembly_name="Godot Tactical RPG"
-
 [editor_plugins]
 
 enabled=PackedStringArray()
@@ -44,14 +40,12 @@ enabled=PackedStringArray()
 [file_customization]
 
 folder_colors={
-"res://addons/": "red",
 "res://assets/": "blue",
 "res://assets/maps/": "purple",
 "res://data/": "green",
 "res://data/models/": "yellow",
 "res://data/modules/": "green",
-"res://maps/": "orange",
-"res://modules/": "yellow"
+"res://tools/": "orange"
 }
 
 [gui]

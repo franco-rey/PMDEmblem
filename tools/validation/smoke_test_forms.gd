@@ -1,14 +1,8 @@
-extends SceneTree
+extends SmokeCase
 
 const DRIVER := preload("res://tools/debug/notation_driver.gd")
 const LOBBY_SCENE_PATH: String = "res://assets/scene/skirmish_lobby.tscn"
 const CODE: String = "match seed=5 mode=pvp p=0019_rattata~1@50|0386_deoxys~1@50|0479_rotom~5@50 e=0019_rattata@50|0483_dialga~1@50|0201_unown~3@50 map=chessboard"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _species(slug: String) -> PokemonSpeciesResource:
@@ -91,7 +85,7 @@ func _run() -> void:
 
 	await _check_lobby(rattata)
 	await _check_battle()
-	_finish()
+	_finish("forms")
 
 
 func _check_lobby(rattata: PokemonSpeciesResource) -> void:
@@ -206,20 +200,3 @@ func _same(values: Array[int], expected: Array) -> bool:
 		if values[i] != int(expected[i]):
 			return false
 	return true
-
-
-func _finish() -> void:
-	if failures > 0:
-		print("smoke: forms FAILED with %d failures" % failures)
-		quit(1)
-		return
-	print("smoke: forms clean")
-	quit(0)
-
-
-func _assert_true(condition: bool, label: String) -> void:
-	if condition:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		print("smoke: FAIL - %s" % label)

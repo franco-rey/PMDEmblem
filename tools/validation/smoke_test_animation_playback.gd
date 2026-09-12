@@ -1,4 +1,4 @@
-extends SceneTree
+extends SmokeCase
 
 const PAWN_SCENE_PATH: String = "res://data/modules/tactics/level/pawn/pawn.tscn"
 const EXPERTISE_SCENE_PATH: String = "res://data/modules/stats/expertise/expertise.tscn"
@@ -6,12 +6,6 @@ const BULBASAUR_PATH: String = "res://data/models/pokemon/generated/instances/00
 const SQUIRTLE_PATH: String = "res://data/models/pokemon/generated/instances/0007_squirtle.tres"
 const GALLADE_PATH: String = "res://data/models/pokemon/generated/instances/0475_gallade.tres"
 const HELIOPTILE_PATH: String = "res://data/models/pokemon/generated/instances/0694_helioptile.tres"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -189,20 +183,3 @@ func _has_animation_event(log: BattleLog, purpose: String) -> bool:
 		if String(event.get("purpose", "")) == purpose and String(event.get("kind", "")).begins_with("animation_"):
 			return true
 	return false
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: fail - %s" % label)
-
-
-func _finish(name: String) -> void:
-	if failures > 0:
-		push_error("smoke: %s failed %d check(s)" % [name, failures])
-		quit(1)
-	else:
-		print("smoke: %s clean" % name)
-		quit(0)

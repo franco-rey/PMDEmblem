@@ -1,13 +1,7 @@
-extends SceneTree
+extends SmokeCase
 
 const TEST_ARENA_MAP_PATH: String = "res://data/models/maps/definitions/chessboard.tres"
 const GENERATED_MOVES_DIR: String = "res://data/models/pokemon/generated/moves/"
-
-var failures: int = 0
-
-
-func _init() -> void:
-	call_deferred("_run")
 
 
 func _run() -> void:
@@ -374,20 +368,3 @@ func _first_event(log: BattleLog, kind: String) -> Dictionary:
 		if String(event.get("kind", "")) == kind:
 			return event
 	return {}
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		failures += 1
-		push_error("smoke: fail - %s" % label)
-
-
-func _finish(name: String) -> void:
-	if failures > 0:
-		push_error("smoke: %s failed %d check(s)" % [name, failures])
-		quit(1)
-	else:
-		print("smoke: %s clean" % name)
-		quit(0)

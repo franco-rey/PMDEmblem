@@ -56,6 +56,11 @@ var result_line: String = ""
 var director: bool = false
 var human: bool = false
 var human_step: int = 0
+var keys: bool = false
+var keys_step: int = 0
+var record_size: Vector2i = Vector2i(1920, 1080)
+var fast_scale: float = 1.0
+var open_timelines: int = 0
 var speed_setting: float = 0.0
 var center_marker: Node3D = null
 var director_turn: int = 0
@@ -68,6 +73,14 @@ func _init() -> void:
 
 
 var _settings_snapshot: String = ""
+
+
+func _force_window_size() -> void:
+	DisplayServer.window_set_min_size(Vector2i.ZERO)
+	if record_size.y > record_size.x:
+		DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, true)
+		DisplayServer.window_set_position(Vector2i.ZERO)
+	DisplayServer.window_set_size(record_size)
 
 
 func _snapshot_settings() -> void:
@@ -86,9 +99,20 @@ func _restore_settings() -> void:
 
 func _run() -> void:
 	_snapshot_settings()
-	DisplayServer.window_set_size(Vector2i(1920, 1080))
+	for arg in OS.get_cmdline_user_args():
+		if String(arg).begins_with("--size="):
+			var parts: PackedStringArray = String(arg).substr(7).split("x")
+			if parts.size() == 2:
+				record_size = Vector2i(int(parts[0]), int(parts[1]))
+		elif String(arg).begins_with("--keys="):
+			keys = String(arg).substr(7) == "1"
+		elif String(arg).begins_with("--fast-scale="):
+			fast_scale = maxf(1.0, float(String(arg).substr(13)))
+		elif String(arg).begins_with("--open-timelines="):
+			open_timelines = int(String(arg).substr(17))
+	_force_window_size()
 	root.content_scale_size = Vector2i(0, 0)
-	UiScale.override_factor = UiScale.compute(Vector2(1920, 1080))
+	UiScale.override_factor = UiScale.compute(Vector2(record_size))
 	for arg in OS.get_cmdline_user_args():
 		if String(arg).begins_with("--seed="):
 			seed_value = int(String(arg).substr(7))
@@ -114,6 +138,13 @@ func _run() -> void:
 			speed_setting = float(String(arg).substr(8))
 		elif String(arg).begins_with("--code="):
 			code_override = String(arg).substr(7)
+	keys_step = seed_value % KEY_SCRIPT.size()
+	if record_size != Vector2i(1920, 1080):
+		GameSettings.load_settings()
+		GameSettings.window_mode = "windowed"
+		GameSettings.resolution = record_size
+		GameSettings.remember_window_size = false
+		GameSettings.save_settings()
 	driver = DRIVER.new(self)
 	var ok: bool = await driver._launch(code_override if not code_override.is_empty() else CODE_TEMPLATE % seed_value)
 	if not ok:
@@ -129,17 +160,25 @@ func _run() -> void:
 		queues[slug] = (plan[slug] as Array).duplicate(true)
 	if fast_turns > 0:
 		level.presentation_runner.immediate_mode = true
+		var normal_speed: float = GameSettings.cpu_speed
+		var was_cinematic: bool = cinematic
+		cinematic = false
+		GameSettings.cpu_speed = fast_scale
+		Engine.time_scale = fast_scale
 		while turns_taken < fast_turns and _battle_alive():
 			var fast_pawn: TacticsPawn = await _next_active()
 			if fast_pawn == null:
 				break
 			turns_taken += 1
 			await _take_turn(fast_pawn)
+		cinematic = was_cinematic
+		GameSettings.cpu_speed = normal_speed
+		Engine.time_scale = normal_speed
 		level.presentation_runner.immediate_mode = false
 		print("showcase: fast phase ended after %d turns at %.2f s" % [turns_taken, float(Engine.get_physics_frames()) / 60.0])
 	if cinematic:
 		GameSettings.battle_flair = true
-		if human:
+		if human or keys:
 			GameSettings.camera_track = true
 		if director:
 			GameSettings.camera_track = true
@@ -150,31 +189,41 @@ func _run() -> void:
 		if speed_setting > 0.0:
 			GameSettings.cpu_speed = speed_setting
 		GameSettings.window_mode = "windowed"
-		GameSettings.resolution = Vector2i(1920, 1080)
+		GameSettings.resolution = record_size
 		UiScale.override_factor = 0.0
 		GameSettings.ui_scale = 1.0
 		GameSettings.apply(root)
 		await physics_frame
 		await physics_frame
 		Input.warp_mouse(Vector2(160.0, float(root.size.y) - 60.0))
-	DisplayServer.window_set_size(Vector2i(1920, 1080))
+	_force_window_size()
 	UiScale.override_factor = 1.0
 	UiScale.apply(root)
 	root.content_scale_factor = 1.0
 	if not show_ui:
-		level.set_interface_visible(false)
+		driver.main.set_interface_visible(false)
+	if record_size.y > record_size.x:
+		var portrait_camera: Camera3D = level.get_viewport().get_camera_3d()
+		if portrait_camera != null:
+			portrait_camera.keep_aspect = Camera3D.KEEP_WIDTH
 	await physics_frame
 	await physics_frame
 	start_frame = Engine.get_physics_frames()
 	print("showcase: recording starts at frame %d (%.2f s)" % [start_frame, float(start_frame) / 60.0])
+	print("showcase: recording starts at drawn frame %d (%.2f s)" % [Engine.get_frames_drawn(), float(Engine.get_frames_drawn()) / 60.0])
 	print("showcase: window=%s root=%s scale=%.2f hud=%s override=%.2f" % [str(DisplayServer.window_get_size()), str(root.size), root.content_scale_factor, str(level.hud.layout_size()), UiScale.override_factor])
+	if level.multiverse != null and level.multiverse.enabled:
+		print("showcase: timelines open at the start: %d" % level.multiverse.state.timeline_ids().size())
 	if cinematic:
 		base_yaw = level.camera.y_rot
-		level.camera.target_fov = 40.0
+		level.camera.target_fov = 35.0 if record_size.y > record_size.x else 40.0
 		if director:
 			_director_cut("wide", null, null)
 		elif human:
 			pass
+		elif keys:
+			_keys_reveal()
+			_keys_hide_stats()
 		else:
 			_enter_shot(0)
 			_cinematic_tick(0.0)
@@ -292,7 +341,7 @@ func _camera_loop() -> void:
 		if director:
 			_director_tick(1.0 / 60.0)
 			continue
-		if human:
+		if human or keys:
 			continue
 		var elapsed: float = float(Engine.get_physics_frames() - start_frame) / 60.0
 		var index: int = _shot_index_at(elapsed)
@@ -351,7 +400,7 @@ func _cinematic_tick(dt: float) -> void:
 
 
 func _punch_in() -> void:
-	if cinematic:
+	if cinematic and not keys and not human:
 		level.camera.target_fov = maxf(level.camera.min_zoom, level.camera.target_fov - 3.0)
 
 
@@ -426,6 +475,8 @@ func _slot_for(pawn: TacticsPawn, move_id: String) -> int:
 
 func _take_turn(pawn: TacticsPawn) -> void:
 	_index_pawns()
+	if _open_timeline(pawn):
+		return
 	var slug: String = _slug_of(pawn)
 	var acted: bool = false
 	if director:
@@ -433,6 +484,8 @@ func _take_turn(pawn: TacticsPawn) -> void:
 	if human:
 		await _human_turn_start()
 		await _hold(24)
+	if keys and start_frame > 0:
+		await _keys_turn_start()
 	var queue: Array = queues.get(slug, [])
 	if level.multiverse != null and not level.multiverse.pending_travel.is_empty() and level.participant.res.stage == level.participant.res.STAGE_SELECT_TRAVEL:
 		var hop_choice: int = -1
@@ -471,10 +524,78 @@ func _take_turn(pawn: TacticsPawn) -> void:
 		await _end_turn(pawn)
 
 
+const OPENER_MOVES: Dictionary = {
+	"0483_dialga": "roar_of_time",
+	"0484_palkia": "spacial_rend",
+	"0487_giratina": "shadow_force",
+	"0720_hoopa": "hyperspace_fury",
+	"0251_celebi": "dimensional_hole",
+	"0253_grovyle": "dimensional_hole",
+	"0477_dusknoir": "dimensional_hole",
+	"0474_porygon_z": "dimensional_glitch",
+}
+
+
+func _species_id(pawn: TacticsPawn) -> String:
+	if pawn == null or pawn.stats == null or pawn.stats.pokemon_instance == null or pawn.stats.pokemon_instance.species == null:
+		return ""
+	return String(pawn.stats.pokemon_instance.species.species_id)
+
+
+func _fresh_option(options: Array) -> int:
+	for i in range(options.size()):
+		if String((options[i] as Dictionary).get("kind", "")) != "hop":
+			return i
+	return -1
+
+
+func _open_timeline(pawn: TacticsPawn) -> bool:
+	if open_timelines <= 0 or turns_taken > fast_turns or level.multiverse == null or not level.multiverse.enabled:
+		return false
+	var mv: MultiverseController = level.multiverse
+	if mv.state.timeline_ids().size() >= open_timelines or not mv.pending_travel.is_empty() or mv.committing:
+		return false
+	var move_id: String = String(OPENER_MOVES.get(_species_id(pawn), ""))
+	if move_id.is_empty():
+		return false
+	var player_side: bool = pawn.get_parent() == level.player
+	var mine: int = mv.state.created_by_player if player_side else mv.state.created_by_enemy
+	var theirs: int = mv.state.created_by_enemy if player_side else mv.state.created_by_player
+	if mine > theirs:
+		return false
+	var travellers: String = String(mv.travel_rule(move_id).get("travellers", ""))
+	var target: TacticsPawn = pawn
+	if travellers == "both" or travellers == "target":
+		target = null
+		var foes: Array = []
+		for foe in (level.opponent if player_side else level.player).get_children():
+			if foe is TacticsPawn and foe.is_alive() and not mv.is_immune(foe):
+				foes.append(foe)
+		foes.shuffle()
+		for foe in foes:
+			if _fresh_option(mv.travel_options(move_id, pawn, foe)) >= 0:
+				target = foe
+				break
+		if target == null:
+			return false
+	elif _fresh_option(mv.travel_options(move_id, pawn, pawn)) < 0:
+		return false
+	if mv.request_travel(move_id, pawn, target) <= 0:
+		return false
+	var choice: int = _fresh_option(mv.pending_travel.get("options", []))
+	if choice < 0 or not mv.commit_travel(choice):
+		mv.cancel_travel()
+		return false
+	print("showcase: %s opens a timeline with %s (%d open)" % [_species_id(pawn), move_id, mv.state.timeline_ids().size()])
+	return true
+
+
 func _execute_intent(pawn: TacticsPawn, intent: Array) -> String:
 	var kind: String = String(intent[0])
 	if kind == "wait":
 		return "done"
+	if kind == "hop":
+		return "drop"
 	if kind == "map":
 		await _press(KEY_M)
 		await _hold(int(intent[1]) if intent.size() > 1 else 90)
@@ -503,6 +624,8 @@ func _execute_intent(pawn: TacticsPawn, intent: Array) -> String:
 			await driver._move(pawn, label)
 		return "moved"
 	if kind == "self" or kind == "self_low":
+		if intent.size() > 2:
+			travel_choice = int(intent[2])
 		var slot: int = _slot_for(pawn, String(intent[1]))
 		if slot < 0:
 			return "drop"
@@ -613,6 +736,85 @@ func _press(code: Key) -> void:
 		event.pressed = pressed
 		Input.parse_input_event(event)
 		await physics_frame
+
+
+const KEY_SCRIPT: Array = [
+	[[KEY_E, 0]],
+	[[KEY_MINUS, 0]],
+	[[KEY_BRACKETLEFT, 0], [-1, 110], [KEY_BRACKETLEFT, 0]],
+	[[KEY_Q, 0], [-1, 20], [KEY_Q, 0]],
+	[[KEY_EQUAL, 0]],
+	[[KEY_W, 30]],
+	[[KEY_MINUS, 0], [-1, 8], [KEY_MINUS, 0], [-1, 8], [KEY_MINUS, 0], [-1, 150], [KEY_E, 0], [-1, 60], [KEY_EQUAL, 0], [-1, 8], [KEY_EQUAL, 0], [-1, 8], [KEY_EQUAL, 0]],
+	[[KEY_P, 0]],
+	[[KEY_BRACKETRIGHT, 0], [-1, 130], [KEY_BRACKETRIGHT, 0]],
+	[[KEY_P, 0]],
+	[[KEY_D, 30]],
+	[[KEY_MINUS, 0], [-1, 8], [KEY_MINUS, 0], [-1, 90], [KEY_EQUAL, 0], [-1, 8], [KEY_EQUAL, 0]],
+	[[KEY_A, 30]],
+	[[KEY_Q, 0]],
+	[[KEY_S, 24]],
+]
+var keys_busy: bool = false
+
+
+func _press_held(code: Key, frames: int) -> void:
+	var down := InputEventKey.new()
+	down.keycode = code
+	down.physical_keycode = code
+	down.pressed = true
+	Input.parse_input_event(down)
+	await _hold(frames)
+	var up := InputEventKey.new()
+	up.keycode = code
+	up.physical_keycode = code
+	up.pressed = false
+	Input.parse_input_event(up)
+	await physics_frame
+
+
+func _keys_hide_stats() -> void:
+	while _battle_alive():
+		await physics_frame
+		if level == null or not is_instance_valid(level) or level.participant == null or level.participant.res == null:
+			return
+		if level.participant.res.display_opponent_stats:
+			level.participant.res.display_opponent_stats = false
+			for group in [level.player, level.opponent]:
+				for pawn in group.get_children():
+					if pawn is TacticsPawn and pawn.res.pawn_hud_enabled:
+						pawn.res.pawn_hud_enabled = false
+						pawn.show_pawn_stats(false)
+
+
+func _keys_reveal() -> void:
+	keys_busy = true
+	await _hold(90)
+	for i in range(3):
+		await _press(KEY_MINUS)
+		await _hold(7)
+	await _hold(200)
+	for i in range(3):
+		await _press(KEY_EQUAL)
+		await _hold(7)
+	keys_busy = false
+
+
+func _keys_turn_start() -> void:
+	if keys_busy:
+		return
+	var script_entry: Array = KEY_SCRIPT[keys_step % KEY_SCRIPT.size()]
+	keys_step += 1
+	for step in script_entry:
+		var code: int = int((step as Array)[0])
+		var frames: int = int((step as Array)[1])
+		if code < 0:
+			await _hold(frames)
+		elif frames > 0:
+			await _press_held(code as Key, frames)
+		else:
+			await _press(code as Key)
+			await _hold(4)
 
 
 func _human_top_down() -> bool:
@@ -763,8 +965,11 @@ func _perform_attack(pawn: TacticsPawn, slot: int, target: TacticsPawn) -> void:
 		await _resolve_travel_choice(pawn)
 		return
 	var controls: TacticsControls = _controls()
-	if not cinematic or controls == null:
+	if not cinematic or controls == null or keys:
+		if keys:
+			await _hold(30)
 		await driver._attack(pawn, slot, target)
+		await _resolve_travel_choice(pawn)
 		return
 	var participant: TacticsParticipantResource = level.participant.res
 	await _show_actions(pawn)
@@ -776,8 +981,10 @@ func _perform_attack(pawn: TacticsPawn, slot: int, target: TacticsPawn) -> void:
 		await _hold(30)
 	if participant.stage == participant.STAGE_ATTACK:
 		await _wait_attack_end(pawn)
+		await _resolve_travel_choice(pawn)
 		return
 	await driver._attack(pawn, slot, target)
+	await _resolve_travel_choice(pawn)
 
 
 func _wait_attack_end(pawn: TacticsPawn) -> void:

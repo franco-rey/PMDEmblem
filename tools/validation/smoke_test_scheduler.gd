@@ -1,6 +1,5 @@
-extends SceneTree
+extends SmokeCase
 
-var failures: int = 0
 var created_stats: Array[Stats] = []
 
 
@@ -43,7 +42,7 @@ func _test_basic_order() -> void:
 	var s := BattleScheduler.new()
 	s.start_battle([a, b, c, d], 42)
 	var order: Array = _drain(s, 4)
-	_assert_eq(order, [a, b, c, d], "basic speed-descending order (110>90>85>25)")
+	_assert_array_eq(order, [a, b, c, d], "basic speed-descending order (110>90>85>25)")
 
 
 func _test_determinism_same_seed() -> void:
@@ -60,8 +59,8 @@ func _test_determinism_same_seed() -> void:
 	s2.start_battle([a, b, c, d], 7)
 	var order2: Array = _drain(s2, 4)
 
-	_assert_eq(order1, order2, "same seed produces same order")
-	_assert_eq(order1, [a, b, c, d], "stable insertion order resolves within-team ties")
+	_assert_array_eq(order1, order2, "same seed produces same order")
+	_assert_array_eq(order1, [a, b, c, d], "stable insertion order resolves within-team ties")
 
 
 func _test_player_team_precedence() -> void:
@@ -71,7 +70,7 @@ func _test_player_team_precedence() -> void:
 	var s := BattleScheduler.new()
 	s.start_battle([e1, p1, p2], 11)
 	var order: Array = _drain(s, 3)
-	_assert_eq(order, [p1, p2, e1], "team precedence applies within tied Speeds")
+	_assert_array_eq(order, [p1, p2, e1], "team precedence applies within tied Speeds")
 
 
 func _test_remove_unit() -> void:
@@ -82,15 +81,15 @@ func _test_remove_unit() -> void:
 	var s := BattleScheduler.new()
 	s.start_battle([a, b, c, d], 42)
 
-	_assert_eq([s.get_active_unit()], [a], "round starts with a")
+	_assert_array_eq([s.get_active_unit()], [a], "round starts with a")
 	s.complete_active_unit()
-	_assert_eq([s.get_active_unit()], [b], "advances to b")
+	_assert_array_eq([s.get_active_unit()], [b], "advances to b")
 	s.remove_unit(b)
-	_assert_eq([s.get_active_unit()], [c], "removing active b advances to c")
+	_assert_array_eq([s.get_active_unit()], [c], "removing active b advances to c")
 	s.remove_unit(b)
-	_assert_eq([s.get_active_unit()], [c], "double-remove of b is idempotent")
+	_assert_array_eq([s.get_active_unit()], [c], "double-remove of b is idempotent")
 	s.complete_active_unit()
-	_assert_eq([s.get_active_unit()], [d], "after c, d is active")
+	_assert_array_eq([s.get_active_unit()], [d], "after c, d is active")
 
 
 func _test_insert_unit() -> void:
@@ -104,11 +103,11 @@ func _test_insert_unit() -> void:
 	s.complete_active_unit()
 	var hot := _make_unit(200, PokemonInstanceResource.Team.ALLY, 99)
 	s.insert_unit(hot)
-	_assert_eq([s.get_active_unit()], [b], "active b not displaced by insertion")
+	_assert_array_eq([s.get_active_unit()], [b], "active b not displaced by insertion")
 	s.complete_active_unit()
-	_assert_eq([s.get_active_unit()], [hot], "inserted high-speed unit acts before remaining queue")
+	_assert_array_eq([s.get_active_unit()], [hot], "inserted high-speed unit acts before remaining queue")
 	s.complete_active_unit()
-	_assert_eq([s.get_active_unit()], [c], "queue resumes after inserted unit acts")
+	_assert_array_eq([s.get_active_unit()], [c], "queue resumes after inserted unit acts")
 
 
 func _test_rebuild_queue() -> void:
@@ -122,7 +121,7 @@ func _test_rebuild_queue() -> void:
 	s.complete_active_unit()
 	s.complete_active_unit()
 	s.rebuild_queue()
-	_assert_eq([s.get_active_unit()], [a], "rebuild restarts with highest-speed living unit")
+	_assert_array_eq([s.get_active_unit()], [a], "rebuild restarts with highest-speed living unit")
 
 
 func _test_fainted_skipped() -> void:
@@ -133,7 +132,7 @@ func _test_fainted_skipped() -> void:
 	s.start_battle([a, b, c], 42)
 	b.stats.battle_status = Stats.BattleStatus.FAINTED
 	s.complete_active_unit()
-	_assert_eq([s.get_active_unit()], [c], "fainted unit is skipped without removal")
+	_assert_array_eq([s.get_active_unit()], [c], "fainted unit is skipped without removal")
 
 
 func _test_status_turn_skip() -> void:
@@ -150,15 +149,15 @@ func _test_status_turn_skip() -> void:
 	_assert_true(String(sleep_skip.get("status_id", "")) == "sleep", "sleep reports a turn skip")
 	_assert_true(a.stats.battle_statuses.has("sleep"), "sleep persists after skip consumption")
 	_assert_true(s.skip_active_unit(String(sleep_skip.get("status_id", ""))), "scheduler skips active sleeping unit")
-	_assert_eq([s.get_active_unit()], [b], "skip advances from sleeping unit to next active unit")
+	_assert_array_eq([s.get_active_unit()], [b], "skip advances from sleeping unit to next active unit")
 
 	b.stats.apply_battle_status("flinch", {"source": "test"})
 	var flinch_skip: Dictionary = b.stats.consume_turn_skip_status()
 	_assert_true(String(flinch_skip.get("status_id", "")) == "flinch", "flinch reports a turn skip")
 	_assert_true(not b.stats.battle_statuses.has("flinch"), "flinch is consumed by turn skip")
 	_assert_true(s.skip_active_unit(String(flinch_skip.get("status_id", ""))), "scheduler skips active flinched unit")
-	_assert_eq([s.get_active_unit()], [c], "skip advances from flinched unit to next active unit")
-	_assert_eq(completed, [a, b], "skipped units emit turn_completed deterministically")
+	_assert_array_eq([s.get_active_unit()], [c], "skip advances from flinched unit to next active unit")
+	_assert_array_eq(completed, [a, b], "skipped units emit turn_completed deterministically")
 
 	c.stats.apply_battle_status("paralyze", {"skip_turn": true})
 	var paralysis_skip: Dictionary = c.stats.consume_turn_skip_status()
@@ -184,7 +183,7 @@ func _test_peek_upcoming() -> void:
 	var s := BattleScheduler.new()
 	s.start_battle([a, b, c, d], 42)
 	var upcoming: Array = s.peek_upcoming(3)
-	_assert_eq(upcoming, [b, c, d], "peek_upcoming returns the next N queued units")
+	_assert_array_eq(upcoming, [b, c, d], "peek_upcoming returns the next N queued units")
 
 
 func _drain(s: BattleScheduler, n: int) -> Array:
@@ -198,7 +197,7 @@ func _drain(s: BattleScheduler, n: int) -> Array:
 	return order
 
 
-func _assert_eq(actual: Array, expected: Array, label: String) -> void:
+func _assert_array_eq(actual: Array, expected: Array, label: String) -> void:
 	if actual.size() != expected.size():
 		_fail("%s (size mismatch: %d vs %d)" % [label, actual.size(), expected.size()])
 		return
@@ -207,18 +206,6 @@ func _assert_eq(actual: Array, expected: Array, label: String) -> void:
 			_fail("%s (index %d differs)" % [label, i])
 			return
 	print("smoke: ok - %s" % label)
-
-
-func _assert_true(value: bool, label: String) -> void:
-	if value:
-		print("smoke: ok - %s" % label)
-	else:
-		_fail(label)
-
-
-func _fail(label: String) -> void:
-	failures += 1
-	push_error("smoke: fail - %s" % label)
 
 
 func _cleanup() -> void:
