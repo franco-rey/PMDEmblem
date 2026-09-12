@@ -7,7 +7,8 @@ const TILE_LIGHT: Color = Color(0.87, 0.82, 0.68, 1.0)
 const TILE_FRAME: Color = Color(0.22, 0.17, 0.12, 1.0)
 const BLOCK_SIZE: Vector3 = Vector3(1.0, 0.5, 1.0)
 const SLAB_SIZE: Vector3 = Vector3(1.4, 0.3, 1.4)
-const BOOT_ZOOM: float = DEFAULT_ZOOM - ZOOM_SPEED
+const BOOT_ZOOM: float = DEFAULT_ZOOM - ZOOM_SPEED * 2.0
+const FACING_OFFSET_DEGREES: float = 45.0
 const HIT_CUE: String = "battle.hit_neutral"
 const ATTACK_STATES: Array[String] = ["attack", "strike", "physical_attack", "special_attack", "shoot", "charge", "cast", "hop"]
 
@@ -107,4 +108,15 @@ func _after_frame() -> void:
 		_action_playing = false
 		_character.set_anim_state(_character.ANIM_IDLE)
 	if _character != null and is_instance_valid(_character) and _pawn != null:
+		_face_camera()
 		_character.rotate_sprite(_pawn.global_basis)
+
+
+func _face_camera() -> void:
+	if _camera == null or _pawn == null or not is_instance_valid(_pawn):
+		return
+	var to_camera: Vector3 = _camera.global_position - _pawn.global_position
+	to_camera.y = 0.0
+	if to_camera.length_squared() < 0.0001:
+		return
+	_pawn.rotation.y = atan2(to_camera.x, to_camera.z) + deg_to_rad(FACING_OFFSET_DEGREES)

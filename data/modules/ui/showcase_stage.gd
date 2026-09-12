@@ -4,7 +4,7 @@ extends SubViewportContainer
 const VIEW_SIZE: Vector2i = Vector2i(560, 460)
 const ROTATE_STEP_DEGREES: float = 45.0
 const ZOOM_SPEED: float = 10.0
-const MIN_ZOOM: float = 10.0
+const MIN_ZOOM: float = 5.0
 const MAX_ZOOM: float = 65.0
 const DEFAULT_ZOOM: float = 30.0
 const ZOOM_SMOOTHNESS: float = 0.65
