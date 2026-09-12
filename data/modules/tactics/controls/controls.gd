@@ -11,6 +11,7 @@ var serv: TacticsControlsService
 
 @onready var mouse_click_capture: InputCapture = $MouseClickCapture
 
+
 func _ready() -> void:
 	serv = TacticsControlsService.new(controls, t_cam, participant, arena, mouse_click_capture)
 	serv.setup(self)
@@ -19,11 +20,14 @@ func _ready() -> void:
 		var str_name: StringName = controls.actions[action]
 		get_act(action).connect("pressed", Callable(self, str_name))
 
+
 func _physics_process(delta: float) -> void:
 	serv.physics_process(delta, self)
 
+
 func _input(event: InputEvent) -> void:
 	serv.handle_input(event)
+
 
 func set_cursor_shape_to_move() -> void:
 	CursorService.set_cursor_shape_to_move()

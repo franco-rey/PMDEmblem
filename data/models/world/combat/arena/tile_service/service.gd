@@ -3,6 +3,7 @@ extends Node3D
 
 const TILE_SRC: String = "res://data/modules/tactics/level/arena/tile/tactics_tile.gd"
 
+
 static func tiles_into_staticbodies(tiles_obj: Node3D) -> void:
 	for _t: MeshInstance3D in tiles_obj.get_children():
 		_t.create_trimesh_collision()

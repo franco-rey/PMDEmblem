@@ -22,6 +22,7 @@ var path_mat: StandardMaterial3D = TacticsConfig.mat_color.path
 var committed_mat: StandardMaterial3D = TacticsConfig.mat_color.committed
 var danger_mat: StandardMaterial3D = TacticsConfig.mat_color.danger
 
+
 func _process(_delta: float) -> void:
 	var tile: MeshInstance3D = get_node_or_null("Tile") as MeshInstance3D
 	if not tile:
@@ -49,6 +50,7 @@ func _process(_delta: float) -> void:
 				tile.material_override = attackable_mat
 			elif danger:
 				tile.material_override = danger_mat
+
 
 func get_neighbors(height: float) -> Array:
 	return $RayCasting.get_all_neighbors(height)

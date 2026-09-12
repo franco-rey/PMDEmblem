@@ -229,4 +229,3 @@ static func apply_explicit_loadout(instance: PokemonInstanceResource, move_ids: 
 	instance.pp_state = pp
 	instance.loadout_locked = true
 	return ""
-

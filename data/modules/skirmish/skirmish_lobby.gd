@@ -1875,6 +1875,7 @@ func _create_roster_cell(entry: Dictionary) -> Button:
 	button.add_child(texture_rect)
 	return button
 
+
 func _refresh_team_trays() -> void:
 	_populate_slots(player_slots, player_team_paths, SIDE_PLAYER)
 	_populate_slots(enemy_slots, enemy_team_paths, SIDE_ENEMY)

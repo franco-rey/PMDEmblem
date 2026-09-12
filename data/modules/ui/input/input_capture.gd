@@ -1,6 +1,7 @@
 class_name InputCapture
 extends Node3D
 
+
 func project_mouse_position(collision_mask: int, is_joystick: bool) -> Object:
 	var ray_length: int = 1_000_000
 	var camera: Camera3D = get_viewport().get_camera_3d()
